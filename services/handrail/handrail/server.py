@@ -281,6 +281,44 @@ def v1_runs_latest():
     return {"ok": False, "latest_run_dir": None}
 
 
+
+@app.get("/v1/runs/get")
+def v1_runs_get(run_dir: str | None = None):
+    target = Path(run_dir) if run_dir else None
+
+    if target is None:
+        latest_file = RUNS_DIR / "latest"
+        if not latest_file.exists():
+            return JSONResponse({"ok": False, "error": "no latest run"}, status_code=404)
+        target = Path(latest_file.read_text().strip())
+
+    if not target.exists():
+        return JSONResponse({"ok": False, "error": "run_dir not found", "run_dir": str(target)}, status_code=404)
+
+    def read_text(name: str):
+        fp = target / name
+        if fp.exists():
+            return fp.read_text(errors="replace")
+        return None
+
+    payload = {
+        "ok": True,
+        "run_dir": str(target),
+        "meta_json": read_text("meta.json"),
+        "result_json": read_text("result.json"),
+        "error_txt": read_text("error.txt"),
+        "stdout_txt": read_text("stdout.txt"),
+        "stderr_txt": read_text("stderr.txt"),
+        "compose_ps_txt": read_text("compose_ps.txt"),
+        "compose_ps_before_txt": read_text("compose_ps_before.txt"),
+        "compose_ps_after_txt": read_text("compose_ps_after.txt"),
+        "compose_up_ns_continuum_txt": read_text("compose_up_ns_continuum.txt"),
+        "health_json": read_text("health.json"),
+        "mounts_json": read_text("mounts.json"),
+        "queued_txt": read_text("queued.txt"),
+    }
+    return JSONResponse(payload)
+
 @app.get("/ui", response_class=HTMLResponse)
 def ui():
     # single-file UI, no build step
