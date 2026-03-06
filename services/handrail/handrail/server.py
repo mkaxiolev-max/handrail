@@ -6,10 +6,11 @@ import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel
 
 try:
     import urllib.request as urlreq
@@ -25,6 +26,12 @@ EXTERNAL = Path("/Volumes/NSExternal")
 
 RUNS_DIR = EXTERNAL / ".run" / "boot"
 RUNS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+class RunRequest(BaseModel):
+    cmd: List[str]
+    cwd: Optional[str] = None
+    timeout_s: int = 120
 
 
 def _boot_ez_worker(run_dir):
@@ -214,6 +221,56 @@ def v1_boot_ez(background_tasks: BackgroundTasks):
         "run_dir": str(run_dir),
         "note": "Boot queued. Check result.json/error.txt in run_dir."
     })
+
+
+
+@app.post("/v1/run")
+def v1_run(req: RunRequest):
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    cwd = Path(req.cwd) if req.cwd else WORKSPACE
+    meta = {
+        "run_id": run_id,
+        "date_utc": datetime.now(timezone.utc).isoformat(),
+        "cwd": str(cwd),
+        "cmd": req.cmd,
+        "timeout_s": req.timeout_s,
+    }
+    (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+
+    try:
+        p = subprocess.run(
+            req.cmd,
+            cwd=str(cwd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=req.timeout_s,
+        )
+        out = p.stdout
+        rc = int(p.returncode)
+    except subprocess.TimeoutExpired as e:
+        out = (e.stdout or "") + "\n[TIMEOUT]\n" + (e.stderr or "")
+        rc = 124
+    except Exception as e:
+        out = f"{type(e).__name__}: {e}\n"
+        rc = 1
+
+    (run_dir / "stdout.txt").write_text(out)
+
+    resp = {
+        "ok": rc == 0,
+        "run_id": run_id,
+        "rc": rc,
+        "cwd": str(cwd),
+        "cmd": req.cmd,
+        "run_dir": str(run_dir),
+    }
+    (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+    return JSONResponse(resp)
 
 @app.get("/v1/runs/latest")
 def v1_runs_latest():
