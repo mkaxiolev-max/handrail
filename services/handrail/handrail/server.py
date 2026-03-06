@@ -1,0 +1,288 @@
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+from fastapi import FastAPI, BackgroundTasks
+from fastapi.responses import HTMLResponse, JSONResponse
+
+try:
+    import urllib.request as urlreq
+except Exception:
+    urlreq = None  # type: ignore
+
+app = FastAPI(title="Handrail", version="0.1.0")
+
+# Paths visible INSIDE handrail container
+WORKSPACE = Path(os.environ.get("HR_WORKSPACE", "/workspace"))
+COMPOSE_FILE = WORKSPACE / "docker-compose.yml"
+EXTERNAL = Path("/Volumes/NSExternal")
+
+RUNS_DIR = EXTERNAL / ".run" / "boot"
+RUNS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _boot_ez_worker(run_dir):
+    """
+    Worker for Boot EZ:
+    - restart ns + continuum only
+    - never touch deps (prevents handrail self-recreate)
+    - writes output files so we can debug deterministically
+    """
+    from pathlib import Path as _Path
+    import json as _json
+    try:
+        rc_up = run_compose(
+            ["up", "-d", "--no-deps", "--build", "--force-recreate", "ns", "continuum"],
+            cwd=WORKSPACE,
+            out_path=_Path(run_dir) / "compose_up_ns_continuum.txt",
+        )
+
+        health = wait_health(_Path(run_dir), deadline_s=60)
+        mounts = mount_status(_Path(run_dir))
+
+        run_compose(["ps"], cwd=WORKSPACE, out_path=_Path(run_dir) / "compose_ps_after.txt")
+
+        resp = {
+            "ok": rc_up == 0 and health.get("ns") and health.get("continuum"),
+            "rc_up": rc_up,
+            "health": health,
+            "mounts": mounts,
+            "run_dir": str(run_dir),
+            "note": "Boot EZ v1 restarts ns + continuum only (handrail remains running).",
+        }
+        (_Path(run_dir) / "result.json").write_text(_json.dumps(resp, indent=2))
+    except Exception as e:
+        (_Path(run_dir) / "error.txt").write_text(f"{type(e).__name__}: {e}\n")
+
+NS_HEALTHZ = os.environ.get("NS_HEALTHZ", "http://ns:9000/healthz")
+CONT_STATE = os.environ.get("CONT_STATE", "http://continuum:8788/state")
+SELF_HEALTHZ = os.environ.get("SELF_HEALTHZ", "http://127.0.0.1:8011/healthz")
+
+
+def now_id() -> str:
+    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+
+
+def http_ok(url: str, timeout: float = 2.0) -> bool:
+    if urlreq is None:
+        return False
+    try:
+        with urlreq.urlopen(url, timeout=timeout) as r:
+            return 200 <= int(getattr(r, "status", 200)) < 300
+    except Exception:
+        return False
+
+
+def http_json(url: str, timeout: float = 2.0) -> Optional[Dict[str, Any]]:
+    if urlreq is None:
+        return None
+    try:
+        with urlreq.urlopen(url, timeout=timeout) as r:
+            body = r.read().decode("utf-8", errors="replace")
+            return json.loads(body)
+    except Exception:
+        return None
+
+
+def run_compose(args: list[str], cwd: Path, out_path: Path) -> int:
+    """
+    Runs docker-compose against the host via /var/run/docker.sock.
+    IMPORTANT: never "up --force-recreate" handrail from inside handrail.
+    """
+    cmd = ["docker-compose", "-f", str(COMPOSE_FILE), *args]
+    p = subprocess.run(
+        cmd,
+        cwd=str(cwd),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    out_path.write_text(p.stdout)
+    return int(p.returncode)
+
+
+def wait_health(run_dir: Path, deadline_s: int = 40) -> Dict[str, Any]:
+    t0 = time.time()
+    status = {"handrail": False, "ns": False, "continuum": False}
+
+    while time.time() - t0 < deadline_s:
+        status["handrail"] = http_ok(SELF_HEALTHZ)
+        status["ns"] = http_ok(NS_HEALTHZ)
+        status["continuum"] = http_ok(CONT_STATE)
+        if all(status.values()):
+            break
+        time.sleep(2)
+
+    (run_dir / "health.json").write_text(json.dumps(status, indent=2))
+    return status
+
+
+def mount_status(run_dir: Path) -> Dict[str, Any]:
+    ms = {
+        "handrail_sees_NSExternal": EXTERNAL.exists(),
+        "ns_healthz": http_json(NS_HEALTHZ),
+    }
+    (run_dir / "mounts.json").write_text(json.dumps(ms, indent=2, default=str))
+    return ms
+
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
+
+
+@app.get("/v1/status")
+def v1_status():
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    rc_ps = run_compose(["ps"], cwd=WORKSPACE, out_path=run_dir / "compose_ps.txt")
+
+    health = {
+        "handrail": http_ok(SELF_HEALTHZ),
+        "ns": http_ok(NS_HEALTHZ),
+        "continuum": http_ok(CONT_STATE),
+    }
+    mounts = mount_status(run_dir)
+
+    resp = {
+        "ok": rc_ps == 0,
+        "run_id": run_id,
+        "compose_ps_rc": rc_ps,
+        "health": health,
+        "mounts": mounts,
+        "run_dir": str(run_dir),
+    }
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+    return JSONResponse(resp)
+
+
+@app.post("/v1/stack/stop")
+def v1_stack_stop():
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Do NOT stop handrail from inside handrail. Stop only ns + continuum.
+    rc = run_compose(["stop", "ns", "continuum"], cwd=WORKSPACE, out_path=run_dir / "compose_stop.txt")
+
+    resp = {
+        "ok": rc == 0,
+        "run_id": run_id,
+        "rc": rc,
+        "run_dir": str(run_dir),
+    }
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+    return JSONResponse(resp)
+
+
+@app.post("/v1/boot/ez")
+def v1_boot_ez(background_tasks: BackgroundTasks):
+    """
+    Boot EZ v1 (safe): restart ns + continuum only.
+    Returns immediately; boot runs in background.
+    """
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    meta = {
+        "run_id": run_id,
+        "date_utc": datetime.now(timezone.utc).isoformat(),
+        "compose_file": str(COMPOSE_FILE),
+        "workspace": str(WORKSPACE),
+        "mode": "async",
+    }
+    (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+
+    run_compose(["ps"], cwd=WORKSPACE, out_path=run_dir / "compose_ps_before.txt")
+    (run_dir / "queued.txt").write_text("queued\n")
+
+    background_tasks.add_task(_boot_ez_worker, str(run_dir))
+
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+    return JSONResponse({
+        "accepted": True,
+        "run_id": run_id,
+        "run_dir": str(run_dir),
+        "note": "Boot queued. Check result.json/error.txt in run_dir."
+    })
+
+@app.get("/v1/runs/latest")
+def v1_runs_latest():
+    latest_file = RUNS_DIR / "latest"
+    if latest_file.exists():
+        p = latest_file.read_text().strip()
+        return {"ok": True, "latest_run_dir": p}
+    return {"ok": False, "latest_run_dir": None}
+
+
+@app.get("/ui", response_class=HTMLResponse)
+def ui():
+    # single-file UI, no build step
+    return HTMLResponse(
+        """
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Handrail UI</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 16px; }
+    button { margin-right: 8px; padding: 10px 12px; }
+    pre { background: #f5f5f5; padding: 12px; overflow: auto; }
+    .row { margin: 10px 0; }
+    .ok { color: #0a0; }
+    .bad { color: #a00; }
+    code { background: #eee; padding: 2px 4px; }
+  </style>
+</head>
+<body>
+  <h2>Handrail Control Surface</h2>
+
+  <div class="row">
+    <button onclick="bootEz()">Boot EZ (ns+continuum)</button>
+    <button onclick="status()">Status</button>
+    <button onclick="stopStack()">Stop (ns+continuum)</button>
+    <button onclick="latest()">Latest Run</button>
+  </div>
+
+  <div class="row" id="summary"></div>
+  <pre id="out">(no output yet)</pre>
+
+<script>
+async function call(method, path) {
+  const res = await fetch(path, { method });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return { raw: text }; }
+}
+function setOut(obj) {
+  document.getElementById('out').textContent = JSON.stringify(obj, null, 2);
+  if (obj && obj.run_dir) {
+    document.getElementById('summary').innerHTML =
+      'run_id: <code>' + (obj.run_id || '') + '</code> ' +
+      'run_dir: <code>' + obj.run_dir + '</code>';
+  } else if (obj && obj.latest_run_dir) {
+    document.getElementById('summary').innerHTML =
+      'latest_run_dir: <code>' + obj.latest_run_dir + '</code>';
+  } else {
+    document.getElementById('summary').textContent = '';
+  }
+}
+async function bootEz(){ setOut(await call('POST','/v1/boot/ez')); }
+async function status(){ setOut(await call('GET','/v1/status')); }
+async function stopStack(){ setOut(await call('POST','/v1/stack/stop')); }
+async function latest(){ setOut(await call('GET','/v1/runs/latest')); }
+</script>
+</body>
+</html>
+        """.strip()
+    )
