@@ -73,7 +73,7 @@ SELF_HEALTHZ = os.environ.get("SELF_HEALTHZ", "http://127.0.0.1:8011/healthz")
 
 
 def now_id() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
 
 
 def http_ok(url: str, timeout: float = 2.0) -> bool:

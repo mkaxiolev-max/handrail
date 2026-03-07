@@ -13,7 +13,7 @@ from runtime.handrail_bridge.task_packet_builder import build_execution_packet
 
 
 def now_id() -> str:
-    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
 
 
 def write_json(path: Path, obj) -> None:
