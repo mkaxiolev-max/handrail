@@ -355,6 +355,89 @@ def v1_runs_latest():
 
 
 
+
+
+@app.get("/v1/run_summary")
+def v1_run_summary(run_dir: str | None = None):
+    latest_file = RUNS_DIR / "latest"
+    target = Path(run_dir) if run_dir else Path(latest_file.read_text().strip())
+
+    def read_json(name: str):
+        p = target / name
+        if not p.exists():
+            return None
+        try:
+            return json.loads(p.read_text())
+        except Exception:
+            return None
+
+    def read_text(name: str):
+        p = target / name
+        if not p.exists():
+            return None
+        return p.read_text()
+
+    result = read_json("result.json")
+    task_request = read_json("task_request.json")
+    stdout_txt = read_text("stdout.txt")
+
+    boot_go_run_dir = None
+    child_run_dir = None
+    present_state_run_dir = None
+
+    if isinstance(result, dict):
+        boot_go_run_dir = result.get("boot_go_run_dir")
+        child_run_dir = result.get("child_run_dir")
+        present_state_run_dir = result.get("present_state_run_dir")
+
+    child_result = None
+    present_state_artifacts = None
+    post_status = None
+
+    if boot_go_run_dir:
+        bg = Path(boot_go_run_dir)
+        post_status_p = bg / "post_status.json"
+        if post_status_p.exists():
+            try:
+                post_status = json.loads(post_status_p.read_text())
+            except Exception:
+                post_status = None
+
+    if child_run_dir:
+        cr = Path(child_run_dir)
+        rp = cr / "result.json"
+        if rp.exists():
+            try:
+                child_result = json.loads(rp.read_text())
+            except Exception:
+                child_result = None
+
+    if present_state_run_dir:
+        pr = Path(present_state_run_dir)
+        present_state_artifacts = {
+            "infra_boot_report": str(pr / "infra_boot_report.json") if (pr / "infra_boot_report.json").exists() else None,
+            "present_state_kernel": str(pr / "present_state_kernel.json") if (pr / "present_state_kernel.json").exists() else None,
+            "ancestry_graph": str(pr / "ancestry_graph.json") if (pr / "ancestry_graph.json").exists() else None,
+            "coherence_report": str(pr / "coherence_report.json") if (pr / "coherence_report.json").exists() else None,
+            "operating_frame": str(pr / "operating_frame.json") if (pr / "operating_frame.json").exists() else None,
+            "execution_packet": str(pr / "execution_packet.json") if (pr / "execution_packet.json").exists() else None,
+        }
+
+    summary = {
+        "ok": True,
+        "queried_run_dir": str(target),
+        "task_request": task_request,
+        "task_result": result,
+        "boot_go_run_dir": boot_go_run_dir,
+        "child_run_dir": child_run_dir,
+        "present_state_run_dir": present_state_run_dir,
+        "post_status": post_status,
+        "child_result": child_result,
+        "present_state_artifacts": present_state_artifacts,
+        "stdout_preview": stdout_txt[:2000] if stdout_txt else None,
+    }
+    return JSONResponse(summary)
+
 @app.get("/v1/runs/get")
 def v1_runs_get(run_dir: str | None = None):
     target = Path(run_dir) if run_dir else None
