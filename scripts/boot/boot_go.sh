@@ -235,6 +235,19 @@ checks = {
     "artifact_completeness": evaluators.get("artifact_completeness_verifier", {}).get("pass", False),
 }
 
+execution_mode = "bootstrap_fallback"
+handoff_mode = None
+ledger_path = run_dir / "proof_ledger.jsonl"
+if ledger_path.exists():
+    for line in ledger_path.read_text().splitlines():
+        if '"event_type": "handoff_to_handrail"' in line and '"mode": "direct_handrail"' in line:
+            handoff_mode = "direct_handrail"
+            break
+        if '"event_type": "handoff_to_handrail"' in line and '"mode": "bootstrap_fallback"' in line:
+            handoff_mode = "bootstrap_fallback"
+if handoff_mode:
+    execution_mode = handoff_mode
+
 write_run_summary(
     run_dir,
     {
@@ -253,6 +266,7 @@ write_run_summary(
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
         "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,
         "contradictions": [],
+        "execution_mode": execution_mode,
     },
 )
 PY

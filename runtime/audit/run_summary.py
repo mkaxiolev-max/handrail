@@ -21,6 +21,7 @@ def write_run_summary(run_dir: str | Path, summary: Dict[str, Any]) -> Path:
         "ok": summary.get("ok", False),
         "intent": summary.get("intent"),
         "task_type": summary.get("task_type"),
+        "execution_mode": summary.get("execution_mode"),
         "policy_version": "v1",
         "policy_hash": summary.get("policy_hash"),
         "services": summary.get("services", {}),
