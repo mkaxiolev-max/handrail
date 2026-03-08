@@ -351,6 +351,7 @@ def v1_run_summary(run_dir: str | None = None):
 
     result = read_json("result.json")
     task_request = read_json("task_request.json")
+    run_summary_json = read_json("run_summary.json")
     stdout_txt = read_text("stdout.txt")
 
     boot_go_run_dir = None
@@ -400,12 +401,14 @@ def v1_run_summary(run_dir: str | None = None):
         "queried_run_dir": str(target),
         "task_request": task_request,
         "task_result": result,
+        "run_summary_json": run_summary_json,
         "boot_go_run_dir": boot_go_run_dir,
         "child_run_dir": child_run_dir,
         "present_state_run_dir": present_state_run_dir,
         "post_status": post_status,
         "child_result": child_result,
         "present_state_artifacts": present_state_artifacts,
+        "proof_ledger_path": str(target / "proof_ledger.jsonl") if (target / "proof_ledger.jsonl").exists() else None,
         "stdout_preview": stdout_txt[:2000] if stdout_txt else None,
     }
     return JSONResponse(summary)
