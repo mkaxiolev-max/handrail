@@ -7,20 +7,36 @@ ROOT="$(pwd)"
 RUNS_ROOT="/Volumes/NSExternal/.run/boot"
 mkdir -p "$RUNS_ROOT"
 
-RUN_ID="$(date -u +%Y%m%d_%H%M%S)"
+RUN_ID="$(python3 - <<'PY2'
+from datetime import datetime, timezone
+print(datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f"))
+PY2
+)"
 TASK_ID="ops_boot_check_${RUN_ID}"
 RUN_DIR="$RUNS_ROOT/$RUN_ID"
 mkdir -p "$RUN_DIR"
 
 export ROOT RUN_ID TASK_ID RUN_DIR RUNS_ROOT
 
-POLICY_HASH="$(
-  cat docker-compose.yml \
-      services/handrail/handrail/server.py \
-      runtime/boot/boot_orchestrator.py \
-      scripts/boot/boot_ez.sh \
-      scripts/boot/reset_clean.sh \
-      scripts/boot/status.sh 2>/dev/null | shasum -a 256 | awk '{print $1}'
+POLICY_HASH="$(python3 - <<'PYHASH'
+from pathlib import Path
+import hashlib
+
+paths = [
+    Path("docker-compose.yml"),
+    Path("services/handrail/handrail/server.py"),
+    Path("runtime/boot/boot_orchestrator.py"),
+    Path("scripts/boot/boot_ez.sh"),
+    Path("scripts/boot/reset_clean.sh"),
+    Path("scripts/boot/status.sh"),
+]
+
+h = hashlib.sha256()
+for path in paths:
+    if path.exists():
+        h.update(path.read_bytes())
+print(h.hexdigest())
+PYHASH
 )"
 export POLICY_HASH
 

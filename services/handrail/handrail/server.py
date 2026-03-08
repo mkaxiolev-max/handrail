@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional, List
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
+from pydantic import BaseModel
 
 try:
     import urllib.request as urlreq
@@ -18,6 +19,12 @@ except Exception:
     urlreq = None  # type: ignore
 
 app = FastAPI(title="Handrail", version="0.1.0")
+
+
+class TaskRequest(BaseModel):
+    task_type: str
+    objective: str | None = None
+    payload: dict[str, Any] | None = None
 
 # Paths visible INSIDE handrail container
 WORKSPACE = Path(os.environ.get("HR_WORKSPACE", "/workspace"))
@@ -271,6 +278,57 @@ def v1_run(req: RunRequest):
     (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
     (RUNS_DIR / "latest").write_text(str(run_dir))
     return JSONResponse(resp)
+
+
+
+@app.post("/v1/task")
+def v1_task(req: TaskRequest):
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    meta = {
+        "run_id": run_id,
+        "task_type": req.task_type,
+        "objective": req.objective,
+        "payload": req.payload or {},
+    }
+    (run_dir / "task_request.json").write_text(json.dumps(meta, indent=2))
+
+    if req.task_type == "ops_boot_check":
+        governed_script = WORKSPACE / "scripts" / "boot" / "boot_go.sh"
+        cmd = ["bash", "-lc", f'cd "{WORKSPACE}" && bash "{governed_script}"']
+        p = subprocess.run(
+            cmd,
+            cwd=str(WORKSPACE),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        (run_dir / "stdout.txt").write_text(p.stdout)
+        resp = {
+            "ok": p.returncode == 0,
+            "run_id": run_id,
+            "task_type": req.task_type,
+            "rc": int(p.returncode),
+            "run_dir": str(run_dir),
+            "stdout_path": str(run_dir / "stdout.txt"),
+        }
+        (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
+        (RUNS_DIR / "latest").write_text(str(run_dir))
+        return JSONResponse(resp)
+
+    resp = {
+        "ok": False,
+        "run_id": run_id,
+        "task_type": req.task_type,
+        "error": "unsupported_task_type",
+        "supported_task_types": ["ops_boot_check"],
+        "run_dir": str(run_dir),
+    }
+    (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+    return JSONResponse(resp, status_code=400)
 
 @app.get("/v1/runs/latest")
 def v1_runs_latest():
