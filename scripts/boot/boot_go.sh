@@ -162,6 +162,7 @@ import os
 from pathlib import Path
 from runtime.audit.proof_ledger import append_event
 from runtime.state.memory_fabric import write_snapshot
+from runtime.audit.run_summary import write_run_summary
 
 run_dir = Path(os.environ["RUN_DIR"])
 snapshot = {
@@ -183,7 +184,59 @@ append_event(
     "boot_go_finished",
     {
         "run_id": os.environ["RUN_ID"],
+        "task_id": os.environ["TASK_ID"],
+        "policy_hash": os.environ["POLICY_HASH"],
         "present_state_run_dir": os.environ.get("PRESENT_STATE_RUN"),
+    },
+    service="ns",
+    layer="router",
+    status="ok",
+    message="Governed boot finished",
+)
+
+post_ok = False
+services = {}
+mounts = {}
+checks = {}
+
+if isinstance(post_status, dict):
+    health = post_status.get("health", {})
+    mounts_blob = post_status.get("mounts", {})
+    services = {
+        "handrail": "ok" if health.get("handrail") else "fail",
+        "ns": "ok" if health.get("ns") else "fail",
+        "continuum": "ok" if health.get("continuum") else "fail",
+    }
+    mounts = {
+        "handrail": bool(mounts_blob.get("handrail_sees_NSExternal")),
+        "ns": bool((mounts_blob.get("ns_healthz") or {}).get("storage", {}).get("external_ssd")),
+        "continuum": True,
+    }
+    post_ok = all(v == "ok" for v in services.values())
+
+checks = {
+    "external_ssd": mounts.get("ns", False),
+    "artifact_completeness": evaluators.get("artifact_completeness_verifier", {}).get("pass", False),
+}
+
+write_run_summary(
+    run_dir,
+    {
+        "run_id": os.environ["RUN_ID"],
+        "task_id": os.environ["TASK_ID"],
+        "started_ts_ms": int((run_dir / "proof_ledger.jsonl").stat().st_mtime * 1000) if (run_dir / "proof_ledger.jsonl").exists() else None,
+        "duration_ms": None,
+        "ok": bool(post_ok),
+        "intent": "governed boot entrypoint using Handrail and present-state artifacts",
+        "task_type": "ops_boot_check",
+        "policy_hash": os.environ["POLICY_HASH"],
+        "services": services,
+        "mounts": mounts,
+        "checks": checks,
+        "failure_reason": None if post_ok else "post_checks_failed",
+        "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
+        "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,
+        "contradictions": [],
     },
 )
 PY
