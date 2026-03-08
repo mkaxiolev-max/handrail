@@ -306,6 +306,18 @@ def v1_task(req: TaskRequest):
             text=True,
         )
         (run_dir / "stdout.txt").write_text(p.stdout)
+
+        boot_go_run_dir = None
+        child_run_dir = None
+        present_state_run_dir = None
+        for line in p.stdout.splitlines():
+            if line.startswith("BOOT_GO_RUN_DIR="):
+                boot_go_run_dir = line.split("=", 1)[1].strip()
+            elif line.startswith("CHILD_RUN_DIR="):
+                child_run_dir = line.split("=", 1)[1].strip()
+            elif line.startswith("PRESENT_STATE_RUN="):
+                present_state_run_dir = line.split("=", 1)[1].strip()
+
         resp = {
             "ok": p.returncode == 0,
             "run_id": run_id,
@@ -313,6 +325,9 @@ def v1_task(req: TaskRequest):
             "rc": int(p.returncode),
             "run_dir": str(run_dir),
             "stdout_path": str(run_dir / "stdout.txt"),
+            "boot_go_run_dir": boot_go_run_dir,
+            "child_run_dir": child_run_dir,
+            "present_state_run_dir": present_state_run_dir,
         }
         (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
         (RUNS_DIR / "latest").write_text(str(run_dir))
