@@ -198,6 +198,14 @@ post_ok = False
 services = {}
 mounts = {}
 checks = {}
+evaluators = {}
+evaluators_path = run_dir / "evaluators.json"
+if evaluators_path.exists():
+    try:
+        evaluators = json.loads(evaluators_path.read_text())
+    except Exception:
+        evaluators = {}
+
 
 post_status = None
 post_status_path = run_dir / "post_status.json"
