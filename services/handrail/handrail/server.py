@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional, List
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
+from handrail.task_runner import run_task
 from pydantic import BaseModel
 
 try:
@@ -295,54 +296,25 @@ def v1_task(req: TaskRequest):
     }
     (run_dir / "task_request.json").write_text(json.dumps(meta, indent=2))
 
-    if req.task_type == "ops_boot_check":
-        governed_script = WORKSPACE / "scripts" / "boot" / "boot_go.sh"
-        cmd = ["bash", "-lc", f'cd "{WORKSPACE}" && bash "{governed_script}"']
-        p = subprocess.run(
-            cmd,
-            cwd=str(WORKSPACE),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
-        (run_dir / "stdout.txt").write_text(p.stdout)
-
-        boot_go_run_dir = None
-        child_run_dir = None
-        present_state_run_dir = None
-        for line in p.stdout.splitlines():
-            if line.startswith("BOOT_GO_RUN_DIR="):
-                boot_go_run_dir = line.split("=", 1)[1].strip()
-            elif line.startswith("CHILD_RUN_DIR="):
-                child_run_dir = line.split("=", 1)[1].strip()
-            elif line.startswith("PRESENT_STATE_RUN="):
-                present_state_run_dir = line.split("=", 1)[1].strip()
-
-        resp = {
-            "ok": p.returncode == 0,
-            "run_id": run_id,
-            "task_type": req.task_type,
-            "rc": int(p.returncode),
-            "run_dir": str(run_dir),
-            "stdout_path": str(run_dir / "stdout.txt"),
-            "boot_go_run_dir": boot_go_run_dir,
-            "child_run_dir": child_run_dir,
-            "present_state_run_dir": present_state_run_dir,
-        }
-        (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
-        (RUNS_DIR / "latest").write_text(str(run_dir))
-        return JSONResponse(resp)
+    task_resp = run_task(
+        task_type=req.task_type,
+        objective=req.objective,
+        payload=req.payload,
+        workspace=WORKSPACE,
+        run_dir=run_dir,
+    )
 
     resp = {
-        "ok": False,
         "run_id": run_id,
-        "task_type": req.task_type,
-        "error": "unsupported_task_type",
-        "supported_task_types": ["ops_boot_check"],
         "run_dir": str(run_dir),
+        **task_resp,
     }
+
     (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
     (RUNS_DIR / "latest").write_text(str(run_dir))
+
+    if resp.get("ok"):
+        return JSONResponse(resp)
     return JSONResponse(resp, status_code=400)
 
 @app.get("/v1/runs/latest")

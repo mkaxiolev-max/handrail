@@ -199,6 +199,14 @@ services = {}
 mounts = {}
 checks = {}
 
+post_status = None
+post_status_path = run_dir / "post_status.json"
+if post_status_path.exists():
+    try:
+        post_status = json.loads(post_status_path.read_text())
+    except Exception:
+        post_status = None
+
 if isinstance(post_status, dict):
     health = post_status.get("health", {})
     mounts_blob = post_status.get("mounts", {})
