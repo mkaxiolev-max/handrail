@@ -130,6 +130,54 @@ def _print_latest_resolved():
     return 0
 
 
+def _history_items(limit: int):
+    items = []
+    for run_dir in all_run_dirs():
+        if is_snapshot_dir(run_dir):
+            continue
+
+        result = read_json(run_dir / "result.json") or {}
+        summary = read_json(run_dir / "run_summary.json") or {}
+
+        if result.get("task_type") == "ops_boot_check":
+            governed = resolve_governed_run(run_dir)
+            governed_summary = read_json(governed / "run_summary.json") or {}
+            items.append({
+                "kind": "boot_task",
+                "task_run_dir": str(run_dir),
+                "governed_run_dir": str(governed),
+                "task_type": governed_summary.get("task_type") or result.get("task_type"),
+                "ok": governed_summary.get("ok"),
+                "execution_mode": governed_summary.get("execution_mode"),
+                "has_summary": (governed / "run_summary.json").exists(),
+                "has_ledger": (governed / "proof_ledger.jsonl").exists(),
+            })
+        elif summary:
+            items.append({
+                "kind": "task_run",
+                "run_dir": str(run_dir),
+                "task_type": summary.get("task_type"),
+                "ok": summary.get("ok"),
+                "execution_mode": summary.get("execution_mode"),
+                "has_summary": (run_dir / "run_summary.json").exists(),
+                "has_ledger": (run_dir / "proof_ledger.jsonl").exists(),
+            })
+        elif result:
+            items.append({
+                "kind": "task_run",
+                "run_dir": str(run_dir),
+                "task_type": result.get("task_type"),
+                "ok": result.get("ok"),
+                "execution_mode": None,
+                "has_summary": (run_dir / "run_summary.json").exists(),
+                "has_ledger": (run_dir / "proof_ledger.jsonl").exists(),
+            })
+
+        if len(items) >= limit:
+            break
+    return items
+
+
 def cmd_boot():
     code, out, err = _post_task("ops_boot_check", "run governed boot through nsctl")
     if out.strip():
@@ -258,9 +306,25 @@ def cmd_doctor():
     sys.exit(0 if all(payload["services"].values()) else 1)
 
 
+def cmd_runs(limit_arg: str | None):
+    limit = 12
+    if limit_arg:
+        try:
+            limit = max(1, int(limit_arg))
+        except Exception:
+            print(json.dumps({"error": "invalid_limit"}, indent=2))
+            sys.exit(1)
+
+    print(json.dumps({
+        "command": "runs",
+        "items": _history_items(limit),
+    }, indent=2))
+    sys.exit(0)
+
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -281,8 +345,11 @@ def main():
         cmd_reset()
     elif cmd == "doctor":
         cmd_doctor()
+    elif cmd == "runs":
+        arg = sys.argv[2] if len(sys.argv) > 2 else None
+        cmd_runs(arg)
     else:
-        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
 
