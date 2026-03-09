@@ -26,13 +26,51 @@ def read_json(path: Path):
         return None
 
 
-def latest_run_dir():
+def all_run_dirs():
     if not RUNS_ROOT.exists():
-        return None
-    runs = [p for p in RUNS_ROOT.iterdir() if p.is_dir()]
-    if not runs:
-        return None
-    return sorted(runs, key=lambda p: p.stat().st_mtime, reverse=True)[0]
+        return []
+    return sorted(
+        [p for p in RUNS_ROOT.iterdir() if p.is_dir()],
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+
+
+def is_task_run_dir(run_dir: Path) -> bool:
+    return (run_dir / "task_request.json").exists() or (run_dir / "result.json").exists()
+
+
+def is_governed_run_dir(run_dir: Path) -> bool:
+    return (run_dir / "run_summary.json").exists() and (run_dir / "proof_ledger.jsonl").exists()
+
+
+def is_snapshot_dir(run_dir: Path) -> bool:
+    snapshot_markers = {
+        "compose_config.txt",
+        "compose_ps.txt",
+        "continuum_state.json",
+        "handrail_healthz.json",
+        "logs_tail.txt",
+        "meta.txt",
+        "ns_healthz.json",
+    }
+    names = {p.name for p in run_dir.iterdir() if p.is_file()} if run_dir.exists() else set()
+    return len(snapshot_markers.intersection(names)) >= 3 and not is_task_run_dir(run_dir) and not is_governed_run_dir(run_dir)
+
+
+def latest_run_dir():
+    for run_dir in all_run_dirs():
+        if is_task_run_dir(run_dir) or is_governed_run_dir(run_dir):
+            return run_dir
+    runs = all_run_dirs()
+    return runs[0] if runs else None
+
+
+def latest_snapshot_dir():
+    for run_dir in all_run_dirs():
+        if is_snapshot_dir(run_dir):
+            return run_dir
+    return None
 
 
 def resolve_governed_run(task_run: Path):
@@ -143,6 +181,11 @@ def cmd_open(target: str):
             chosen = resolve_governed_run(latest)
         else:
             chosen = latest
+    elif target == "snapshot":
+        chosen = latest_snapshot_dir()
+        if not chosen:
+            print("No snapshot found")
+            sys.exit(1)
     else:
         matches = sorted(RUNS_ROOT.glob(f"{target}*"))
         if not matches:
@@ -184,6 +227,7 @@ def cmd_doctor():
         "root_exists": ROOT.exists(),
         "runs_root_exists": RUNS_ROOT.exists(),
         "latest_run_dir": str(latest_run_dir()) if latest_run_dir() else None,
+        "latest_snapshot_dir": str(latest_snapshot_dir()) if latest_snapshot_dir() else None,
     }
 
     health_code, _, _ = run_cmd("curl -sS http://127.0.0.1:8011/healthz >/dev/null")
