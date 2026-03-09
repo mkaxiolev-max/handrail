@@ -4,7 +4,28 @@ import json
 import time
 import subprocess
 from pathlib import Path
+from runtime.audit.proof_ledger import append_event
 from typing import Any
+
+
+def _task_id(task_type: str, run_id: str) -> str:
+    return f"{task_type}_{run_id}"
+
+
+def _append_task_event(run_dir: Path, event_type: str, run_id: str, task_type: str, payload: dict, *, message: str, status: str = "ok"):
+    append_event(
+        run_dir,
+        event_type,
+        {
+            "run_id": run_id,
+            "task_id": _task_id(task_type, run_id),
+            **payload,
+        },
+        service="handrail",
+        layer="execution",
+        status=status,
+        message=message,
+    )
 
 
 def _write_run_summary(
@@ -47,8 +68,20 @@ def _write_run_summary(
     (run_dir / "run_summary.json").write_text(json.dumps(summary, indent=2))
 
 
-def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | None, workspace: Path, run_dir: Path) -> dict[str, Any]:
+def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | None, workspace: Path, run_dir: Path, run_id: str) -> dict[str, Any]:
     payload = payload or {}
+
+    _append_task_event(
+        run_dir,
+        "task_received",
+        run_id,
+        task_type,
+        {
+            "objective": objective,
+            "payload": payload,
+        },
+        message=f"Task received: {task_type}",
+    )
     run_id = run_dir.name
 
     if task_type == "ops_boot_check":
@@ -87,6 +120,22 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
                     "boot_go_stdout_present": True,
                 }
             },
+        )
+
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            run_id,
+            task_type,
+            {
+                "rc": int(p.returncode),
+                "stdout_path": str(run_dir / "stdout.txt"),
+                "boot_go_run_dir": boot_go_run_dir,
+                "child_run_dir": child_run_dir,
+                "present_state_run_dir": present_state_run_dir,
+            },
+            message=f"Task completed: {task_type}",
+            status="ok" if p.returncode == 0 else "fail",
         )
 
         return {
@@ -136,6 +185,20 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
             },
         )
 
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            run_id,
+            task_type,
+            {
+                "rc": int(p.returncode),
+                "stdout_path": str(run_dir / "stdout.txt"),
+                "services": services,
+            },
+            message=f"Task completed: {task_type}",
+            status="ok" if p.returncode == 0 else "fail",
+        )
+
         return {
             "ok": p.returncode == 0,
             "task_type": task_type,
@@ -156,6 +219,19 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
                 "supported_task_types": False,
             },
         },
+    )
+
+    _append_task_event(
+        run_dir,
+        "task_completed",
+        run_id,
+        task_type,
+        {
+            "error": "unsupported_task_type",
+            "supported_task_types": ["ops_boot_check", "ops_status_check"],
+        },
+        message=f"Task rejected: {task_type}",
+        status="fail",
     )
 
     return {

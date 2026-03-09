@@ -302,6 +302,7 @@ def v1_task(req: TaskRequest):
         payload=req.payload,
         workspace=WORKSPACE,
         run_dir=run_dir,
+        run_id=run_id,
     )
 
     resp = {
@@ -396,6 +397,14 @@ def v1_run_summary(run_dir: str | None = None):
             "execution_packet": str(pr / "execution_packet.json") if (pr / "execution_packet.json").exists() else None,
         }
 
+    proof_ledger_lines = None
+    proof_ledger_path = target / "proof_ledger.jsonl"
+    if proof_ledger_path.exists():
+        try:
+            proof_ledger_lines = proof_ledger_path.read_text().splitlines()
+        except Exception:
+            proof_ledger_lines = None
+
     summary = {
         "ok": True,
         "queried_run_dir": str(target),
@@ -408,7 +417,8 @@ def v1_run_summary(run_dir: str | None = None):
         "post_status": post_status,
         "child_result": child_result,
         "present_state_artifacts": present_state_artifacts,
-        "proof_ledger_path": str(target / "proof_ledger.jsonl") if (target / "proof_ledger.jsonl").exists() else None,
+        "proof_ledger_path": str(proof_ledger_path) if proof_ledger_path.exists() else None,
+        "proof_ledger_preview": proof_ledger_lines[:10] if proof_ledger_lines else None,
         "stdout_preview": stdout_txt[:2000] if stdout_txt else None,
     }
     return JSONResponse(summary)
