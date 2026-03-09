@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 import json
 import subprocess
 import sys
@@ -10,11 +8,11 @@ ROOT = Path.home() / "axiolev_runtime"
 RUNS_ROOT = Path("/Volumes/NSExternal/.run/boot")
 
 
-def run_cmd(cmd: str, cwd: Path | None = None) -> tuple[int, str, str]:
+def run_cmd(cmd: str):
     p = subprocess.run(
         cmd,
         shell=True,
-        cwd=str(cwd or ROOT),
+        cwd=str(ROOT),
         text=True,
         capture_output=True,
     )
@@ -22,32 +20,32 @@ def run_cmd(cmd: str, cwd: Path | None = None) -> tuple[int, str, str]:
 
 
 def read_json(path: Path):
-    if not path.exists():
-        return None
     try:
         return json.loads(path.read_text())
     except Exception:
         return None
 
 
-def latest_run_dir() -> Path | None:
+def latest_run_dir():
     if not RUNS_ROOT.exists():
         return None
-    runs = [p for p in RUNS_ROOT.iterdir() if p.is_dir() and p.name[:2] == "20"]
+    runs = [p for p in RUNS_ROOT.iterdir() if p.is_dir()]
     if not runs:
         return None
     return sorted(runs, key=lambda p: p.stat().st_mtime, reverse=True)[0]
 
 
-def resolve_governed_run(task_run: Path) -> Path:
+def resolve_governed_run(task_run: Path):
     result = read_json(task_run / "result.json") or {}
-    governed = result.get("boot_go_run_dir")
-    if governed:
-        return Path(governed)
+    boot_go_run_dir = result.get("boot_go_run_dir")
+    if boot_go_run_dir:
+        p = Path(boot_go_run_dir)
+        if p.exists():
+            return p
     return task_run
 
 
-def summarize_run(run_dir: Path) -> dict:
+def summarize_run(run_dir: Path):
     summary = read_json(run_dir / "run_summary.json")
     if summary:
         return {
@@ -62,7 +60,7 @@ def summarize_run(run_dir: Path) -> dict:
     }
 
 
-def _post_task(task_type: str, objective: str) -> tuple[int, str, str]:
+def _post_task(task_type: str, objective: str):
     payload = {
         "task_type": task_type,
         "objective": objective,
@@ -76,7 +74,7 @@ def _post_task(task_type: str, objective: str) -> tuple[int, str, str]:
     return run_cmd(cmd)
 
 
-def _print_latest_resolved() -> int:
+def _print_latest_resolved():
     latest = latest_run_dir()
     if not latest:
         print(json.dumps({"error": "no_runs_found"}, indent=2))
@@ -156,9 +154,69 @@ def cmd_open(target: str):
     subprocess.run(["open", str(chosen)], check=False)
 
 
+def cmd_snapshot():
+    code, out, err = run_cmd("./scripts/boot/snapshot.sh")
+    payload = {
+        "command": "snapshot",
+        "ok": code == 0,
+        "stdout": out.strip(),
+        "stderr": err.strip(),
+    }
+    print(json.dumps(payload, indent=2))
+    sys.exit(code)
+
+
+def cmd_reset():
+    code, out, err = run_cmd("./scripts/boot/reset_clean.sh")
+    payload = {
+        "command": "reset",
+        "ok": code == 0,
+        "stdout": out.strip(),
+        "stderr": err.strip(),
+    }
+    print(json.dumps(payload, indent=2))
+    sys.exit(code)
+
+
+def cmd_doctor():
+    payload = {
+        "command": "doctor",
+        "root_exists": ROOT.exists(),
+        "runs_root_exists": RUNS_ROOT.exists(),
+        "latest_run_dir": str(latest_run_dir()) if latest_run_dir() else None,
+    }
+
+    health_code, _, _ = run_cmd("curl -sS http://127.0.0.1:8011/healthz >/dev/null")
+    ns_code, _, _ = run_cmd("curl -sS http://127.0.0.1:9000/healthz >/dev/null")
+    continuum_code, _, _ = run_cmd("curl -sS http://127.0.0.1:8788/state >/dev/null")
+
+    payload["services"] = {
+        "handrail_http": health_code == 0,
+        "ns_http": ns_code == 0,
+        "continuum_http": continuum_code == 0,
+    }
+
+    latest = latest_run_dir()
+    if latest:
+        result = read_json(latest / "result.json") or {}
+        payload["latest_task_type"] = result.get("task_type")
+        if result.get("task_type") == "ops_boot_check":
+            governed = resolve_governed_run(latest)
+            payload["resolved_latest_run_dir"] = str(governed)
+            payload["resolved_latest_has_summary"] = (governed / "run_summary.json").exists()
+            payload["resolved_latest_has_ledger"] = (governed / "proof_ledger.jsonl").exists()
+        else:
+            payload["resolved_latest_run_dir"] = str(latest)
+            payload["resolved_latest_has_summary"] = (latest / "run_summary.json").exists()
+            payload["resolved_latest_has_ledger"] = (latest / "proof_ledger.jsonl").exists()
+
+    print(json.dumps(payload, indent=2))
+    sys.exit(0 if all(payload["services"].values()) else 1)
+
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|run|open> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -173,8 +231,14 @@ def main():
         cmd_run(sys.argv[2])
     elif cmd == "open" and len(sys.argv) > 2:
         cmd_open(sys.argv[2])
+    elif cmd == "snapshot":
+        cmd_snapshot()
+    elif cmd == "reset":
+        cmd_reset()
+    elif cmd == "doctor":
+        cmd_doctor()
     else:
-        print("Usage: nsctl <boot|status|latest|run|open> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor> [arg]")
         sys.exit(1)
 
 
