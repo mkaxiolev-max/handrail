@@ -1,31 +1,58 @@
 from __future__ import annotations
 
 import json
-import time
 import subprocess
+import time
 from pathlib import Path
-from runtime.audit.proof_ledger import append_event
 from typing import Any
 
 
-def _task_id(task_type: str, run_id: str) -> str:
-    return f"{task_type}_{run_id}"
+def _now_ts_ms() -> int:
+    return int(time.time() * 1000)
 
 
-def _append_task_event(run_dir: Path, event_type: str, run_id: str, task_type: str, payload: dict, *, message: str, status: str = "ok"):
-    append_event(
-        run_dir,
-        event_type,
-        {
-            "run_id": run_id,
-            "task_id": _task_id(task_type, run_id),
-            **payload,
-        },
-        service="handrail",
-        layer="execution",
-        status=status,
-        message=message,
-    )
+def _append_task_event(
+    run_dir: Path,
+    event_type: str,
+    payload: dict[str, Any],
+    *,
+    service: str = "handrail",
+    layer: str = "task_runner",
+    status: str = "ok",
+    message: str = "",
+) -> None:
+    seq_path = run_dir / ".task_seq"
+    if seq_path.exists():
+        try:
+            seq = int(seq_path.read_text().strip())
+        except Exception:
+            seq = 0
+    else:
+        seq = 0
+    seq += 1
+    seq_path.write_text(str(seq))
+
+    event = {
+        "schema_version": "v1",
+        "run_id": payload.get("run_id"),
+        "task_id": payload.get("task_id"),
+        "event_id": f"evt_{seq:06d}",
+        "parent_event_id": None,
+        "seq": seq,
+        "ts_ms": _now_ts_ms(),
+        "mono_ns": time.monotonic_ns(),
+        "service": service,
+        "layer": layer,
+        "event_type": event_type,
+        "status": status,
+        "policy_hash": payload.get("policy_hash"),
+        "message": message or event_type,
+        "data": payload,
+    }
+
+    ledger_path = run_dir / "proof_ledger.jsonl"
+    with ledger_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(event, sort_keys=True) + "\n")
 
 
 def _write_run_summary(
@@ -34,18 +61,18 @@ def _write_run_summary(
     run_id: str,
     task_type: str,
     ok: bool,
-    rc: int | None,
+    rc: int,
     stdout_path: str | None,
     objective: str | None,
     extra: dict[str, Any] | None = None,
 ) -> None:
     extra = extra or {}
-    summary = {
+    payload = {
         "schema_version": "v1",
         "run_id": run_id,
         "task_id": f"{task_type}_{run_id}",
-        "started_ts_ms": int(time.time() * 1000),
-        "finished_ts_ms": int(time.time() * 1000),
+        "started_ts_ms": _now_ts_ms(),
+        "finished_ts_ms": _now_ts_ms(),
         "duration_ms": None,
         "ok": ok,
         "intent": objective,
@@ -56,33 +83,57 @@ def _write_run_summary(
         "services": extra.get("services", {}),
         "mounts": extra.get("mounts", {}),
         "checks": extra.get("checks", {}),
-        "failure_reason": None if ok else f"rc_{rc}",
-        "artifact_refs": sorted(
-            str(p) for p in run_dir.iterdir() if p.is_file()
-        ) if run_dir.exists() else [],
-        "event_count": 0,
+        "failure_reason": extra.get("failure_reason"),
+        "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
+        "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,
         "contradictions": [],
         "stdout_path": stdout_path,
         "rc": rc,
     }
-    (run_dir / "run_summary.json").write_text(json.dumps(summary, indent=2))
+
+    path = run_dir / "run_summary.json"
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    _append_task_event(
+        run_dir,
+        "run_summary_written",
+        {
+            "run_id": run_id,
+            "task_id": f"{task_type}_{run_id}",
+            "task_type": task_type,
+            "ok": ok,
+            "rc": rc,
+            "checks": payload.get("checks", {}),
+        },
+        service="handrail",
+        layer="ledger",
+        status="ok",
+        message="Direct task run summary written",
+    )
 
 
-def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | None, workspace: Path, run_dir: Path, run_id: str) -> dict[str, Any]:
+def run_task(
+    task_type: str,
+    objective: str | None,
+    payload: dict[str, Any] | None,
+    workspace: Path,
+    run_dir: Path,
+    run_id: str,
+) -> dict[str, Any]:
     payload = payload or {}
+    task_id = f"{task_type}_{run_id}"
 
     _append_task_event(
         run_dir,
         "task_received",
-        run_id,
-        task_type,
         {
+            "run_id": run_id,
+            "task_id": task_id,
+            "task_type": task_type,
             "objective": objective,
-            "payload": payload,
         },
-        message=f"Task received: {task_type}",
+        message="Direct Handrail task received",
     )
-    run_id = run_dir.name
 
     if task_type == "ops_boot_check":
         governed_script = workspace / "scripts" / "boot" / "boot_go.sh"
@@ -107,6 +158,22 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
             elif line.startswith("PRESENT_STATE_RUN="):
                 present_state_run_dir = line.split("=", 1)[1].strip()
 
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": int(p.returncode),
+                "boot_go_run_dir": boot_go_run_dir,
+                "child_run_dir": child_run_dir,
+                "present_state_run_dir": present_state_run_dir,
+            },
+            status="ok" if p.returncode == 0 else "fail",
+            message="Direct boot task completed",
+        )
+
         _write_run_summary(
             run_dir,
             run_id=run_id,
@@ -120,22 +187,6 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
                     "boot_go_stdout_present": True,
                 }
             },
-        )
-
-        _append_task_event(
-            run_dir,
-            "task_completed",
-            run_id,
-            task_type,
-            {
-                "rc": int(p.returncode),
-                "stdout_path": str(run_dir / "stdout.txt"),
-                "boot_go_run_dir": boot_go_run_dir,
-                "child_run_dir": child_run_dir,
-                "present_state_run_dir": present_state_run_dir,
-            },
-            message=f"Task completed: {task_type}",
-            status="ok" if p.returncode == 0 else "fail",
         )
 
         return {
@@ -152,7 +203,7 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
         status_cmd = [
             "bash",
             "-lc",
-            'cd "{}" && curl -sS http://127.0.0.1:8011/v1/status && printf "\\n" && curl -sS http://ns:9000/healthz && printf "\\n" && curl -sS http://continuum:8788/state'.format(workspace)
+            'cd "{}" && curl -sS http://127.0.0.1:8011/healthz && printf "\\n" && curl -sS http://ns:9000/healthz && printf "\\n" && curl -sS http://continuum:8788/state'.format(workspace)
         ]
         p = subprocess.run(
             status_cmd,
@@ -168,6 +219,20 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
             "ns": "ok" if '"status":"ok"' in p.stdout or '"status": "ok"' in p.stdout else "unknown",
             "continuum": "ok" if '"global_tier"' in p.stdout else "unknown",
         }
+
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": int(p.returncode),
+                "services": services,
+            },
+            status="ok" if p.returncode == 0 else "fail",
+            message="Direct status task completed",
+        )
 
         _write_run_summary(
             run_dir,
@@ -185,26 +250,25 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
             },
         )
 
-        _append_task_event(
-            run_dir,
-            "task_completed",
-            run_id,
-            task_type,
-            {
-                "rc": int(p.returncode),
-                "stdout_path": str(run_dir / "stdout.txt"),
-                "services": services,
-            },
-            message=f"Task completed: {task_type}",
-            status="ok" if p.returncode == 0 else "fail",
-        )
-
         return {
             "ok": p.returncode == 0,
             "task_type": task_type,
             "rc": int(p.returncode),
             "stdout_path": str(run_dir / "stdout.txt"),
         }
+
+    _append_task_event(
+        run_dir,
+        "task_rejected",
+        {
+            "run_id": run_id,
+            "task_id": task_id,
+            "task_type": task_type,
+            "supported_task_types": ["ops_boot_check", "ops_status_check"],
+        },
+        status="fail",
+        message="Unsupported task type",
+    )
 
     _write_run_summary(
         run_dir,
@@ -218,20 +282,8 @@ def run_task(task_type: str, objective: str | None, payload: dict[str, Any] | No
             "checks": {
                 "supported_task_types": False,
             },
+            "failure_reason": "unsupported_task_type",
         },
-    )
-
-    _append_task_event(
-        run_dir,
-        "task_completed",
-        run_id,
-        task_type,
-        {
-            "error": "unsupported_task_type",
-            "supported_task_types": ["ops_boot_check", "ops_status_check"],
-        },
-        message=f"Task rejected: {task_type}",
-        status="fail",
     )
 
     return {
