@@ -257,6 +257,63 @@ def run_task(
             "stdout_path": str(run_dir / "stdout.txt"),
         }
 
+
+    if task_type == "ops_snapshot":
+        snapshot_cmd = [
+            "bash",
+            "-lc",
+            'cd "{}" && ./scripts/boot/snapshot.sh'.format(workspace),
+        ]
+        p = subprocess.run(
+            snapshot_cmd,
+            cwd=str(workspace),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        (run_dir / "stdout.txt").write_text(p.stdout)
+
+        snapshot_ok = "SNAPSHOT_OK=" in p.stdout
+
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": int(p.returncode),
+                "snapshot_ok": snapshot_ok,
+            },
+            status="ok" if p.returncode == 0 else "fail",
+            message="Direct snapshot task completed",
+        )
+
+        _write_run_summary(
+            run_dir,
+            run_id=run_id,
+            task_type=task_type,
+            ok=(p.returncode == 0),
+            rc=int(p.returncode),
+            stdout_path=str(run_dir / "stdout.txt"),
+            objective=objective,
+            extra={
+                "checks": {
+                    "stdout_present": True,
+                    "snapshot_ok": snapshot_ok,
+                },
+            },
+        )
+
+        return {
+            "run_id": run_id,
+            "run_dir": str(run_dir),
+            "ok": p.returncode == 0,
+            "task_type": task_type,
+            "rc": int(p.returncode),
+            "stdout_path": str(run_dir / "stdout.txt"),
+        }
+
     _append_task_event(
         run_dir,
         "task_rejected",
@@ -264,7 +321,7 @@ def run_task(
             "run_id": run_id,
             "task_id": task_id,
             "task_type": task_type,
-            "supported_task_types": ["ops_boot_check", "ops_status_check"],
+            "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot"],
         },
         status="fail",
         message="Unsupported task type",
@@ -290,5 +347,5 @@ def run_task(
         "ok": False,
         "task_type": task_type,
         "error": "unsupported_task_type",
-        "supported_task_types": ["ops_boot_check", "ops_status_check"],
+        "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot"],
     }
