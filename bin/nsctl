@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import json
 import subprocess
 import sys
@@ -8,68 +10,50 @@ ROOT = Path.home() / "axiolev_runtime"
 RUNS_ROOT = Path("/Volumes/NSExternal/.run/boot")
 
 
-def run_cmd(cmd: str):
+def run_cmd(cmd: str, cwd: Path | None = None) -> tuple[int, str, str]:
     p = subprocess.run(
         cmd,
         shell=True,
-        cwd=str(ROOT),
+        cwd=str(cwd or ROOT),
         text=True,
         capture_output=True,
     )
     return p.returncode, p.stdout, p.stderr
 
 
-def latest_run_dir():
-    if not RUNS_ROOT.exists():
-        return None
-    runs = sorted(
-        [p for p in RUNS_ROOT.iterdir() if p.is_dir() and p.name[:2] == "20"],
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    return runs[0] if runs else None
-
-
 def read_json(path: Path):
+    if not path.exists():
+        return None
     try:
         return json.loads(path.read_text())
     except Exception:
         return None
 
 
-def resolve_governed_run(run_dir: Path) -> Path:
-    result_json = run_dir / "result.json"
-    if result_json.exists():
-        data = read_json(result_json) or {}
-        boot_go_run_dir = data.get("boot_go_run_dir")
-        if boot_go_run_dir:
-            p = Path(boot_go_run_dir)
-            if p.exists():
-                return p
-    return run_dir
+def latest_run_dir() -> Path | None:
+    if not RUNS_ROOT.exists():
+        return None
+    runs = [p for p in RUNS_ROOT.iterdir() if p.is_dir() and p.name[:2] == "20"]
+    if not runs:
+        return None
+    return sorted(runs, key=lambda p: p.stat().st_mtime, reverse=True)[0]
 
 
-def summarize_run(run_dir: Path):
-    summary_json = run_dir / "run_summary.json"
-    if summary_json.exists():
+def resolve_governed_run(task_run: Path) -> Path:
+    result = read_json(task_run / "result.json") or {}
+    governed = result.get("boot_go_run_dir")
+    if governed:
+        return Path(governed)
+    return task_run
+
+
+def summarize_run(run_dir: Path) -> dict:
+    summary = read_json(run_dir / "run_summary.json")
+    if summary:
         return {
             "latest_run_dir": str(run_dir),
-            "run_summary": read_json(summary_json),
+            "run_summary": summary,
         }
-
-    result_json = run_dir / "result.json"
-    if result_json.exists():
-        result = read_json(result_json) or {}
-        governed = result.get("boot_go_run_dir")
-        if governed:
-            governed_path = Path(governed)
-            governed_summary = read_json(governed_path / "run_summary.json")
-            if governed_summary:
-                return {
-                    "latest_task_run_dir": str(run_dir),
-                    "governed_run_dir": str(governed_path),
-                    "governed_run_summary": governed_summary,
-                }
 
     files = sorted([p.name for p in run_dir.iterdir() if p.is_file()]) if run_dir.exists() else []
     return {
@@ -78,10 +62,10 @@ def summarize_run(run_dir: Path):
     }
 
 
-def cmd_boot():
+def _post_task(task_type: str, objective: str) -> tuple[int, str, str]:
     payload = {
-        "task_type": "ops_boot_check",
-        "objective": "run governed boot through nsctl",
+        "task_type": task_type,
+        "objective": objective,
         "payload": {},
     }
     cmd = (
@@ -89,36 +73,14 @@ def cmd_boot():
         "-H 'Content-Type: application/json' "
         f"-d '{json.dumps(payload)}'"
     )
-    code, out, err = run_cmd(cmd)
-    print(out.strip())
-    if err.strip():
-        print(err.strip(), file=sys.stderr)
-    sys.exit(code)
+    return run_cmd(cmd)
 
 
-def cmd_status():
-    payload = {
-        "task_type": "ops_status_check",
-        "objective": "inspect current runtime health through nsctl",
-        "payload": {},
-    }
-    cmd = (
-        "curl -sS -X POST http://127.0.0.1:8011/v1/task "
-        "-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
-    )
-    code, out, err = run_cmd(cmd)
-    print(out.strip())
-    if err.strip():
-        print(err.strip(), file=sys.stderr)
-    sys.exit(code)
-
-
-def cmd_latest():
+def _print_latest_resolved() -> int:
     latest = latest_run_dir()
     if not latest:
         print(json.dumps({"error": "no_runs_found"}, indent=2))
-        sys.exit(1)
+        return 1
 
     result = read_json(latest / "result.json") or {}
     task_type = result.get("task_type")
@@ -126,30 +88,53 @@ def cmd_latest():
     if task_type == "ops_boot_check":
         chosen = resolve_governed_run(latest)
         print(json.dumps(summarize_run(chosen), indent=2))
-        return
+        return 0
 
     print(json.dumps(summarize_run(latest), indent=2))
+    return 0
 
 
-def cmd_run(task_type):
-    payload = {
-        "task_type": task_type,
-        "objective": f"run governed task {task_type} through nsctl",
-        "payload": {},
-    }
-    cmd = (
-        "curl -sS -X POST http://127.0.0.1:8011/v1/task "
-        "-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
-    )
-    code, out, err = run_cmd(cmd)
-    print(out.strip())
+def cmd_boot():
+    code, out, err = _post_task("ops_boot_check", "run governed boot through nsctl")
+    if out.strip():
+        print(out.strip())
     if err.strip():
         print(err.strip(), file=sys.stderr)
-    sys.exit(code)
+    if code != 0:
+        sys.exit(code)
+    print()
+    sys.exit(_print_latest_resolved())
 
 
-def cmd_open(target):
+def cmd_status():
+    code, out, err = _post_task("ops_status_check", "inspect current runtime health through nsctl")
+    if out.strip():
+        print(out.strip())
+    if err.strip():
+        print(err.strip(), file=sys.stderr)
+    if code != 0:
+        sys.exit(code)
+    print()
+    sys.exit(_print_latest_resolved())
+
+
+def cmd_latest():
+    sys.exit(_print_latest_resolved())
+
+
+def cmd_run(task_type: str):
+    code, out, err = _post_task(task_type, f"run governed task {task_type} through nsctl")
+    if out.strip():
+        print(out.strip())
+    if err.strip():
+        print(err.strip(), file=sys.stderr)
+    if code != 0:
+        sys.exit(code)
+    print()
+    sys.exit(_print_latest_resolved())
+
+
+def cmd_open(target: str):
     if target == "latest":
         latest = latest_run_dir()
         if not latest:
