@@ -246,15 +246,15 @@ def cmd_open(target: str):
 
 
 def cmd_snapshot():
-    code, out, err = run_cmd("./scripts/boot/snapshot.sh")
-    payload = {
-        "command": "snapshot",
-        "ok": code == 0,
-        "stdout": out.strip(),
-        "stderr": err.strip(),
-    }
-    print(json.dumps(payload, indent=2))
-    sys.exit(code)
+    code, out, err = _post_task("ops_snapshot", "capture governed snapshot through nsctl")
+    if out.strip():
+        print(out.strip())
+    if err.strip():
+        print(err.strip(), file=sys.stderr)
+    if code != 0:
+        sys.exit(code)
+    print()
+    sys.exit(_print_latest_resolved())
 
 
 def cmd_reset():
