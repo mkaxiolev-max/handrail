@@ -156,6 +156,71 @@ PRESENT_STATE_RUN="$(
 export PRESENT_STATE_RUN
 printf '%s\n' "$PRESENT_STATE_RUN" > "$RUN_DIR/present_state_run_dir.txt"
 
+python3 - <<'PY2'
+import json
+import os
+from pathlib import Path
+
+run_dir = Path(os.environ["RUN_DIR"])
+present_state_run = os.environ.get("PRESENT_STATE_RUN")
+present_state_dir = Path(present_state_run) if present_state_run else None
+
+post_status = None
+post_status_path = run_dir / "post_status.json"
+if post_status_path.exists():
+    try:
+        post_status = json.loads(post_status_path.read_text())
+    except Exception:
+        post_status = None
+
+health = (post_status or {}).get("health", {}) if isinstance(post_status, dict) else {}
+mounts_blob = (post_status or {}).get("mounts", {}) if isinstance(post_status, dict) else {}
+
+required_present_state_files = [
+    "infra_boot_report.json",
+    "present_state_kernel.json",
+    "ancestry_graph.json",
+    "coherence_report.json",
+    "operating_frame.json",
+    "execution_packet.json",
+]
+
+artifact_ok = bool(
+    present_state_dir
+    and present_state_dir.exists()
+    and all((present_state_dir / name).exists() for name in required_present_state_files)
+)
+
+evaluators = {
+    "health_verifier": {
+        "pass": bool(health.get("handrail") and health.get("ns") and health.get("continuum")),
+        "services": {
+            "handrail": bool(health.get("handrail")),
+            "ns": bool(health.get("ns")),
+            "continuum": bool(health.get("continuum")),
+        },
+    },
+    "mount_verifier": {
+        "pass": bool(
+            mounts_blob.get("handrail_sees_NSExternal")
+            and ((mounts_blob.get("ns_healthz") or {}).get("storage", {}) or {}).get("external_ssd")
+        ),
+        "mounts": {
+            "handrail_sees_NSExternal": bool(mounts_blob.get("handrail_sees_NSExternal")),
+            "ns_external_ssd": bool((((mounts_blob.get("ns_healthz") or {}).get("storage", {}) or {}).get("external_ssd"))),
+        },
+    },
+    "artifact_completeness_verifier": {
+        "pass": artifact_ok,
+        "required_files": required_present_state_files,
+        "present_state_run_dir": str(present_state_dir) if present_state_dir else None,
+    },
+}
+
+(run_dir / "evaluators.json").write_text(json.dumps(evaluators, indent=2))
+print("OK: wrote", run_dir / "evaluators.json")
+PY2
+
 python3 - <<'PY'
 import json
 import os
@@ -262,6 +327,7 @@ write_run_summary(
         "services": services,
         "mounts": mounts,
         "checks": checks,
+        "evaluators": evaluators,
         "failure_reason": None if post_ok else "post_checks_failed",
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
         "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,

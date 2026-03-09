@@ -27,11 +27,18 @@ def write_run_summary(run_dir: str | Path, summary: Dict[str, Any]) -> Path:
         "services": summary.get("services", {}),
         "mounts": summary.get("mounts", {}),
         "checks": summary.get("checks", {}),
+        "evaluators": summary.get("evaluators", {}),
         "failure_reason": summary.get("failure_reason"),
         "artifact_refs": summary.get("artifact_refs", []),
         "event_count": summary.get("event_count", 0),
         "contradictions": summary.get("contradictions", []),
     }
+
+    try:
+        from runtime.ledger.event_writer import record_boot_event
+        record_boot_event(run_dir, payload)
+    except Exception:
+        pass
 
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return path
