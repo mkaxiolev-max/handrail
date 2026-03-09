@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
-
 import json
 import subprocess
 import sys
@@ -21,30 +19,63 @@ def run_cmd(cmd: str):
     return p.returncode, p.stdout, p.stderr
 
 
-def latest_run_dir() -> Path | None:
+def latest_run_dir():
     if not RUNS_ROOT.exists():
         return None
-    runs = sorted([p for p in RUNS_ROOT.iterdir() if p.is_dir()], key=lambda p: p.stat().st_mtime, reverse=True)
+    runs = sorted(
+        [p for p in RUNS_ROOT.iterdir() if p.is_dir() and p.name[:2] == "20"],
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
     return runs[0] if runs else None
 
 
 def read_json(path: Path):
-    if not path.exists():
-        return None
     try:
         return json.loads(path.read_text())
     except Exception:
         return None
 
 
-def resolve_governed_run(task_or_run_dir: Path) -> Path:
-    result_json = read_json(task_or_run_dir / "result.json") or {}
-    boot_go_run_dir = result_json.get("boot_go_run_dir")
-    if boot_go_run_dir:
-        p = Path(boot_go_run_dir)
-        if p.exists():
-            return p
-    return task_or_run_dir
+def resolve_governed_run(run_dir: Path) -> Path:
+    result_json = run_dir / "result.json"
+    if result_json.exists():
+        data = read_json(result_json) or {}
+        boot_go_run_dir = data.get("boot_go_run_dir")
+        if boot_go_run_dir:
+            p = Path(boot_go_run_dir)
+            if p.exists():
+                return p
+    return run_dir
+
+
+def summarize_run(run_dir: Path):
+    summary_json = run_dir / "run_summary.json"
+    if summary_json.exists():
+        return {
+            "latest_run_dir": str(run_dir),
+            "run_summary": read_json(summary_json),
+        }
+
+    result_json = run_dir / "result.json"
+    if result_json.exists():
+        result = read_json(result_json) or {}
+        governed = result.get("boot_go_run_dir")
+        if governed:
+            governed_path = Path(governed)
+            governed_summary = read_json(governed_path / "run_summary.json")
+            if governed_summary:
+                return {
+                    "latest_task_run_dir": str(run_dir),
+                    "governed_run_dir": str(governed_path),
+                    "governed_run_summary": governed_summary,
+                }
+
+    files = sorted([p.name for p in run_dir.iterdir() if p.is_file()]) if run_dir.exists() else []
+    return {
+        "latest_run_dir": str(run_dir),
+        "files": files,
+    }
 
 
 def cmd_boot():
@@ -59,8 +90,7 @@ def cmd_boot():
         f"-d '{json.dumps(payload)}'"
     )
     code, out, err = run_cmd(cmd)
-    if out.strip():
-        print(out.strip())
+    print(out.strip())
     if err.strip():
         print(err.strip(), file=sys.stderr)
     sys.exit(code)
@@ -78,27 +108,7 @@ def cmd_status():
         f"-d '{json.dumps(payload)}'"
     )
     code, out, err = run_cmd(cmd)
-    if out.strip():
-        print(out.strip())
-    if err.strip():
-        print(err.strip(), file=sys.stderr)
-    sys.exit(code)
-
-
-def cmd_run(task_type: str):
-    payload = {
-        "task_type": task_type,
-        "objective": f"run governed task {task_type} through nsctl",
-        "payload": {},
-    }
-    cmd = (
-        "curl -sS -X POST http://127.0.0.1:8011/v1/task "
-        "-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
-    )
-    code, out, err = run_cmd(cmd)
-    if out.strip():
-        print(out.strip())
+    print(out.strip())
     if err.strip():
         print(err.strip(), file=sys.stderr)
     sys.exit(code)
@@ -110,42 +120,46 @@ def cmd_latest():
         print(json.dumps({"error": "no_runs_found"}, indent=2))
         sys.exit(1)
 
-    latest_summary = read_json(latest / "run_summary.json")
-    latest_result = read_json(latest / "result.json")
+    result = read_json(latest / "result.json") or {}
+    task_type = result.get("task_type")
 
-    if latest_summary:
-        print(json.dumps({
-            "latest_run_dir": str(latest),
-            "run_summary": latest_summary,
-        }, indent=2))
+    if task_type == "ops_boot_check":
+        chosen = resolve_governed_run(latest)
+        print(json.dumps(summarize_run(chosen), indent=2))
         return
 
-    governed = resolve_governed_run(latest)
-    governed_summary = read_json(governed / "run_summary.json")
-
-    if governed != latest and governed_summary:
-        print(json.dumps({
-            "latest_task_run_dir": str(latest),
-            "governed_run_dir": str(governed),
-            "governed_run_summary": governed_summary,
-        }, indent=2))
-        return
-
-    files = sorted([p.name for p in latest.iterdir() if p.is_file()])
-    print(json.dumps({
-        "latest_run_dir": str(latest),
-        "files": files,
-        "task_result": latest_result,
-    }, indent=2))
+    print(json.dumps(summarize_run(latest), indent=2))
 
 
-def cmd_open(target: str):
+def cmd_run(task_type):
+    payload = {
+        "task_type": task_type,
+        "objective": f"run governed task {task_type} through nsctl",
+        "payload": {},
+    }
+    cmd = (
+        "curl -sS -X POST http://127.0.0.1:8011/v1/task "
+        "-H 'Content-Type: application/json' "
+        f"-d '{json.dumps(payload)}'"
+    )
+    code, out, err = run_cmd(cmd)
+    print(out.strip())
+    if err.strip():
+        print(err.strip(), file=sys.stderr)
+    sys.exit(code)
+
+
+def cmd_open(target):
     if target == "latest":
         latest = latest_run_dir()
         if not latest:
             print("No runs found")
             sys.exit(1)
-        chosen = resolve_governed_run(latest)
+        result = read_json(latest / "result.json") or {}
+        if result.get("task_type") == "ops_boot_check":
+            chosen = resolve_governed_run(latest)
+        else:
+            chosen = latest
     else:
         matches = sorted(RUNS_ROOT.glob(f"{target}*"))
         if not matches:
