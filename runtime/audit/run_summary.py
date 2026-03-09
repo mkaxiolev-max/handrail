@@ -35,8 +35,24 @@ def write_run_summary(run_dir: str | Path, summary: Dict[str, Any]) -> Path:
     }
 
     try:
-        from runtime.ledger.event_writer import record_boot_event
-        record_boot_event(run_dir, payload)
+        from runtime.audit.proof_ledger import append_event
+        append_event(
+            run_dir,
+            "run_summary_written",
+            {
+                "run_id": payload.get("run_id"),
+                "task_id": payload.get("task_id"),
+                "policy_hash": payload.get("policy_hash"),
+                "ok": payload.get("ok"),
+                "task_type": payload.get("task_type"),
+                "execution_mode": payload.get("execution_mode"),
+                "checks": payload.get("checks", {}),
+            },
+            service="ns",
+            layer="ledger",
+            status="ok" if payload.get("ok") else "fail",
+            message="Canonical run summary written",
+        )
     except Exception:
         pass
 
