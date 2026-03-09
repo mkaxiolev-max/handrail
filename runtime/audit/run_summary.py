@@ -32,6 +32,7 @@ def write_run_summary(run_dir: str | Path, summary: Dict[str, Any]) -> Path:
         "artifact_refs": summary.get("artifact_refs", []),
         "event_count": summary.get("event_count", 0),
         "contradictions": summary.get("contradictions", []),
+        "snapshot_run_dir": summary.get("snapshot_run_dir"),
     }
 
     try:

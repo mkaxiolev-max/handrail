@@ -1,27 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd ~/axiolev_runtime
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$ROOT_DIR"
 
-RUN_ID="$(date +%Y%m%d_%H%M%S)"
-BASE="/Volumes/NSExternal/.run/boot/$RUN_ID"
-mkdir -p "$BASE"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+RUN_DIR="/Volumes/NSExternal/.run/boot/${STAMP}"
 
-{
-  echo "time=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-  echo "pwd=$(pwd)"
-  echo "git_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
-  echo "git_commit=$(git rev-parse HEAD 2>/dev/null || true)"
-  echo "docker=$(docker --version 2>/dev/null || true)"
-  echo "compose=$(docker compose version 2>/dev/null || true)"
-} > "$BASE/meta.txt"
+mkdir -p "$RUN_DIR"
 
-docker compose ps > "$BASE/compose_ps.txt"
-docker compose config > "$BASE/compose_config.txt"
-curl -fsS http://127.0.0.1:8011/healthz > "$BASE/handrail_healthz.json"
-curl -fsS http://127.0.0.1:9000/healthz > "$BASE/ns_healthz.json"
-curl -fsS http://127.0.0.1:8788/state > "$BASE/continuum_state.json"
-docker compose logs --tail=120 > "$BASE/logs_tail.txt"
+docker compose config > "$RUN_DIR/compose_config.txt"
+docker compose ps > "$RUN_DIR/compose_ps.txt"
+docker compose logs --tail=200 > "$RUN_DIR/logs_tail.txt" 2>&1 || true
 
-printf '%s\n' "$BASE" | tee /Volumes/NSExternal/.run/boot/latest_manual_snapshot
-echo "SNAPSHOT_OK=$BASE"
+curl -sS http://127.0.0.1:8011/healthz > "$RUN_DIR/handrail_healthz.json"
+curl -sS http://ns:9000/healthz > "$RUN_DIR/ns_healthz.json"
+curl -sS http://continuum:8788/state > "$RUN_DIR/continuum_state.json"
+
+cat > "$RUN_DIR/meta.txt" <<EOF
+snapshot_ts=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+root_dir=$ROOT_DIR
+run_dir=$RUN_DIR
+EOF
+
+printf '%s\n' "$RUN_DIR"
+printf 'SNAPSHOT_OK=%s\n' "$RUN_DIR"

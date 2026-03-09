@@ -273,7 +273,12 @@ def run_task(
         )
         (run_dir / "stdout.txt").write_text(p.stdout)
 
-        snapshot_ok = "SNAPSHOT_OK=" in p.stdout
+        snapshot_run_dir = None
+        for line in p.stdout.splitlines():
+            if line.startswith("SNAPSHOT_OK="):
+                snapshot_run_dir = line.split("=", 1)[1].strip() or None
+
+        snapshot_ok = bool(snapshot_run_dir)
 
         _append_task_event(
             run_dir,
@@ -284,6 +289,7 @@ def run_task(
                 "task_type": task_type,
                 "rc": int(p.returncode),
                 "snapshot_ok": snapshot_ok,
+                "snapshot_run_dir": snapshot_run_dir,
             },
             status="ok" if p.returncode == 0 else "fail",
             message="Direct snapshot task completed",
@@ -302,6 +308,7 @@ def run_task(
                     "stdout_present": True,
                     "snapshot_ok": snapshot_ok,
                 },
+                "snapshot_run_dir": snapshot_run_dir,
             },
         )
 
@@ -312,6 +319,7 @@ def run_task(
             "task_type": task_type,
             "rc": int(p.returncode),
             "stdout_path": str(run_dir / "stdout.txt"),
+            "snapshot_run_dir": snapshot_run_dir,
         }
 
     _append_task_event(
