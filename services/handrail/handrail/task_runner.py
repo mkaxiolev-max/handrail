@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from shlex import split as shlex_split
 import time
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,34 @@ from typing import Any
 
 def _now_ts_ms() -> int:
     return int(time.time() * 1000)
+
+
+ALLOWED_EXEC_BINARIES = {"pwd", "ls", "cat", "tail", "head", "wc", "find"}
+BLOCKED_TOKENS = {";", "&&", "||", ">", ">>", "<", "|", "$(", "`"}
+
+
+def _validate_exec_command(raw_cmd: str) -> tuple[bool, str | None, list[str] | None]:
+    raw_cmd = (raw_cmd or "").strip()
+    if not raw_cmd:
+        return False, "empty_command", None
+
+    for token in BLOCKED_TOKENS:
+        if token in raw_cmd:
+            return False, f"blocked_token:{token}", None
+
+    try:
+        argv = shlex_split(raw_cmd)
+    except Exception:
+        return False, "invalid_shell_syntax", None
+
+    if not argv:
+        return False, "empty_argv", None
+
+    binary = argv[0]
+    if binary not in ALLOWED_EXEC_BINARIES:
+        return False, f"unsupported_binary:{binary}", None
+
+    return True, None, argv
 
 
 def _append_task_event(
@@ -84,6 +113,8 @@ def _write_run_summary(
         "mounts": extra.get("mounts", {}),
         "checks": extra.get("checks", {}),
         "failure_reason": extra.get("failure_reason"),
+        "command": extra.get("command"),
+        "snapshot_run_dir": extra.get("snapshot_run_dir"),
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
         "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,
         "contradictions": [],
@@ -322,6 +353,109 @@ def run_task(
             "snapshot_run_dir": snapshot_run_dir,
         }
 
+
+    if task_type == "ops_exec_cmd":
+        raw_cmd = str((payload or {}).get("cmd") or "").strip()
+        ok_cmd, reason, argv = _validate_exec_command(raw_cmd)
+
+        if not ok_cmd:
+            msg = reason or "invalid_command"
+            (run_dir / "stdout.txt").write_text(msg + "\n", encoding="utf-8")
+
+            _append_task_event(
+                run_dir,
+                "task_rejected",
+                {
+                    "run_id": run_id,
+                    "task_id": task_id,
+                    "task_type": task_type,
+                    "cmd": raw_cmd,
+                    "reason": msg,
+                },
+                status="fail",
+                message="Exec command rejected",
+            )
+
+            _write_run_summary(
+                run_dir,
+                run_id=run_id,
+                task_type=task_type,
+                ok=False,
+                rc=400,
+                stdout_path=str(run_dir / "stdout.txt"),
+                objective=objective,
+                extra={
+                    "checks": {
+                        "stdout_present": True,
+                        "command_valid": False,
+                    },
+                    "failure_reason": msg,
+                    "command": raw_cmd,
+                },
+            )
+
+            return {
+                "run_id": run_id,
+                "run_dir": str(run_dir),
+                "ok": False,
+                "task_type": task_type,
+                "rc": 400,
+                "stdout_path": str(run_dir / "stdout.txt"),
+                "failure_reason": msg,
+            }
+
+        p = subprocess.run(
+            argv,
+            cwd=str(workspace),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        (run_dir / "stdout.txt").write_text(p.stdout, encoding="utf-8")
+
+        _append_task_event(
+            run_dir,
+            "task_completed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "cmd": raw_cmd,
+                "argv": argv,
+                "rc": int(p.returncode),
+            },
+            status="ok" if p.returncode == 0 else "fail",
+            message="Direct exec task completed",
+        )
+
+        _write_run_summary(
+            run_dir,
+            run_id=run_id,
+            task_type=task_type,
+            ok=(p.returncode == 0),
+            rc=int(p.returncode),
+            stdout_path=str(run_dir / "stdout.txt"),
+            objective=objective,
+            extra={
+                "checks": {
+                    "stdout_present": True,
+                    "command_valid": True,
+                },
+                "command": raw_cmd,
+            },
+        )
+
+        return {
+            "run_id": run_id,
+            "run_dir": str(run_dir),
+            "ok": p.returncode == 0,
+            "task_type": task_type,
+            "rc": int(p.returncode),
+            "stdout_path": str(run_dir / "stdout.txt"),
+            "command": raw_cmd,
+        }
+
+
     _append_task_event(
         run_dir,
         "task_rejected",
@@ -329,7 +463,7 @@ def run_task(
             "run_id": run_id,
             "task_id": task_id,
             "task_type": task_type,
-            "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot"],
+            "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd"],
         },
         status="fail",
         message="Unsupported task type",
@@ -355,5 +489,5 @@ def run_task(
         "ok": False,
         "task_type": task_type,
         "error": "unsupported_task_type",
-        "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot"],
+        "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd"],
     }

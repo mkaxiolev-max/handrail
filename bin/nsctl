@@ -98,16 +98,16 @@ def summarize_run(run_dir: Path):
     }
 
 
-def _post_task(task_type: str, objective: str):
-    payload = {
+def _post_task(task_type: str, objective: str, payload: dict | None = None):
+    body = {
         "task_type": task_type,
         "objective": objective,
-        "payload": {},
+        "payload": payload or {},
     }
     cmd = (
         "curl -sS -X POST http://127.0.0.1:8011/v1/task "
         "-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(payload)}'"
+        f"-d '{json.dumps(body)}'"
     )
     return run_cmd(cmd)
 
@@ -208,6 +208,19 @@ def cmd_latest():
 
 def cmd_run(task_type: str):
     code, out, err = _post_task(task_type, f"run governed task {task_type} through nsctl")
+    if out.strip():
+        print(out.strip())
+    if err.strip():
+        print(err.strip(), file=sys.stderr)
+    if code != 0:
+        sys.exit(code)
+    print()
+    sys.exit(_print_latest_resolved())
+
+
+def cmd_exec(raw_cmd: str):
+    payload = {"cmd": raw_cmd}
+    code, out, err = _post_task("ops_exec_cmd", f"execute governed command through nsctl: {raw_cmd}", payload)
     if out.strip():
         print(out.strip())
     if err.strip():
@@ -324,7 +337,7 @@ def cmd_runs(limit_arg: str | None):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|exec|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -337,6 +350,8 @@ def main():
         cmd_latest()
     elif cmd == "run" and len(sys.argv) > 2:
         cmd_run(sys.argv[2])
+    elif cmd == "exec" and len(sys.argv) > 2:
+        cmd_exec(" ".join(sys.argv[2:]))
     elif cmd == "open" and len(sys.argv) > 2:
         cmd_open(sys.argv[2])
     elif cmd == "snapshot":
@@ -349,7 +364,7 @@ def main():
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
     else:
-        print("Usage: nsctl <boot|status|latest|run|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|run|exec|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
 
