@@ -271,6 +271,31 @@ def _resolve_run_target(target: str):
     return None
 
 
+def cmd_cat(target: str, filename: str):
+    chosen = _resolve_run_target(target)
+    if not chosen:
+        print(f"No run found for: {target}")
+        sys.exit(1)
+
+    allowed = {
+        "run_summary.json",
+        "task_request.json",
+        "proof_ledger.jsonl",
+        "stdout.txt",
+    }
+    if filename not in allowed:
+        print(f"Unsupported file: {filename}")
+        sys.exit(1)
+
+    path = chosen / filename
+    if not path.exists():
+        print(f"File not found: {path}")
+        sys.exit(1)
+
+    print(path.read_text(), end="")
+    sys.exit(0)
+
+
 def cmd_stdout(target: str):
     chosen = _resolve_run_target(target)
     if not chosen:
@@ -401,7 +426,7 @@ def cmd_runs(limit_arg: str | None):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -420,6 +445,8 @@ def main():
         cmd_exec(" ".join(sys.argv[2:]))
     elif cmd == "stdout" and len(sys.argv) > 2:
         cmd_stdout(sys.argv[2])
+    elif cmd == "cat" and len(sys.argv) > 3:
+        cmd_cat(sys.argv[2], sys.argv[3])
     elif cmd == "open" and len(sys.argv) > 2:
         cmd_open(sys.argv[2])
     elif cmd == "snapshot":
@@ -432,7 +459,7 @@ def main():
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
     else:
-        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
 
 
