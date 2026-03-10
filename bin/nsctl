@@ -424,9 +424,66 @@ def cmd_runs(limit_arg: str | None):
     sys.exit(0)
 
 
+
+def cmd_runs_ok(limit: int = 10):
+    root = Path("/Volumes/NSExternal/.run/boot")
+    items = []
+    for d in sorted([p for p in root.iterdir() if p.is_dir()], reverse=True):
+        summary = read_json(d / "run_summary.json")
+        if not summary:
+            continue
+        if summary.get("ok") is not True:
+            continue
+        items.append({
+            "kind": "task_run",
+            "run_dir": str(d),
+            "task_type": summary.get("task_type"),
+            "ok": summary.get("ok"),
+            "execution_mode": summary.get("execution_mode"),
+            "has_summary": True,
+            "has_ledger": (d / "proof_ledger.jsonl").exists(),
+        })
+        if len(items) >= limit:
+            break
+
+    print(json.dumps({
+        "command": "runs-ok",
+        "items": items,
+    }, indent=2))
+    sys.exit(0)
+
+
+def cmd_runs_fail(limit: int = 10):
+    root = Path("/Volumes/NSExternal/.run/boot")
+    items = []
+    for d in sorted([p for p in root.iterdir() if p.is_dir()], reverse=True):
+        summary = read_json(d / "run_summary.json")
+        if not summary:
+            continue
+        if summary.get("ok") is not False:
+            continue
+        items.append({
+            "kind": "task_run",
+            "run_dir": str(d),
+            "task_type": summary.get("task_type"),
+            "ok": summary.get("ok"),
+            "execution_mode": summary.get("execution_mode"),
+            "failure_reason": summary.get("failure_reason"),
+            "has_summary": True,
+            "has_ledger": (d / "proof_ledger.jsonl").exists(),
+        })
+        if len(items) >= limit:
+            break
+
+    print(json.dumps({
+        "command": "runs-fail",
+        "items": items,
+    }, indent=2))
+    sys.exit(0)
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -458,6 +515,13 @@ def main():
     elif cmd == "runs":
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
+    elif cmd == "runs-ok":
+        limit = int(sys.argv[2]) if len(sys.argv) > 2 else 10
+        cmd_runs_ok(limit)
+    elif cmd == "runs-fail":
+        limit = int(sys.argv[2]) if len(sys.argv) > 2 else 10
+        cmd_runs_fail(limit)
+
     else:
         print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs> [arg]")
         sys.exit(1)
