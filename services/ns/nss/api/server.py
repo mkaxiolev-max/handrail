@@ -15,6 +15,7 @@ Endpoints: /auth /chat /receipts /approvals /visuals /canon
 
 import os
 import requests
+from requests import exceptions as req_exc
 import sys
 import json
 import asyncio
@@ -616,7 +617,15 @@ def create_app() -> FastAPI:
         }
 
         r = requests.post("http://handrail:8011/v1/task", json=body, timeout=30)
-        return JSONResponse(status_code=r.status_code, content=r.json())
+        try:
+            payload = r.json()
+        except Exception:
+            payload = {
+                "ok": r.ok,
+                "status_code": r.status_code,
+                "raw_text": r.text,
+            }
+        return JSONResponse(status_code=r.status_code, content=payload)
 
 
     @app.post("/ingest/snapshot")
@@ -630,8 +639,37 @@ def create_app() -> FastAPI:
             "payload": {},
         }
 
-        r = requests.post("http://handrail:8011/v1/task", json=body, timeout=30)
-        return JSONResponse(status_code=r.status_code, content=r.json())
+        try:
+            r = requests.post("http://handrail:8011/v1/task", json=body, timeout=120)
+            try:
+                payload = r.json()
+            except Exception:
+                payload = {
+                    "ok": r.ok,
+                    "status_code": r.status_code,
+                    "raw_text": r.text,
+                }
+            return JSONResponse(status_code=r.status_code, content=payload)
+        except req_exc.Timeout as e:
+            return JSONResponse(
+                status_code=504,
+                content={
+                    "ok": False,
+                    "status_code": 504,
+                    "error": "snapshot_bridge_timeout",
+                    "detail": str(e),
+                },
+            )
+        except req_exc.RequestException as e:
+            return JSONResponse(
+                status_code=502,
+                content={
+                    "ok": False,
+                    "status_code": 502,
+                    "error": "snapshot_bridge_request_error",
+                    "detail": str(e),
+                },
+            )
 
 
     @app.get("/ingest/status")
