@@ -414,6 +414,39 @@ def cmd_reset():
     sys.exit(code)
 
 
+
+def cmd_dashboard():
+    latest = latest_run_dir()
+    latest_ok = latest_ok_run_dir()
+    latest_fail = latest_fail_run_dir()
+    latest_snapshot = latest_snapshot_dir()
+
+    payload = {
+        "command": "dashboard",
+        "services": {
+            "handrail_http": http_ok("http://127.0.0.1:8011/healthz"),
+            "ns_http": http_ok("http://127.0.0.1:9000/healthz"),
+            "continuum_http": http_ok("http://127.0.0.1:8788/state"),
+        },
+        "latest_run_dir": str(latest) if latest else None,
+        "latest_ok_run_dir": str(latest_ok) if latest_ok else None,
+        "latest_fail_run_dir": str(latest_fail) if latest_fail else None,
+        "latest_snapshot_dir": str(latest_snapshot) if latest_snapshot else None,
+    }
+
+    if latest:
+        payload["latest_summary"] = read_json(latest / "run_summary.json") or {}
+
+    if latest_ok:
+        payload["latest_ok_summary"] = read_json(latest_ok / "run_summary.json") or {}
+
+    if latest_fail:
+        payload["latest_fail_summary"] = read_json(latest_fail / "run_summary.json") or {}
+
+    print(json.dumps(payload, indent=2))
+    sys.exit(0)
+
+
 def cmd_doctor():
     latest = latest_run_dir()
     latest_ok = latest_ok_run_dir()
@@ -526,7 +559,7 @@ def cmd_runs_fail(limit: int = 10):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|dashboard|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -557,6 +590,8 @@ def main():
         cmd_reset()
     elif cmd == "doctor":
         cmd_doctor()
+    elif cmd == "dashboard":
+        cmd_dashboard()
     elif cmd == "runs":
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
