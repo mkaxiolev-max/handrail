@@ -619,6 +619,21 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=r.status_code, content=r.json())
 
 
+    @app.post("/ingest/snapshot")
+    async def ingest_snapshot(request: Request):
+        ops_key = request.headers.get("X-NS-OPS-KEY", "")
+        _ops_guard(ops_key)
+
+        body = {
+            "task_type": "ops_snapshot",
+            "objective": "capture governed snapshot through ns authenticated ingest",
+            "payload": {},
+        }
+
+        r = requests.post("http://handrail:8011/v1/task", json=body, timeout=30)
+        return JSONResponse(status_code=r.status_code, content=r.json())
+
+
     @app.get("/ingest/status")
     async def ingest_status(ctx: AuthContext = Depends(require_auth)):
         stats = ingest.get_stats()
