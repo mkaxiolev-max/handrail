@@ -305,6 +305,32 @@ def _resolve_run_target(target: str):
     return None
 
 
+
+def cmd_fail_ledger():
+    chosen = latest_fail_run_dir()
+    if not chosen:
+        print(json.dumps({"error": "no_failed_runs_found"}, indent=2))
+        sys.exit(1)
+
+    ledger_path = chosen / "proof_ledger.jsonl"
+    summary = read_json(chosen / "run_summary.json") or {}
+
+    payload = {
+        "command": "fail-ledger",
+        "run_dir": str(chosen),
+        "task_type": summary.get("task_type"),
+        "failure_reason": summary.get("failure_reason"),
+        "ledger_path": str(ledger_path),
+        "ledger_exists": ledger_path.exists(),
+    }
+
+    if ledger_path.exists():
+        payload["ledger"] = ledger_path.read_text()
+
+    print(json.dumps(payload, indent=2))
+    sys.exit(0)
+
+
 def cmd_cat(target: str, filename: str):
     chosen = _resolve_run_target(target)
     if not chosen:
@@ -559,7 +585,7 @@ def cmd_runs_fail(limit: int = 10):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|dashboard|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|dashboard|fail-ledger|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -592,6 +618,8 @@ def main():
         cmd_doctor()
     elif cmd == "dashboard":
         cmd_dashboard()
+    elif cmd == "fail-ledger":
+        cmd_fail_ledger()
     elif cmd == "runs":
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
