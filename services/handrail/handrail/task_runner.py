@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shlex
 import subprocess
 from shlex import split as shlex_split
 import time
@@ -96,6 +97,9 @@ def _write_run_summary(
     extra: dict[str, Any] | None = None,
 ) -> None:
     extra = extra or {}
+    ledger_path = run_dir / "proof_ledger.jsonl"
+    pre_summary_event_count = sum(1 for _ in ledger_path.open()) if ledger_path.exists() else 0
+
     payload = {
         "schema_version": "v1",
         "run_id": run_id,
@@ -116,7 +120,7 @@ def _write_run_summary(
         "command": extra.get("command"),
         "snapshot_run_dir": extra.get("snapshot_run_dir"),
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
-        "event_count": sum(1 for _ in (run_dir / "proof_ledger.jsonl").open()) if (run_dir / "proof_ledger.jsonl").exists() else 0,
+        "event_count": pre_summary_event_count + 1,
         "contradictions": [],
         "stdout_path": stdout_path,
         "rc": rc,
