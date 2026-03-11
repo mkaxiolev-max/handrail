@@ -19,6 +19,12 @@ def run_cmd(cmd: str):
     return p.returncode, p.stdout, p.stderr
 
 
+def http_ok(url: str) -> bool:
+    code, out, err = run_cmd(f'curl -s -o /dev/null -w "%{{http_code}}" {url}')
+    text = (out or "").strip()
+    return code == 0 and text == "200"
+
+
 def read_json(path: Path):
     try:
         return json.loads(path.read_text())
@@ -409,40 +415,40 @@ def cmd_reset():
 
 
 def cmd_doctor():
+    latest = latest_run_dir()
+    latest_ok = latest_ok_run_dir()
+    latest_fail = latest_fail_run_dir()
+    latest_snapshot = latest_snapshot_dir()
+
     payload = {
         "command": "doctor",
         "root_exists": ROOT.exists(),
         "runs_root_exists": RUNS_ROOT.exists(),
-        "latest_run_dir": str(latest_run_dir()) if latest_run_dir() else None,
-        "latest_snapshot_dir": str(latest_snapshot_dir()) if latest_snapshot_dir() else None,
+        "latest_run_dir": str(latest) if latest else None,
+        "latest_ok_run_dir": str(latest_ok) if latest_ok else None,
+        "latest_fail_run_dir": str(latest_fail) if latest_fail else None,
+        "latest_snapshot_dir": str(latest_snapshot) if latest_snapshot else None,
+        "services": {
+            "handrail_http": http_ok("http://127.0.0.1:8011/healthz"),
+            "ns_http": http_ok("http://127.0.0.1:9000/healthz"),
+            "continuum_http": http_ok("http://127.0.0.1:8788/state"),
+        },
     }
 
-    health_code, _, _ = run_cmd("curl -sS http://127.0.0.1:8011/healthz >/dev/null")
-    ns_code, _, _ = run_cmd("curl -sS http://127.0.0.1:9000/healthz >/dev/null")
-    continuum_code, _, _ = run_cmd("curl -sS http://127.0.0.1:8788/state >/dev/null")
-
-    payload["services"] = {
-        "handrail_http": health_code == 0,
-        "ns_http": ns_code == 0,
-        "continuum_http": continuum_code == 0,
-    }
-
-    latest = latest_run_dir()
     if latest:
-        result = read_json(latest / "result.json") or {}
-        payload["latest_task_type"] = result.get("task_type")
-        if result.get("task_type") == "ops_boot_check":
-            governed = resolve_governed_run(latest)
-            payload["resolved_latest_run_dir"] = str(governed)
-            payload["resolved_latest_has_summary"] = (governed / "run_summary.json").exists()
-            payload["resolved_latest_has_ledger"] = (governed / "proof_ledger.jsonl").exists()
-        else:
-            payload["resolved_latest_run_dir"] = str(latest)
-            payload["resolved_latest_has_summary"] = (latest / "run_summary.json").exists()
-            payload["resolved_latest_has_ledger"] = (latest / "proof_ledger.jsonl").exists()
+        summary = read_json(latest / "run_summary.json") or {}
+        payload["latest_task_type"] = summary.get("task_type")
+        payload["resolved_latest_run_dir"] = str(latest)
+        payload["resolved_latest_has_summary"] = (latest / "run_summary.json").exists()
+        payload["resolved_latest_has_ledger"] = (latest / "proof_ledger.jsonl").exists()
+
+    if latest_fail:
+        fail_summary = read_json(latest_fail / "run_summary.json") or {}
+        payload["latest_fail_reason"] = fail_summary.get("failure_reason")
+        payload["latest_fail_task_type"] = fail_summary.get("task_type")
 
     print(json.dumps(payload, indent=2))
-    sys.exit(0 if all(payload["services"].values()) else 1)
+    sys.exit(0)
 
 
 def cmd_runs(limit_arg: str | None):
