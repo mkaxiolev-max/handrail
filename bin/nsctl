@@ -720,7 +720,37 @@ def main():
         cmd_doctor()
     elif cmd == "dashboard":
         cmd_dashboard()
-    elif cmd == "summary":
+    
+
+elif cmd == "ns-exec":
+    import subprocess, json
+
+    if len(sys.argv) < 3:
+        print("usage: nsctl ns-exec '<cmd>'")
+        sys.exit(1)
+
+    command = sys.argv[2]
+
+    key = subprocess.check_output(
+        ["docker","compose","exec","-T","ns","sh","-lc","printf '%s' "$NS_OPS_KEY""]
+    ).decode().strip()
+
+    import requests
+
+    r = requests.post(
+        "http://127.0.0.1:9000/ingest/exec",
+        headers={
+            "Content-Type":"application/json",
+            "X-NS-OPS-KEY":key
+        },
+        json={"cmd":command},
+        timeout=30
+    )
+
+    print(json.dumps(r.json(),indent=2))
+    sys.exit(0)
+
+elif cmd == "summary":
         cmd_summary()
     elif cmd == "ok-ledger":
         cmd_ok_ledger()
