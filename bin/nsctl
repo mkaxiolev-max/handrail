@@ -75,6 +75,15 @@ def latest_ok_run_dir():
     return None
 
 
+def latest_fail_run_dir():
+    runs = sorted([p for p in RUNS_ROOT.glob("*") if p.is_dir()], reverse=True)
+    for run in runs:
+        summary = read_json(run / "run_summary.json") or {}
+        if summary.get("ok") is False:
+            return run
+    return None
+
+
 def latest_snapshot_dir():
     for run_dir in all_run_dirs():
         if is_snapshot_dir(run_dir):
@@ -232,6 +241,23 @@ def cmd_latest_ok():
     sys.exit(0)
 
 
+def cmd_latest_fail():
+    chosen = latest_fail_run_dir()
+    if not chosen:
+        print(json.dumps({"error": "no_failed_runs_found"}, indent=2))
+        sys.exit(1)
+
+    summary = read_json(chosen / "run_summary.json")
+    payload = {"latest_run_dir": str(chosen)}
+    if summary:
+        payload["run_summary"] = summary
+    else:
+        payload["files"] = sorted([p.name for p in chosen.iterdir() if p.is_file()])
+
+    print(json.dumps(payload, indent=2))
+    sys.exit(0)
+
+
 def cmd_run(task_type: str):
     code, out, err = _post_task(task_type, f"run governed task {task_type} through nsctl")
     if out.strip():
@@ -262,6 +288,8 @@ def _resolve_run_target(target: str):
         return latest_run_dir()
     if target == "latest_ok":
         return latest_ok_run_dir()
+    if target == "latest_fail":
+        return latest_fail_run_dir()
     p = Path(target)
     if p.exists():
         return p
@@ -316,6 +344,15 @@ def cmd_open(target: str):
         chosen = latest_ok_run_dir()
         if not chosen:
             print("No successful runs found")
+            sys.exit(1)
+        print(str(chosen))
+        subprocess.run(["open", str(chosen)], check=False)
+        return
+
+    if target == "latest_fail":
+        chosen = latest_fail_run_dir()
+        if not chosen:
+            print("No failed runs found")
             sys.exit(1)
         print(str(chosen))
         subprocess.run(["open", str(chosen)], check=False)
@@ -483,7 +520,7 @@ def cmd_runs_fail(limit: int = 10):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -496,6 +533,8 @@ def main():
         cmd_latest()
     elif cmd == "latest-ok":
         cmd_latest_ok()
+    elif cmd == "latest-fail":
+        cmd_latest_fail()
     elif cmd == "run" and len(sys.argv) > 2:
         cmd_run(sys.argv[2])
     elif cmd == "exec" and len(sys.argv) > 2:
