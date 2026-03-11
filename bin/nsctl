@@ -306,6 +306,22 @@ def _resolve_run_target(target: str):
 
 
 
+
+def cmd_tail_fail():
+    chosen = latest_fail_run_dir()
+    if not chosen:
+        print("No failed runs found")
+        sys.exit(1)
+
+    ledger_path = chosen / "proof_ledger.jsonl"
+    if not ledger_path.exists():
+        print(f"No proof_ledger.jsonl found for: {chosen}")
+        sys.exit(1)
+
+    print(ledger_path.read_text(), end="")
+    sys.exit(0)
+
+
 def cmd_fail_ledger():
     chosen = latest_fail_run_dir()
     if not chosen:
@@ -645,7 +661,7 @@ def cmd_runs_fail(limit: int = 10):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|fail-ledger|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -682,6 +698,8 @@ def main():
         cmd_summary()
     elif cmd == "fail-ledger":
         cmd_fail_ledger()
+    elif cmd == "tail-fail":
+        cmd_tail_fail()
     elif cmd == "runs":
         arg = sys.argv[2] if len(sys.argv) > 2 else None
         cmd_runs(arg)
