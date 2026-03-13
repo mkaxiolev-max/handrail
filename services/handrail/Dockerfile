@@ -30,5 +30,6 @@ RUN set -eux; \
 WORKDIR /app
 RUN pip install --no-cache-dir fastapi uvicorn pydantic pytest
 COPY handrail ./handrail
+COPY tests ./tests
 EXPOSE 8011
 CMD ["uvicorn", "handrail.server:app", "--host", "0.0.0.0", "--port", "8011"]
