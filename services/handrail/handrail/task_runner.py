@@ -7,6 +7,12 @@ from shlex import split as shlex_split
 import time
 from pathlib import Path
 from typing import Any
+from .tasks.ops_apply_patch import run_apply_patch
+from .tasks.ops_run_tests import run_tests
+from .tasks.ops_execute_plan import execute_plan
+
+
+
 
 
 def _now_ts_ms() -> int:
@@ -169,6 +175,133 @@ def run_task(
         },
         message="Direct Handrail task received",
     )
+
+    
+    
+    
+
+    if task_type == "ops_execute_plan":
+        result = execute_plan(payload, run_dir, run_task)
+
+        stdout_text = json.dumps(result, indent=2)
+        (run_dir / "stdout.txt").write_text(stdout_text, encoding="utf-8")
+
+        ok = result.get("ok", False)
+        rc = result.get("rc", 0 if ok else 1)
+
+        _append_task_event(
+            run_dir,
+            "task_completed" if ok else "task_failed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": rc,
+                "failed_step": result.get("failed_step"),
+            },
+            status="ok" if ok else "fail",
+            message="Execute plan task finished",
+        )
+
+        _write_run_summary(
+            run_dir,
+            run_id=run_id,
+            task_type=task_type,
+            ok=ok,
+            rc=rc,
+            stdout_path=str(run_dir / "stdout.txt"),
+            objective=objective,
+            extra={
+                "checks": {
+                    "plan_executed": ok,
+                    "step_count": len(result.get("results", [])),
+                },
+                "failure_reason": result.get("failure_reason"),
+            },
+        )
+
+        return result
+
+    if task_type == "ops_run_tests":
+        result = run_tests(payload, run_dir)
+
+        stdout_text = (result.get("stdout", "") or "") + (result.get("stderr", "") or "")
+        (run_dir / "stdout.txt").write_text(stdout_text, encoding="utf-8")
+
+        ok = result.get("ok", False)
+        rc = result.get("rc", 1)
+
+        _append_task_event(
+            run_dir,
+            "task_completed" if ok else "task_failed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": rc,
+                "argv": result.get("argv"),
+                "command": result.get("command"),
+            },
+            status="ok" if ok else "fail",
+            message="Run tests task finished",
+        )
+
+        _write_run_summary(
+            run_dir,
+            run_id=run_id,
+            task_type=task_type,
+            ok=ok,
+            rc=rc,
+            stdout_path=str(run_dir / "stdout.txt"),
+            objective=objective,
+            extra={
+                "checks": {"tests_passed": ok},
+                "failure_reason": result.get("failure_reason"),
+                "command": result.get("command"),
+            },
+        )
+
+        return result
+
+    if task_type == "ops_apply_patch":
+        result = run_apply_patch(payload, run_dir)
+
+        stdout_text = (result.get("stdout", "") or "") + (result.get("stderr", "") or "")
+        (run_dir / "stdout.txt").write_text(stdout_text, encoding="utf-8")
+
+        ok = result.get("ok", False)
+        rc = result.get("rc", 1)
+
+        _append_task_event(
+            run_dir,
+            "task_completed" if ok else "task_failed",
+            {
+                "run_id": run_id,
+                "task_id": task_id,
+                "task_type": task_type,
+                "rc": rc,
+                "patch_hash": result.get("patch_hash"),
+            },
+            status="ok" if ok else "fail",
+            message="Apply patch task finished",
+        )
+
+        _write_run_summary(
+            run_dir,
+            run_id=run_id,
+            task_type=task_type,
+            ok=ok,
+            rc=rc,
+            stdout_path=str(run_dir / "stdout.txt"),
+            objective=objective,
+            extra={
+                "checks": {"patch_applied": ok},
+                "failure_reason": result.get("failure_reason"),
+            },
+        )
+
+        return result
+
 
     if task_type == "ops_boot_check":
         governed_script = workspace / "scripts" / "boot" / "boot_go.sh"

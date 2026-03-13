@@ -28,7 +28,7 @@ RUN set -eux; \
     chmod +x /usr/local/bin/docker-compose
 
 WORKDIR /app
-RUN pip install --no-cache-dir fastapi uvicorn pydantic
+RUN pip install --no-cache-dir fastapi uvicorn pydantic pytest
 COPY handrail ./handrail
 EXPOSE 8011
 CMD ["uvicorn", "handrail.server:app", "--host", "0.0.0.0", "--port", "8011"]
