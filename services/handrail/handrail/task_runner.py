@@ -5,6 +5,9 @@ import shlex
 import subprocess
 from shlex import split as shlex_split
 import time
+import hashlib
+import os
+import sys
 from pathlib import Path
 from typing import Any
 from .tasks.ops_apply_patch import run_apply_patch
@@ -45,6 +48,47 @@ def _validate_exec_command(raw_cmd: str) -> tuple[bool, str | None, list[str] | 
         return False, f"unsupported_binary:{binary}", None
 
     return True, None, argv
+
+
+
+def _sha256_bytes(data: bytes) -> str:
+    return "sha256:" + hashlib.sha256(data).hexdigest()
+
+
+def _sha256_file(path: Path) -> str | None:
+    if not path.exists() or not path.is_file():
+        return None
+    return _sha256_bytes(path.read_bytes())
+
+
+def _git_head_for_workspace(workspace: Path) -> str | None:
+    try:
+        p = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(workspace),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if p.returncode == 0:
+            return p.stdout.strip() or None
+    except Exception:
+        pass
+    return None
+
+
+def _compute_environment_hash(workspace: Path, task_type: str) -> str:
+    repo_head = _git_head_for_workspace(workspace)
+    py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    payload = {
+        "repo_head": repo_head,
+        "python_version": py_ver,
+        "task_type": task_type,
+        "cwd": str(workspace),
+        "image_id": os.getenv("HANDRAIL_IMAGE_ID", "unknown"),
+    }
+    raw = json.dumps(payload, sort_keys=True).encode("utf-8")
+    return _sha256_bytes(raw)
 
 
 def _append_task_event(
@@ -104,21 +148,28 @@ def _write_run_summary(
 ) -> None:
     extra = extra or {}
     ledger_path = run_dir / "proof_ledger.jsonl"
+    task_request_path = run_dir / "task_request.json"
     pre_summary_event_count = sum(1 for _ in ledger_path.open()) if ledger_path.exists() else 0
+
+    started_ts_ms = extra.get("started_ts_ms", _now_ts_ms())
+    finished_ts_ms = _now_ts_ms()
 
     payload = {
         "schema_version": "v1",
         "run_id": run_id,
+        "parent_run_id": extra.get("parent_run_id"),
         "task_id": f"{task_type}_{run_id}",
-        "started_ts_ms": _now_ts_ms(),
-        "finished_ts_ms": _now_ts_ms(),
-        "duration_ms": None,
+        "started_ts_ms": started_ts_ms,
+        "finished_ts_ms": finished_ts_ms,
+        "duration_ms": max(0, finished_ts_ms - started_ts_ms) if started_ts_ms is not None else None,
         "ok": ok,
         "intent": objective,
         "task_type": task_type,
         "execution_mode": "direct_handrail_task",
         "policy_version": "v1",
-        "policy_hash": None,
+        "policy_hash": extra.get("policy_hash"),
+        "task_request_hash": _sha256_file(task_request_path),
+        "environment_hash": extra.get("environment_hash"),
         "services": extra.get("services", {}),
         "mounts": extra.get("mounts", {}),
         "checks": extra.get("checks", {}),
@@ -130,6 +181,7 @@ def _write_run_summary(
         "contradictions": [],
         "stdout_path": stdout_path,
         "rc": rc,
+        "ledger_hash": None,
     }
 
     path = run_dir / "run_summary.json"
@@ -152,6 +204,12 @@ def _write_run_summary(
         message="Direct task run summary written",
     )
 
+    final_ledger_hash = _sha256_file(ledger_path)
+    final_payload = json.loads(path.read_text(encoding="utf-8"))
+    final_payload["ledger_hash"] = final_ledger_hash
+    final_payload["event_count"] = sum(1 for _ in ledger_path.open()) if ledger_path.exists() else final_payload["event_count"]
+    path.write_text(json.dumps(final_payload, indent=2), encoding="utf-8")
+
 
 def run_task(
     task_type: str,
@@ -163,6 +221,22 @@ def run_task(
 ) -> dict[str, Any]:
     payload = payload or {}
     task_id = f"{task_type}_{run_id}"
+    started_ts_ms = _now_ts_ms()
+    parent_run_id = payload.get("_parent_run_id")
+    environment_hash = _compute_environment_hash(workspace, task_type)
+
+    persisted_request = {
+        "run_id": run_id,
+        "parent_run_id": parent_run_id,
+        "task_id": task_id,
+        "task_type": task_type,
+        "objective": objective,
+        "payload": payload,
+    }
+    (run_dir / "task_request.json").write_text(
+        json.dumps(persisted_request, indent=2),
+        encoding="utf-8",
+    )
 
     _append_task_event(
         run_dir,
@@ -217,6 +291,9 @@ def run_task(
                     "step_count": len(result.get("results", [])),
                 },
                 "failure_reason": result.get("failure_reason"),
+                "started_ts_ms": started_ts_ms,
+                "parent_run_id": parent_run_id,
+                "environment_hash": environment_hash,
             },
         )
 
@@ -258,6 +335,9 @@ def run_task(
                 "checks": {"tests_passed": ok},
                 "failure_reason": result.get("failure_reason"),
                 "command": result.get("command"),
+                "started_ts_ms": started_ts_ms,
+                "parent_run_id": parent_run_id,
+                "environment_hash": environment_hash,
             },
         )
 
@@ -297,6 +377,9 @@ def run_task(
             extra={
                 "checks": {"patch_applied": ok},
                 "failure_reason": result.get("failure_reason"),
+                "started_ts_ms": started_ts_ms,
+                "parent_run_id": parent_run_id,
+                "environment_hash": environment_hash,
             },
         )
 

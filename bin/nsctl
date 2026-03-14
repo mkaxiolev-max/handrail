@@ -685,9 +685,83 @@ def cmd_runs_fail(limit: int = 10):
     }, indent=2))
     sys.exit(0)
 
+
+def _sha256_file(path):
+    import hashlib
+    path = Path(path)
+    if not path.exists() or not path.is_file():
+        return None
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _validate_run_dir(run_dir):
+    run_dir = Path(run_dir)
+    summary_path = run_dir / "run_summary.json"
+    ledger_path = run_dir / "proof_ledger.jsonl"
+    task_request_path = run_dir / "task_request.json"
+
+    if not summary_path.exists():
+        return {
+            "ok": False,
+            "run_dir": str(run_dir),
+            "error": "missing_run_summary",
+        }
+
+    summary = json.loads(summary_path.read_text())
+    errors = []
+    missing_artifacts = []
+
+    for item in summary.get("artifact_refs", []):
+        artifact_path = Path(item)
+        if not artifact_path.exists():
+            missing_artifacts.append(str(artifact_path))
+
+    task_request_hash_ok = summary.get("task_request_hash") == _sha256_file(task_request_path)
+    ledger_hash_ok = summary.get("ledger_hash") == _sha256_file(ledger_path)
+
+    if not ledger_path.exists():
+        errors.append("missing_ledger")
+    if not task_request_path.exists():
+        errors.append("missing_task_request")
+    if missing_artifacts:
+        errors.append("missing_artifacts")
+    if not task_request_hash_ok:
+        errors.append("task_request_hash_mismatch")
+    if not ledger_hash_ok:
+        errors.append("ledger_hash_mismatch")
+
+    children_root = run_dir / "children"
+    child_dirs = sorted([x for x in children_root.iterdir() if x.is_dir()]) if children_root.exists() else []
+    child_results = [_validate_run_dir(child) for child in child_dirs]
+    children_ok = all(x.get("ok", False) for x in child_results)
+
+    if not children_ok:
+        errors.append("child_validation_failed")
+
+    return {
+        "ok": len(errors) == 0,
+        "run_dir": str(run_dir),
+        "task_type": summary.get("task_type"),
+        "artifacts_ok": len(missing_artifacts) == 0,
+        "missing_artifacts": missing_artifacts,
+        "task_request_hash_ok": task_request_hash_ok,
+        "ledger_hash_ok": ledger_hash_ok,
+        "children_checked": len(child_results),
+        "children_ok": children_ok,
+        "children": child_results,
+        "errors": errors,
+    }
+
+
+def cmd_validate_run(target):
+    result = _validate_run_dir(target)
+    print(json.dumps(result, indent=2))
+    return 0 if result.get("ok") else 1
+
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -702,6 +776,8 @@ def main():
         cmd_latest_ok()
     elif cmd == "latest-fail":
         cmd_latest_fail()
+    elif cmd == "validate-run" and len(sys.argv) > 2:
+        sys.exit(cmd_validate_run(sys.argv[2]))
     elif cmd == "run" and len(sys.argv) > 2:
         cmd_run(sys.argv[2])
     elif cmd == "exec" and len(sys.argv) > 2:
@@ -761,7 +837,7 @@ def main():
         cmd_runs_fail(limit)
 
     else:
-        print("Usage: nsctl <boot|status|latest|latest-ok|run|exec|stdout|cat|open|snapshot|reset|doctor|runs> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
 

@@ -31,7 +31,8 @@ def execute_plan(task_request: dict, run_dir: Path, task_runner):
 
     for idx, step in enumerate(steps, start=1):
         task_type = step.get("task")
-        payload = step.get("payload", {})
+        payload = dict(step.get("payload", {}) or {})
+        payload["_parent_run_id"] = Path(run_dir).name
         objective = step.get("objective", "")
 
         if task_type not in allowed_tasks:
