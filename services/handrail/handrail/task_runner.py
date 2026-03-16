@@ -112,6 +112,18 @@ def _append_task_event(
     seq += 1
     seq_path.write_text(str(seq))
 
+    ledger_path = run_dir / "proof_ledger.jsonl"
+
+    prev_event_hash = None
+    if ledger_path.exists():
+        try:
+            lines = [line for line in ledger_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            if lines:
+                prev_event = json.loads(lines[-1])
+                prev_event_hash = prev_event.get("event_hash")
+        except Exception:
+            prev_event_hash = None
+
     event = {
         "schema_version": "v1",
         "run_id": payload.get("run_id"),
@@ -127,10 +139,15 @@ def _append_task_event(
         "status": status,
         "policy_hash": payload.get("policy_hash"),
         "message": message or event_type,
+        "prev_event_hash": prev_event_hash,
         "data": payload,
     }
 
-    ledger_path = run_dir / "proof_ledger.jsonl"
+    canonical = dict(event)
+    event["event_hash"] = _sha256_bytes(
+        json.dumps(canonical, sort_keys=True).encode("utf-8")
+    )
+
     with ledger_path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(event, sort_keys=True) + "\n")
 
@@ -176,6 +193,9 @@ def _write_run_summary(
         "failure_reason": extra.get("failure_reason"),
         "command": extra.get("command"),
         "snapshot_run_dir": extra.get("snapshot_run_dir"),
+        "patch_hash": extra.get("patch_hash"),
+        "target_files": extra.get("target_files"),
+        "apply_rc": extra.get("apply_rc"),
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
         "event_count": pre_summary_event_count + 1,
         "contradictions": [],
@@ -377,6 +397,9 @@ def run_task(
             extra={
                 "checks": {"patch_applied": ok},
                 "failure_reason": result.get("failure_reason"),
+                "patch_hash": result.get("patch_hash"),
+                "target_files": result.get("target_files"),
+                "apply_rc": result.get("apply_rc"),
                 "started_ts_ms": started_ts_ms,
                 "parent_run_id": parent_run_id,
                 "environment_hash": environment_hash,

@@ -4,6 +4,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 ROOT = Path.home() / "axiolev_runtime"
 RUNS_ROOT = Path("/Volumes/NSExternal/.run/boot")
 
@@ -694,6 +698,40 @@ def _sha256_file(path):
     return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+
+def _validate_ledger_chain(ledger_path):
+    ledger_path = Path(ledger_path)
+    if not ledger_path.exists():
+        return False, "missing_ledger"
+
+    try:
+        lines = [line for line in ledger_path.read_text().splitlines() if line.strip()]
+        prev_hash = None
+
+        for idx, line in enumerate(lines, start=1):
+            event = json.loads(line)
+            actual_prev = event.get("prev_event_hash")
+            if actual_prev != prev_hash:
+                return False, f"prev_event_hash_mismatch_at_seq_{idx}"
+
+            event_copy = dict(event)
+            event_hash = event_copy.pop("event_hash", None)
+            if not event_hash:
+                return False, f"missing_event_hash_at_seq_{idx}"
+
+            expected_hash = "sha256:" + __import__("hashlib").sha256(
+                json.dumps(event_copy, sort_keys=True).encode("utf-8")
+            ).hexdigest()
+
+            if event_hash != expected_hash:
+                return False, f"event_hash_mismatch_at_seq_{idx}"
+
+            prev_hash = event_hash
+
+        return True, None
+    except Exception as e:
+        return False, f"ledger_chain_exception:{e}"
+
 def _validate_run_dir(run_dir):
     run_dir = Path(run_dir)
     summary_path = run_dir / "run_summary.json"
@@ -718,6 +756,7 @@ def _validate_run_dir(run_dir):
 
     task_request_hash_ok = summary.get("task_request_hash") == _sha256_file(task_request_path)
     ledger_hash_ok = summary.get("ledger_hash") == _sha256_file(ledger_path)
+    ledger_chain_ok, ledger_chain_error = _validate_ledger_chain(ledger_path)
 
     if not ledger_path.exists():
         errors.append("missing_ledger")
@@ -729,6 +768,21 @@ def _validate_run_dir(run_dir):
         errors.append("task_request_hash_mismatch")
     if not ledger_hash_ok:
         errors.append("ledger_hash_mismatch")
+    if not ledger_chain_ok:
+        errors.append(ledger_chain_error or "ledger_chain_invalid")
+
+    mutation_required = []
+    if summary.get("task_type") == "ops_apply_patch":
+        mutation_required = [
+            "state_before.json",
+            "simulated_transition.json",
+            "state_after.json",
+            "actual_delta.json",
+            "patch.diff",
+        ]
+        for name in mutation_required:
+            if not (run_dir / name).exists():
+                errors.append(f"missing_mutation_artifact:{name}")
 
     children_root = run_dir / "children"
     child_dirs = sorted([x for x in children_root.iterdir() if x.is_dir()]) if children_root.exists() else []
@@ -746,6 +800,9 @@ def _validate_run_dir(run_dir):
         "missing_artifacts": missing_artifacts,
         "task_request_hash_ok": task_request_hash_ok,
         "ledger_hash_ok": ledger_hash_ok,
+        "ledger_chain_ok": ledger_chain_ok,
+        "ledger_chain_error": ledger_chain_error,
+        "mutation_artifacts_required": mutation_required,
         "children_checked": len(child_results),
         "children_ok": children_ok,
         "children": child_results,
@@ -759,9 +816,18 @@ def cmd_validate_run(target):
     return 0 if result.get("ok") else 1
 
 
+
+def cmd_replay_run(target):
+    from services.handrail.handrail.replay_engine import replay_run
+    import json
+
+    result = replay_run(target, dry_run=True)
+    print(json.dumps(result, indent=2))
+    return 0
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -778,6 +844,9 @@ def main():
         cmd_latest_fail()
     elif cmd == "validate-run" and len(sys.argv) > 2:
         sys.exit(cmd_validate_run(sys.argv[2]))
+    elif cmd == "replay" and len(sys.argv) > 2:
+        sys.exit(cmd_replay_run(sys.argv[2]))
+
     elif cmd == "run" and len(sys.argv) > 2:
         cmd_run(sys.argv[2])
     elif cmd == "exec" and len(sys.argv) > 2:
@@ -837,7 +906,7 @@ def main():
         cmd_runs_fail(limit)
 
     else:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
 
