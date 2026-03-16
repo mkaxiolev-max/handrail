@@ -825,9 +825,29 @@ def cmd_replay_run(target):
     print(json.dumps(result, indent=2))
     return 0
 
+
+def cmd_opcode(op):
+    from services.handrail.handrail.opcode import parse_opcode
+
+    parsed = parse_opcode(op)
+
+    code, out, err = _post_task(
+        parsed["task_type"],
+        parsed["objective"],
+        parsed.get("payload", {})
+    )
+
+    if out.strip():
+        print(out.strip())
+
+    if err.strip():
+        print(err.strip())
+
+    return code
+
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|opcode|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -836,6 +856,8 @@ def main():
         cmd_boot()
     elif cmd == "status":
         cmd_status()
+    elif cmd == "opcode":
+        cmd_opcode(sys.argv[2])
     elif cmd == "latest":
         cmd_latest()
     elif cmd == "latest-ok":
@@ -906,7 +928,7 @@ def main():
         cmd_runs_fail(limit)
 
     else:
-        print("Usage: nsctl <boot|status|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|opcode|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
 

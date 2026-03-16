@@ -1,6 +1,6 @@
 FROM python:3.12-slim-bookworm
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl \
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl patch \
   && rm -rf /var/lib/apt/lists/*
 
 # Install modern docker CLI + compose v2 plugin (works with Docker Desktop API >= 1.44)
