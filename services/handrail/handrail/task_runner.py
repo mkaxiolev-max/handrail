@@ -13,7 +13,6 @@ from typing import Any
 from .tasks.ops_apply_patch import run_apply_patch
 from .tasks.ops_run_tests import run_tests
 from .tasks.ops_execute_plan import execute_plan
-from .tasks.ops_env_action import run_ops_env_action
 
 
 
@@ -197,9 +196,6 @@ def _write_run_summary(
         "patch_hash": extra.get("patch_hash"),
         "target_files": extra.get("target_files"),
         "apply_rc": extra.get("apply_rc"),
-        "adapter_method": extra.get("adapter_method"),
-        "state_change": extra.get("state_change"),
-        "warnings": extra.get("warnings"),
         "artifact_refs": sorted([str(p) for p in run_dir.iterdir() if p.is_file()]),
         "event_count": pre_summary_event_count + 1,
         "contradictions": [],
@@ -412,49 +408,6 @@ def run_task(
 
         return result
 
-
-    if task_type == "ops_env_action":
-        result = run_ops_env_action(run_dir, payload)
-        ok = result.get("ok", False)
-        rc = int(result.get("rc", 1))
-
-        stdout_path = str(run_dir / "stdout.txt")
-        (run_dir / "stdout.txt").write_text(
-            json.dumps(result.get("adapter_response"), indent=2, sort_keys=True) if result.get("adapter_response") else "",
-            encoding="utf-8",
-        )
-
-        _write_run_summary(
-            run_dir,
-            run_id=run_id,
-            task_type=task_type,
-            ok=ok,
-            rc=rc,
-            stdout_path=stdout_path,
-            objective=objective,
-            extra={
-                "checks": result.get("checks", {}),
-                "failure_reason": result.get("failure_reason"),
-                "started_ts_ms": started_ts_ms,
-                "parent_run_id": parent_run_id,
-                "environment_hash": environment_hash,
-                "adapter_method": result.get("adapter_method"),
-                "state_change": result.get("state_change", {}),
-                "warnings": result.get("warnings", []),
-            },
-        )
-
-        return {
-            "ok": ok,
-            "rc": rc,
-            "failure_reason": result.get("failure_reason"),
-            "artifacts": result.get("artifacts", []),
-            "checks": result.get("checks", {}),
-            "state_change": result.get("state_change", {}),
-            "warnings": result.get("warnings", []),
-            "adapter_method": result.get("adapter_method"),
-            "adapter_response": result.get("adapter_response"),
-        }
 
     if task_type == "ops_boot_check":
         governed_script = workspace / "scripts" / "boot" / "boot_go.sh"
@@ -753,7 +706,7 @@ def run_task(
             "run_id": run_id,
             "task_id": task_id,
             "task_type": task_type,
-            "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd", "ops_env_action"],
+            "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd"],
         },
         status="fail",
         message="Unsupported task type",
@@ -779,5 +732,5 @@ def run_task(
         "ok": False,
         "task_type": task_type,
         "error": "unsupported_task_type",
-        "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd", "ops_env_action"],
+        "supported_task_types": ["ops_boot_check", "ops_status_check", "ops_snapshot", "ops_exec_cmd"],
     }

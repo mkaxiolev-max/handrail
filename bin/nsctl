@@ -845,41 +845,9 @@ def cmd_opcode(op):
 
     return code
 
-
-def cmd_env_action(adapter_method: str, params_json: str | None = None, objective: str | None = None):
-    try:
-        payload_params = json.loads(params_json) if params_json else {}
-    except Exception:
-        print(json.dumps({"error": "invalid_params_json"}, indent=2))
-        sys.exit(1)
-
-    now = int(__import__("time").time() * 1000)
-    body = {
-        "task_type": "ops_env_action",
-        "objective": objective or f"run adapter method {adapter_method}",
-        "payload": {
-            "adapter_method": adapter_method,
-            "adapter_params": payload_params,
-            "run_id": f"env_{now}",
-            "action_id": f"act_{now}",
-        },
-    }
-
-    cmd = (
-        "curl -sS -X POST http://127.0.0.1:8011/v1/task "
-        "-H 'Content-Type: application/json' "
-        f"-d '{json.dumps(body)}'"
-    )
-    code, out, err = run_cmd(cmd)
-    if out.strip():
-        print(out.strip())
-    if err.strip():
-        print(err.strip(), file=sys.stderr)
-    sys.exit(code)
-
 def main():
     if len(sys.argv) < 2:
-        print("Usage: nsctl <boot|status|opcode|env-action|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|opcode|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -890,10 +858,6 @@ def main():
         cmd_status()
     elif cmd == "opcode":
         cmd_opcode(sys.argv[2])
-    elif cmd == "env-action" and len(sys.argv) > 2:
-        params_json = sys.argv[3] if len(sys.argv) > 3 else "{}"
-        objective = sys.argv[4] if len(sys.argv) > 4 else None
-        cmd_env_action(sys.argv[2], params_json, objective)
     elif cmd == "latest":
         cmd_latest()
     elif cmd == "latest-ok":
@@ -964,7 +928,7 @@ def main():
         cmd_runs_fail(limit)
 
     else:
-        print("Usage: nsctl <boot|status|opcode|env-action|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
+        print("Usage: nsctl <boot|status|opcode|latest|latest-ok|latest-fail|validate-run|replay|run|exec|ns-exec|stdout|cat|open|snapshot|reset|doctor|dashboard|summary|ok-ledger|fail-ledger|tail-fail|runs|runs-ok|runs-fail> [arg]")
         sys.exit(1)
 
 
