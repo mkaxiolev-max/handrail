@@ -282,6 +282,42 @@ def v1_run(req: RunRequest):
 
 
 
+
+class CPSRequest(BaseModel):
+    cps_id: str
+    objective: str | None = None
+    ops: list[dict[str, Any]]
+    expect: dict[str, Any] | None = None
+
+
+@app.post("/ops/cps")
+def ops_cps(req: CPSRequest):
+    """Execute CPS (Cognitive Program Sequence) transaction"""
+    from handrail.cps_engine import CPSExecutor
+
+    run_id = now_id()
+    run_dir = RUNS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    cps_dict = {
+        "cps_id": req.cps_id,
+        "objective": req.objective,
+        "ops": req.ops,
+        "expect": req.expect or {}
+    }
+
+    (run_dir / "cps_request.json").write_text(json.dumps(cps_dict, indent=2))
+
+    result = CPSExecutor.execute(cps_dict, WORKSPACE)
+    result["run_id"] = run_id
+    result["run_dir"] = str(run_dir)
+
+    (run_dir / "cps_result.json").write_text(json.dumps(result, indent=2))
+    (RUNS_DIR / "latest").write_text(str(run_dir))
+
+    return JSONResponse(result)
+
+
 @app.post("/v1/task")
 def v1_task(req: TaskRequest):
     run_id = now_id()
