@@ -1,0 +1,13 @@
+{
+  "name": "boot.runtime",
+  "allowed_paths": [
+    "/workspace",
+    "/Volumes/NSExternal",
+    "/tmp",
+    "/var/tmp"
+  ],
+  "allowed_programs": [
+    "docker", "curl", "python3", "bash", "sh", "git", "pwd", "ls", "cat"
+  ],
+  "allow_mutation": true
+}

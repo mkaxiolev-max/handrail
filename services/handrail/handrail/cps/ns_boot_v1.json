@@ -1,0 +1,47 @@
+{
+  "cps_id": "ns_boot_v1",
+  "objective": "boot NS stack and verify core local services",
+  "policy_profile": "boot.runtime",
+  "ops": [
+    {
+      "op": "docker.compose_up",
+      "args": {
+        "project_dir": "/workspace",
+        "detached": true,
+        "build": false
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://127.0.0.1:8011/healthz",
+        "timeout_ms": 5000
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://127.0.0.1:9000/healthz",
+        "timeout_ms": 5000
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://127.0.0.1:8788/state",
+        "timeout_ms": 5000
+      }
+    },
+    {
+      "op": "docker.compose_ps",
+      "args": {
+        "project_dir": "/workspace"
+      }
+    }
+  ],
+  "expect": {
+    "results[1].data.status_code": 200,
+    "results[2].data.status_code": 200,
+    "results[3].data.status_code": 200
+  }
+}

@@ -288,7 +288,27 @@ class CPSRequest(BaseModel):
     objective: str | None = None
     ops: list[dict[str, Any]]
     expect: dict[str, Any] | None = None
+    policy_profile: str | None = None
 
+
+
+
+def _write_artifact_manifest(run_dir):
+    """Write artifact_manifest.json for a CPS run directory."""
+    import hashlib, time
+    files = []
+    for fname in ["cps_request.json", "cps_result.json"]:
+        fpath = run_dir / fname
+        if fpath.exists():
+            h = hashlib.sha256(fpath.read_bytes()).hexdigest()
+            files.append({
+                "path": fname,
+                "type": fname.replace(".json", "").replace("cps_", ""),
+                "checksum": f"sha256:{h}",
+                "created_ts_ms": int(time.time() * 1000),
+            })
+    manifest = {"files": files}
+    (run_dir / "artifact_manifest.json").write_text(json.dumps(manifest, indent=2))
 
 @app.post("/ops/cps")
 def ops_cps(req: CPSRequest):

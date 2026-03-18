@@ -1,0 +1,12 @@
+{
+  "name": "repo.inspect",
+  "allowed_paths": [
+    "/workspace",
+    "/Volumes/NSExternal",
+    "/tmp"
+  ],
+  "allowed_programs": [
+    "git", "pwd", "ls", "cat", "curl"
+  ],
+  "allow_mutation": false
+}
