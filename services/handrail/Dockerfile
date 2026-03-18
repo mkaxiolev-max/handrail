@@ -28,7 +28,7 @@ RUN set -eux; \
     chmod +x /usr/local/bin/docker-compose
 
 WORKDIR /app
-RUN pip install --no-cache-dir fastapi uvicorn pydantic pytest
+RUN pip install --no-cache-dir fastapi uvicorn pydantic pytest httpx
 COPY handrail ./handrail
 COPY tests ./tests
 EXPOSE 8011
