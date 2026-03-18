@@ -1,0 +1,11 @@
+{
+  "cps_id": "repo_inspect_001",
+  "objective": "inspect repository state",
+  "ops": [
+    {"op": "fs.pwd", "args": {}},
+    {"op": "git.status", "args": {"repo": "/workspace"}},
+    {"op": "git.log", "args": {"repo": "/workspace"}},
+    {"op": "fs.list", "args": {"path": "/workspace"}}
+  ],
+  "expect": {}
+}
