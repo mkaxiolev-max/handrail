@@ -69,7 +69,7 @@ def list_cps() -> list[str]:
 
 def cat_cps(cps_id: str) -> dict:
     cps_dir = _cps_dir()
-    path = cps_dir / f"{cps_id}.json"
+    path = cps_dir / cps_id
     if not path.exists():
         raise FileNotFoundError(f"CPS not found: {cps_id} (looked in {cps_dir})")
     return json.loads(path.read_text())
