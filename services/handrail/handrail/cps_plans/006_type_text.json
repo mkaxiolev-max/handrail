@@ -1,0 +1,1 @@
+{"cps_id":"type_text","objective":"Type text","ops":[{"op":"ui.type","args":{"text":"${TEXT}"},"expect":{"typed":true}}]}
