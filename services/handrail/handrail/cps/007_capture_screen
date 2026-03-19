@@ -1,0 +1,1 @@
+{"cps_id":"capture_screen","objective":"Capture screen","ops":[{"op":"vision.capture","args":{"format":"png"},"expect":{"captured":true}}]}

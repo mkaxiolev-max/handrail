@@ -64,7 +64,7 @@ def list_cps() -> list[str]:
     cps_dir = _cps_dir()
     if not cps_dir.exists():
         return []
-    return sorted(p.stem for p in cps_dir.glob("*.json"))
+    return sorted(p.stem for p in cps_dir.glob("*"))
 
 
 def cat_cps(cps_id: str) -> dict:

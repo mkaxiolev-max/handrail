@@ -1,0 +1,1 @@
+{"cps_id":"click_coordinates","objective":"Click at coordinates","ops":[{"op":"ui.click","args":{"x":${CLICK_X},"y":${CLICK_Y},"button":"left"},"expect":{"clicked":true}}]}

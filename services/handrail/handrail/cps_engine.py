@@ -239,6 +239,23 @@ def _validate_expect(results: list, expect: dict) -> dict:
 # Main executor
 # ---------------------------------------------------------------------------
 
+OP_DISPATCH = {
+    "fs.pwd": _op_fs_pwd,
+    "fs.list": _op_fs_list,
+    "fs.read": _op_fs_read,
+    "git.status": _op_git_status,
+    "git.log": _op_git_log,
+    "docker.compose_ps": _op_docker_compose_ps,
+    "docker.compose_up": _op_docker_compose_up,
+    "http.get": _op_http_get,
+    "proc.run": _op_proc_run,
+    "app.focus": _op_app_focus,
+    "ui.click": _op_ui_click,
+    "ui.type": _op_ui_type,
+    "vision.capture": _op_vision_capture,
+    "fs.read_full": _op_fs_read_full,
+}
+
 class CPSExecutor:
     @staticmethod
     def execute(cps: dict, workspace: Path | None = None) -> dict:
@@ -322,3 +339,98 @@ class CPSExecutor:
             "result_digest": result_digest,
             "policy_profile": policy_profile_name or "default",
         }
+
+    @staticmethod
+    def handle_app_focus(args):
+        import subprocess
+        app_name = args.get("app_name")
+        try:
+            subprocess.run(["osascript", "-e", f'tell application "{app_name}" to activate'], timeout=5, check=True, capture_output=True)
+            return {"ok": True, "focused": True}
+        except:
+            return {"ok": False, "error": "focus_failed"}
+
+    @staticmethod
+    def handle_ui_click(args):
+        x, y = args.get("x", 0), args.get("y", 0)
+        import subprocess
+        try:
+            subprocess.run(["osascript", "-e", f'tell application "System Events" to click at {{{x}, {y}}}'], timeout=5, check=True, capture_output=True)
+            return {"ok": True, "clicked": True}
+        except:
+            return {"ok": False, "error": "click_failed"}
+
+    @staticmethod
+    def handle_ui_type(args):
+        text = args.get("text", "").replace('"', '\\"')
+        import subprocess
+        try:
+            subprocess.run(["osascript", "-e", f'tell application "System Events" to keystroke "{text}"'], timeout=5, check=True, capture_output=True)
+            return {"ok": True, "typed": True}
+        except:
+            return {"ok": False, "error": "type_failed"}
+
+    @staticmethod
+    def handle_vision_capture(args):
+        import subprocess, time
+        artifact_path = f"/Volumes/NSExternal/.run/boot/screen_{int(time.time()*1000)}.png"
+        try:
+            subprocess.run(["screencapture", "-x", artifact_path], timeout=5, check=True)
+            return {"ok": True, "captured": True, "artifact": artifact_path}
+        except:
+            return {"ok": False, "error": "capture_failed"}
+
+    @staticmethod
+    def handle_fs_read(args):
+        path = args.get("path")
+        try:
+            with open(path, 'r') as f:
+                content = f.read()
+            return {"ok": True, "read": True, "content": content, "length": len(content)}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+def _op_app_focus(args: dict, _policy: PolicyEngine) -> dict:
+    import subprocess
+    app_name = args.get("app_name")
+    try:
+        subprocess.run(["osascript", "-e", f'tell application "{app_name}" to activate'], timeout=5, check=True, capture_output=True)
+        return {"ok": True, "focused": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+def _op_ui_click(args: dict, _policy: PolicyEngine) -> dict:
+    import subprocess
+    x, y = args.get("x", 0), args.get("y", 0)
+    try:
+        subprocess.run(["osascript", "-e", f'tell application "System Events" to click at {{{x}, {y}}}'], timeout=5, check=True, capture_output=True)
+        return {"ok": True, "clicked": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+def _op_ui_type(args: dict, _policy: PolicyEngine) -> dict:
+    import subprocess
+    text = args.get("text", "").replace('"', '\\"')
+    try:
+        subprocess.run(["osascript", "-e", f'tell application "System Events" to keystroke "{text}"'], timeout=5, check=True, capture_output=True)
+        return {"ok": True, "typed": True}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+def _op_vision_capture(args: dict, _policy: PolicyEngine) -> dict:
+    import subprocess, time
+    artifact_path = f"/Volumes/NSExternal/.run/boot/screen_{int(time.time()*1000)}.png"
+    try:
+        subprocess.run(["screencapture", "-x", artifact_path], timeout=5, check=True)
+        return {"ok": True, "captured": True, "artifact": artifact_path}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+def _op_fs_read_full(args: dict, _policy: PolicyEngine) -> dict:
+    path = args.get("path")
+    try:
+        with open(path, 'r') as f:
+            content = f.read()
+        return {"ok": True, "read": True, "content": content, "length": len(content)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
