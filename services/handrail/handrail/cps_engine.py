@@ -249,11 +249,6 @@ OP_DISPATCH = {
     "docker.compose_up": _op_docker_compose_up,
     "http.get": _op_http_get,
     "proc.run": _op_proc_run,
-    "app.focus": _op_app_focus,
-    "ui.click": _op_ui_click,
-    "ui.type": _op_ui_type,
-    "vision.capture": _op_vision_capture,
-    "fs.read_full": _op_fs_read_full,
 }
 
 class CPSExecutor:
