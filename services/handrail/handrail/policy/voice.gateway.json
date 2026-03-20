@@ -1,0 +1,13 @@
+{
+  "name": "voice.gateway",
+  "allowed_paths": ["/tmp", "/var/tmp", "/Volumes/NSExternal"],
+  "allowed_programs": ["twilio-cli", "ffmpeg", "sox", "curl", "python3"],
+  "allow_mutation": false,
+  "voice_settings": {
+    "max_call_duration_sec": 300,
+    "record_format": "wav",
+    "transcription_engine": "aws-transcribe",
+    "tts_voice": "Polly.Matthew",
+    "authorized_yubikey": "26116460"
+  }
+}
