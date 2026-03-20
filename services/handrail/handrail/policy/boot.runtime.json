@@ -7,7 +7,17 @@
     "/var/tmp"
   ],
   "allowed_programs": [
-    "docker", "curl", "python3", "bash", "sh", "git", "pwd", "ls", "cat"
+    "docker",
+    "curl",
+    "python3",
+    "bash",
+    "sh",
+    "git",
+    "pwd",
+    "ls",
+    "cat",
+    "docker-compose",
+    "docker compose"
   ],
   "allow_mutation": true
 }
