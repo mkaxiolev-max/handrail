@@ -176,7 +176,7 @@ def v1_status():
         "run_dir": str(run_dir),
     }
     (RUNS_DIR / "latest").write_text(str(run_dir))
-    return JSONResponse(resp)
+    return JSONResponse(result)
 
 
 @app.post("/v1/stack/stop")
@@ -195,7 +195,7 @@ def v1_stack_stop():
         "run_dir": str(run_dir),
     }
     (RUNS_DIR / "latest").write_text(str(run_dir))
-    return JSONResponse(resp)
+    return JSONResponse(result)
 
 
 @app.post("/v1/boot/ez")
@@ -278,7 +278,7 @@ def v1_run(req: RunRequest):
     }
     (run_dir / "result.json").write_text(json.dumps(resp, indent=2))
     (RUNS_DIR / "latest").write_text(str(run_dir))
-    return JSONResponse(resp)
+    return JSONResponse(result)
 
 
 
@@ -371,7 +371,7 @@ def v1_task(req: TaskRequest):
     (RUNS_DIR / "latest").write_text(str(run_dir))
 
     if resp.get("ok"):
-        return JSONResponse(resp)
+        return JSONResponse(result)
     return JSONResponse(resp, status_code=400)
 
 @app.get("/v1/runs/latest")
