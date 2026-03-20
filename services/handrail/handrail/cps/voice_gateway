@@ -1,0 +1,1 @@
+{"cps_id":"voice_gateway","objective":"Twilio inbound call handler","policy_profile":"voice.gateway","ops":[{"op":"twilio.answer_call","args":{"timeout_sec":5}},{"op":"twilio.record_transcribe","args":{"max_duration_sec":60}},{"op":"ns.classify_intent","args":{"transcription":"{TRANSCRIPTION}"}},{"op":"twilio.speak","args":{"message":"{RESPONSE}"}}]}
