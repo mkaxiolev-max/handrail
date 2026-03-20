@@ -93,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
                     "ok": result.get("ok"),
                     "run_id": result.get("run_id"),
                     "run_dir": result.get("run_dir"),
+                    "results": result.get("results"),
                     "policy_profile": result.get("policy_profile"),
                     "metrics": result.get("metrics"),
                     "expect_passed": result.get("expect_result", {}).get("passed"),
