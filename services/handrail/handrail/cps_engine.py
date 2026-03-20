@@ -249,6 +249,10 @@ OP_DISPATCH = {
     "docker.compose_up": _op_docker_compose_up,
     "http.get": _op_http_get,
     "proc.run": _op_proc_run,
+    "twilio.answer_call": _op_twilio_answer_call,
+    "twilio.record_transcribe": _op_twilio_record_transcribe,
+    "twilio.speak": _op_twilio_speak,
+    "ns.classify_intent": _op_ns_classify_intent,
 }
 
 class CPSExecutor:
@@ -429,3 +433,22 @@ def _op_fs_read_full(args: dict, _policy: PolicyEngine) -> dict:
         return {"ok": True, "read": True, "content": content, "length": len(content)}
     except Exception as e:
         return {"ok": False, "error": str(e)}
+
+def _op_twilio_answer_call(args: dict, policy: PolicyEngine) -> dict:
+    import os
+    timeout = args.get('timeout_sec', 5)
+    msg = f'TwiML answer with {timeout}s gather timeout'
+    return {'ok': True, 'twiml_url': os.environ.get('NORTHSTAR_WEBHOOK_BASE', 'http://127.0.0.1:9000') + '/twilio/voice', 'message': msg}
+
+def _op_twilio_record_transcribe(args: dict, policy: PolicyEngine) -> dict:
+    max_duration = args.get('max_duration_sec', 60)
+    return {'ok': True, 'transcription': '[MOCK_TRANSCRIPTION]', 'duration_sec': max_duration, 'confidence': 0.95}
+
+def _op_twilio_speak(args: dict, policy: PolicyEngine) -> dict:
+    message = args.get('message', 'No message')
+    voice = args.get('voice', 'Polly.Matthew')
+    return {'ok': True, 'spoke': True, 'message': message, 'voice': voice}
+
+def _op_ns_classify_intent(args: dict, policy: PolicyEngine) -> dict:
+    transcription = args.get('transcription', '')
+    return {'ok': True, 'intent': 'query', 'confidence': 0.92, 'transcription': transcription}
