@@ -329,6 +329,8 @@ def ops_cps(req: CPSRequest):
     (run_dir / "cps_request.json").write_text(json.dumps(cps_dict, indent=2))
 
     result = CPSExecutor.execute(cps_dict, WORKSPACE)
+    from handrail.bk_core import apply_black_knight_protocol
+    result = apply_black_knight_protocol(cps_dict, result, run_id)
     result["run_id"] = run_id
     result["run_dir"] = str(run_dir)
 
