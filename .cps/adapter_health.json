@@ -1,0 +1,35 @@
+{
+  "cps_id": "adapter_health",
+  "objective": "verify handrail-adapter-macos is live and responding",
+  "policy_profile": "readonly.local",
+  "ops": [
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://host.docker.internal:9911/healthz",
+        "timeout_ms": 3000
+      }
+    },
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://host.docker.internal:9911/adapter/v1/run",
+        "json": { "method": "env.health", "params": {} },
+        "timeout_ms": 3000
+      }
+    },
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://host.docker.internal:9911/adapter/v1/run",
+        "json": { "method": "env.capabilities", "params": {} },
+        "timeout_ms": 3000
+      }
+    }
+  ],
+  "expect": {
+    "results[0].data.status_code": 200,
+    "results[1].data.status_code": 200,
+    "results[2].data.status_code": 200
+  }
+}
