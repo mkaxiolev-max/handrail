@@ -1,0 +1,13 @@
+{
+  "cps_id": "omega_boot",
+  "objective": "Full Sovereign System Initialization (NSS_FIXED_BOOT)",
+  "policy_profile": "boot.runtime",
+  "ops": [
+    {"op": "docker.compose_up", "args": {"service": "ns"}},
+    {"op": "ns.initialize_intent_router", "args": {"enable_cps_only": true}},
+    {"op": "ns.classify_intent", "args": {"intent": "system_check"}},
+    {"op": "twilio.answer_call", "args": {"timeout_sec": 5}},
+    {"op": "ns.disable_shell_access", "args": {"block_direct_calls": true}}
+  ],
+  "expect": {"ok": true}
+}

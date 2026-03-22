@@ -17,7 +17,8 @@
     "ls",
     "cat",
     "docker-compose",
-    "docker compose"
+    "docker compose",
+    "ns"
   ],
   "allow_mutation": true
 }
