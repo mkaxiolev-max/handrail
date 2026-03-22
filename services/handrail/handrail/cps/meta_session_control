@@ -1,0 +1,27 @@
+{
+  "cps_id": "meta_session_control",
+  "version": "omega-v7.0-formalized",
+  "purpose": "Govern LLM-directed coding sessions with deterministic mutation bounds",
+  "schema": {
+    "input_state_hash": "sha256(session_context)",
+    "uncertainty_confidence": "float(0.0-1.0)",
+    "blast_radius_penalty": "float(0.0-1.0)",
+    "fail_surface": "str(identifier of failure mode)",
+    "root_cause_confidence": "float(0.0-1.0)",
+    "active_blocker_count": "int(>= 0)",
+    "route_quality_memory": "dict(repeat_detection_history)",
+    "section_freshness": "dict(field_name -> timestamp)",
+    "mutation_packets": [
+      {
+        "operation": "str(description)",
+        "state_before": "dict(snapshot)",
+        "state_after": "dict(snapshot)",
+        "evidence_path": "str(proof_location)"
+      }
+    ],
+    "output_state_hash": "sha256(result_context)",
+    "transition_valid": "bool(all_constraints_satisfied)"
+  },
+  "policy_profile": "readonly.local",
+  "ops": []
+}

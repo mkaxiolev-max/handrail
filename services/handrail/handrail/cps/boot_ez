@@ -1,0 +1,14 @@
+{
+  "cps_id": "boot_ez",
+  "version": "1.0",
+  "purpose": "Deterministic startup: Handrail → Adapter → NS → Continuum (constitutional order)",
+  "policy_profile": "boot.runtime",
+  "ops": [
+    {"op": "proc.run", "args": {"cmd": "docker compose up -d handrail", "timeout_ms": 60000}},
+    {"op": "http.get", "args": {"url": "http://127.0.0.1:8011/healthz", "timeout_ms": 3000}},
+    {"op": "proc.run", "args": {"cmd": "docker compose up -d adapter", "timeout_ms": 30000}},
+    {"op": "proc.run", "args": {"cmd": "docker compose up -d ns", "timeout_ms": 30000}},
+    {"op": "proc.run", "args": {"cmd": "docker compose up -d continuum", "timeout_ms": 30000}},
+    {"op": "http.get", "args": {"url": "http://127.0.0.1:8011/healthz", "timeout_ms": 3000}}
+  ]
+}
