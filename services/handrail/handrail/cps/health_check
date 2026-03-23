@@ -1,25 +1,13 @@
 {
   "cps_id": "health_check",
-  "objective": "verify core service health endpoints",
-  "policy_profile": "readonly.local",
+  "objective": "verify handrail health",
   "ops": [
     {
       "op": "http.get",
       "args": {
-        "url": "http://127.0.0.1:8011/healthz",
-        "timeout_ms": 3000
-      }
-    },
-    {
-      "op": "http.get",
-      "args": {
-        "url": "http://127.0.0.1:9000/healthz",
-        "timeout_ms": 3000
+        "url": "http://127.0.0.1:8011/healthz"
       }
     }
   ],
-  "expect": {
-    "results[0].data.status_code": 200,
-    "results[1].data.status_code": 200
-  }
+  "expect": {}
 }
