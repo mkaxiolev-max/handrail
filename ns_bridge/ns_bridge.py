@@ -186,3 +186,35 @@ def cmd_replay():
     }
 
 # Update main to support inspect/replay/list
+
+def task_precommit_check():
+    """Check if safe to commit"""
+    print("[ns] TASK: precommit_check", file=sys.stderr)
+    
+    # Step 1: repo status
+    s = execute_intent("status")
+    if not s["ok"]:
+        return {"task": "precommit_check", "ok": False, "safe_to_commit": False, "reason": "repo status failed"}
+    
+    # Step 2: git inspect
+    g = execute_intent("git_inspect")
+    if not g["ok"]:
+        return {"task": "precommit_check", "ok": False, "safe_to_commit": False, "reason": "git inspect failed"}
+    
+    # Step 3: runtime health (optional)
+    h = execute_intent("health")
+    runtime_ok = h["ok"]
+    
+    # Decision logic
+    safe = s["ok"] and g["ok"]
+    
+    return {
+        "task": "precommit_check",
+        "ok": True,
+        "safe_to_commit": safe,
+        "repo_status": "clean" if s["ok"] else "issues",
+        "git_state": "inspected" if g["ok"] else "error",
+        "runtime_health": "ok" if runtime_ok else "degraded",
+        "recommendation": "proceed with commit" if safe else "fix issues first",
+    }
+
