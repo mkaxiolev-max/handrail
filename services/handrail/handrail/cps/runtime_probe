@@ -1,0 +1,20 @@
+{
+  "cps_id": "runtime_probe",
+  "objective": "verify runtime file mutation works",
+  "ops": [
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://127.0.0.1:8011/healthz"
+      }
+    },
+    {
+      "op": "proc.run_readonly",
+      "args": {
+        "command": "pwd",
+        "cwd": "/app/handrail"
+      }
+    }
+  ],
+  "expect": {}
+}

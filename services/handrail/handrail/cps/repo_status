@@ -1,0 +1,21 @@
+{
+  "cps_id": "repo_status",
+  "objective": "inspect handrail runtime state",
+  "ops": [
+    {
+      "op": "proc.run_readonly",
+      "args": {
+        "command": "pwd",
+        "cwd": "/app/handrail"
+      }
+    },
+    {
+      "op": "proc.run_readonly",
+      "args": {
+        "command": "ls",
+        "cwd": "/app/handrail"
+      }
+    }
+  ],
+  "expect": {}
+}

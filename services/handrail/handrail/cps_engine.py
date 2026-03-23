@@ -17,6 +17,143 @@ class PolicyEngine:
         prog_name = program.split()[0]
         return any(prog_name.endswith(allowed) for allowed in PolicyEngine.ALLOWED_PROGRAMS)
 
+
+
+def _op_fs_exists(args: Dict[str, Any]) -> Dict[str, Any]:
+    path = args.get("path", "")
+    try:
+        exists = os.path.exists(path)
+        return {"ok": True, "data": {"path": path, "exists": exists}, "signal": 0, "latency_ms": 1, "error": None}
+    except Exception as e:
+        return {"ok": False, "data": None, "signal": -1, "latency_ms": 0, "error": str(e)}
+
+def _op_fs_list(args: Dict[str, Any]) -> Dict[str, Any]:
+    path = args.get("path", ".")
+    try:
+        entries = sorted(os.listdir(path))
+        return {"ok": True, "data": {"path": path, "entries": entries}, "signal": 0, "latency_ms": 5, "error": None}
+    except Exception as e:
+        return {"ok": False, "data": None, "signal": -1, "latency_ms": 0, "error": str(e)}
+
+
+
+READONLY_ALLOWLIST = {
+    "pwd": ["pwd"],
+    "ls": ["ls"],
+    "git_status": ["git", "status", "--short", "--branch"],
+    "git_log": ["git", "log", "--oneline", "-5"],
+}
+
+
+
+FS_WRITE_PREFIXES = [
+    "/app/handrail/cps/",
+]
+
+def _op_fs_write(args: Dict[str, Any]) -> Dict[str, Any]:
+    path = args.get("path", "")
+    content = args.get("content", "")
+    overwrite = bool(args.get("overwrite", False))
+
+    if not any(path.startswith(prefix) for prefix in FS_WRITE_PREFIXES):
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"Path not allowed for write: {path}"
+        }
+
+    try:
+        import os, time
+        start = time.time()
+
+        if os.path.exists(path) and not overwrite:
+            return {
+                "ok": False,
+                "data": None,
+                "signal": -1,
+                "latency_ms": 0,
+                "error": f"File exists and overwrite=false: {path}"
+            }
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        elapsed = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": True,
+            "data": {
+                "path": path,
+                "bytes_written": len(content.encode("utf-8"))
+            },
+            "signal": 0,
+            "latency_ms": elapsed,
+            "error": None
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
+def _op_proc_run_readonly(args: Dict[str, Any]) -> Dict[str, Any]:
+    import subprocess, time
+    command = args.get("command", "")
+    cwd = args.get("cwd", "/app")
+    if command not in READONLY_ALLOWLIST:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"Command not allowed: {command}"
+        }
+    try:
+        start = time.time()
+        cp = subprocess.run(
+            READONLY_ALLOWLIST[command],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        elapsed = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": cp.returncode == 0,
+            "data": {
+                "command": command,
+                "cwd": cwd,
+                "stdout": cp.stdout,
+                "stderr": cp.stderr,
+                "returncode": cp.returncode
+            },
+            "signal": cp.returncode,
+            "latency_ms": elapsed,
+            "error": None if cp.returncode == 0 else (cp.stderr or f"returncode={cp.returncode}")
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
+def _op_fs_read(args: Dict[str, Any]) -> Dict[str, Any]:
+    path = args.get("path", "")
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            content = f.read()
+        return {"ok": True, "data": {"path": path, "content": content}, "signal": 0, "latency_ms": 10, "error": None}
+    except Exception as e:
+        return {"ok": False, "data": None, "signal": -1, "latency_ms": 0, "error": str(e)}
+
 def _op_http_get(args: Dict[str, Any]) -> Dict[str, Any]:
     import urllib.request, json as json_module
     url = args.get("url", "")
@@ -66,6 +203,116 @@ def _op_fs_list(args: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as e:
         return {"ok": False, "data": None, "signal": -1, "latency_ms": 0, "error": str(e)}
 
+
+
+READONLY_ALLOWLIST = {
+    "pwd": ["pwd"],
+    "ls": ["ls"],
+    "git_status": ["git", "status", "--short", "--branch"],
+    "git_log": ["git", "log", "--oneline", "-5"],
+}
+
+
+
+FS_WRITE_PREFIXES = [
+    "/app/handrail/cps/",
+]
+
+def _op_fs_write(args: Dict[str, Any]) -> Dict[str, Any]:
+    path = args.get("path", "")
+    content = args.get("content", "")
+    overwrite = bool(args.get("overwrite", False))
+
+    if not any(path.startswith(prefix) for prefix in FS_WRITE_PREFIXES):
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"Path not allowed for write: {path}"
+        }
+
+    try:
+        import os, time
+        start = time.time()
+
+        if os.path.exists(path) and not overwrite:
+            return {
+                "ok": False,
+                "data": None,
+                "signal": -1,
+                "latency_ms": 0,
+                "error": f"File exists and overwrite=false: {path}"
+            }
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        elapsed = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": True,
+            "data": {
+                "path": path,
+                "bytes_written": len(content.encode("utf-8"))
+            },
+            "signal": 0,
+            "latency_ms": elapsed,
+            "error": None
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
+def _op_proc_run_readonly(args: Dict[str, Any]) -> Dict[str, Any]:
+    import subprocess, time
+    command = args.get("command", "")
+    cwd = args.get("cwd", "/app")
+    if command not in READONLY_ALLOWLIST:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"Command not allowed: {command}"
+        }
+    try:
+        start = time.time()
+        cp = subprocess.run(
+            READONLY_ALLOWLIST[command],
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        elapsed = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": cp.returncode == 0,
+            "data": {
+                "command": command,
+                "cwd": cwd,
+                "stdout": cp.stdout,
+                "stderr": cp.stderr,
+                "returncode": cp.returncode
+            },
+            "signal": cp.returncode,
+            "latency_ms": elapsed,
+            "error": None if cp.returncode == 0 else (cp.stderr or f"returncode={cp.returncode}")
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
 def _op_fs_read(args: Dict[str, Any]) -> Dict[str, Any]:
     path = args.get("path", "")
     if not PolicyEngine.is_path_allowed(path):
@@ -99,10 +346,17 @@ def _op_git_log(args: Dict[str, Any]) -> Dict[str, Any]:
 
 OP_DISPATCH = {
     "http.get": _op_http_get,
+    "fs.exists": _op_fs_exists,
+    "fs.list": _op_fs_list,
+    "fs.read": _op_fs_read,
+    "proc.run_readonly": _op_proc_run_readonly,
+    "fs.write": _op_fs_write,
     "proc.run": _op_proc_run,
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
     "fs.read": _op_fs_read,
+    "proc.run_readonly": _op_proc_run_readonly,
+    "fs.write": _op_fs_write,
     "git.status": _op_git_status,
     "git.log": _op_git_log,
 }
