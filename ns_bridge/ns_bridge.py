@@ -139,3 +139,50 @@ def execute_with_policy(task):
     return summary
 
 # Update main to use execute_with_policy
+
+# ===== OPERATOR SURFACES =====
+def cmd_list():
+    """List available tasks"""
+    tasks = {
+        "system_check": "Health + status + probe",
+        "cps_introspect": "Catalog + git inspect",
+        "debug_failure": "Investigate last failure",
+        "repo_status": "Repo status + listing",
+        "runtime_probe": "Runtime health + process",
+        "health": "API health check",
+    }
+    print("AVAILABLE TASKS:", file=sys.stderr)
+    for task, desc in tasks.items():
+        print(f"  {task:20} {desc}", file=sys.stderr)
+
+def cmd_inspect(run_id=None):
+    """Inspect last run"""
+    load_memory()
+    if not run_id: run_id = NS_MEMORY.get("last_run_id")
+    if not run_id: return {"error": "no last run"}
+    return {
+        "run_id": run_id,
+        "intent": NS_MEMORY["last_intent"],
+        "cps_id": NS_MEMORY["last_cps_id"],
+        "ok": NS_MEMORY["last_ok"],
+        "digest": NS_MEMORY["last_digest"],
+        "failed_ops": NS_MEMORY["failed_ops"],
+        "next_action": NS_MEMORY["next_recommended_action"],
+    }
+
+def cmd_replay():
+    """Replay last run"""
+    load_memory()
+    if not NS_MEMORY["last_intent"]:
+        return {"error": "no last run to replay"}
+    task = NS_MEMORY["last_intent"]
+    summary = execute_with_policy(task)
+    return {
+        "replayed": task,
+        "ok": summary["ok"],
+        "deterministic": summary["result_digest"] == NS_MEMORY["last_digest"],
+        "new_digest": summary["result_digest"],
+        "last_digest": NS_MEMORY["last_digest"],
+    }
+
+# Update main to support inspect/replay/list
