@@ -1,0 +1,9 @@
+{
+  "cps_id": "git_inspect",
+  "objective": "inspect git status and recent log",
+  "ops": [
+    {"op": "git.status", "args": {"repo": "/app/handrail"}},
+    {"op": "git.log", "args": {"repo": "/app/handrail"}}
+  ],
+  "expect": {}
+}

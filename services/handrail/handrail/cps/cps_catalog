@@ -1,0 +1,10 @@
+{
+  "cps_id": "cps_catalog",
+  "objective": "list and inspect available CPS definitions",
+  "ops": [
+    {"op": "fs.list", "args": {"path": "/app/handrail/cps"}},
+    {"op": "fs.read", "args": {"path": "/app/handrail/cps/health_check"}},
+    {"op": "fs.read", "args": {"path": "/app/handrail/cps/runtime_probe"}}
+  ],
+  "expect": {}
+}
