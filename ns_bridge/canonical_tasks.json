@@ -1,0 +1,32 @@
+{
+  "precommit_check": {
+    "description": "git status + diff + log before commit",
+    "commands": ["git status --short --branch", "git diff --stat", "git log --oneline -5"],
+    "cps": "repo_status + git_inspect chain",
+    "output": "safe_to_commit: true/false"
+  },
+  "system_check": {
+    "description": "handrail health + runtime + repo",
+    "commands": ["curl healthz", "pwd", "ls"],
+    "cps": "health_check + runtime_probe + repo_status chain",
+    "output": "system_ok: true/false"
+  },
+  "cps_catalog": {
+    "description": "list available CPS + read key ones",
+    "commands": ["ls /app/handrail/cps", "cat /app/handrail/cps/*"],
+    "cps": "cps_catalog CPS",
+    "output": "available tasks + definitions"
+  },
+  "test_smoke": {
+    "description": "run narrow pytest target",
+    "commands": ["python3 -m pytest tests/ -k test_health"],
+    "cps": "proc.run_readonly for pytest (future op)",
+    "output": "tests passed/failed"
+  },
+  "session_start": {
+    "description": "daily opener: pwd + ls + status + health",
+    "commands": ["pwd", "ls", "git status", "curl healthz"],
+    "cps": "repo_status + health_check + runtime_probe chain",
+    "output": "ready_to_work: true/false"
+  }
+}
