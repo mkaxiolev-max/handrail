@@ -107,3 +107,35 @@ def main():
     else: print(f"ERROR: Unknown command {cmd}", file=sys.stderr); sys.exit(1)
 
 if __name__ == "__main__": main()
+
+# ===== DECISION POLICY =====
+def classify_failure(failed_ops, error_msg=None):
+    if not failed_ops: return "unknown"
+    for op in failed_ops:
+        if "connection refused" in str(op): return "connection_refused"
+        if "policy denied" in str(op): return "policy_denied"
+        if "not found" in str(op): return "not_found"
+    return "op_failed"
+
+def decide_recovery(task, ok, failed_ops, failure_type=None):
+    if ok: return {"action": "done", "reason": "task succeeded"}
+    if not failed_ops: return {"action": "stop", "reason": "task failed, no ops to debug"}
+    if failure_type == "connection_refused": return {"action": "retry_once", "reason": "connection issue, retry"}
+    if failure_type == "policy_denied": return {"action": "stop_surface_reason", "reason": "policy enforcement, cannot proceed"}
+    if failure_type == "not_found": return {"action": "debug_failure", "reason": "resource not found, inspect"}
+    return {"action": "debug_failure", "reason": "op failed, run debug"}
+
+def execute_with_policy(task):
+    load_memory()
+    summary = execute_intent(task)
+    if not summary["cps_id"] in CPS_MAP: summary["cps_id"] = task
+    remember(task, summary.get("cps_id"), summary["run_id"], summary["ok"], summary["result_digest"], summary["failed_ops"])
+    failure_type = classify_failure(summary["failed_ops"])
+    recovery = decide_recovery(task, summary["ok"], summary["failed_ops"], failure_type)
+    summary["failure_classification"] = failure_type
+    summary["recovery_decision"] = recovery
+    NS_MEMORY["decision_history"].append({"task": task, "ok": summary["ok"], "decision": recovery["action"], "timestamp": datetime.now(datetime.timezone.utc).isoformat()})
+    save_memory()
+    return summary
+
+# Update main to use execute_with_policy
