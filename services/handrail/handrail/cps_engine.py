@@ -145,6 +145,64 @@ def _op_proc_run_readonly(args: Dict[str, Any]) -> Dict[str, Any]:
             "error": str(e)
         }
 
+
+
+FS_WRITE_PREFIXES = [
+    "/app/handrail/cps/",
+    "/Users/axiolevns/axiolev_runtime/services/handrail/handrail/cps/",
+]
+
+def _op_fs_write_text(args: Dict[str, Any]) -> Dict[str, Any]:
+    import os, time
+    path = args.get("path", "")
+    content = args.get("content", "")
+    overwrite = bool(args.get("overwrite", False))
+
+    if not any(path.startswith(prefix) for prefix in FS_WRITE_PREFIXES):
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"path_not_allowed:{path}"
+        }
+
+    try:
+        start = time.time()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        if os.path.exists(path) and not overwrite:
+            return {
+                "ok": False,
+                "data": None,
+                "signal": -1,
+                "latency_ms": 0,
+                "error": f"exists_overwrite_false:{path}"
+            }
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        latency = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": True,
+            "data": {
+                "path": path,
+                "bytes_written": len(content.encode("utf-8"))
+            },
+            "signal": 0,
+            "latency_ms": latency,
+            "error": None
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
 def _op_fs_read(args: Dict[str, Any]) -> Dict[str, Any]:
     path = args.get("path", "")
     try:
@@ -313,6 +371,64 @@ def _op_proc_run_readonly(args: Dict[str, Any]) -> Dict[str, Any]:
             "error": str(e)
         }
 
+
+
+FS_WRITE_PREFIXES = [
+    "/app/handrail/cps/",
+    "/Users/axiolevns/axiolev_runtime/services/handrail/handrail/cps/",
+]
+
+def _op_fs_write_text(args: Dict[str, Any]) -> Dict[str, Any]:
+    import os, time
+    path = args.get("path", "")
+    content = args.get("content", "")
+    overwrite = bool(args.get("overwrite", False))
+
+    if not any(path.startswith(prefix) for prefix in FS_WRITE_PREFIXES):
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": f"path_not_allowed:{path}"
+        }
+
+    try:
+        start = time.time()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+
+        if os.path.exists(path) and not overwrite:
+            return {
+                "ok": False,
+                "data": None,
+                "signal": -1,
+                "latency_ms": 0,
+                "error": f"exists_overwrite_false:{path}"
+            }
+
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        latency = round((time.time() - start) * 1000, 1)
+        return {
+            "ok": True,
+            "data": {
+                "path": path,
+                "bytes_written": len(content.encode("utf-8"))
+            },
+            "signal": 0,
+            "latency_ms": latency,
+            "error": None
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "data": None,
+            "signal": -1,
+            "latency_ms": 0,
+            "error": str(e)
+        }
+
 def _op_fs_read(args: Dict[str, Any]) -> Dict[str, Any]:
     path = args.get("path", "")
     if not PolicyEngine.is_path_allowed(path):
@@ -349,12 +465,14 @@ OP_DISPATCH = {
     "fs.exists": _op_fs_exists,
     "fs.list": _op_fs_list,
     "fs.read": _op_fs_read,
+    "fs.write_text": _op_fs_write_text,
     "proc.run_readonly": _op_proc_run_readonly,
     "fs.write": _op_fs_write,
     "proc.run": _op_proc_run,
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
     "fs.read": _op_fs_read,
+    "fs.write_text": _op_fs_write_text,
     "proc.run_readonly": _op_proc_run_readonly,
     "fs.write": _op_fs_write,
     "git.status": _op_git_status,

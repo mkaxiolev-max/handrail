@@ -17,26 +17,6 @@ services:
       retries: 30
       start_period: 5s
 
-  adapter:
-    build:
-      context: ./services/handrail-adapter-macos
-      dockerfile: Dockerfile
-    container_name: axiolev_runtime-adapter-1
-    ports:
-      - "9911:9911"
-    environment:
-      - ADAPTER_ARTIFACTS_ROOT=/app/artifacts
-    volumes:
-      - adapter_artifacts:/app/artifacts
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:9911/healthz"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-
   ns:
     build: ./services/ns
     ports:
@@ -70,6 +50,3 @@ services:
       timeout: 3s
       retries: 30
       start_period: 10s
-
-volumes:
-  adapter_artifacts:
