@@ -1,45 +1,60 @@
-import hashlib,json,os,time
-from datetime import datetime
-from pathlib import Path
-from fastapi import FastAPI,Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List,Dict,Any,Optional
+from typing import Any, Dict, List, Optional
+import subprocess
 
-app=FastAPI(title="Handrail Core")
-RUNS_DIR=Path("/app/handrail/.run")
-WORKSPACE=Path("/app/handrail/workspace")
+app = FastAPI(title="Handrail Core")
+
 
 class CPSRequest(BaseModel):
-    cps_id:str
-    objective:str
-    ops:List[Dict[str,Any]]
-    expect:Optional[Dict[str,Any]]={}
+    cps_id: str
+    objective: str
+    ops: List[Dict[str, Any]]
+    expect: Optional[Dict[str, Any]] = {}
 
-def now_id(): return datetime.utcnow().strftime("%Y%m%d_%H%M%S")
 
 @app.get("/healthz")
-def health(): return {"status":"online"}
+def health():
+    return {"status": "ok"}
+
 
 @app.post("/ops/cps")
-def ops_cps(req:CPSRequest):
-    from handrail.cps_engine import CPSExecutor
-    run_id=now_id()
-    run_dir=RUNS_DIR/run_id
-    run_dir.mkdir(parents=True,exist_ok=True)
-    cps_dict=req.dict()
-    result=CPSExecutor.execute(cps_dict,WORKSPACE)
+def ops_cps(req: CPSRequest):
     try:
-        _blob=json.dumps(cps_dict,sort_keys=True).encode()
-        _h=hashlib.sha256(_blob).hexdigest()
-        result["identity"]={"input_hash":_h,"timestamp":datetime.utcnow().isoformat()}
-        _lp="/app/handrail/ledger_chain.json"
-        _ph="0"*64
-        if os.path.exists(_lp):
-            with open(_lp,"r") as f: _ph=json.load(f).get("last_hash",_ph)
-        _ch=hashlib.sha256((_ph+_h).encode()).hexdigest()
-        result["ledger"]={"prev_hash":_ph,"hash":_ch}
-        with open(_lp,"w") as f: json.dump({"last_hash":_ch,"run_id":run_id},f)
-    except Exception as e: result["bk_error"]=str(e)
-    result.update({"run_id":run_id,"run_dir":str(run_dir)})
-    return JSONResponse(result)
+        results = []
+
+        for op in req.ops:
+            if op.get("op") == "proc.run_readonly":
+                cmd = op.get("args", {}).get("command")
+
+                if cmd == "pwd":
+                    cp = subprocess.run(["pwd"], capture_output=True, text=True)
+                    results.append({
+                        "ok": cp.returncode == 0,
+                        "stdout": cp.stdout,
+                        "stderr": cp.stderr
+                    })
+                else:
+                    results.append({
+                        "ok": False,
+                        "error": f"not allowed: {cmd}"
+                    })
+            else:
+                results.append({
+                    "ok": False,
+                    "error": f"unknown op: {op.get('op')}"
+                })
+
+        return JSONResponse({
+            "ok": True,
+            "cps_id": req.cps_id,
+            "results": results
+        })
+
+    except Exception as e:
+        return JSONResponse({
+            "ok": False,
+            "error": str(e),
+            "class": "server_exception"
+        })
