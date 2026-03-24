@@ -1,0 +1,7 @@
+{
+  "cps_id": "pytest_check",
+  "objective": "run tests",
+  "ops": [
+    {"op": "pytest.run", "args": {}}
+  ]
+}

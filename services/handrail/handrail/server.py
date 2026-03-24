@@ -19,32 +19,49 @@ def health():
     return {"status": "ok"}
 
 
+def run(cmd):
+    try:
+        cp = subprocess.run(cmd, capture_output=True, text=True)
+        return {
+            "ok": cp.returncode == 0,
+            "stdout": cp.stdout,
+            "stderr": cp.stderr,
+            "code": cp.returncode
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 @app.post("/ops/cps")
 def ops_cps(req: CPSRequest):
     try:
         results = []
 
         for op in req.ops:
-            if op.get("op") == "proc.run_readonly":
-                cmd = op.get("args", {}).get("command")
+            name = op.get("op")
+            args = op.get("args", {})
+
+            if name == "proc.run_readonly":
+                cmd = args.get("command")
 
                 if cmd == "pwd":
-                    cp = subprocess.run(["pwd"], capture_output=True, text=True)
-                    results.append({
-                        "ok": cp.returncode == 0,
-                        "stdout": cp.stdout,
-                        "stderr": cp.stderr
-                    })
+                    results.append(run(["pwd"]))
+                elif cmd == "ls":
+                    results.append(run(["ls"]))
                 else:
-                    results.append({
-                        "ok": False,
-                        "error": f"not allowed: {cmd}"
-                    })
+                    results.append({"ok": False, "error": f"not allowed: {cmd}"})
+
+            elif name == "pytest.run":
+                results.append(run(["pytest", "-q"]))
+
+            elif name == "docker.ps":
+                results.append(run(["docker", "ps"]))
+
+            elif name == "logs.tail":
+                results.append(run(["docker", "logs", "--tail", "50", "axiolev_runtime-handrail-1"]))
+
             else:
-                results.append({
-                    "ok": False,
-                    "error": f"unknown op: {op.get('op')}"
-                })
+                results.append({"ok": False, "error": f"unknown op: {name}"})
 
         return JSONResponse({
             "ok": True,
