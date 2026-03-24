@@ -2,7 +2,7 @@ import json
 import sys
 import urllib.request
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 HANDRAIL_URL = "http://127.0.0.1:8011/ops/cps"
 CPS_DIR = Path("services/handrail/handrail/cps")
@@ -16,6 +16,9 @@ ATOMIC = {
     "git": "git_inspect",
     "precommit": "precommit_check",
     "pwd": "pwd_check",
+    "ls": "ls_check",
+    "pytest": "pytest_check",
+    "docker": "docker_check",
     "pytest": "pytest_smoke",
     "docker": "docker_status",
     "logs": "recent_logs",
@@ -30,7 +33,7 @@ COMPOSITES = {
 }
 
 def now():
-    return datetime.utcnow().isoformat() + "Z"
+    return datetime.now(timezone.utc).isoformat() + "Z"
 
 def ensure_parent(path: Path):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -294,6 +297,9 @@ def resolve_intent(raw: str):
         (["probe"], "probe"),
         (["git"], "git"),
         (["pwd"], "pwd"),
+        (["ls"], "ls"),
+        (["pytest"], "pytest"),
+        (["docker"], "docker"),
         (["pytest"], "pytest"),
         (["docker"], "docker"),
         (["logs"], "logs"),
