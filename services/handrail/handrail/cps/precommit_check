@@ -1,0 +1,26 @@
+{
+  "cps_id": "precommit_check",
+  "objective": "inspect repo before commit",
+  "ops": [
+    {
+      "op": "git.status",
+      "args": {
+        "repo": "/Users/axiolevns/axiolev_runtime"
+      }
+    },
+    {
+      "op": "git.log",
+      "args": {
+        "repo": "/Users/axiolevns/axiolev_runtime",
+        "count": 5
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://127.0.0.1:8011/healthz"
+      }
+    }
+  ],
+  "expect": {}
+}

@@ -21,6 +21,7 @@ COMPOSITES = {
     "system_check": ["health", "status", "probe"],
     "cps_introspect": ["catalog", "git"],
     "precommit_full": ["health", "status", "precommit"],
+    "session_start": ["health", "status", "catalog"],
 }
 
 def now():
@@ -279,25 +280,63 @@ def resolve_intent(raw: str):
         (["debug"], "debug_failure"),
         (["failure"], "debug_failure"),
         (["precommit"], "precommit_full"),
+        (["session", "start"], "session_start"),
+        (["start", "session"], "session_start"),
+        (["open", "session"], "session_start"),
         (["before commit"], "precommit_full"),
         (["health"], "health"),
         (["status"], "status"),
         (["probe"], "probe"),
         (["git"], "git"),
+        (["replay", "compare"], "replay_compare"),
+        (["compare", "replay"], "replay_compare"),
         (["memory"], "memory"),
         (["inspect"], "inspect"),
         (["replay"], "replay"),
         (["list"], "list"),
+        (["replay", "compare"], "replay_compare"),
+        (["compare", "replay"], "replay_compare"),
     ]
 
     for needles, target in rules:
         if all(n in text for n in needles):
             return target
 
-    if text in ATOMIC or text in COMPOSITES or text in {"debug_failure", "list", "inspect", "memory", "replay"}:
+    if text in ATOMIC or text in COMPOSITES or text in {"debug_failure", "list", "inspect", "memory", "replay", "replay_compare"}:
         return text
 
     return None
+
+
+
+def replay_compare():
+    mem = load_memory()
+    last = mem.get("last_intent")
+    last_digest = mem.get("last_digest")
+    if not last:
+        return {"ok": False, "error": "no_last_intent"}
+
+    if last in {"memory", "inspect", "list", "replay", "replay_compare"}:
+        return {"ok": False, "error": f"non_replayable_intent:{last}"}
+
+    out = dispatch(last)
+    if isinstance(out, dict) and "steps" in out:
+        step_summaries = [s["summary"] for s in out["steps"]]
+        new_digest = step_summaries[-1].get("result_digest") if step_summaries else None
+    elif isinstance(out, dict) and "summary" in out:
+        new_digest = out["summary"].get("result_digest")
+    else:
+        new_digest = None
+
+    return {
+        "intent": "replay_compare",
+        "replayed_intent": last,
+        "previous_digest": last_digest,
+        "new_digest": new_digest,
+        "deterministic_match": (last_digest == new_digest and last_digest is not None),
+        "output": out,
+        "timestamp": now(),
+    }
 
 def dispatch(intent: str):
     if intent in ATOMIC:
@@ -314,6 +353,8 @@ def dispatch(intent: str):
         return inspect_last()
     if intent == "replay":
         return replay_last()
+    if intent == "replay_compare":
+        return replay_compare()
     return {
         "ok": False,
         "error": f"unknown_intent:{intent}",
@@ -335,7 +376,7 @@ def main():
     if isinstance(out, dict) and ("steps" in out or "cps_name" in out):
         mem = update_memory_from_output(out)
         envelope = {
-            "intent": intent,
+            "intent": out.get("intent", intent) if isinstance(out, dict) else intent,
             "output": out,
             "memory": {
                 "last_intent": mem.get("last_intent"),
