@@ -15,6 +15,10 @@ ATOMIC = {
     "catalog": "cps_catalog",
     "git": "git_inspect",
     "precommit": "precommit_check",
+    "pwd": "pwd_check",
+    "pytest": "pytest_smoke",
+    "docker": "docker_status",
+    "logs": "recent_logs",
 }
 
 COMPOSITES = {
@@ -22,6 +26,7 @@ COMPOSITES = {
     "cps_introspect": ["catalog", "git"],
     "precommit_full": ["health", "status", "precommit"],
     "session_start": ["health", "status", "catalog"],
+    "dev_check": ["health", "docker", "pytest", "logs"],
 }
 
 def now():
@@ -288,6 +293,11 @@ def resolve_intent(raw: str):
         (["status"], "status"),
         (["probe"], "probe"),
         (["git"], "git"),
+        (["pwd"], "pwd"),
+        (["pytest"], "pytest"),
+        (["docker"], "docker"),
+        (["logs"], "logs"),
+        (["dev", "check"], "dev_check"),
         (["replay", "compare"], "replay_compare"),
         (["compare", "replay"], "replay_compare"),
         (["memory"], "memory"),
@@ -360,6 +370,18 @@ def dispatch(intent: str):
         "error": f"unknown_intent:{intent}",
         "known_intents": list_tasks(),
     }
+
+
+
+def safe_safe_execute_cps(cps_id: str):
+    try:
+        return safe_execute_cps(cps_id)
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": str(e),
+            "cps_id": cps_id
+        }
 
 def main():
     raw_intent = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "list"
