@@ -1,0 +1,14 @@
+{
+  "cps_id": "recent_logs",
+  "objective": "inspect recent handrail run artifacts",
+  "ops": [
+    {
+      "op": "proc.run_readonly",
+      "args": {
+        "command": "recent_handrail_logs",
+        "cwd": "/app"
+      }
+    }
+  ],
+  "expect": {}
+}

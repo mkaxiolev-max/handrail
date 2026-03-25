@@ -1,0 +1,14 @@
+{
+  "cps_id": "pytest_smoke",
+  "objective": "run smoke tests",
+  "ops": [
+    {
+      "op": "proc.run_readonly",
+      "args": {
+        "command": "pytest_smoke",
+        "cwd": "/app"
+      }
+    }
+  ],
+  "expect": {}
+}
