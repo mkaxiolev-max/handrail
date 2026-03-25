@@ -1,0 +1,15 @@
+ls|list_files|path:.
+pwd|show_pwd|
+git status|proc_run|cmd:git status
+docker ps|proc_run|cmd:docker ps
+curl healthz|http_get|url:http://127.0.0.1:8011/healthz
+grep text file|proc_run|cmd:grep text file
+cat file|read_file|path:file
+find . -name X|proc_run|cmd:find . -name X
+ls -la|list_files|path:.,detailed:true
+git log|proc_run|cmd:git log -5
+docker logs|proc_run|cmd:docker logs
+echo test|proc_run|cmd:echo test
+python3 -c|proc_run|cmd:python3 -c "print('ok')"
+health check|health_probe|service:handrail
+status all|proc_run|cmd:git status && docker ps
