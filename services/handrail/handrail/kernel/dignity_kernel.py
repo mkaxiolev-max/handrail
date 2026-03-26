@@ -17,7 +17,7 @@ class DignityKernel:
   if rb.get('execution',{}).get('all_ok')is None:return False,NeverEvent.EXECUTION_NULL
   if rb.get('result',{}).get('output_ok')is None:return False,NeverEvent.OUTPUT_NULL
   if rb.get('violations')is None:return False,NeverEvent.VIOLATIONS_NULL
-  if not isinstance(rb.get('violations'),[]):return False,NeverEvent.VIOLATIONS_NOT_LIST
+  if not isinstance(rb.get('violations'),list):return False,NeverEvent.VIOLATIONS_NOT_LIST
   return True,None
  def enforce_dignity_invariants(self,rb:Dict[str,Any])->tuple:
   valid,never=self.validate_never_event(rb)
