@@ -1,14 +1,9 @@
 {
-  "buildCommand": "echo 'No build needed'",
-  "outputDirectory": ".",
-  "env": [
+  "version": 2,
+  "builds": [
     {
-      "key": "STRIPE_SECRET_KEY",
-      "value": "sk_live_YOUR_KEY"
-    },
-    {
-      "key": "STRIPE_PUBLIC_KEY",
-      "value": "pk_live_YOUR_KEY"
+      "src": "index.html",
+      "use": "@vercel/static"
     }
   ]
 }
