@@ -28,5 +28,5 @@ class ABIValidator:
    if packet.get('decision',{}).get('allowed')is None:return False,"decision.allowed cannot be None"
    if packet.get('execution',{}).get('all_ok')is None:return False,"execution.all_ok cannot be None"
    if packet.get('result',{}).get('output_ok')is None:return False,"result.output_ok cannot be None"
-   if not isinstance(packet.get('violations'),[]):return False,"violations must be list"
+   if not isinstance(packet.get('violations'),list):return False,"violations must be list"
   return True,"valid"
