@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Handrail — Deterministic Execution Control</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a0a;color:#fff;font-family:'Courier New',monospace;min-height:100vh}
+    .hero{padding:80px 40px;text-align:center;border-bottom:1px solid #222}
+    h1{font-size:48px;letter-spacing:-2px;margin-bottom:16px}
+    .sub{color:#888;font-size:18px;margin-bottom:40px}
+    .proof{background:#111;border:1px solid #333;padding:24px;border-radius:8px;display:inline-block;text-align:left;margin-bottom:40px}
+    .proof .green{color:#0f0}
+    .install{background:#111;border:1px solid #444;padding:16px 24px;border-radius:6px;font-size:16px;margin-bottom:8px;cursor:pointer;display:inline-block}
+    .pricing{display:flex;justify-content:center;gap:32px;padding:80px 40px;flex-wrap:wrap}
+    .plan{background:#111;border:1px solid #333;border-radius:12px;padding:40px;width:280px}
+    .plan.highlight{border-color:#0f0}
+    .plan h2{font-size:24px;margin-bottom:8px}
+    .price{font-size:36px;color:#0f0;margin:20px 0}
+    .period{color:#888;font-size:14px}
+    .features{text-align:left;margin:24px 0;list-style:none}
+    .features li{padding:8px 0;border-bottom:1px solid #222;font-size:14px}
+    .cta{background:#0f0;color:#000;padding:14px 28px;border-radius:6px;cursor:pointer;font-weight:bold;border:none;width:100%;margin-top:24px;font-size:16px;text-decoration:none;display:block;text-align:center}
+    .cta:hover{background:#1f1}
+    .cta.secondary{background:transparent;color:#0f0;border:1px solid #0f0}
+    .cta.secondary:hover{background:#0f01}
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>HANDRAIL</h1>
+    <p class="sub">Deterministic execution control plane.<br>Every op logged. Every result proven. 1000/1000 verified.</p>
+    <div class="proof">
+      <div class="green">✓ 1000/1000 determinism verified</div>
+      <div class="green">✓ Merkle proof ledger</div>
+      <div class="green">✓ Byte-identical replay</div>
+      <div class="green">✓ ABI rejection enforcement</div>
+    </div>
+    <br>
+    <code class="install">pip install handrail-cli</code>
+  </div>
+  <div class="pricing">
+    <div class="plan">
+      <h2>Free</h2>
+      <div class="price">$0<span class="period">/mo</span></div>
+      <ul class="features">
+        <li>✅ Local execution</li>
+        <li>✅ Deterministic replay</li>
+        <li>✅ Immutable ledger</li>
+        <li>✅ 5 built-in ops</li>
+        <li>❌ Cloud sync</li>
+        <li>❌ Team access</li>
+      </ul>
+      <a class="cta secondary" href="#">Get Started</a>
+    </div>
+    <div class="plan highlight">
+      <h2>Pro</h2>
+      <div class="price">$29<span class="period">/mo</span></div>
+      <ul class="features">
+        <li>✅ Everything in Free</li>
+        <li>✅ Cloud proof storage</li>
+        <li>✅ Audit dashboard</li>
+        <li>✅ Team access (5 users)</li>
+        <li>✅ Email support</li>
+        <li>❌ Custom policies</li>
+      </ul>
+      <a class="cta" href="https://buy.stripe.com/test_8x2bIUeh3e4qedFg9QejK00">Start Free Trial</a>
+    </div>
+    <div class="plan">
+      <h2>Enterprise</h2>
+      <div class="price">$299<span class="period">/mo</span></div>
+      <ul class="features">
+        <li>✅ Everything in Pro</li>
+        <li>✅ Unlimited team members</li>
+        <li>✅ Custom policies</li>
+        <li>✅ SSO integration</li>
+        <li>✅ SLA guarantee</li>
+        <li>✅ Dedicated support</li>
+      </ul>
+      <a class="cta" href="https://buy.stripe.com/test_4gM5kwfl78K60mP4r8ejK02">Contact Sales</a>
+    </div>
+  </div>
+</body>
+</html>
