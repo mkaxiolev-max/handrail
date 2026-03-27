@@ -1,0 +1,27 @@
+{
+  "plan_id": "patch_loop_v1",
+  "version": "1",
+  "steps": [
+    {
+      "id": "dev_check",
+      "op": "ops_dev_check",
+      "input": {},
+      "retry": { "max_attempts": 1, "backoff_seconds": 0 },
+      "halt_on_fail": true
+    },
+    {
+      "id": "patch",
+      "op": "ops_apply_patch",
+      "input": { "patch": "test_patch_v1" },
+      "retry": { "max_attempts": 2, "backoff_seconds": 1 },
+      "halt_on_fail": true
+    },
+    {
+      "id": "tests",
+      "op": "ops_run_tests",
+      "input": { "selector": "pytest -q" },
+      "retry": { "max_attempts": 1, "backoff_seconds": 0 },
+      "halt_on_fail": true
+    }
+  ]
+}
