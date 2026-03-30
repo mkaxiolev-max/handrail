@@ -1,0 +1,33 @@
+TS=20260228_134326
+
+PWD=/Users/axiolevns/axiolev_runtime
+
+docker compose ps:
+NAME                          IMAGE                       COMMAND                  SERVICE     CREATED             STATUS                       PORTS
+axiolev_runtime-continuum-1   axiolev_runtime-continuum   "python -m uvicorn s…"   continuum   About an hour ago   Up About an hour (healthy)   0.0.0.0:8788->8788/tcp, [::]:8788->8788/tcp
+axiolev_runtime-handrail-1    axiolev_runtime-handrail    "uvicorn handrail.se…"   handrail    About an hour ago   Up About an hour (healthy)   0.0.0.0:8011->8011/tcp, [::]:8011->8011/tcp
+axiolev_runtime-ns-1          axiolev_runtime-ns          "python -m uvicorn n…"   ns          3 minutes ago       Up 3 minutes                 0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp
+
+healthz:
+{"status":"ok","version":"2.0.0","architecture":"conciliar_v1","storage":{"external_ssd":false,"alexandria":true,"ether":true,"proto_canon":true,"receipt_ledger":true,"manifold":true,"canon":true,"mission_graph":true},"voice":{"active":false,"webhook":false},"alpaca":{"configured":false,"base_url":"https://broker-api.sandbox.alpaca.markets","live_trading":false,"paper_mode":true,"founder_veto_active":true,"max_position_usd":10000},"intelligence":{"claude":false,"gpt4o":false,"gemini":false,"grok":false},"ether":{"ssd_mounted":false,"polygon":false,"fred":false,"newsapi":false},"ws_connections":0,"timestamp":"2026-02-28T21:43:26.938937+00:00"}
+compose file head:
+services:
+  handrail:
+    build: ./services/handrail
+    ports:
+      - "8011:8011"
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; urllib.request.urlopen('http://127.0.0.1:8011/healthz', timeout=2); sys.exit(0)\""]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  ns:
+    build: ./services/ns
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env

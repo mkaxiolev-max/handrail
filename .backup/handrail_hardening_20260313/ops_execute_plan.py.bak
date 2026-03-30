@@ -1,0 +1,46 @@
+from pathlib import Path
+import json
+
+def execute_plan(task_request, run_dir, task_runner):
+
+    steps = task_request.get("steps")
+
+    if not steps:
+        return {
+            "ok": False,
+            "failure_reason": "missing_steps"
+        }
+
+    results = []
+
+    for step in steps:
+
+        task_type = step.get("task")
+        payload = step.get("payload", {})
+        objective = step.get("objective", "")
+
+        result = task_runner(
+            task_type=task_type,
+            objective=objective,
+            payload=payload,
+            workspace=Path("/app"),
+            run_dir=run_dir,
+            run_id=step.get("run_id","plan_step")
+        )
+
+        results.append({
+            "task": task_type,
+            "result": result
+        })
+
+        if not result.get("ok", False):
+            return {
+                "ok": False,
+                "failed_step": task_type,
+                "results": results
+            }
+
+    return {
+        "ok": True,
+        "results": results
+    }

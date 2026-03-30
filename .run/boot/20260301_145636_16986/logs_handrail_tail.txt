@@ -1,0 +1,32 @@
+handrail-1  | INFO:     Started server process [1]
+handrail-1  | INFO:     Waiting for application startup.
+handrail-1  | INFO:     Application startup complete.
+handrail-1  | INFO:     Uvicorn running on http://0.0.0.0:8011 (Press CTRL+C to quit)
+handrail-1  | INFO:     127.0.0.1:51364 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:51372 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:50046 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:50050 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:50060 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:50062 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:57536 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:57552 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:57568 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:57584 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:57594 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37930 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37940 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37942 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37956 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37970 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37334 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37348 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37358 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37374 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:37386 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:42576 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:42584 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:42586 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:42596 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58414 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58426 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     192.168.65.1:30847 - "GET /healthz HTTP/1.1" 200 OK

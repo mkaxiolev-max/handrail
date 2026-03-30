@@ -5,3 +5,4 @@ __pycache__/
 *.jsonl
 /tmp/
 node_modules/
+.vercel

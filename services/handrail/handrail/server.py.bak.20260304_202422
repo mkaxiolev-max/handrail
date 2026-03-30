@@ -1,0 +1,73 @@
+from __future__ import annotations
+
+from typing import List, Optional
+import os
+import subprocess
+import time
+
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
+
+# Keep the existing Archivist import (your handrail package has it)
+from .archivist import Archivist
+
+app = FastAPI(title="Handrail", version="0.1.0")
+
+class RunRequest(BaseModel):
+    session_id: str = Field(min_length=1)
+    plan_id: str = Field(min_length=1)
+    commands: List[str]
+    dry_run: bool = False
+    workdir: Optional[str] = None
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
+
+@app.post("/run")
+def run(req: RunRequest):
+    # If Archivist exists and you want to use it later, it's instantiated here
+    _arch = Archivist()
+
+    results = []
+    ok_all = True
+
+    for cmd in req.commands:
+        t0 = time.time()
+        if req.dry_run:
+            results.append({
+                "cmd": cmd,
+                "ok": True,
+                "returncode": 0,
+                "stdout": "",
+                "stderr": "",
+                "ms": int((time.time() - t0) * 1000),
+                "dry_run": True,
+            })
+            continue
+
+        p = subprocess.run(
+            cmd,
+            shell=True,
+            cwd=req.workdir or None,
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+        )
+        ok = (p.returncode == 0)
+        ok_all = ok_all and ok
+        results.append({
+            "cmd": cmd,
+            "ok": ok,
+            "returncode": p.returncode,
+            "stdout": p.stdout,
+            "stderr": p.stderr,
+            "ms": int((time.time() - t0) * 1000),
+        })
+
+    return {
+        "session_id": req.session_id,
+        "plan_id": req.plan_id,
+        "ok": ok_all,
+        "results": results,
+    }

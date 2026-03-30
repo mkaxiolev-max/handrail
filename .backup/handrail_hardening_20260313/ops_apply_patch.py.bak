@@ -1,0 +1,41 @@
+from pathlib import Path
+import subprocess
+import hashlib
+
+ALLOWED_ROOT = Path("/app")
+
+def run_apply_patch(task_request, run_dir):
+    patch_text = task_request.get("patch")
+
+    if not patch_text:
+        return {
+            "ok": False,
+            "failure_reason": "missing_patch"
+        }
+
+    patch_path = Path(run_dir) / "patch.diff"
+    patch_path.write_text(patch_text)
+
+    patch_hash = hashlib.sha256(patch_text.encode()).hexdigest()
+
+    try:
+        result = subprocess.run(
+            ["patch", "-p1"],
+            input=patch_text.encode(),
+            cwd=ALLOWED_ROOT,
+            capture_output=True
+        )
+
+        return {
+            "ok": result.returncode == 0,
+            "rc": result.returncode,
+            "patch_hash": patch_hash,
+            "stdout": result.stdout.decode(),
+            "stderr": result.stderr.decode()
+        }
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "failure_reason": str(e)
+        }

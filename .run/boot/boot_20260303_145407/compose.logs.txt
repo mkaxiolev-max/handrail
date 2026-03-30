@@ -1,0 +1,218 @@
+handrail-1  | INFO:     Started server process [1]
+handrail-1  | INFO:     Waiting for application startup.
+handrail-1  | INFO:     Application startup complete.
+handrail-1  | INFO:     Uvicorn running on http://0.0.0.0:8011 (Press CTRL+C to quit)
+handrail-1  | INFO:     127.0.0.1:46546 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:46556 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:46562 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:46576 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     192.168.65.1:35988 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:51162 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:51174 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:51180 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:51190 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58682 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58692 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58700 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58706 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58720 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53978 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53980 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53990 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:54000 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:54012 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:34780 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:34790 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:34800 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:34816 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:34822 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35184 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35192 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35194 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35198 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35518 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35532 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35534 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35536 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35548 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:44688 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:44702 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:44706 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:44722 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:44732 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53636 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53646 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53662 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53666 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:53670 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58812 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58824 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58832 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58844 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:58846 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35464 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35474 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35478 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:35484 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:59606 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:59612 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:59628 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:59634 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:59636 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:56302 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:56314 - "GET /healthz HTTP/1.1" 200 OK
+continuum-1  | INFO:     Started server process [1]
+continuum-1  | INFO:     Waiting for application startup.
+continuum-1  | INFO:     Application startup complete.
+continuum-1  | INFO:     Uvicorn running on http://0.0.0.0:8788 (Press CTRL+C to quit)
+continuum-1  | INFO:     192.168.65.1:51714 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:46740 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:46746 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:46760 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:44724 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:44734 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:44742 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:44754 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:44760 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37568 - "GET /state HTTP/1.1" 200 OK
+ns-1         | INFO:     Started server process [1]
+ns-1         | INFO:     Waiting for application startup.
+ns-1         | INFO:     Application startup complete.
+ns-1         | INFO:     Uvicorn running on http://0.0.0.0:9000 (Press CTRL+C to quit)
+ns-1         | 
+ns-1         | ==============================================================
+ns-1         | ⚡ NORTHSTAR OS — NS∞ / AXIOLEV Holdings
+ns-1         |    Ω Advisory Sovereignty Law: ACTIVE
+ns-1         |    Conciliar Architecture v1.0: ACTIVE
+ns-1         | ==============================================================
+ns-1         |   ✓ Canon docs: 12 manifest | 12 current
+ns-1         |   ✓ Stabilization engine online (SPF | CCT | SCS)
+ns-1         |   ✓ Ether ingest: 94117 docs in Alexandria
+ns-1         |   ✓ SAN terrain: 0 patents | 0 claims | 0 snapshots
+ns-1         |   ✓ SAN terrain: 0 patents | 9 snapshots
+ns-1         |   ✓ MCP router online (12 tools governed)
+ns-1         | 
+continuum-1  | INFO:     127.0.0.1:37582 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37594 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37596 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37610 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:57326 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:57328 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:57336 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:57338 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40120 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40130 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40146 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40148 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40152 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39688 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39704 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39720 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39722 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39726 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:47370 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:47386 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:47396 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:47400 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:47404 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:55900 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:55916 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:55932 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:55934 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:48182 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:48188 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:48192 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:48208 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:48210 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37310 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37326 - "GET /state HTTP/1.1" 200 OK
+ns-1         | ─── Intelligence Layer ──────────────────────────────────
+ns-1         | ✗ Claude
+ns-1         |   GPT-4o: not set
+ns-1         |   Gemini: not set
+ns-1         |   Grok: not set
+ns-1         | ─── Voice ───────────────────────────────────────────────
+ns-1         | ✗ Computer: 
+ns-1         |   Webhook: ⚠ Run ngrok, then set NORTHSTAR_WEBHOOK_BASE
+ns-1         | ─── Console ─────────────────────────────────────────────
+ns-1         |   Dashboard: http://localhost:9000
+continuum-1  | INFO:     127.0.0.1:37334 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37340 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:37352 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:39990 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40004 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40010 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40024 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:40030 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:43000 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     127.0.0.1:43006 - "GET /state HTTP/1.1" 200 OK
+ns-1         |   Console:   http://localhost:9000/console
+ns-1         |   Login:     user=founder, password=northstar (change on first boot)
+ns-1         | ==============================================================
+ns-1         | 
+ns-1         | 
+ns-1         |   ⚡ Overnight Ether Ingest: ACTIVE
+ns-1         |   Alexandria: /Volumes/NSExternal/ALEXANDRIA/ether/
+ns-1         |   Watchlist: 14 tickers
+ns-1         |   Sources: Polygon + FRED + NewsAPI
+ns-1         | 
+ns-1         | 
+ns-1         |   ── Ether Ingest Cycle 1 [22:52:08 UTC] ──
+ns-1         |   Market: CLOSED | Next: 300s
+ns-1         |   ✓ Drop folder watcher: /Volumes/NSExternal/ALEXANDRIA/drop
+ns-1         | INFO:     127.0.0.1:38016 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     192.168.65.1:56837 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35356 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35364 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35374 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35390 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35406 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:50322 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:50326 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:50336 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:50342 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:46502 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:46516 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:46532 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:46544 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:46554 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:47016 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:47020 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:47036 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:47046 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:47054 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:36778 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:36794 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:36810 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:36826 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:36828 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54490 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54504 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54510 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54514 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54530 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:59234 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:59244 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:59258 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:59260 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54476 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54490 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54502 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54518 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:54532 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:48952 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:48954 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:48960 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:48972 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:48978 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:53154 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:53158 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:53172 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:53176 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:53178 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:41712 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:41728 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:41742 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:41754 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35058 - "GET /healthz HTTP/1.1" 200 OK
+ns-1         | INFO:     127.0.0.1:35060 - "GET /healthz HTTP/1.1" 200 OK

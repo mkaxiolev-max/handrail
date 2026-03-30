@@ -1,0 +1,96 @@
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.03kB done
+#1 DONE 0.0s
+
+#2 [handrail internal] load build definition from Dockerfile
+#2 transferring dockerfile: 298B done
+#2 DONE 0.0s
+
+#3 [ns internal] load build definition from Dockerfile
+#3 transferring dockerfile: 294B done
+#3 DONE 0.0s
+
+#4 [ns internal] load metadata for docker.io/library/python:3.12-slim
+#4 DONE 0.4s
+
+#5 [handrail internal] load .dockerignore
+#5 transferring context: 2B done
+#5 DONE 0.0s
+
+#6 [ns internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [handrail internal] load build context
+#7 transferring context: 1.17kB done
+#7 DONE 0.0s
+
+#8 [handrail 1/4] FROM docker.io/library/python:3.12-slim@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c
+#8 resolve docker.io/library/python:3.12-slim@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c done
+#8 DONE 0.0s
+
+#9 [handrail 2/4] WORKDIR /app
+#9 CACHED
+
+#10 [handrail 3/4] RUN pip install --no-cache-dir fastapi uvicorn pydantic
+#10 CACHED
+
+#11 [handrail 4/4] COPY handrail ./handrail
+#11 CACHED
+
+#12 [handrail] exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:76708942e1c2a8887966b3e672ad81b9728a8f0a9c23f514820a4ae88561868d done
+#12 exporting config sha256:ac468512fda19e9b148304801a3ca3209320daf1a73d79153ce907780f86a4a7 done
+#12 exporting attestation manifest sha256:429b6d3ac11b8b3a2ea6a8e5eabd21ca40998b9a251b497f0c09acd2d8cd8048 0.0s done
+#12 exporting manifest list sha256:865d7fad18f17f6373cd2d47a679dc695868ad595c6dc8d31703f21a08912a50 done
+#12 naming to docker.io/library/axiolev_runtime-handrail:latest done
+#12 unpacking to docker.io/library/axiolev_runtime-handrail:latest done
+#12 DONE 0.1s
+
+#13 [ns internal] load build context
+#13 ...
+
+#14 [handrail] resolving provenance for metadata file
+#14 DONE 0.0s
+
+#13 [ns internal] load build context
+#13 transferring context: 3.80MB 0.8s done
+#13 DONE 0.8s
+
+#15 [ns 4/5] RUN pip install --no-cache-dir -r requirements.txt || true
+#15 CACHED
+
+#9 [ns 2/4] WORKDIR /app
+#9 CACHED
+
+#16 [ns 3/5] COPY . .
+#16 CACHED
+
+#17 [ns 5/5] RUN pip install --no-cache-dir fastapi uvicorn
+#17 CACHED
+
+#18 [ns] exporting to image
+#18 exporting layers done
+#18 exporting manifest sha256:532b0fbaacd59e2c32c2851d1f840677f7c3b2488e7273e71b91d0dbd65f2ee8 done
+#18 exporting config sha256:a0a99b7906d2cdfc4f3ab752c23a08f5eac0093226c8270870ce5614f80d942f done
+#18 exporting attestation manifest sha256:966f9837c12001467dbf738cdb670d06e495436b69b77e7ebcfec967afb7c0e4 done
+#18 exporting manifest list sha256:099b7734bce00a9376c354116e2f78c7595c4804ef901b2b0a73dd382ca95ba8 done
+#18 naming to docker.io/library/axiolev_runtime-ns:latest done
+#18 unpacking to docker.io/library/axiolev_runtime-ns:latest done
+#18 DONE 0.0s
+
+#19 [ns] resolving provenance for metadata file
+#19 DONE 0.0s
+ axiolev_runtime-ns  Built
+ axiolev_runtime-handrail  Built
+ Network axiolev_runtime_default  Creating
+ Network axiolev_runtime_default  Created
+ Container axiolev_runtime-ns-1  Creating
+ Container axiolev_runtime-handrail-1  Creating
+ Container axiolev_runtime-handrail-1  Created
+ Container axiolev_runtime-ns-1  Created
+ Container axiolev_runtime-handrail-1  Starting
+ Container axiolev_runtime-ns-1  Starting
+ Container axiolev_runtime-handrail-1  Started
+ Container axiolev_runtime-ns-1  Started

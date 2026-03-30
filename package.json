@@ -1,0 +1,10 @@
+{
+  "name": "handrail",
+  "version": "1.0.0",
+  "description": "Safe execution + deterministic replay for AI-generated code",
+  "main": "bin/handrail",
+  "bin": {"handrail": "bin/handrail"},
+  "repository": "https://github.com/AXIOLEV/handrail",
+  "author": "AXIOLEV",
+  "license": "MIT"
+}

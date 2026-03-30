@@ -1,0 +1,62 @@
+handrail-1  | INFO:     Started server process [1]
+handrail-1  | INFO:     Waiting for application startup.
+handrail-1  | INFO:     Application startup complete.
+handrail-1  | INFO:     Uvicorn running on http://0.0.0.0:8011 (Press CTRL+C to quit)
+handrail-1  | INFO:     127.0.0.1:48674 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:48686 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:48694 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     192.168.65.1:54158 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:52454 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:52458 - "GET /healthz HTTP/1.1" 200 OK
+handrail-1  | INFO:     127.0.0.1:52472 - "GET /healthz HTTP/1.1" 200 OK
+ns-1        | INFO:     Started server process [1]
+ns-1        | INFO:     Waiting for application startup.
+ns-1        | INFO:     Application startup complete.
+ns-1        | INFO:     Uvicorn running on http://0.0.0.0:9000 (Press CTRL+C to quit)
+ns-1        | 
+ns-1        | ==============================================================
+ns-1        | ⚡ NORTHSTAR OS — NS∞ / AXIOLEV Holdings
+ns-1        |    Ω Advisory Sovereignty Law: ACTIVE
+ns-1        |    Conciliar Architecture v1.0: ACTIVE
+ns-1        | ==============================================================
+ns-1        |   ✓ Canon docs: 12 manifest | 12 current
+ns-1        |   ✓ Stabilization engine online (SPF | CCT | SCS)
+ns-1        |   ✓ Ether ingest: 94117 docs in Alexandria
+ns-1        |   ✓ SAN terrain: 0 patents | 0 claims | 0 snapshots
+ns-1        |   ✓ SAN terrain: 0 patents | 9 snapshots
+ns-1        |   ✓ MCP router online (12 tools governed)
+ns-1        | 
+ns-1        | ─── Intelligence Layer ──────────────────────────────────
+ns-1        | ✗ Claude
+ns-1        |   GPT-4o: not set
+ns-1        |   Gemini: not set
+ns-1        |   Grok: not set
+ns-1        | ─── Voice ───────────────────────────────────────────────
+ns-1        | ✗ Computer: 
+ns-1        |   Webhook: ⚠ Run ngrok, then set NORTHSTAR_WEBHOOK_BASE
+ns-1        | ─── Console ─────────────────────────────────────────────
+ns-1        |   Dashboard: http://localhost:9000
+ns-1        |   Console:   http://localhost:9000/console
+ns-1        |   Login:     user=founder, password=northstar (change on first boot)
+ns-1        | ==============================================================
+ns-1        | 
+ns-1        | 
+ns-1        |   ⚡ Overnight Ether Ingest: ACTIVE
+ns-1        |   Alexandria: /Volumes/NSExternal/ALEXANDRIA/ether/
+ns-1        |   Watchlist: 14 tickers
+ns-1        |   Sources: Polygon + FRED + NewsAPI
+ns-1        | 
+ns-1        | 
+ns-1        |   ── Ether Ingest Cycle 1 [00:35:31 UTC] ──
+ns-1        |   Market: CLOSED | Next: 300s
+ns-1        |   ✓ Drop folder watcher: /Volumes/NSExternal/ALEXANDRIA/drop
+ns-1        | INFO:     127.0.0.1:35734 - "GET /healthz HTTP/1.1" 200 OK
+ns-1        | INFO:     192.168.65.1:20991 - "GET /healthz HTTP/1.1" 200 OK
+ns-1        | INFO:     127.0.0.1:35740 - "GET /healthz HTTP/1.1" 200 OK
+ns-1        | INFO:     127.0.0.1:35742 - "GET /healthz HTTP/1.1" 200 OK
+continuum-1  | INFO:     Started server process [1]
+continuum-1  | INFO:     Waiting for application startup.
+continuum-1  | INFO:     Application startup complete.
+continuum-1  | INFO:     Uvicorn running on http://0.0.0.0:8788 (Press CTRL+C to quit)
+continuum-1  | INFO:     127.0.0.1:48468 - "GET /state HTTP/1.1" 200 OK
+continuum-1  | INFO:     192.168.65.1:58452 - "GET /state HTTP/1.1" 200 OK

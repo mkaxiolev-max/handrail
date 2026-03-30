@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  ns:
+    build: ./services/ns
+    ports:
+      - "9000:9000"
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+
+  continuum:
+    build: ./services/continuum
+    ports:
+      - "8788:8788"
+
+  handrail:
+    build: ./services/handrail
+    ports:
+      - "8011:8011"
+    depends_on:
+      - continuum

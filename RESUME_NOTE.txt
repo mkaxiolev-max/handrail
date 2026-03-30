@@ -1,0 +1,2 @@
+Mon Mar  2 16:06:39 PST 2026
+Next: re-run SAN hello/terrain/status with proper separators; confirm USPTO-only path; remove PatentsView env var usage from flows later.

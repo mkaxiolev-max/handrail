@@ -1,0 +1,531 @@
+# SFE Ontology v1.0 — Socratic Field Engine
+# Alexandria Lexicon — NS∞ / AXIOLEV Holdings
+# Semantic spine: concept objects, question bases, boundaries, conflicts, translation maps
+# "Meaning = the set of constraints that survive contact with evidence and outcomes"
+
+version: "1.0.0"
+name: Socratic Field Engine
+subsystem: Alexandria Lexicon
+architecture: NS∞ Constitutional OS
+principle: >
+  SFE stores meaning generation rules, not meanings.
+  Definitions evolve by boundary sharpening, not narrative rewriting.
+  No silent edits. No authority games. Evidence and outcomes bind.
+
+# ══════════════════════════════════════════════════════════════════════════════
+# OBJECTS
+# ══════════════════════════════════════════════════════════════════════════════
+
+objects:
+
+  Term:
+    description: >
+      A surface symbol. The string a human uses.
+      Terms are not concepts. Multiple terms can refer to one concept.
+      One term can be overloaded across multiple concepts (polysemy trigger).
+    fields:
+      term_id:
+        type: string
+        format: "TERM-{sha256[:8]}"
+        immutable: true
+      surface_forms:
+        type: list[string]
+        description: Synonyms, abbreviations, alternate spellings
+      language:
+        type: string
+        default: "en"
+      domain_tags:
+        type: list[string]
+        description: Domains where this term appears
+      usage_coords:
+        type: list[ChunkRef]
+        description: Citations into ether chunk_store
+      created_at:
+        type: timestamp
+      last_seen:
+        type: timestamp
+
+  Concept:
+    description: >
+      A stabilized semantic object. Versioned. The unit of meaning in SFE.
+      A concept is defined by its QuestionBasis, not its surface label.
+      Multiple concept versions can coexist. Canon promotes specific versions.
+    fields:
+      concept_id:
+        type: string
+        format: "CONCEPT-{uuid4}"
+        immutable: true
+      label:
+        type: string
+        description: Human-readable name, not authoritative
+      version:
+        type: semver
+        description: "MAJOR.MINOR.PATCH — see versioning rules"
+      invariant_core:
+        type: string
+        description: >
+          The part of this concept intended to remain stable across versions.
+          MAJOR version change required to modify invariant_core.
+      domain_variants:
+        type: list[ConceptVariantRef]
+        description: Domain-specific instantiations of this concept
+      linked_terms:
+        type: list[TermRef]
+      question_basis_id:
+        type: QuestionBasisRef
+      boundaries:
+        type: list[BoundaryRef]
+      conflicts:
+        type: list[ConflictRef]
+      primitive_mapping:
+        type: dict
+        description: >
+          Maps concept to seed primitives: constraint, outcome, feedback, measurement.
+          Anchors concept to axiomatic layer.
+      parent_concept_id:
+        type: ConceptRef
+        nullable: true
+        description: Set when this concept was created by fission from a parent
+      status:
+        type: enum[active, deprecated, superseded, candidate]
+      receipts:
+        type: list[ReceiptRef]
+        description: All mutations, promotions, splits, retirements
+      created_at:
+        type: timestamp
+      created_by:
+        type: string
+
+  Question:
+    description: >
+      A canonical interrogative atom. Not a prompt. A contract.
+      Questions are the basis vectors of concept space.
+      A question defines an axis, not a value.
+    fields:
+      question_id:
+        type: string
+        format: "Q-{uuid4}"
+        immutable: true
+      type:
+        type: enum
+        values:
+          - identity       # What is this operationally?
+          - measurement    # How do we observe or measure it?
+          - constraint     # Where does it apply, where does it fail?
+          - decision       # What actions change if true vs false?
+          - falsification  # What outcome pattern proves we're using it wrong?
+          - translation    # What is preserved/lost mapping to another domain?
+      phrasing_variants:
+        type: list[string]
+        description: How this question surfaces in different contexts
+      answer_schema:
+        type: AnswerSchema
+        description: Required fields, types, provenance for a valid answer
+      evidence_requirements:
+        type: EvidenceRequirements
+      domain_applicability:
+        type: list[string]
+      failure_triggers:
+        type: list[string]
+        description: Conditions under which this question must be re-asked
+      created_at:
+        type: timestamp
+      version:
+        type: semver
+
+  AnswerSchema:
+    description: >
+      The contract a valid Answer must satisfy.
+      If schema cannot be satisfied, system returns REFUSE_INSUFFICIENT_GROUNDING.
+    fields:
+      required_fields:
+        type: list[FieldSpec]
+      allowed_uncertainty:
+        type: float
+        range: [0.0, 1.0]
+      required_evidence_types:
+        type: list[string]
+      required_provenance:
+        type: list[string]
+      fail_closed_condition:
+        type: string
+        description: >
+          If this condition is met, answer is rejected regardless of content.
+          Implements semantic fail-closed.
+
+  QuestionBasis:
+    description: >
+      The set of Questions that fully coordinates a Concept.
+      Minimal basis = irreducible set. Optional = domain extensions.
+      You cannot claim a concept exists without satisfying its minimal basis.
+    fields:
+      basis_id:
+        type: string
+        format: "QB-{uuid4}"
+        immutable: true
+      concept_id:
+        type: ConceptRef
+      minimal_basis:
+        type: list[QuestionRef]
+        description: >
+          Irreducible set. Must include at least one question of each canonical type:
+          identity, measurement, constraint, decision, falsification, translation.
+      optional_basis:
+        type: list[QuestionRef]
+        description: Domain extensions beyond minimal
+      completeness_score:
+        type: float
+        description: 0.0-1.0, computed from answered vs unanswered questions
+      last_evaluated:
+        type: timestamp
+
+  Answer:
+    description: >
+      A grounded response to a Question in a specific context.
+      Not a string. A structured payload with evidence, confidence, and hash.
+      Immutable once stored. New answers create new records.
+    fields:
+      answer_id:
+        type: string
+        format: "ANS-{uuid4}"
+        immutable: true
+      question_id:
+        type: QuestionRef
+      context_id:
+        type: ContextRef
+      answer_payload:
+        type: dict
+        description: Must conform to question's AnswerSchema
+      evidence_pack_id:
+        type: EvidencePackRef
+      confidence:
+        type: float
+        range: [0.0, 1.0]
+      answer_hash:
+        type: string
+        format: sha256
+        description: Hash of answer_payload + evidence_pack_id. Immutable.
+      timestamp:
+        type: timestamp
+        immutable: true
+      created_by:
+        type: string
+
+  Context:
+    description: >
+      The situation boundary within which a concept is being evaluated.
+      Context scopes meaning. Same concept, different context = different admissible answers.
+    fields:
+      context_id:
+        type: string
+        format: "CTX-{uuid4}"
+        immutable: true
+      domain_profile_id:
+        type: string
+      constraints_active:
+        type: list[string]
+        description: Active constraint expressions in this context
+      authority_active:
+        type: list[string]
+        description: Who has decision authority in this context
+      time_window:
+        type: object
+        fields:
+          start: timestamp
+          end: timestamp
+          nullable: true
+      provenance:
+        type: string
+        description: Where this context came from (session, document, call, etc.)
+
+  EvidencePack:
+    description: >
+      Mandatory for all Answers. Immutable bundle of citations, sources, hashes.
+      Already in NS architecture. SFE makes it mandatory, not optional.
+    fields:
+      pack_id:
+        type: string
+        format: "EP-{uuid4}"
+        immutable: true
+      citations:
+        type: list[Citation]
+      source_chunks:
+        type: list[ChunkRef]
+      external_refs:
+        type: list[string]
+      pack_hash:
+        type: string
+        format: sha256
+      created_at:
+        type: timestamp
+
+  Outcome:
+    description: >
+      Immutable record of what happened when a Concept was used in the world.
+      Outcomes are the feedback signal that shapes concept boundaries.
+      Never deleted. Contradictory outcomes are structured conflicts, not erasures.
+    fields:
+      outcome_id:
+        type: string
+        format: "OUT-{uuid4}"
+        immutable: true
+      linked_action_receipt_id:
+        type: ReceiptRef
+      linked_concepts:
+        type: list[ConceptRef]
+      linked_questions:
+        type: list[QuestionRef]
+      measured_deltas:
+        type: dict
+        description: Quantified changes observed post-action
+      irreversibility_class:
+        type: enum[reversible, partially_reversible, irreversible]
+      prediction_vs_actual:
+        type: object
+        fields:
+          predicted: any
+          actual: any
+          error: float
+      timestamp:
+        type: timestamp
+        immutable: true
+
+  Boundary:
+    description: >
+      A learned constraint edge for a Concept.
+      Where meaning becomes sharp. The most important object in SFE.
+      Boundaries are what survive contact with outcomes and evidence.
+    fields:
+      boundary_id:
+        type: string
+        format: "BND-{uuid4}"
+        immutable: true
+      concept_id:
+        type: ConceptRef
+      constraint_expression:
+        type: object
+        fields:
+          human_readable: string
+          machine_form: string
+          formal_language: enum[predicate_logic, set_notation, plain_language, code]
+      supporting_evidence:
+        type: list[EvidencePackRef]
+      supporting_outcomes:
+        type: list[OutcomeRef]
+      counterexamples:
+        type: list[OutcomeRef]
+        description: Outcomes that pressure this boundary. Stored, never deleted.
+      scope:
+        type: list[string]
+        description: Domain variants this boundary applies to
+      strength:
+        type: float
+        range: [0.0, 1.0]
+        description: Ratio of supporting to total evidence
+      status:
+        type: enum[candidate, active, contested, superseded]
+      version:
+        type: semver
+      created_at:
+        type: timestamp
+
+  Conflict:
+    description: >
+      A structured disagreement. Not an error. A first-class artifact.
+      Conflict is the signal that a concept is overloaded or mis-scoped.
+      Resolution creates new structure, not erasure.
+    fields:
+      conflict_id:
+        type: string
+        format: "CONF-{uuid4}"
+        immutable: true
+      conflict_type:
+        type: enum
+        values:
+          - polysemy       # one term, multiple concepts
+          - synonymy       # many terms, one concept
+          - clash          # two concept variants incompatible in same context
+          - scope_gap      # concept used outside its validated scope
+          - measurement    # measurement schemas cannot be unified
+      involved_concepts:
+        type: list[ConceptRef]
+      involved_terms:
+        type: list[TermRef]
+      evidence_sides:
+        type: dict
+        description: Evidence supporting each side of the conflict
+      resolution_state:
+        type: enum[open, scoped_coexistence, split, superseded, invalid]
+      resolution_receipt_id:
+        type: ReceiptRef
+        nullable: true
+      triggered_by:
+        type: string
+        description: What caused this conflict to surface
+      created_at:
+        type: timestamp
+
+  TranslationMap:
+    description: >
+      A mapping between concept variants across domains.
+      Not analogy. Measured mapping with explicit loss accounting.
+      Enables cross-domain insight transfer that is safe, repeatable, improvable.
+    fields:
+      map_id:
+        type: string
+        format: "TM-{uuid4}"
+        immutable: true
+      source_concept_id:
+        type: ConceptRef
+      source_domain:
+        type: string
+      target_concept_id:
+        type: ConceptRef
+      target_domain:
+        type: string
+      shared_basis_questions:
+        type: list[QuestionRef]
+        description: Questions that survive the translation intact
+      non_shared_questions:
+        type: list[QuestionRef]
+        description: Questions lost in translation — the loss
+      translation_loss_estimate:
+        type: float
+        range: [0.0, 1.0]
+        description: 0.0 = lossless, 1.0 = no meaningful transfer
+      evidence_support:
+        type: list[EvidencePackRef]
+      verified_by_outcomes:
+        type: list[OutcomeRef]
+      status:
+        type: enum[proposed, validated, deprecated]
+      created_at:
+        type: timestamp
+
+# ══════════════════════════════════════════════════════════════════════════════
+# RELATIONS
+# ══════════════════════════════════════════════════════════════════════════════
+
+relations:
+  - subject: Term
+    predicate: refers_to
+    object: Concept
+    cardinality: many-to-many
+    note: "One term can refer to multiple concepts (polysemy). One concept has many terms (synonymy)."
+
+  - subject: Concept
+    predicate: has
+    object: QuestionBasis
+    cardinality: one-to-one
+    note: "Every concept has exactly one active QuestionBasis."
+
+  - subject: Question
+    predicate: answered_by
+    object: Answer
+    cardinality: one-to-many
+    note: "Multiple answers per question across different contexts."
+
+  - subject: Answer
+    predicate: grounded_by
+    object: EvidencePack
+    cardinality: many-to-one
+    note: "Evidence is mandatory. Unevidenced answers are REFUSED."
+
+  - subject: Concept
+    predicate: shaped_by
+    object: Boundary
+    cardinality: one-to-many
+    note: "Boundaries accumulate. Old boundaries persist for auditability."
+
+  - subject: Concept
+    predicate: challenged_by
+    object: Conflict
+    cardinality: one-to-many
+    note: "Conflicts are signals, not failures. All preserved."
+
+  - subject: Concept
+    predicate: updated_by
+    object: Outcome
+    cardinality: one-to-many
+    note: "Outcomes are the primary feedback mechanism for boundary evolution."
+
+  - subject: TranslationMap
+    predicate: links
+    object: Concept
+    cardinality: many-to-many
+    note: "A map links a source concept variant to a target concept variant."
+
+  - subject: Canon
+    predicate: promotes
+    object: Boundary
+    cardinality: one-to-many
+    note: "Canon stabilizes specific Boundary versions and Concept versions."
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SEED PRIMITIVES
+# ══════════════════════════════════════════════════════════════════════════════
+
+seed_primitives:
+  description: >
+    Axiomatic concepts that require no external grounding.
+    All other concepts map onto these primitives.
+    These are the epistemic axioms of the lexicon.
+  primitives:
+    - constraint:
+        definition: "A condition that reduces the feasible set."
+        invariant: true
+    - outcome:
+        definition: "An observed change in the world state after an action."
+        invariant: true
+    - feedback:
+        definition: "A signal that updates a model based on outcome vs prediction."
+        invariant: true
+    - measurement:
+        definition: "A procedure that maps a state to a value in a defined schema."
+        invariant: true
+    - evidence:
+        definition: "A citation-backed observation relevant to a claim."
+        invariant: true
+    - boundary:
+        definition: "A constraint edge that defines where a concept applies and where it fails."
+        invariant: true
+
+# ══════════════════════════════════════════════════════════════════════════════
+# VERSIONING RULES SUMMARY
+# ══════════════════════════════════════════════════════════════════════════════
+
+versioning:
+  patch:
+    triggers:
+      - Clarify wording of existing question phrasing
+      - Add usage examples
+      - Improve evidence pack citations
+      - Fix typos or formatting in constraint expressions
+    requires: receipt
+    council: not_required
+
+  minor:
+    triggers:
+      - Add a domain variant
+      - Add a boundary condition
+      - Add a new measurement method
+      - Update or add a TranslationMap
+      - Add optional basis questions
+    requires: receipt + domain quorum (2 domains)
+    council: abbreviated
+
+  major:
+    triggers:
+      - Split concept (fission)
+      - Change invariant_core
+      - Retire an unsafe definition
+      - Rebase primitive_mapping
+      - Merge two concepts
+    requires: outcome_pressure OR structural_contradiction_evidence
+    requires_also: receipt + CPC vote + 72h cooling
+    council: full_CPC
+    rule: "No MAJOR change without outcome pressure or structural contradiction evidence. No exceptions."
+
+  no_silent_changes:
+    rule: "Every mutation is receipted. The lexicon never silently changes."
+    enforced_by: append_only_receipt_chain

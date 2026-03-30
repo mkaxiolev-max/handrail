@@ -1,0 +1,16 @@
+services:
+  handrail:
+    build: ./services/handrail
+    ports: ["8011:8011"]
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; urllib.request.urlopen('http://127.0.0.1:8011/healthz', timeout=2); sys.exit(0)\""]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  ns:
+    build: ./services/ns
+    ports: ["9000:9000"]
