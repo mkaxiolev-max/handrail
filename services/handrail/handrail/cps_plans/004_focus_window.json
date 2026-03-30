@@ -1,1 +1,0 @@
-{"cps_id":"focus_window","objective":"Focus macOS app","ops":[{"op":"app.focus","args":{"app_name":"${APP_NAME}"},"expect":{"focused":true}}]}

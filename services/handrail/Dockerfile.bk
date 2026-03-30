@@ -1,3 +1,0 @@
-FROM axiolev_runtime-handrail:latest
-COPY fix_server.py /tmp/fix_server.py
-RUN python3 /tmp/fix_server.py && rm /tmp/fix_server.py

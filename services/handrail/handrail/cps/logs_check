@@ -1,8 +1,0 @@
-{
-  "cps_id": "logs_check",
-  "objective": "tail recent handrail logs",
-  "ops": [
-    {"op": "logs.tail", "args": {}}
-  ],
-  "expect": {}
-}

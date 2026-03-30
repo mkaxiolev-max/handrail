@@ -1,6 +1,0 @@
-15:01:33 continuum health=starting
-15:01:34 continuum health=starting
-15:01:35 continuum health=starting
-15:01:36 continuum health=starting
-15:01:37 continuum health=starting
-15:01:38 continuum health=healthy

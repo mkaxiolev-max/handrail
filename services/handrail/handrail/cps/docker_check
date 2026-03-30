@@ -1,7 +1,0 @@
-{
-  "cps_id": "docker_check",
-  "objective": "docker ps",
-  "ops": [
-    {"op": "docker.ps", "args": {}}
-  ]
-}

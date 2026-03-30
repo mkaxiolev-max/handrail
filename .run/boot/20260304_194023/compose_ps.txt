@@ -1,4 +1,0 @@
-NAME                          IMAGE                       COMMAND                  SERVICE     CREATED          STATUS                    PORTS
-axiolev_runtime-continuum-1   axiolev_runtime-continuum   "python -m uvicorn s…"   continuum   17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:8788->8788/tcp, [::]:8788->8788/tcp
-axiolev_runtime-handrail-1    axiolev_runtime-handrail    "uvicorn handrail.se…"   handrail    17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:8011->8011/tcp, [::]:8011->8011/tcp
-axiolev_runtime-ns-1          axiolev_runtime-ns          "python -m uvicorn n…"   ns          17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp

@@ -1,6 +1,0 @@
-28:        source: /Volumes/NSExternal
-29:        target: /Volumes/NSExternal
-53:        source: /Volumes/NSExternal
-54:        target: /Volumes/NSExternal
-84:        source: /Volumes/NSExternal
-85:        target: /Volumes/NSExternal

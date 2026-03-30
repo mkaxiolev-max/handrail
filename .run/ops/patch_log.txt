@@ -1,2 +1,0 @@
-Sat Feb 28 13:35:31 PST 2026
-Patched services/ns/nss/core/auth.py: added Request import, moved HTTPException to top-level, removed inline import.

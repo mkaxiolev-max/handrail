@@ -1,8 +1,0 @@
-# Handrail unified server (UI + Runner + Archivist)
-fastapi>=0.110
-uvicorn>=0.23
-pydantic>=2.7
-orjson>=3.10
-structlog>=24.0
-python-dotenv>=1.0
-httpx

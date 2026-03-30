@@ -1,9 +1,0 @@
-{
-  "cps_id": "git_inspect",
-  "objective": "inspect git status and recent log",
-  "ops": [
-    {"op": "git.status", "args": {"repo": "/Users/axiolevns/axiolev_runtime"}},
-    {"op": "git.log", "args": {"repo": "/Users/axiolevns/axiolev_runtime"}}
-  ],
-  "expect": {}
-}

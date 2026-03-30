@@ -1,7 +1,0 @@
-{
-  "cps_id": "ls_check",
-  "objective": "list files",
-  "ops": [
-    {"op": "proc.run_readonly", "args": {"command": "ls"}}
-  ]
-}

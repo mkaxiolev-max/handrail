@@ -1,1 +1,0 @@
-{"cps_id":"read_file","objective":"Read file","ops":[{"op":"fs.read","args":{"path":"${FILE_PATH}"},"expect":{"read":true}}]}

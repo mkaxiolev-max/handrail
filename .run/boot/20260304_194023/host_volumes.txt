@@ -1,9 +1,0 @@
-Volumes:
-total 0
-drwxr-xr-x   4 root       wheel  128 Mar  4 19:13 .
-drwxr-xr-x  22 root       wheel  704 Nov 22 05:49 ..
-lrwxr-xr-x   1 root       wheel    1 Mar  4 19:12 Macintosh HD -> /
-drwxrwxr-x@ 15 axiolevns  staff  480 Feb 22 14:47 NSExternal
-
-NSExternal mount check:
-drwxrwxr-x@ 15 axiolevns  staff  480 Feb 22 14:47 NSExternal
