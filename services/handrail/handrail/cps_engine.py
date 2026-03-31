@@ -203,17 +203,109 @@ def _op_proc_run(args: dict, policy: PolicyEngine) -> dict:
     return {"returncode": result.returncode, "stdout": result.stdout, "stderr": result.stderr}
 
 
+def _op_git_diff(args: dict, _policy: PolicyEngine) -> dict:
+    repo = args.get("repo", "/workspace")
+    ref = args.get("ref", "HEAD")
+    result = subprocess.run(["git", "-C", repo, "diff", ref, "--stat"], capture_output=True, text=True, timeout=10)
+    return {"output": result.stdout.strip(), "returncode": result.returncode}
+
+
+def _op_git_commit(args: dict, policy: PolicyEngine) -> dict:
+    if not policy.allow_mutation():
+        raise PermissionError("Policy does not allow mutation (git.commit)")
+    repo = args.get("repo", "/workspace")
+    message = args.get("message", "")
+    if not message:
+        raise ValueError("git.commit requires message")
+    result = subprocess.run(["git", "-C", repo, "commit", "-m", message], capture_output=True, text=True, timeout=15)
+    return {"output": result.stdout.strip(), "returncode": result.returncode, "stderr": result.stderr.strip()}
+
+
+def _op_http_post(args: dict, _policy: PolicyEngine) -> dict:
+    url = args.get("url", "")
+    body = args.get("body", {})
+    timeout_ms = args.get("timeout_ms", 5000)
+    try:
+        resp = httpx.post(url, json=body, timeout=timeout_ms / 1000)
+        try:
+            resp_body = resp.json()
+        except Exception:
+            resp_body = resp.text[:500]
+        return {"status_code": resp.status_code, "body": resp_body}
+    except httpx.TimeoutException:
+        raise TimeoutError(f"POST {url} timed out after {timeout_ms}ms")
+    except Exception as e:
+        raise RuntimeError(f"POST {url} failed: {e}")
+
+
+def _op_http_health_check(args: dict, _policy: PolicyEngine) -> dict:
+    url = args.get("url", "")
+    timeout_ms = args.get("timeout_ms", 3000)
+    expect_status = args.get("expect_status", 200)
+    try:
+        resp = httpx.get(url, timeout=timeout_ms / 1000)
+        return {"status_code": resp.status_code, "healthy": resp.status_code == expect_status, "url": url}
+    except Exception as e:
+        return {"status_code": None, "healthy": False, "url": url, "error": str(e)}
+
+
+_SYS_ENV_ALLOWLIST = {
+    "ANTHROPIC_API_KEY", "YUBIKEY_CLIENT_ID", "FOUNDER_PHONE", "NS_URL",
+    "HANDRAIL_URL", "CONTINUUM_URL", "TWILIO_ACCOUNT_SID", "NODE_ENV",
+    "HR_WORKSPACE", "STRIPE_WEBHOOK_SECRET",
+}
+
+def _op_sys_env_get(args: dict, _policy: PolicyEngine) -> dict:
+    import os
+    key = args.get("key", "")
+    if key not in _SYS_ENV_ALLOWLIST:
+        raise PermissionError(f"env var not in allowlist: {key}")
+    val = os.environ.get(key)
+    return {"key": key, "set": val is not None, "value": "***" if val else None}
+
+
+def _op_sys_disk_usage(args: dict, _policy: PolicyEngine) -> dict:
+    import shutil
+    path = args.get("path", "/")
+    total, used, free = shutil.disk_usage(path)
+    return {
+        "path": path,
+        "total_gb": round(total / 1e9, 2),
+        "used_gb": round(used / 1e9, 2),
+        "free_gb": round(free / 1e9, 2),
+        "used_pct": round(used / total * 100, 1),
+    }
+
+
+def _op_sys_uptime(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        raw = Path("/proc/uptime").read_text().split()
+        uptime_s = float(raw[0])
+        idle_s = float(raw[1]) if len(raw) > 1 else None
+        return {"uptime_s": uptime_s, "idle_s": idle_s, "source": "/proc/uptime"}
+    except Exception:
+        result = subprocess.run(["uptime"], capture_output=True, text=True, timeout=5)
+        return {"uptime": result.stdout.strip(), "returncode": result.returncode, "source": "uptime"}
+
+
 OP_DISPATCH: dict[str, Any] = {
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
     "fs.read": _op_fs_read,
     "git.status": _op_git_status,
     "git.log": _op_git_log,
+    "git.diff": _op_git_diff,
+    "git.commit": _op_git_commit,
     "proc.run_readonly": _op_proc_run_readonly,
     "docker.compose_ps": _op_docker_compose_ps,
     "docker.compose_up": _op_docker_compose_up,
     "http.get": _op_http_get,
+    "http.post": _op_http_post,
+    "http.health_check": _op_http_health_check,
     "proc.run_allowed": _op_proc_run,
+    "sys.env_get": _op_sys_env_get,
+    "sys.disk_usage": _op_sys_disk_usage,
+    "sys.uptime": _op_sys_uptime,
 }
 
 

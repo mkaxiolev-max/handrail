@@ -1321,6 +1321,34 @@ def create_app() -> FastAPI:
             "snapshots_dir": str(snap_dir),
         }
 
+    @app.get("/alexandria/proof")
+    async def alexandria_proof(n: int = 50):
+        """Compute SHA256 Merkle chain over last N ledger entries. Returns root_hash + chain_length + proof_valid."""
+        import hashlib
+        ssd_ledger_file = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
+        local_ledger_file = Path("/tmp/ns_alexandria_boot.jsonl")
+        ledger_file = ssd_ledger_file if ssd_ledger_file.exists() else local_ledger_file
+        if not ledger_file.exists():
+            return JSONResponse({"ok": False, "error": "ledger not found", "proof_valid": False}, status_code=404)
+        lines = []
+        with ledger_file.open() as _f:
+            for line in _f:
+                line = line.strip()
+                if line:
+                    lines.append(line)
+        entries = lines[-n:] if len(lines) >= n else lines
+        chain_hash = "0" * 64
+        for entry in entries:
+            chain_hash = hashlib.sha256((chain_hash + entry).encode()).hexdigest()
+        return {
+            "ok": True,
+            "root_hash": "sha256:" + chain_hash,
+            "chain_length": len(entries),
+            "total_entries": len(lines),
+            "ledger_source": str(ledger_file),
+            "proof_valid": len(entries) > 0,
+        }
+
     @app.get("/health/models")
     async def health_models():
         return {

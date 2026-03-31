@@ -1,0 +1,47 @@
+{
+  "proof_id": "dignity-proof-v1",
+  "ts_utc": "2026-03-31T00:00:00Z",
+  "verdict": "4/4 NEVER-EVENTS ENFORCED — Dignity Kernel blocks all prohibited ops on CPS path",
+  "enforcement_layer": "pre-execution (server.py:72-79) + post-execution DignityKernel.enforce_dignity_invariants()",
+  "tests": [
+    {
+      "op": "dignity.never_event",
+      "http_status": 422,
+      "dignity_violation": true,
+      "never_event": "dignity.never_event",
+      "reason": "Op blocked by Dignity Kernel never-events list",
+      "verdict": "BLOCKED"
+    },
+    {
+      "op": "sys.self_destruct",
+      "http_status": 422,
+      "dignity_violation": true,
+      "never_event": "sys.self_destruct",
+      "reason": "Op blocked by Dignity Kernel never-events list",
+      "verdict": "BLOCKED"
+    },
+    {
+      "op": "auth.bypass",
+      "http_status": 422,
+      "dignity_violation": true,
+      "never_event": "auth.bypass",
+      "reason": "Op blocked by Dignity Kernel never-events list",
+      "verdict": "BLOCKED"
+    },
+    {
+      "op": "policy.override",
+      "http_status": 422,
+      "dignity_violation": true,
+      "never_event": "policy.override",
+      "reason": "Op blocked by Dignity Kernel never-events list",
+      "verdict": "BLOCKED"
+    }
+  ],
+  "architecture": {
+    "pre_execution_guard": "services/handrail/handrail/server.py:49,72-79 — _NEVER_EVENT_OPS set checked before CPSExecutor.execute()",
+    "post_execution_guard": "services/handrail/handrail/server.py:88-102 — DignityKernel.enforce_dignity_invariants(returnblock)",
+    "dignity_kernel_impl": "services/handrail/handrail/kernel/dignity_kernel.py"
+  },
+  "pass_rate": "4/4",
+  "all_blocked": true
+}

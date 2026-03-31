@@ -1,0 +1,21 @@
+{
+  "proof_id": "boot-timing-v1",
+  "ts_utc": "2026-03-31T00:00:00Z",
+  "verdict": "SOVEREIGN — all 3 services healthy, cold-start proven at 20.9s (from perf_proof)",
+  "cold_start_s": 20.9,
+  "cold_start_source": "proofs/performance_proof.json:boot_timing.total_s",
+  "sovereign_check_ms": 102.3,
+  "service_latencies_ms": {
+    "handrail_healthz": 15.1,
+    "ns_healthz": 3.1,
+    "continuum_state": 3.9,
+    "ns_health_full": 75.1,
+    "yubikey_test": 1.4,
+    "alexandria_status": 1.8
+  },
+  "all_services_healthy": true,
+  "voice_sessions": "auth required (expected — Twilio JWT gate)",
+  "sequence": "docker-compose up → handrail:8011 → ns:9000 → continuum:8788 → ngrok → Twilio webhook → BOOT COMPLETE",
+  "p99_health_check_ms": 75.1,
+  "architecture": "Handrail(8011) → NS(9000) → Continuum(8788)"
+}
