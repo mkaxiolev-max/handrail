@@ -174,10 +174,22 @@ def create_app() -> FastAPI:
     _ALEXANDRIA_SNAPSHOTS_DIR = Path("/tmp/alexandria_snapshots")
     _ALEXANDRIA_SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
     _ALEXANDRIA_LEDGER = Path("/tmp/ns_alexandria_boot.jsonl")
+    # SSD persistence paths
+    _SSD_ALEXANDRIA = Path("/Volumes/NSExternal/ALEXANDRIA")
+    _SSD_SNAPSHOTS_DIR = _SSD_ALEXANDRIA / "snapshots"
+    _SSD_LEDGER_DIR = _SSD_ALEXANDRIA / "ledger"
+    _SSD_MOUNTED = _SSD_ALEXANDRIA.exists()
+    if _SSD_MOUNTED:
+        _SSD_SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
+        _SSD_LEDGER_DIR.mkdir(parents=True, exist_ok=True)
+        (_SSD_ALEXANDRIA / "ether").mkdir(parents=True, exist_ok=True)
     _boot_entry = json.dumps({"event": "NS_BOOT", "ts": datetime.utcnow().isoformat() + "Z",
                                "version": "2.0.0"})
     with _ALEXANDRIA_LEDGER.open("a") as _f:
         _f.write(_boot_entry + "\n")
+    if _SSD_MOUNTED:
+        with (_SSD_LEDGER_DIR / "ns_receipt_chain.jsonl").open("a") as _f:
+            _f.write(_boot_entry + "\n")
     try:
         import hashlib as _hlib
         _snap_data = {"tag": "boot", "ts": datetime.utcnow().isoformat() + "Z", "entry": _boot_entry}
@@ -185,15 +197,28 @@ def create_app() -> FastAPI:
         _snap_file = _ALEXANDRIA_SNAPSHOTS_DIR / f"snapshot_boot_{_snap_hash[:8]}.json"
         with _snap_file.open("w") as _f:
             json.dump({**_snap_data, "snapshot_hash": _snap_hash}, _f)
-        print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} written")
+        print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} written (local)")
+        if _SSD_MOUNTED:
+            _ssd_snap_file = _SSD_SNAPSHOTS_DIR / f"snapshot_boot_{_snap_hash[:8]}.json"
+            with _ssd_snap_file.open("w") as _f:
+                json.dump({**_snap_data, "snapshot_hash": _snap_hash, "ssd": True}, _f)
+            print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} mirrored to SSD")
     except Exception as _ae:
         print(f"  ⚠  Alexandria boot proof error: {_ae}")
+
+    _SSD_RECEIPT_LEDGER = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
 
     async def emit_receipt(event_type: str, source: dict, inputs: dict, outputs: dict) -> dict:
         """Emit receipt and broadcast receipt.new to connected consoles."""
         receipt = receipt_chain.emit(event_type, source, inputs, outputs)
         try:
             await bus.broadcast("receipt.new", receipt)
+        except Exception:
+            pass
+        try:
+            if _SSD_RECEIPT_LEDGER.parent.exists():
+                with _SSD_RECEIPT_LEDGER.open("a") as _lf:
+                    _lf.write(json.dumps(receipt) + "\n")
         except Exception:
             pass
         return receipt
@@ -1182,16 +1207,21 @@ def create_app() -> FastAPI:
     async def alexandria_status():
         snap_dir = Path("/tmp/alexandria_snapshots")
         snapshots = list(snap_dir.glob("*.json")) if snap_dir.exists() else []
-        ssd = Path("/Volumes/NSExternal")
-        ssd_snaps: list = []
-        if (ssd / "ALEXANDRIA").exists():
-            ssd_snaps = list((ssd / "ALEXANDRIA").rglob("snapshot_*.json"))
+        ssd_snapshots_dir = Path("/Volumes/NSExternal/ALEXANDRIA/snapshots")
+        ssd_ledger_file = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
+        ssd_snaps = list(ssd_snapshots_dir.glob("snapshot_*.json")) if ssd_snapshots_dir.exists() else []
+        ssd_ledger_entries = 0
+        if ssd_ledger_file.exists():
+            with ssd_ledger_file.open() as _f:
+                ssd_ledger_entries = sum(1 for line in _f if line.strip())
         total = len(snapshots) + len(ssd_snaps)
         return {
             "ok": total > 0,
             "snapshot_count": total,
             "local_snapshots": len(snapshots),
             "ssd_snapshots": len(ssd_snaps),
+            "ssd_snapshots_dir": str(ssd_snapshots_dir),
+            "ssd_ledger_entries": ssd_ledger_entries,
             "snapshots_dir": str(snap_dir),
         }
 
