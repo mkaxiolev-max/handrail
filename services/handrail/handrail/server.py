@@ -45,14 +45,46 @@ def run(cmd):
         return {"ok": False, "error": str(e)}
 
 
+_NEVER_EVENT_OPS = {"dignity.never_event", "sys.self_destruct", "auth.bypass", "policy.override"}
+
 @app.post("/ops/cps")
 def ops_cps(req: CPSRequest):
     from handrail.cps_engine import CPSExecutor
+    from handrail.kernel.dignity_kernel import DignityKernel
+
+    # Pre-execution: never-event op check
+    for op_spec in req.ops:
+        if op_spec.get("op") in _NEVER_EVENT_OPS:
+            return JSONResponse({
+                "ok": False,
+                "dignity_violation": True,
+                "never_event": op_spec.get("op"),
+                "reason": "Op blocked by Dignity Kernel never-events list",
+            }, status_code=422)
+
     run_id = now_id()
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     cps_dict = {"cps_id": req.cps_id, "ops": req.ops, "expect": req.expect or {}, "policy_profile": req.policy_profile}
     result = CPSExecutor.execute(cps_dict, WORKSPACE)
+
+    # Post-execution: Dignity Kernel returnblock validation
+    dk = DignityKernel()
+    returnblock = {
+        "decision":  {"allowed": result.get("ok")},
+        "execution": {"all_ok": result.get("ok")},
+        "result":    {"output_ok": result.get("ok")},
+        "violations": [],
+    }
+    valid, dk_msg = dk.enforce_dignity_invariants(returnblock)
+    if not valid:
+        return JSONResponse({
+            "ok": False,
+            "dignity_violation": True,
+            "dignity_message": dk_msg,
+            "run_id": run_id,
+        }, status_code=422)
+
     try:
         _h = hashlib.sha256(json.dumps(cps_dict, sort_keys=True).encode()).hexdigest()
         result["identity"] = {"input_hash": _h, "timestamp": datetime.utcnow().isoformat()}
@@ -70,5 +102,5 @@ def ops_cps(req: CPSRequest):
             json.dump({"last_hash": _ch, "run_id": run_id}, f)
     except Exception as e:
         result["bk_error"] = str(e)
-    result.update({"run_id": run_id, "run_dir": str(run_dir)})
+    result.update({"run_id": run_id, "run_dir": str(run_dir), "dignity_enforced": True})
     return JSONResponse(result)
