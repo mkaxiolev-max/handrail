@@ -1,10 +1,11 @@
 {
   "cps_id": "ns_boot_v1_001",
   "objective": "boot NS services and verify health",
+  "policy_profile": "boot.runtime",
   "ops": [
-    {"op": "docker.compose_ps", "args": {"compose_file": "/workspace/docker-compose.yml"}},
+    {"op": "docker.compose_ps", "args": {"project_dir": "/Users/axiolevns/axiolev_runtime"}},
     {"op": "http.get", "args": {"url": "http://127.0.0.1:8011/healthz"}},
-    {"op": "http.get", "args": {"url": "http://127.0.0.1:9000/healthz"}}
+    {"op": "http.get", "args": {"url": "http://ns:9000/healthz"}}
   ],
   "expect": {}
 }
