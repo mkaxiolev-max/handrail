@@ -35,6 +35,14 @@
 - [x] Crash recovery: NS killed → watchdog recovered in 4s, SSD state preserved (crash-recovery-v1)
 - [x] Replay contract: same input → same output hash both runs (replay-contract-v1)
 
+- [x] Dignity Kernel enforcement proof — 4/4 never-events blocked on CPS path (dignity-proof-v1)
+- [x] NS boot timing proof — cold_start=20.9s, all 3 services healthy (boot-timing-v1)
+- [x] Alexandria Merkle proof endpoint — GET /alexandria/proof, SHA256 chain, proof_valid=true (alexandria-merkle-v1)
+- [x] Git adapter — git.diff, git.commit added to CPS OP_DISPATCH (adapter-git-v1)
+- [x] HTTP adapter hardened — http.post, http.health_check (adapter-http-v1)
+- [x] System adapter — sys.env_get (allowlisted), sys.disk_usage, sys.uptime (adapter-sys-v1)
+- [x] sovereign_boot CPS plan — 7/7 ops pass, expect_passed=true (sovereign-boot-v1)
+
 ## ⚠️ REMAINING BLOCKERS
 
 - [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)
