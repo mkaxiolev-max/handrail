@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
+import re
 import subprocess
 import hashlib
 import json
@@ -46,11 +47,26 @@ def run(cmd):
 
 
 _NEVER_EVENT_OPS = {"dignity.never_event", "sys.self_destruct", "auth.bypass", "policy.override"}
+_YSK_TOKEN_RE = re.compile(r'^ysk_[0-9a-f]{32}$')
+
+def _validate_ysk_token(token: str) -> bool:
+    return bool(token and _YSK_TOKEN_RE.match(token))
 
 @app.post("/ops/cps")
-def ops_cps(req: CPSRequest):
+async def ops_cps(req: CPSRequest, http_request: Request):
     from handrail.cps_engine import CPSExecutor
     from handrail.kernel.dignity_kernel import DignityKernel
+
+    # Quorum gate: boot.runtime requires a valid YubiKey session token
+    if req.policy_profile == "boot.runtime":
+        ysk_token = http_request.headers.get("X-YSK-Token", "")
+        if not _validate_ysk_token(ysk_token):
+            return JSONResponse({
+                "ok": False,
+                "quorum_required": True,
+                "reason": "boot.runtime ops require a valid X-YSK-Token YubiKey session",
+                "policy_profile": "boot.runtime",
+            }, status_code=403)
 
     # Pre-execution: never-event op check
     for op_spec in req.ops:

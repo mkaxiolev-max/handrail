@@ -254,18 +254,6 @@ def _validate_expect(results: list, expect: dict) -> dict:
 # Main executor
 # ---------------------------------------------------------------------------
 
-OP_DISPATCH = {
-    "fs.pwd": _op_fs_pwd,
-    "fs.list": _op_fs_list,
-    "fs.read": _op_fs_read,
-    "git.status": _op_git_status,
-    "git.log": _op_git_log,
-    "docker.compose_ps": _op_docker_compose_ps,
-    "docker.compose_up": _op_docker_compose_up,
-    "http.get": _op_http_get,
-    "proc.run": _op_proc_run,
-}
-
 
 READONLY_ALLOWLIST = {
     "pwd": ["pwd"],

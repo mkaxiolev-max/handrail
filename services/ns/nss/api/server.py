@@ -308,6 +308,28 @@ def create_app() -> FastAPI:
     def _is_modhex(s: str) -> bool:
         return all(c in _YUBIKEY_MODHEX for c in s.lower())
 
+    async def _yubicloud_verify(otp: str, nonce: str) -> dict:
+        """Call YubiCloud OTP verification API (api.yubico.com).
+        Client ID 1 is the public Yubico demo client — no secret required.
+        Returns dict with keys: status, nonce, t (timestamp), sl (sync level).
+        """
+        import urllib.parse
+        params = urllib.parse.urlencode({"id": "1", "otp": otp, "nonce": nonce})
+        url = f"https://api.yubico.com/wsapi/2.0/verify?{params}"
+        try:
+            import httpx as _httpx
+            async with _httpx.AsyncClient(timeout=8.0) as _c:
+                resp = await _c.get(url)
+            lines = resp.text.strip().splitlines()
+            result = {}
+            for line in lines:
+                if "=" in line:
+                    k, _, v = line.partition("=")
+                    result[k.strip()] = v.strip()
+            return result
+        except Exception as e:
+            return {"status": "YUBICLOUD_UNREACHABLE", "error": str(e)}
+
     @app.post("/auth/yubikey")
     async def auth_yubikey(request: Request):
         try:
@@ -323,20 +345,35 @@ def create_app() -> FastAPI:
                                  "detail": "OTP must be 44 modhex characters"}, status_code=400)
         device_id = otp[:12]
         import hashlib, secrets
+        nonce = secrets.token_hex(16)
+        cloud = await _yubicloud_verify(otp, nonce)
+        cloud_status = cloud.get("status", "")
+        if cloud_status == "YUBICLOUD_UNREACHABLE":
+            return JSONResponse({"ok": False, "error": "yubicloud_unreachable",
+                                 "detail": cloud.get("error", "network error")}, status_code=503)
+        if cloud_status != "OK":
+            return JSONResponse({"ok": False, "error": "otp_rejected",
+                                 "yubicloud_status": cloud_status,
+                                 "device_id": device_id}, status_code=401)
+        # OTP valid — issue session token
         token_payload = f"{device_id}:{_YUBIKEY_SERIAL}:{datetime.utcnow().isoformat()}"
-        token = "ysk_" + hashlib.sha256((token_payload + secrets.token_hex(8)).encode()).hexdigest()[:32]
+        token = "ysk_" + hashlib.sha256((token_payload + nonce).encode()).hexdigest()[:32]
         _YUBIKEY_SESSIONS[token] = {
             "device_id": device_id,
             "serial": _YUBIKEY_SERIAL,
             "issued_at": datetime.utcnow().isoformat() + "Z",
+            "yubicloud_status": cloud_status,
+            "yubicloud_sl": cloud.get("sl", ""),
         }
         receipt_chain.emit("YUBIKEY_AUTH", {"kind": "auth", "ref": device_id},
-                           {"serial": _YUBIKEY_SERIAL, "device_id": device_id}, {})
+                           {"serial": _YUBIKEY_SERIAL, "device_id": device_id,
+                            "yubicloud_status": cloud_status}, {})
         return {
             "ok": True,
             "token": token,
             "device_id": device_id,
             "serial": _YUBIKEY_SERIAL,
+            "yubicloud_status": cloud_status,
             "issued_at": _YUBIKEY_SESSIONS[token]["issued_at"],
         }
 
