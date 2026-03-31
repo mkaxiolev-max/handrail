@@ -45,7 +45,7 @@ from nss.core.events import (
 from nss.interfaces.voice_lane import (
     get_or_create_session, close_session, active_sessions,
     check_voice_configured, build_arbiter_context,
-    safe_speak_filter,
+    safe_speak_filter, load_persisted_sessions,
     NORTHSTAR_WEBHOOK_BASE, TWILIO_PHONE_NUMBER,
     TIER_F, TIER_E,
 )
@@ -205,6 +205,17 @@ def create_app() -> FastAPI:
             print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} mirrored to SSD")
     except Exception as _ae:
         print(f"  ⚠  Alexandria boot proof error: {_ae}")
+
+    # ── Voice Session Reload from SSD ──────────────────────────────────────────
+    try:
+        _persisted = load_persisted_sessions(max_age_hours=24)
+        if _persisted:
+            active_sessions.update(_persisted)
+            print(f"  ✓ Voice sessions reloaded from SSD: {len(_persisted)} sessions")
+        else:
+            print(f"  ✓ Voice sessions: no recent sessions on SSD")
+    except Exception as _vse:
+        print(f"  ⚠  Voice session reload error: {_vse}")
 
     _SSD_RECEIPT_LEDGER = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
 
@@ -1655,9 +1666,15 @@ def create_app() -> FastAPI:
 
     @app.get("/voice/sessions")
     async def voice_sessions(request: Request, ctx: AuthContext = Depends(require_auth)):
-        return {"active_sessions": len(active_sessions),
-                "sessions": [{"call_sid": k, "tier": v.tier}
-                              for k, v in active_sessions.items()]}
+        ssd_sessions_dir = Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
+        persisted_count = len(list(ssd_sessions_dir.glob("*.json"))) if ssd_sessions_dir.exists() else 0
+        return {
+            "active_sessions": len(active_sessions),
+            "persisted_sessions": persisted_count,
+            "sessions_dir": str(ssd_sessions_dir),
+            "sessions": [{"call_sid": k, "tier": v.tier, "turns": len(v.turns)}
+                         for k, v in active_sessions.items()],
+        }
 
     # ── Twilio URL alias (what Twilio console is configured to hit) ────────────
     @app.post("/voice/incoming")
