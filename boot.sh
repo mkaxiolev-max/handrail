@@ -9,6 +9,11 @@ if [ -f .env ]; then
   export $(grep -v '^#' .env | xargs)
 fi
 
+# Ensure Docker Desktop socket is used (macOS)
+if [ -S "/Users/${USER}/.docker/run/docker.sock" ]; then
+  export DOCKER_HOST="unix:///Users/${USER}/.docker/run/docker.sock"
+fi
+
 NS_URL="http://localhost:9000"
 HANDRAIL_URL="http://localhost:8011"
 CONTINUUM_URL="http://localhost:8788"
