@@ -1201,6 +1201,68 @@ def create_app() -> FastAPI:
     async def healthz():
         return await health()
 
+    @app.get("/health/full")
+    async def health_full():
+        """Unified system status — no auth required. Checks all services."""
+        import asyncio
+        import aiohttp
+
+        async def _get(url: str) -> dict:
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=4)) as r:
+                        body = await r.json()
+                        return {"status": "ok", "code": r.status, "data": body}
+            except Exception as e:
+                return {"status": "error", "error": str(e)}
+
+        handrail_res, continuum_res = await asyncio.gather(
+            _get("http://handrail:8011/healthz"),
+            _get("http://continuum:8788/continuum/status"),
+        )
+
+        snap_dir = Path("/tmp/alexandria_snapshots")
+        ssd_snapshots_dir = Path("/Volumes/NSExternal/ALEXANDRIA/snapshots")
+        ssd_ledger = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
+        alexandria = {
+            "local_snapshots": len(list(snap_dir.glob("*.json"))) if snap_dir.exists() else 0,
+            "ssd_snapshots": len(list(ssd_snapshots_dir.glob("*.json"))) if ssd_snapshots_dir.exists() else 0,
+            "ssd_ledger_entries": sum(1 for _ in ssd_ledger.open()) if ssd_ledger.exists() else 0,
+            "ssd_mounted": Path("/Volumes/NSExternal/ALEXANDRIA").exists(),
+        }
+
+        voice_cfg = check_voice_configured()
+        ngrok_url = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
+        ngrok_live = bool(ngrok_url and "REPLACE" not in ngrok_url and "localhost" not in ngrok_url)
+
+        yubikey_serial = os.environ.get("YUBIKEY_SERIAL", "")
+
+        all_ok = (
+            handrail_res["status"] == "ok"
+            and continuum_res["status"] == "ok"
+            and alexandria["ssd_mounted"]
+        )
+
+        return {
+            "ok": all_ok,
+            "ts": datetime.utcnow().isoformat() + "Z",
+            "services": {
+                "handrail": {"url": "http://handrail:8011/healthz", **handrail_res},
+                "continuum": {"url": "http://continuum:8788/continuum/status", **continuum_res},
+                "ns": {"status": "ok", "version": "2.0.0"},
+            },
+            "alexandria": alexandria,
+            "voice": {
+                "webhook_configured": voice_cfg.get("webhook_configured", False),
+                "ngrok_live": ngrok_live,
+                "ngrok_url": ngrok_url,
+            },
+            "yubikey": {
+                "serial_set": bool(yubikey_serial),
+                "client_id_set": bool(os.environ.get("YUBIKEY_CLIENT_ID", "")),
+            },
+        }
+
     @app.get("/health/voice")
     async def health_voice():
         return check_voice_configured()
