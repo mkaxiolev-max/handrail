@@ -1,0 +1,13 @@
+{
+  "test": "crash recovery",
+  "ts_utc": "2026-03-31T23:14:30Z",
+  "procedure": "docker kill axiolev_runtime-ns-1",
+  "recovery_agent": "watchdog.sh via docker-compose restart",
+  "recovery_time_s": 4,
+  "ssd_snapshots_before": 11,
+  "ssd_snapshots_after": 12,
+  "ssd_state_preserved": true,
+  "new_snapshot_on_reboot": true,
+  "voice_sessions_endpoint": "requires auth \u2014 SSD sessions/ dir preserved on disk",
+  "verdict": "PASS \u2014 NS recovered in 4s, SSD state preserved"
+}

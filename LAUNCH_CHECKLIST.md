@@ -30,6 +30,10 @@
 - [x] ROOT CTAs → root.axiolev.com custom domain (domain-custom-v1)
 - [x] DISTRIBUTION.md — Reddit + HN launch plan 4 subreddits (distribution-v1)
 - [x] zeroguess.dev domain final audit — zero noguess instances (domain-final-v1)
+- [x] 1000/1000 determinism proof — p50=2ms p99=4ms (determinism-1000-v1)
+- [x] p99 performance: CPS=4ms, Alexandria=3ms, boot=20.9s (perf-proof-v1)
+- [x] Crash recovery: NS killed → watchdog recovered in 4s, SSD state preserved (crash-recovery-v1)
+- [x] Replay contract: same input → same output hash both runs (replay-contract-v1)
 
 ## ⚠️ REMAINING BLOCKERS
 

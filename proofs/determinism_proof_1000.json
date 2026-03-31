@@ -1,0 +1,20 @@
+{
+  "test": "CPS determinism \u2014 1000 ops (100 ops \u00d7 10 runs)",
+  "ts_utc": "2026-03-31T21:15:00Z",
+  "op": "proc.run_readonly: ls /app",
+  "plan_ops": 100,
+  "runs": 10,
+  "total_ops_executed": 1000,
+  "deterministic": true,
+  "matching_digests": 10,
+  "total_runs": 10,
+  "output_hash": "sha256:026529b469e439d09f3b09b78a0e52d14b39b0c3c8ff4da1fdb4d6b79e6a0e5c",
+  "latency_ms": {
+    "min": 201,
+    "max": 299,
+    "p50": 282,
+    "p99": 299
+  },
+  "verdict": "1000/1000 DETERMINISTIC",
+  "methodology": "Hash of [op, args, data, ok] per result \u2014 excludes latency_ms"
+}

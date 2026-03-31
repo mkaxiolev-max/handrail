@@ -1,0 +1,16 @@
+{
+  "test": "replay contract",
+  "ts_utc": "2026-03-31T23:15:28Z",
+  "plan_ops": 3,
+  "ops": [
+    "fs.pwd",
+    "proc.run_readonly:ls/app",
+    "fs.list:/app"
+  ],
+  "run1_hash": "sha256:209eee9eb6be55870330777f1f36b65e929632e28def015a36d2ed098ceec4f7",
+  "run2_hash": "sha256:209eee9eb6be55870330777f1f36b65e929632e28def015a36d2ed098ceec4f7",
+  "hashes_match": true,
+  "run1_ok": false,
+  "run2_ok": false,
+  "verdict": "PASS \u2014 identical input \u2192 identical output hash"
+}

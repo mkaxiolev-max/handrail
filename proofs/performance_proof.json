@@ -1,0 +1,29 @@
+{
+  "test": "p99 performance proof",
+  "ts_utc": "2026-03-31T21:20:00Z",
+  "runs_each": 100,
+  "handrail_cps": {
+    "endpoint": "POST http://localhost:8011/ops/cps",
+    "op": "fs.pwd",
+    "min_ms": 2,
+    "p50_ms": 2,
+    "p95_ms": 3,
+    "p99_ms": 4,
+    "max_ms": 8
+  },
+  "alexandria_status": {
+    "endpoint": "GET http://localhost:9000/alexandria/status",
+    "min_ms": 1,
+    "p50_ms": 2,
+    "p95_ms": 3,
+    "p99_ms": 3,
+    "max_ms": 6
+  },
+  "boot_timing": {
+    "sequence": "docker-compose down \u2192 boot.sh \u2192 BOOT COMPLETE",
+    "total_ms": 20950,
+    "total_s": 20.9,
+    "includes": "docker build (cached), 3 health checks, ngrok start, Twilio webhook update"
+  },
+  "verdict": "all p99 < 1000ms | boot < 25s"
+}
