@@ -23,21 +23,26 @@
 - [x] watchdog.sh + LaunchAgent com.axiolev.watchdog (watchdog-v1)
 - [x] /health/full unified status endpoint — ok=true, all services healthy (health-full-v1)
 - [x] FOUNDER_PHONE=+13602310554 wired for TIER_F voice detection (founder-phone-v1)
+- [x] YubiKey hardware close — physical OTP validated, YubiCloud status=OK (yubikey-cloud-live-v1)
+- [x] YUBIKEY_CLIENT_ID=119160 + SECRET_KEY wired, mode=live_yubicloud (yubikey-test-v1)
+- [x] Stripe webhook live at root.axiolev.com/api/webhook — HMAC-SHA256 sig verification (stripe-live-v1)
+- [x] STRIPE_WEBHOOK_SECRET wired in Vercel env + .env
+- [x] ROOT CTAs → root.axiolev.com custom domain (domain-custom-v1)
+- [x] DISTRIBUTION.md — Reddit + HN launch plan 4 subreddits (distribution-v1)
+- [x] zeroguess.dev domain final audit — zero noguess instances (domain-final-v1)
 
 ## ⚠️ REMAINING BLOCKERS
 
-- [ ] **Stripe account activation** — required for payment processing on Pro/Auto/Enterprise tiers
-- [ ] **Custom domains** — `root-jade-kappa.vercel.app` → final domain (root.axiolev.com or root.so); `axiolevruntime.vercel.app` → handrail.axiolev.com
-- [ ] **Physical YubiKey close** — touch key → `curl -X POST localhost:9000/auth/yubikey -H 'X-YSK-Token: <otp>'` → ok:true
-- [ ] **YUBIKEY_CLIENT_ID** — not set in .env (yubikey.serial_set=true but client_id_set=false)
-- [ ] **HN launch post** — pending HN availability and copy review
-- [ ] **Free tier signup flow** — "Get Started" links to GitHub; no free tier registration path
+- [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)
+- [ ] **Stripe account activation** — activate at dashboard.stripe.com, then set webhook URL to https://root.axiolev.com/api/webhook
+- [ ] **HN launch post** — pending HN availability, use copy from DISTRIBUTION.md
+- [ ] **Free tier signup flow** — "Get Started" links to GitHub; no self-serve registration
 
 ## LAUNCH TARGETS
 
 | Product | URL | Status |
 |---------|-----|--------|
-| ROOT | https://root-jade-kappa.vercel.app | Live |
+| ROOT | https://root.axiolev.com | Live (DNS pending) |
 | Handrail | https://axiolevruntime.vercel.app | Live |
 | Hub | https://zeroguess.dev | Live |
 | Voice | +1 (307) 202-4418 | Live |
