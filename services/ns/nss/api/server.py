@@ -337,20 +337,27 @@ def create_app() -> FastAPI:
     # YUBIKEY AUTH
     # ═══════════════════════════════════════════════════════════════════════════
 
-    _YUBIKEY_SERIAL = os.environ.get("YUBIKEY_SERIAL", "")
-    _YUBIKEY_MODHEX = "cbdefghijklnrtuv"
+    _YUBIKEY_SERIAL    = os.environ.get("YUBIKEY_SERIAL", "")
+    _YUBIKEY_CLIENT_ID = os.environ.get("YUBIKEY_CLIENT_ID", "").strip()
+    _YUBIKEY_SECRET    = os.environ.get("YUBIKEY_SECRET_KEY", "").strip()
+    _YUBIKEY_MODHEX    = "cbdefghijklnrtuv"
     _YUBIKEY_SESSIONS: dict = {}
+
+    if not _YUBIKEY_CLIENT_ID:
+        print("  ⚠  YUBIKEY_CLIENT_ID not set — using public demo client (id=1). "
+              "Get a real key at https://upgrade.yubico.com/getapikey/")
 
     def _is_modhex(s: str) -> bool:
         return all(c in _YUBIKEY_MODHEX for c in s.lower())
 
     async def _yubicloud_verify(otp: str, nonce: str) -> dict:
         """Call YubiCloud OTP verification API (api.yubico.com).
-        Client ID 1 is the public Yubico demo client — no secret required.
+        Uses YUBIKEY_CLIENT_ID if set; falls back to public demo client id=1.
         Returns dict with keys: status, nonce, t (timestamp), sl (sync level).
         """
         import urllib.parse
-        params = urllib.parse.urlencode({"id": "1", "otp": otp, "nonce": nonce})
+        client_id = _YUBIKEY_CLIENT_ID or "1"
+        params = urllib.parse.urlencode({"id": client_id, "otp": otp, "nonce": nonce})
         url = f"https://api.yubico.com/wsapi/2.0/verify?{params}"
         try:
             import httpx as _httpx
@@ -411,6 +418,22 @@ def create_app() -> FastAPI:
             "serial": _YUBIKEY_SERIAL,
             "yubicloud_status": cloud_status,
             "issued_at": _YUBIKEY_SESSIONS[token]["issued_at"],
+        }
+
+    @app.get("/auth/yubikey/test")
+    async def auth_yubikey_test():
+        """Diagnostic endpoint — reports YubiKey config state without auth."""
+        client_id_set = bool(_YUBIKEY_CLIENT_ID)
+        return {
+            "ok": client_id_set,
+            "client_id_set": client_id_set,
+            "client_id": _YUBIKEY_CLIENT_ID if client_id_set else None,
+            "secret_set": bool(_YUBIKEY_SECRET),
+            "serial_set": bool(_YUBIKEY_SERIAL),
+            "serial": _YUBIKEY_SERIAL or None,
+            "mode": "live_yubicloud" if client_id_set else "demo_client_id_1",
+            "error": None if client_id_set else "client_id_not_configured",
+            "instructions": "POST /auth/yubikey with {\"otp\": \"<44-char modhex OTP from key touch>\"}",
         }
 
     # ═══════════════════════════════════════════════════════════════════════════
