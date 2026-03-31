@@ -15,7 +15,7 @@
 - [x] CLAUDE.md architecture brief created (claude-md-v1)
 - [x] Voice session persistence to NSExternal (voice-sessions-v1)
 - [x] CPS determinism 1000/1000 verified (determinism-v1)
-- [x] noguess.dev → zeroguess.dev domain fix (domain-fix-v1)
+- [x] zeroguess.dev domain cleanup — all legacy domain refs purged (domain-fix-v1)
 - [x] ROOT landing page audited — viewport, mobile, Stripe links live (root-prelaunch-v1)
 - [x] Handrail landing page audited — fixed placeholder CTA, added mobile CSS (handrail-prelaunch-v1)
 - [x] NSExternal volume mounted in Docker — verified from inside containers (ssd-mount-v1)
