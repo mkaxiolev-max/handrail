@@ -1,0 +1,46 @@
+{
+  "proof_id": "cps_plan_proof",
+  "timestamp": "2026-04-02T18:39:45Z",
+  "plans": {
+    "sovereign_boot": {
+      "cps_id": "sovereign_boot",
+      "ok": true,
+      "expect_passed": true,
+      "ops_run": 7,
+      "all_expect_passed": true
+    },
+    "self_heal": {
+      "cps_id": "self_heal",
+      "ok": true,
+      "expect_passed": true,
+      "ops_run": 5,
+      "ops": [
+        "http.health_check(ns)",
+        "http.health_check(continuum)",
+        "sys.disk_usage",
+        "http.get(alexandria/proof)",
+        "http.get(health/full)"
+      ],
+      "ns_healthy": true,
+      "continuum_healthy": true,
+      "proof_valid": true
+    },
+    "boot_and_prove": {
+      "cps_id": "boot_and_prove",
+      "ok": true,
+      "expect_passed": true,
+      "ops_run": 7,
+      "ops": [
+        "fs.pwd",
+        "http.health_check(ns)",
+        "http.health_check(continuum)",
+        "http.get(alexandria/proof)",
+        "http.get(auth/yubikey/test)",
+        "sys.disk_usage",
+        "slack.notify"
+      ],
+      "all_expect_passed": true
+    }
+  },
+  "verdict": "PASS \u2014 all 3 CPS plans executed with expect_passed:True"
+}
