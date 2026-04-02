@@ -21,8 +21,6 @@ services:
     build: ./services/ns
     ports:
       - "9000:9000"
-    volumes:
-      - /Volumes/NSExternal:/Volumes/NSExternal
     env_file:
       - .env
     depends_on:
@@ -45,7 +43,7 @@ services:
       ns:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8788/state')\""]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8788/healthz')\""]
       interval: 2s
       timeout: 3s
       retries: 30

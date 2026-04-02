@@ -1,0 +1,18 @@
+{
+  "proof_id": "capability-graph-v1",
+  "date": "2026-04-02",
+  "session": "Capability Graph",
+  "tag": "capability-graph-v1",
+  "results": {
+    "total_nodes": 18,
+    "seed_states": {
+      "implemented": 8,
+      "provisional": 4,
+      "desired": 2,
+      "unresolved": 3,
+      "blocked_policy": 1
+    },
+    "endpoints": ["/capability/graph","/capability/unresolved","/capability/update"],
+    "status": "PASS"
+  }
+}

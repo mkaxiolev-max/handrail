@@ -2996,6 +2996,39 @@ setInterval(refresh, 5000);
         }
 
     # ═══════════════════════════════════════════════════════════════════════════
+    # Capability Graph endpoints
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/capability/graph")
+    async def capability_graph_endpoint():
+        from nss.capability.graph import get_graph
+        g = get_graph()
+        return {"nodes": g.all_nodes(), "summary": g.summary(),
+                "ts": datetime.now(timezone.utc).isoformat()}
+
+    @app.get("/capability/unresolved")
+    async def capability_unresolved():
+        from nss.capability.graph import get_graph
+        g = get_graph()
+        return {"nodes": g.unresolved_nodes(), "top_3": g.top_unresolved(3),
+                "count": len(g.unresolved_nodes()),
+                "ts": datetime.now(timezone.utc).isoformat()}
+
+    @app.post("/capability/update")
+    async def capability_update(request: Request):
+        body = await request.json()
+        node_id = body.get("node_id", "")
+        if not node_id:
+            return JSONResponse({"error": "node_id required"}, status_code=400)
+        from nss.capability.graph import get_graph
+        return get_graph().update_node(
+            node_id,
+            state=body.get("state"),
+            proof_ref=body.get("proof_ref"),
+            blocked_reason=body.get("blocked_reason"),
+        )
+
+    # ═══════════════════════════════════════════════════════════════════════════
     # Semantic Feedback Binder endpoints
     # ═══════════════════════════════════════════════════════════════════════════
 
