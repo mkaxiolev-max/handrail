@@ -43,6 +43,25 @@
 - [x] System adapter — sys.env_get (allowlisted), sys.disk_usage, sys.uptime (adapter-sys-v1)
 - [x] sovereign_boot CPS plan — 7/7 ops pass, expect_passed=true (sovereign-boot-v1)
 
+### Ring 5 / Session April 2 — Adapter Expansion + IP Hardening
+
+- [x] Full adapter expansion — 27 ops across 10 domains: fs, git, proc, docker, http, sys, slack, email, stripe, schedule (adapter-complete-v1)
+- [x] LICENSE written — proprietary IP protection (adapter-complete-v1)
+- [x] self_heal.json + boot_and_prove.json CPS plans — 5-op and 7-op plans verified (adapter-complete-v1)
+- [x] Copyright headers added to all 6 first-party source files (ip-hardened-v1)
+- [x] README.md proprietary notice + provenance statement (provenance-v1)
+- [x] CLAUDE.md full adapter registry — 27 ops documented (adapter-registry-v1)
+- [x] Adapter proof — all adapters verified via container POST /ops/cps (adapter-proof-v1)
+- [x] slack.notify: graceful skip (no SLACK_WEBHOOK_URL) — proves fault tolerance
+- [x] email.notify: graceful skip (no FOUNDER_EMAIL) — proves fault tolerance
+- [x] stripe.get_balance: route wired (auth error expected without key) — proves wired
+- [x] schedule.run_at/list/cancel: full CRUD verified on SSD path
+- [x] self_heal CPS plan — 5/5 ops pass, expect_passed=true (cps-plans-v1)
+- [x] boot_and_prove CPS plan — 7/7 ops pass, expect_passed=true (cps-plans-v1)
+- [x] sovereign_boot re-verified — 7/7 ops pass post-adapter-expansion (cps-plans-v1)
+- [x] Full system: /health/full ok, /alexandria/proof proof_valid=true, /auth/yubikey/test client_id_set=true mode=live_yubicloud
+- [x] Total tags: 155
+
 ## ⚠️ REMAINING BLOCKERS
 
 - [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)
