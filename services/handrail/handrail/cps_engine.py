@@ -731,6 +731,8 @@ def _op_program_archive(args: dict, policy: PolicyEngine) -> dict:
         raise ValueError("program.archive requires namespace")
     return _prog_op(ns, "archive", {**args, "next_state": "archived"}, policy)
 
+from handrail.adapters.san_adapter import SAN_OPS as _SAN_OPS  # noqa: E402
+
 _META_OPS: dict[str, Any] = {
     "program.advance_state":    _op_program_advance_state,
     "program.flag_risk":        _op_program_flag_risk,
@@ -813,6 +815,8 @@ OP_DISPATCH: dict[str, Any] = {
     **_GOV_OPS,
     **_KNOWLEDGE_OPS,
     **_META_OPS,
+    # SAN — Sovereign Authority Namespace (legal/territorial reality layer)
+    **_SAN_OPS,
 }
 
 

@@ -1,0 +1,14 @@
+{
+  "proof_id": "san-adapter-v1",
+  "date": "2026-04-02",
+  "session": "SAN Adapter",
+  "tag": "san-adapter-v1",
+  "results": {
+    "ops_tested": 3,
+    "namespaces": ["san"],
+    "san_ops": 8,
+    "objects_defined": ["TerritoryNode","ClaimCoordinate","WhiteSpaceOpportunity","RiskZone","FilingIntent","LicensingTarget"],
+    "storage": "NSExternal/ALEXANDRIA/san/ with ~/.axiolev/san/ fallback",
+    "status": "PASS"
+  }
+}
