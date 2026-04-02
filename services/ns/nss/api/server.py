@@ -1,3 +1,4 @@
+# Copyright © 2026 Axiolev. All rights reserved.
 """
 NORTHSTAR API Server — Constitutional AI Operating System
 NS∞ / AXIOLEV Holdings — Conciliar Architecture v1.0

@@ -1,3 +1,4 @@
+# Copyright © 2026 Axiolev. All rights reserved.
 from __future__ import annotations
 
 import time

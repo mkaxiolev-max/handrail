@@ -1,3 +1,4 @@
+# Copyright © 2026 Axiolev. All rights reserved.
 """
 Handrail CPS Engine — Phase 1
 Normalized result shape, external policy profiles, expect validation,

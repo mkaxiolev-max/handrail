@@ -1,3 +1,4 @@
+# Copyright © 2026 Axiolev. All rights reserved.
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel

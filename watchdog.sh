@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Copyright © 2026 Axiolev. All rights reserved.
 # NS∞ Watchdog — service health monitor
 # Checks handrail, ns, continuum every 60s. Auto-restarts unhealthy containers.
 # Logs to /Volumes/NSExternal/ALEXANDRIA/ledger/watchdog.log
