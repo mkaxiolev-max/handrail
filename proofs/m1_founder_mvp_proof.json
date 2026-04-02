@@ -1,0 +1,76 @@
+{
+  "proof_id": "m1-founder-mvp-v1",
+  "date": "2026-04-02",
+  "session": "M1 Founder MVP",
+  "tag": "founder-mvp-v1",
+  "results": {
+    "voice_polish": {
+      "status": "PASS",
+      "streaming_api": true,
+      "barge_in_twiml": "Say inside Gather",
+      "timeout_reduced": "10s -> 3s",
+      "ns_personality": true,
+      "memory_wired": true
+    },
+    "voice_status_endpoint": {
+      "status": "PASS",
+      "endpoint": "GET /voice/status",
+      "active_sessions": 0,
+      "persisted": 1,
+      "phone": "+13072024418"
+    },
+    "sms_adapter": {
+      "status": "PASS",
+      "endpoints": ["POST /sms/inbound", "GET /sms/status"],
+      "twilio_wired": true,
+      "session_persistence": "Alexandria JSONL"
+    },
+    "memory_api": {
+      "status": "PASS",
+      "endpoints": [
+        "GET /memory/recent",
+        "GET /memory/search",
+        "GET /memory/sessions",
+        "GET /memory/context"
+      ],
+      "recent_count": 3,
+      "search_q_BOOT_matches": 15,
+      "cross_session_context_injected": true
+    },
+    "founder_console": {
+      "status": "PASS",
+      "endpoint": "GET /founder",
+      "html_served": true,
+      "panels": ["conversation", "health", "activity", "memory"],
+      "refresh_interval_ms": 5000
+    },
+    "chat_quick": {
+      "status": "PASS",
+      "endpoint": "POST /chat/quick",
+      "auth_required": false,
+      "sample_response": "All systems are operational. I am functioning at full capacity."
+    },
+    "meet_adapter": {
+      "status": "PASS",
+      "endpoint": "POST /meet/transcript",
+      "classifications_verified": ["respond", "escalate"],
+      "alexandria_log": true
+    },
+    "ns_comms_ops": {
+      "status": "PASS",
+      "ops_tested": ["ns.memory_recent", "ns.memory_query", "ns.sms_send"],
+      "memory_recent_ok": true,
+      "memory_query_ok": true,
+      "sms_send_graceful_skip": true,
+      "expect_passed": true,
+      "plan_duration_ms": 43.1
+    }
+  },
+  "system_health": {
+    "handrail_8011": "ok",
+    "ns_9000": "ok",
+    "continuum_8788": "ok"
+  },
+  "op_count": 32,
+  "domains": 11
+}
