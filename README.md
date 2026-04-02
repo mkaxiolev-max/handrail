@@ -25,3 +25,8 @@ Pro ($29/mo): Cloud sync + audit
 Enterprise: Custom
 
 Built by AXIOLEV.
+
+## Proprietary Notice
+
+This repository is proprietary and confidential. © 2026 Axiolev. All rights reserved.
+The Alexandria ledger, git history, receipts, Merkle proofs, and execution traces are part of the authorship and execution provenance record and must be preserved.
