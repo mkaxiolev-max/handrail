@@ -1,4 +1,5 @@
 # NS∞ — AXIOLEV Holdings | Architecture Brief
+<!-- Copyright © 2026 Axiolev. All rights reserved. Proprietary and confidential. -->
 
 ## Architecture
 

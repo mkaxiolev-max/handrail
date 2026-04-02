@@ -252,7 +252,9 @@ def _op_http_health_check(args: dict, _policy: PolicyEngine) -> dict:
 _SYS_ENV_ALLOWLIST = {
     "ANTHROPIC_API_KEY", "YUBIKEY_CLIENT_ID", "FOUNDER_PHONE", "NS_URL",
     "HANDRAIL_URL", "CONTINUUM_URL", "TWILIO_ACCOUNT_SID", "NODE_ENV",
-    "HR_WORKSPACE", "STRIPE_WEBHOOK_SECRET",
+    "HR_WORKSPACE", "STRIPE_WEBHOOK_SECRET", "SLACK_WEBHOOK_URL",
+    "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "FOUNDER_EMAIL",
+    "STRIPE_SECRET_KEY",
 }
 
 def _op_sys_env_get(args: dict, _policy: PolicyEngine) -> dict:
@@ -288,6 +290,168 @@ def _op_sys_uptime(args: dict, _policy: PolicyEngine) -> dict:
         return {"uptime": result.stdout.strip(), "returncode": result.returncode, "source": "uptime"}
 
 
+# ---------------------------------------------------------------------------
+# Slack adapter
+# ---------------------------------------------------------------------------
+
+def _op_slack_post_message(args: dict, _policy: PolicyEngine) -> dict:
+    import os
+    url = args.get("webhook_url") or os.environ.get("SLACK_WEBHOOK_URL", "")
+    if not url:
+        raise ValueError("slack.post_message requires webhook_url arg or SLACK_WEBHOOK_URL env var")
+    text = args.get("text", "")
+    blocks = args.get("blocks")
+    payload: dict = {"text": text}
+    if blocks:
+        payload["blocks"] = blocks
+    try:
+        resp = httpx.post(url, json=payload, timeout=5)
+        return {"status_code": resp.status_code, "ok": resp.status_code == 200, "response": resp.text[:200]}
+    except Exception as e:
+        raise RuntimeError(f"slack.post_message failed: {e}")
+
+
+def _op_slack_notify(args: dict, policy: PolicyEngine) -> dict:
+    import os
+    url = os.environ.get("SLACK_WEBHOOK_URL", "")
+    if not url:
+        return {"ok": False, "skipped": True, "reason": "SLACK_WEBHOOK_URL not configured"}
+    return _op_slack_post_message({"webhook_url": url, "text": args.get("text", "NS∞ notification")}, policy)
+
+
+# ---------------------------------------------------------------------------
+# Email adapter
+# ---------------------------------------------------------------------------
+
+def _op_email_send(args: dict, _policy: PolicyEngine) -> dict:
+    import os, smtplib
+    from email.message import EmailMessage
+    host = args.get("smtp_host") or os.environ.get("SMTP_HOST", "")
+    port = int(args.get("smtp_port") or os.environ.get("SMTP_PORT", 587))
+    user = args.get("smtp_user") or os.environ.get("SMTP_USER", "")
+    password = os.environ.get("SMTP_PASS", "")
+    to_addr = args.get("to", "")
+    subject = args.get("subject", "NS∞ Notification")
+    body = args.get("body", "")
+    if not host or not to_addr:
+        return {"ok": False, "skipped": True, "reason": "smtp_host and to required"}
+    try:
+        msg = EmailMessage()
+        msg["From"] = user
+        msg["To"] = to_addr
+        msg["Subject"] = subject
+        msg.set_content(body)
+        with smtplib.SMTP(host, port, timeout=10) as s:
+            s.starttls()
+            if user and password:
+                s.login(user, password)
+            s.send_message(msg)
+        return {"ok": True, "to": to_addr, "subject": subject}
+    except Exception as e:
+        raise RuntimeError(f"email.send failed: {e}")
+
+
+def _op_email_notify(args: dict, policy: PolicyEngine) -> dict:
+    import os
+    to_addr = os.environ.get("FOUNDER_EMAIL", "")
+    if not to_addr:
+        return {"ok": False, "skipped": True, "reason": "FOUNDER_EMAIL not configured"}
+    return _op_email_send({**args, "to": to_addr}, policy)
+
+
+# ---------------------------------------------------------------------------
+# Stripe adapter
+# ---------------------------------------------------------------------------
+
+def _stripe_get(path: str) -> dict:
+    import os, base64
+    key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not key:
+        return {"ok": False, "error": "STRIPE_SECRET_KEY not configured"}
+    token = base64.b64encode(f"{key}:".encode()).decode()
+    try:
+        resp = httpx.get(f"https://api.stripe.com/v1{path}",
+                         headers={"Authorization": f"Basic {token}"}, timeout=10)
+        return {"ok": resp.status_code == 200, "status_code": resp.status_code, "data": resp.json()}
+    except Exception as e:
+        raise RuntimeError(f"Stripe GET {path} failed: {e}")
+
+
+def _op_stripe_get_balance(args: dict, _policy: PolicyEngine) -> dict:
+    result = _stripe_get("/balance")
+    if result.get("ok") and "data" in result:
+        d = result["data"]
+        result["available"] = d.get("available", [])
+        result["pending"] = d.get("pending", [])
+    return result
+
+
+def _op_stripe_list_customers(args: dict, _policy: PolicyEngine) -> dict:
+    limit = args.get("limit", 10)
+    result = _stripe_get(f"/customers?limit={limit}")
+    if result.get("ok") and "data" in result:
+        result["count"] = len(result["data"].get("data", []))
+    return result
+
+
+def _op_stripe_list_payments(args: dict, _policy: PolicyEngine) -> dict:
+    limit = args.get("limit", 10)
+    result = _stripe_get(f"/payment_intents?limit={limit}")
+    if result.get("ok") and "data" in result:
+        result["count"] = len(result["data"].get("data", []))
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Schedule adapter
+# ---------------------------------------------------------------------------
+
+_SCHEDULE_DIR = Path("/Volumes/NSExternal/ALEXANDRIA/scheduled")
+_SCHEDULE_DIR_FALLBACK = Path.home() / "ALEXANDRIA" / "scheduled"
+
+def _sched_dir() -> Path:
+    d = _SCHEDULE_DIR if Path("/Volumes/NSExternal/ALEXANDRIA").exists() else _SCHEDULE_DIR_FALLBACK
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def _op_schedule_run_at(args: dict, _policy: PolicyEngine) -> dict:
+    plan_id = args.get("plan_id", "")
+    run_at = args.get("run_at", "")  # ISO8601
+    plan = args.get("plan", {})
+    if not plan_id or not run_at:
+        raise ValueError("schedule.run_at requires plan_id and run_at (ISO8601)")
+    entry = {"plan_id": plan_id, "run_at": run_at, "plan": plan,
+             "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    dest = _sched_dir() / f"{plan_id}.json"
+    dest.write_text(json.dumps(entry, indent=2))
+    return {"ok": True, "plan_id": plan_id, "run_at": run_at, "path": str(dest)}
+
+
+def _op_schedule_list(args: dict, _policy: PolicyEngine) -> dict:
+    d = _sched_dir()
+    plans = []
+    for f in sorted(d.glob("*.json")):
+        try:
+            entry = json.loads(f.read_text())
+            plans.append({"plan_id": entry.get("plan_id"), "run_at": entry.get("run_at"),
+                          "created_at": entry.get("created_at")})
+        except Exception:
+            pass
+    return {"ok": True, "count": len(plans), "plans": plans}
+
+
+def _op_schedule_cancel(args: dict, _policy: PolicyEngine) -> dict:
+    plan_id = args.get("plan_id", "")
+    if not plan_id:
+        raise ValueError("schedule.cancel requires plan_id")
+    dest = _sched_dir() / f"{plan_id}.json"
+    if dest.exists():
+        dest.unlink()
+        return {"ok": True, "cancelled": plan_id}
+    return {"ok": False, "error": f"plan not found: {plan_id}"}
+
+
 OP_DISPATCH: dict[str, Any] = {
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
@@ -306,6 +470,16 @@ OP_DISPATCH: dict[str, Any] = {
     "sys.env_get": _op_sys_env_get,
     "sys.disk_usage": _op_sys_disk_usage,
     "sys.uptime": _op_sys_uptime,
+    "slack.post_message": _op_slack_post_message,
+    "slack.notify": _op_slack_notify,
+    "email.send": _op_email_send,
+    "email.notify": _op_email_notify,
+    "stripe.get_balance": _op_stripe_get_balance,
+    "stripe.list_customers": _op_stripe_list_customers,
+    "stripe.list_payments": _op_stripe_list_payments,
+    "schedule.run_at": _op_schedule_run_at,
+    "schedule.list": _op_schedule_list,
+    "schedule.cancel": _op_schedule_cancel,
 }
 
 
