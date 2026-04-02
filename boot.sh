@@ -86,6 +86,11 @@ if [ -n "$NGROK_URL" ] && [ -n "${TWILIO_ACCOUNT_SID:-}" ] && [ -n "${TWILIO_AUT
       "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/IncomingPhoneNumbers/$PHONE_SID.json" \
       --data-urlencode "VoiceUrl=$NGROK_URL/voice/inbound" >/dev/null
     log "Twilio webhook updated: $NGROK_URL/voice/inbound"
+    # Wire SMS webhook to /sms/inbound
+    curl -s -X POST -u "$TWILIO_ACCOUNT_SID:$TWILIO_AUTH_TOKEN" \
+      "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/IncomingPhoneNumbers/$PHONE_SID.json" \
+      --data-urlencode "SmsUrl=$NGROK_URL/sms/inbound" >/dev/null
+    log "Twilio SMS webhook updated: $NGROK_URL/sms/inbound"
   else
     log "Could not find phone SID for ${TWILIO_PHONE_NUMBER}, skipping Twilio update"
   fi
@@ -103,4 +108,9 @@ echo "║  ns:         $NS_URL"
 echo "║  continuum:  $CONTINUUM_URL"
 echo "║  ngrok:      ${NGROK_URL:-not started}"
 echo "║  webhook:    ${NGROK_URL:-?}/voice/inbound"
+echo "╠══════════════════════════════════════════════════╣"
+echo "║  Console UI: http://localhost:9000/founder"
+echo "║  Voice:      +1 (307) 202-4418"
+echo "║  SMS:        same number → /sms/inbound"
+echo "║  Memory:     curl http://localhost:9000/memory/recent"
 echo "╚══════════════════════════════════════════════════╝"

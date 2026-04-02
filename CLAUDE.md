@@ -94,6 +94,18 @@ These operations are constitutionally prohibited — never implement, route, or 
 | Continuum | `POST /append` | Append event to stream |
 | Continuum | `POST /receipts` | Append receipt to operational stream |
 
+## Meet Adapter — POST /meet/transcript
+
+Turns meeting transcripts into NS intent. Observe or respond.
+
+```json
+{"speaker": "John", "text": "NS, what do you think?", "meeting_id": "mtg_001"}
+```
+
+Returns: `{action: "respond"|"observe"|"escalate", session_id, response}`
+
+Architecture: Human → `/meet/transcript` → NS intent classifier → Handrail/CPS → response
+
 ## Adapter Registry (CPS OP_DISPATCH)
 
 All ops routed through `POST /ops/cps` via `cps_engine.py`:
@@ -128,7 +140,13 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `schedule` | `schedule.list` | List scheduled plans |
 | `schedule` | `schedule.cancel` | Cancel scheduled plan by plan_id |
 
-**27 ops across 10 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe).
+| `ns` | `ns.sms_send` | Send SMS via Twilio to a number |
+| `ns` | `ns.voice_call` | Initiate outbound Twilio call |
+| `ns` | `ns.memory_query` | Search NS /memory/search with q param |
+| `ns` | `ns.memory_recent` | Get last N memory entries from NS |
+| `ns` | `ns.broadcast` | Send same message via SMS + console |
+
+**32 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
 
 ## Docker Compose
 

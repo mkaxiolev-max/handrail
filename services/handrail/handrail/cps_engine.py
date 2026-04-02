@@ -453,6 +453,116 @@ def _op_schedule_cancel(args: dict, _policy: PolicyEngine) -> dict:
     return {"ok": False, "error": f"plan not found: {plan_id}"}
 
 
+# ---------------------------------------------------------------------------
+# NS comms adapter (Phase 6 — M1 Founder MVP)
+# ---------------------------------------------------------------------------
+
+_NS_URL = None
+
+def _get_ns_url() -> str:
+    import os
+    global _NS_URL
+    if _NS_URL is None:
+        _NS_URL = os.environ.get("NS_URL", "http://ns:9000")
+    return _NS_URL
+
+
+def _op_ns_sms_send(args: dict, _policy: PolicyEngine) -> dict:
+    import os
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID", "")
+    auth_token  = os.environ.get("TWILIO_AUTH_TOKEN", "")
+    from_number = args.get("from_number") or os.environ.get("TWILIO_PHONE_NUMBER", "")
+    to_number   = args.get("to", "")
+    body        = args.get("body", "")
+    if not account_sid or not auth_token:
+        return {"ok": False, "skipped": True, "reason": "Twilio credentials not configured"}
+    if not to_number or not body:
+        raise ValueError("ns.sms_send requires to and body")
+    try:
+        resp = httpx.post(
+            f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json",
+            data={"To": to_number, "From": from_number, "Body": body},
+            auth=(account_sid, auth_token), timeout=10,
+        )
+        return {"ok": resp.status_code == 201, "status_code": resp.status_code,
+                "sid": resp.json().get("sid")}
+    except Exception as e:
+        raise RuntimeError(f"ns.sms_send failed: {e}")
+
+
+def _op_ns_voice_call(args: dict, _policy: PolicyEngine) -> dict:
+    import os
+    account_sid  = os.environ.get("TWILIO_ACCOUNT_SID", "")
+    auth_token   = os.environ.get("TWILIO_AUTH_TOKEN", "")
+    from_number  = args.get("from_number") or os.environ.get("TWILIO_PHONE_NUMBER", "")
+    to_number    = args.get("to", "")
+    webhook_base = args.get("webhook_base") or os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
+    twiml_body   = args.get("twiml", "<Response><Say>NS calling.</Say></Response>")
+    url          = args.get("url") or (f"{webhook_base}/voice/inbound" if webhook_base else "")
+    if not account_sid or not auth_token:
+        return {"ok": False, "skipped": True, "reason": "Twilio credentials not configured"}
+    if not to_number:
+        raise ValueError("ns.voice_call requires to")
+    try:
+        data: dict = {"To": to_number, "From": from_number}
+        if url:
+            data["Url"] = url
+        else:
+            data["Twiml"] = twiml_body
+        resp = httpx.post(
+            f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Calls.json",
+            data=data, auth=(account_sid, auth_token), timeout=10,
+        )
+        return {"ok": resp.status_code == 201, "status_code": resp.status_code,
+                "sid": resp.json().get("sid")}
+    except Exception as e:
+        raise RuntimeError(f"ns.voice_call failed: {e}")
+
+
+def _op_ns_memory_query(args: dict, _policy: PolicyEngine) -> dict:
+    q = args.get("q", "")
+    n = args.get("n", 20)
+    if not q:
+        raise ValueError("ns.memory_query requires q")
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/memory/search", params={"q": q, "n": n}, timeout=10)
+        result = resp.json()
+        return {"ok": resp.status_code == 200, "status_code": resp.status_code, **result}
+    except Exception as e:
+        raise RuntimeError(f"ns.memory_query failed: {e}")
+
+
+def _op_ns_memory_recent(args: dict, _policy: PolicyEngine) -> dict:
+    n = args.get("n", 10)
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/memory/recent", params={"n": n}, timeout=10)
+        result = resp.json()
+        return {"ok": resp.status_code == 200, "status_code": resp.status_code, **result}
+    except Exception as e:
+        raise RuntimeError(f"ns.memory_recent failed: {e}")
+
+
+def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
+    import os
+    text = args.get("text", "")
+    if not text:
+        raise ValueError("ns.broadcast requires text")
+    results: dict = {}
+    to_number = args.get("to") or os.environ.get("FOUNDER_PHONE", "")
+    if to_number:
+        try:
+            results["sms"] = _op_ns_sms_send({"to": to_number, "body": text}, policy)
+        except Exception as e:
+            results["sms"] = {"ok": False, "error": str(e)}
+    try:
+        resp = httpx.post(f"{_get_ns_url()}/chat/quick",
+                          json={"text": f"[broadcast] {text}"}, timeout=5)
+        results["console"] = {"ok": resp.status_code == 200}
+    except Exception as e:
+        results["console"] = {"ok": False, "error": str(e)}
+    return {"ok": True, "channels": results, "text": text}
+
+
 OP_DISPATCH: dict[str, Any] = {
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
@@ -481,6 +591,12 @@ OP_DISPATCH: dict[str, Any] = {
     "schedule.run_at": _op_schedule_run_at,
     "schedule.list": _op_schedule_list,
     "schedule.cancel": _op_schedule_cancel,
+    # NS comms
+    "ns.sms_send": _op_ns_sms_send,
+    "ns.voice_call": _op_ns_voice_call,
+    "ns.memory_query": _op_ns_memory_query,
+    "ns.memory_recent": _op_ns_memory_recent,
+    "ns.broadcast": _op_ns_broadcast,
 }
 
 

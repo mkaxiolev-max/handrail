@@ -1587,6 +1587,69 @@ def create_app() -> FastAPI:
     # VOICE (Twilio + upload)
     # ═══════════════════════════════════════════════════════════════════════════
 
+    # ── M1 Shared State + Helpers (used by voice, SMS, memory, meet) ───────────
+
+    _NS_VOICE_SYSTEM = (
+        "You are NS, the executive intelligence of AXIOLEV Holdings. "
+        "You speak with precision and confidence. "
+        "Responses are concise — 1-3 sentences unless asked for more. "
+        "You remember context from this session. "
+        "You can take real actions through Handrail."
+    )
+
+    _sms_sessions: dict = {}  # phone → list of {ts, heard, spoke}
+
+    def _sms_session_path(phone: str) -> Path:
+        safe = phone.replace("+", "").replace("-", "").replace(" ", "")
+        base = (Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
+                if Path("/Volumes/NSExternal/ALEXANDRIA").exists()
+                else Path.home() / "ALEXANDRIA" / "sessions")
+        return base / f"sms_{safe}.jsonl"
+
+    def _log_sms_turn(phone: str, heard: str, spoke: str) -> None:
+        p = _sms_session_path(phone)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        entry = {"ts": datetime.now(timezone.utc).isoformat(), "heard": heard[:500], "spoke": spoke[:500]}
+        with p.open("a") as f:
+            f.write(json.dumps(entry) + "\n")
+        _sms_sessions.setdefault(phone, []).append(entry)
+
+    def _read_ledger_entries(n: int = 10) -> list:
+        for p in [
+            Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl"),
+            Path("/tmp/ns_alexandria_boot.jsonl"),
+        ]:
+            if p.exists():
+                lines = [ln for ln in p.read_text().splitlines() if ln.strip()]
+                entries = []
+                for line in lines[-(n * 3):]:
+                    try:
+                        entries.append(json.loads(line))
+                    except Exception:
+                        pass
+                if entries:
+                    return entries[-n:]
+        return receipt_chain.recent(n)
+
+    def _get_memory_context(n: int = 5) -> dict:
+        voice_turns = []
+        for s in sorted(active_sessions.values(), key=lambda x: x.started_at, reverse=True)[:3]:
+            for t in s.turns[-n:]:
+                voice_turns.append({"channel": "voice", "ts": t.get("timestamp", ""),
+                                    "heard": t.get("heard", "")[:100], "spoke": t.get("spoke", "")[:100]})
+        sms_turns = []
+        for phone, turns in list(_sms_sessions.items())[-3:]:
+            for t in turns[-n:]:
+                sms_turns.append({"channel": "sms", "ts": t.get("ts", ""),
+                                  "heard": t.get("heard", "")[:100], "spoke": t.get("spoke", "")[:100]})
+        receipts = receipt_chain.recent(n)
+        return {
+            "voice_turns": voice_turns[-n:],
+            "sms_turns": sms_turns[-n:],
+            "recent_receipts": [{"ts": r.get("ts_utc"), "event": r.get("event_type"),
+                                  "ref": (r.get("source") or {}).get("ref", "")} for r in receipts],
+        }
+
     @app.get("/voice/health")
     async def voice_health():
         return check_voice_configured()
@@ -1607,7 +1670,7 @@ def create_app() -> FastAPI:
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Gather input="speech" action="{respond_url}" method="POST"
-          speechTimeout="auto" timeout="10">
+          speechTimeout="auto" timeout="3">
     <Say voice="Polly.Matthew" language="en-US">Northstar online. How can I serve you?</Say>
   </Gather>
   <Redirect method="POST">{respond_url}</Redirect>
@@ -1643,25 +1706,33 @@ def create_app() -> FastAPI:
 </Response>"""
             return Response(content=twiml, media_type="application/xml")
 
-        # Call Anthropic directly — sonnet-4-6, voice-optimized
+        # Wire in memory context for cross-session awareness
+        try:
+            _mem_data = _get_memory_context(3)
+            _recent = (_mem_data.get("voice_turns", []) + _mem_data.get("sms_turns", []))[-3:]
+            _mem_context = ("Context from recent sessions: " +
+                " | ".join(f"{t.get('heard', '')[:50]}" for t in _recent) + "\n\n"
+            ) if _recent else ""
+        except Exception:
+            _mem_context = ""
+
+        # Call Anthropic — NS personality, streaming API, voice-optimized
         anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
         response_text = "I couldn't reach my intelligence layer right now. Please try again."
         try:
             import anthropic as _anthropic
             client = _anthropic.Anthropic(api_key=anthropic_key)
-            ai_resp = await asyncio.to_thread(
-                client.messages.create,
-                model="claude-sonnet-4-6",
-                max_tokens=300,
-                system=(
-                    "You are NORTHSTAR, a voice AI assistant. "
-                    "Respond in 1-3 plain spoken sentences only. "
-                    "No markdown, no lists, no bullet points. "
-                    "Be concise and direct — this will be spoken aloud."
-                ),
-                messages=[{"role": "user", "content": transcript}],
-            )
-            response_text = ai_resp.content[0].text.strip()
+
+            def _stream_voice():
+                with client.messages.stream(
+                    model="claude-sonnet-4-6",
+                    max_tokens=200,
+                    system=_NS_VOICE_SYSTEM,
+                    messages=[{"role": "user", "content": _mem_context + transcript}],
+                ) as stream:
+                    return stream.get_final_text()
+
+            response_text = await asyncio.to_thread(_stream_voice)
         except Exception as exc:
             receipt_chain.emit("VOICE_ERROR", {"kind": "voice", "ref": call_sid},
                                {"error": str(exc)[:200]}, {})
@@ -1676,11 +1747,12 @@ def create_app() -> FastAPI:
                             {"transcript": transcript[:100]},
                             {"response_len": len(filtered), "safespeak": _blocked})
 
+        # Barge-in enabled: Say inside Gather so caller can interrupt NS mid-sentence
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="Polly.Matthew" language="en-US">{filtered}</Say>
   <Gather input="speech" action="{respond_url}" method="POST"
-          speechTimeout="auto" timeout="10">
+          speechTimeout="auto" timeout="3">
+    <Say voice="Polly.Matthew" language="en-US">{filtered}</Say>
   </Gather>
   <Say voice="Polly.Matthew" language="en-US">I didn't catch that. Go ahead.</Say>
   <Redirect method="POST">{respond_url}</Redirect>
@@ -2485,6 +2557,251 @@ setInterval(refresh, 5000);
         alpaca_health = alpaca.health()
         alpaca_ok = alpaca_health.get("status") == "ok"
         return get_dashboard_html(vh, llm_keys, ssd_ok, alpaca_ok, active_sessions, alpaca)
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M1 — PHASE 1d: GET /voice/status (no auth — distinct from POST /voice/status)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/voice/status")
+    async def get_voice_status():
+        ssd_dir = Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
+        persisted = len(list(ssd_dir.glob("*.json"))) if ssd_dir.exists() else 0
+        last_ts = None
+        for s in active_sessions.values():
+            if s.turns:
+                t = s.turns[-1].get("timestamp")
+                if t and (last_ts is None or t > last_ts):
+                    last_ts = t
+        ngrok_url = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
+        return {
+            "active_sessions": len(active_sessions),
+            "persisted_sessions": persisted,
+            "last_call_ts": last_ts,
+            "ngrok_url": ngrok_url,
+            "webhook_status": "configured" if ngrok_url else "missing",
+            "phone_number": os.environ.get("TWILIO_PHONE_NUMBER", "NOT SET"),
+        }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M1 — PHASE 2: SMS Inbound (Anthropic direct + session persistence)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.post("/sms/inbound")
+    async def sms_inbound(request: Request):
+        """Twilio SMS webhook — NS personality, session persistence, Alexandria log."""
+        form = dict(await request.form())
+        msg_sid = form.get("MessageSid", "unknown")
+        from_n  = form.get("From", "unknown")
+        body    = (form.get("Body") or "").strip()
+
+        receipt_chain.emit("SMS_INBOUND", {"kind": "sms", "ref": msg_sid},
+                           {"from_len": len(from_n), "body_len": len(body)}, {})
+
+        if not body:
+            return Response(content=_twiml_sms("Speak clearly. I'm listening."), media_type="application/xml")
+
+        # Build session context from prior turns
+        prior = _sms_sessions.get(from_n, [])[-5:]
+        context_str = ""
+        if prior:
+            context_str = "\nRecent SMS context:\n" + "\n".join(
+                f"You said: {t['heard']}\nNS: {t['spoke']}" for t in prior
+            )
+
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        reply = "I couldn't reach my intelligence layer right now."
+        try:
+            import anthropic as _anthropic
+            client = _anthropic.Anthropic(api_key=anthropic_key)
+            ai_resp = await asyncio.to_thread(
+                client.messages.create,
+                model="claude-sonnet-4-6",
+                max_tokens=300,
+                system=_NS_VOICE_SYSTEM + context_str,
+                messages=[{"role": "user", "content": body}],
+            )
+            reply = ai_resp.content[0].text.strip()
+        except Exception as exc:
+            receipt_chain.emit("SMS_ERROR", {"kind": "sms", "ref": msg_sid},
+                               {"error": str(exc)[:200]}, {})
+
+        reply, _blocked = safe_speak_filter(reply)
+        if _blocked:
+            reply += " Some details were withheld."
+        if len(reply) > 1200:
+            reply = reply[:1190] + "…"
+
+        _log_sms_turn(from_n, body, reply)
+        receipt_chain.emit("SMS_TURN", {"kind": "sms", "ref": msg_sid},
+                           {"heard": body[:120]}, {"reply_len": len(reply)})
+
+        try:
+            await bus.broadcast("sms.message.new", {
+                "channel": "sms", "from": from_n[:4] + "***",
+                "heard": body, "spoke": reply,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            })
+        except Exception:
+            pass
+
+        return Response(content=_twiml_sms(reply), media_type="application/xml")
+
+    @app.get("/sms/status")
+    async def sms_status():
+        last_ts = None
+        for turns in _sms_sessions.values():
+            if turns:
+                t = turns[-1].get("ts")
+                if t and (last_ts is None or t > last_ts):
+                    last_ts = t
+        return {
+            "sms_session_count": len(_sms_sessions),
+            "last_message_ts": last_ts,
+            "phone_number": os.environ.get("TWILIO_PHONE_NUMBER", "NOT SET"),
+            "webhook_path": "/sms/inbound",
+        }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M1 — PHASE 3: Memory Surfacing API
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/memory/recent")
+    async def memory_recent(n: int = 10):
+        entries = _read_ledger_entries(n)
+        return {"entries": entries, "count": len(entries)}
+
+    @app.get("/memory/search")
+    async def memory_search(q: str, n: int = 20):
+        all_entries = _read_ledger_entries(n * 5)
+        q_lower = q.lower()
+        matches = [e for e in all_entries
+                   if q_lower in json.dumps(e, default=str).lower()]
+        return {"query": q, "matches": matches[:n], "count": len(matches[:n])}
+
+    @app.get("/memory/sessions")
+    async def memory_sessions():
+        voice = [{"call_sid": k, "tier": v.tier, "turns": len(v.turns),
+                  "started": v.started_at} for k, v in active_sessions.items()]
+        sms = [{"phone": k[:4] + "***", "turns": len(v)} for k, v in _sms_sessions.items()]
+        return {"voice_sessions": voice, "sms_sessions": sms,
+                "voice_count": len(voice), "sms_count": len(sms)}
+
+    @app.get("/memory/context")
+    async def memory_context(n: int = 5):
+        ctx = _get_memory_context(n)
+        return {"context": ctx, "generated_at": datetime.now(timezone.utc).isoformat()}
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M1 — PHASE 5: Meet / Conference Transcript Intake
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.post("/meet/transcript")
+    async def meet_transcript(request: Request):
+        body = await request.json()
+        speaker    = body.get("speaker", "unknown")
+        text       = body.get("text", "").strip()
+        meeting_id = body.get("meeting_id", "default")
+
+        if not text:
+            return JSONResponse({"error": "text required"}, status_code=400)
+
+        ssd = Path("/Volumes/NSExternal/ALEXANDRIA")
+        meet_dir = (ssd if ssd.exists() else Path.home() / "ALEXANDRIA") / "sessions"
+        meet_dir.mkdir(parents=True, exist_ok=True)
+        entry = {"ts": datetime.now(timezone.utc).isoformat(), "meeting_id": meeting_id,
+                 "speaker": speaker, "text": text}
+        with (meet_dir / f"meet_{meeting_id}.jsonl").open("a") as f:
+            f.write(json.dumps(entry) + "\n")
+
+        # Intent classification: observe / respond / escalate
+        action = "observe"
+        text_lower = text.lower()
+        if any(k in text_lower for k in ["urgent", "critical", "emergency", "escalate"]):
+            action = "escalate"
+        elif any(k in text_lower for k in ["what do you think", "ns,", "northstar,",
+                                             "your view", "summarize", "action item", "ns please"]):
+            action = "respond"
+
+        receipt_chain.emit("MEET_TRANSCRIPT", {"kind": "meet", "ref": meeting_id},
+                           {"speaker": speaker, "text_len": len(text), "action": action}, {})
+
+        session_id = f"meet_{meeting_id}"
+        if action == "observe":
+            return {"action": "logged", "session_id": session_id, "response": None}
+
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        ns_response = "Noted. I'll flag this for follow-up."
+        try:
+            import anthropic as _anthropic
+            client = _anthropic.Anthropic(api_key=anthropic_key)
+            ai_resp = await asyncio.to_thread(
+                client.messages.create,
+                model="claude-sonnet-4-6",
+                max_tokens=200,
+                system=_NS_VOICE_SYSTEM + " You are observing a meeting. Respond only when directly addressed.",
+                messages=[{"role": "user", "content": f"Meeting — {speaker} said: {text}"}],
+            )
+            ns_response = ai_resp.content[0].text.strip()
+        except Exception as exc:
+            receipt_chain.emit("MEET_ERROR", {"kind": "meet", "ref": meeting_id},
+                               {"error": str(exc)[:200]}, {})
+
+        return {"action": action, "session_id": session_id, "response": ns_response}
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M1 — PHASE 4: No-auth chat + Founder Console
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.post("/chat/quick")
+    async def chat_quick(request: Request):
+        """No-auth chat for Founder Console. Local-only service."""
+        body = await request.json()
+        text = body.get("text", "").strip()
+        if not text:
+            return JSONResponse({"error": "text required"}, status_code=400)
+
+        try:
+            _mem_data = _get_memory_context(5)
+            _recent = (_mem_data.get("voice_turns", []) + _mem_data.get("sms_turns", []))[-3:]
+            mem_summary = ("Recent sessions: " +
+                " | ".join(f"[{t['channel']}] {t.get('heard','')[:60]}" for t in _recent) + "\n\n"
+            ) if _recent else ""
+        except Exception:
+            mem_summary = ""
+
+        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        response = "Intelligence layer unavailable."
+        try:
+            import anthropic as _anthropic
+            client = _anthropic.Anthropic(api_key=anthropic_key)
+            ai_resp = await asyncio.to_thread(
+                client.messages.create,
+                model="claude-sonnet-4-6",
+                max_tokens=500,
+                system=_NS_VOICE_SYSTEM + ("\n\n" + mem_summary if mem_summary else ""),
+                messages=[{"role": "user", "content": text}],
+            )
+            response = ai_resp.content[0].text.strip()
+        except Exception:
+            pass
+
+        ts_now = datetime.now(timezone.utc).isoformat()
+        receipt_chain.emit("CHAT_QUICK", {"kind": "console", "ref": "founder"},
+                           {"query_len": len(text)}, {"response_len": len(response)})
+        try:
+            await bus.broadcast("chat.message.new", {
+                "channel": "console", "role": "assistant",
+                "content": response, "timestamp": ts_now,
+            })
+        except Exception:
+            pass
+        return {"response": response, "ts": ts_now}
+
+    @app.get("/founder", response_class=HTMLResponse)
+    async def founder_console():
+        """Founder MVP Console — two-panel real-time UI."""
+        from nss.ui.founder import FOUNDER_HTML
+        return HTMLResponse(content=FOUNDER_HTML)
 
     return app
 
