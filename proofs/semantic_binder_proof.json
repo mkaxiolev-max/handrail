@@ -1,0 +1,13 @@
+{
+  "proof_id": "semantic-binder-v1",
+  "date": "2026-04-02",
+  "session": "Semantic Feedback Binder",
+  "tag": "semantic-binder-v1",
+  "results": {
+    "binder_module": {"status": "PASS", "path": "services/ns/nss/semantic/feedback_binder.py"},
+    "endpoints": {"status": "PASS", "endpoints": ["/semantic/candidates","/semantic/proposals","/semantic/promote"]},
+    "wired_to_cps": {"status": "PASS"},
+    "objects": ["ExecutionOutcome","SemanticImpactReport","MeaningRefinementCandidate","CanonCommitProposal"],
+    "status": "PASS"
+  }
+}

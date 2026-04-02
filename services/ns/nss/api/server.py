@@ -2871,6 +2871,22 @@ setInterval(refresh, 5000);
             })
         except Exception:
             pass
+
+        # Semantic Feedback Binder — every run produces a semantic update candidate
+        try:
+            from nss.semantic.feedback_binder import get_binder, ExecutionOutcome as _EO
+            import uuid as _uuid
+            get_binder().run_full_cycle(_EO(
+                run_id=str(_uuid.uuid4())[:8],
+                ops_executed=["ns.chat_quick"],
+                success=True,
+                latency_ms=0.0,
+                failure_class=None,
+                ts=ts_now,
+            ))
+        except Exception:
+            pass
+
         return {"response": response, "ts": ts_now}
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -2978,6 +2994,33 @@ setInterval(refresh, 5000);
             "sources": sources,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Semantic Feedback Binder endpoints
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/semantic/candidates")
+    async def semantic_candidates():
+        from nss.semantic.feedback_binder import get_binder
+        candidates = get_binder().list_candidates()
+        return {"candidates": candidates, "count": len(candidates),
+                "ts": datetime.now(timezone.utc).isoformat()}
+
+    @app.get("/semantic/proposals")
+    async def semantic_proposals():
+        from nss.semantic.feedback_binder import get_binder
+        proposals = get_binder().list_proposals()
+        return {"proposals": proposals, "count": len(proposals),
+                "ts": datetime.now(timezone.utc).isoformat()}
+
+    @app.post("/semantic/promote")
+    async def semantic_promote(request: Request):
+        body = await request.json()
+        proposal_id = body.get("proposal_id", "")
+        if not proposal_id:
+            return JSONResponse({"error": "proposal_id required"}, status_code=400)
+        from nss.semantic.feedback_binder import get_binder
+        return get_binder().promote_to_canon(proposal_id, body.get("approved_by", "founder"))
 
     @app.get("/founder", response_class=HTMLResponse)
     async def founder_console():
