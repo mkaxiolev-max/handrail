@@ -1,0 +1,58 @@
+{
+  "proof_id": "yubikey-binding-v1",
+  "date": "2026-04-02",
+  "session": "BLACK KNIGHT Step 4 — YubiKey Binding",
+  "tag": "yubikey-binding-v1",
+  "hardware": {
+    "serial": "26116460",
+    "client_id": "119160",
+    "hw_type": "YubiKey 5 NFC",
+    "algo": "ECDSA P-256"
+  },
+  "step_4a_dignity_kernel": {
+    "status": "PASS",
+    "file": "services/ns/nss/kernel/dignity.py",
+    "class": "YubikeyQuorum",
+    "quorum_model": "2-of-3 (1-of-1 active until 2nd key provisioned)",
+    "slot_1": {"serial": "26116460", "role": "primary", "active": true},
+    "slot_2": {"serial": null,       "role": "backup",    "active": false},
+    "slot_3": {"serial": null,       "role": "emergency", "active": false},
+    "challenge_bytes": 32,
+    "challenge_ttl_s": 300,
+    "replay_protection": true,
+    "violation_receipts": "kernel_decisions.jsonl",
+    "yubicloud_mode": "live_yubicloud"
+  },
+  "step_4b_r3_r4_gate": {
+    "status": "PASS",
+    "gate_location": "CPSExecutor.execute — before Dignity Kernel never-event check",
+    "r3_without_yubikey": {"ok": false, "failure_class": "POLICY_DENIAL"},
+    "r4_without_yubikey": {"ok": false, "failure_class": "POLICY_DENIAL"},
+    "r3_with_yubikey_verified_true": {"ok": true, "ops": 1},
+    "r0_r1_r2_unaffected": true,
+    "cps_request_fields_added": ["risk_tier", "yubikey_verified"]
+  },
+  "step_4c_endpoints": {
+    "status": "PASS",
+    "GET /kernel/yubikey/challenge": "challenge_id + 64-char nonce + expires_at returned",
+    "POST /kernel/yubikey/verify":   "otp + challenge_id → verified + receipt_id",
+    "GET /kernel/yubikey/status":    {
+      "serial": "26116460",
+      "quorum_threshold": 1,
+      "active_slots": 1,
+      "quorum_satisfied": true,
+      "mode": "live_yubicloud"
+    }
+  },
+  "step_4d_sovereign_boot_v3": {
+    "status": "PASS",
+    "total_ops": 11,
+    "expect_passed": true,
+    "new_op_11": "http.health_check /kernel/yubikey/status → healthy"
+  },
+  "system_health": {
+    "handrail_8011": "ok",
+    "ns_9000": "ok",
+    "continuum_8788": "ok"
+  }
+}

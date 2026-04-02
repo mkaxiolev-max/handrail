@@ -148,6 +148,29 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 
 **32 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
 
+## Dignity Kernel — YubiKey Binding (BLACK KNIGHT Step 4)
+
+File: `services/ns/nss/kernel/dignity.py`
+
+```
+YubikeyQuorum — 2-of-3 quorum model
+  slot_1: serial 26116460 (primary, ACTIVE)
+  slot_2: pending (backup)
+  slot_3: pending (emergency)
+Threshold: 1-of-1 active. Expands to 2-of-3 when 2nd key provisioned.
+```
+
+Challenge flow: `GET /kernel/yubikey/challenge` → 32-byte nonce, TTL=5min
+Verify flow:    `POST /kernel/yubikey/verify` with `{otp, challenge_id}` → `{verified, receipt_id}`
+Status:         `GET /kernel/yubikey/status` → serial, quorum_slots, quorum_satisfied
+
+**R3/R4 risk tier gate** — enforced in `CPSExecutor.execute` BEFORE Dignity Kernel never-event check:
+- CPS payload fields: `risk_tier` (R0–R4), `yubikey_verified` (bool)
+- R3 or R4 without `yubikey_verified: true` → `POLICY_DENIAL`, `failure_events.jsonl`
+- R0–R2: no YubiKey required
+
+Receipts written to: `/Volumes/NSExternal/ALEXANDRIA/ledger/kernel_decisions.jsonl`
+
 ## Program Library v1 (10 namespaces, 68 ops + 5 meta)
 
 State stored at `/Volumes/NSExternal/ALEXANDRIA/programs/{namespace}/{instance_id}.jsonl`

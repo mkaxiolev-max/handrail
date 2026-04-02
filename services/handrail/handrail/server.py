@@ -27,6 +27,8 @@ class CPSRequest(BaseModel):
     ops: List[Dict[str, Any]]
     expect: Optional[Dict[str, Any]] = {}
     policy_profile: Optional[str] = None
+    risk_tier: Optional[str] = "R0"          # R0-R4; R3/R4 require yubikey_verified
+    yubikey_verified: Optional[bool] = False  # set true after /kernel/yubikey/verify
 
 
 @app.get("/healthz")
@@ -82,7 +84,10 @@ async def ops_cps(req: CPSRequest, http_request: Request):
     run_id = now_id()
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    cps_dict = {"cps_id": req.cps_id, "ops": req.ops, "expect": req.expect or {}, "policy_profile": req.policy_profile}
+    cps_dict = {"cps_id": req.cps_id, "ops": req.ops, "expect": req.expect or {},
+                "policy_profile": req.policy_profile,
+                "risk_tier": req.risk_tier or "R0",
+                "yubikey_verified": bool(req.yubikey_verified)}
     result = CPSExecutor.execute(cps_dict, WORKSPACE)
 
     # Post-execution: Dignity Kernel returnblock validation

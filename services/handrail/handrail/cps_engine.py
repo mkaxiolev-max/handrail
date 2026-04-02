@@ -988,6 +988,31 @@ class CPSExecutor:
         policy_data = load_policy(policy_profile_name)
         policy = PolicyEngine(policy_data)
 
+        # ── R3/R4 YubiKey gate — BEFORE Dignity Kernel never-event evaluation ──
+        risk_tier = cps.get("risk_tier", "R0")
+        if risk_tier in ("R3", "R4"):
+            if not cps.get("yubikey_verified", False):
+                _write_failure_event(
+                    "yubikey_gate", "POLICY_DENIAL", "high", "quarantine_log",
+                    f"risk_tier={risk_tier} requires yubikey_verified:true"
+                )
+                return {
+                    "cps_id": cps.get("cps_id"),
+                    "ok": False,
+                    "results": [],
+                    "expect_result": {"passed": False, "failures": [
+                        {"reason": "yubikey_required", "risk_tier": risk_tier}
+                    ]},
+                    "metrics": {"op_count": 0, "typed_ops_ratio": 0, "duration_ms": 0},
+                    "result_digest": _sha256({"error": "yubikey_required"}),
+                    "policy_profile": policy_profile_name or "default",
+                    "failure_class": "POLICY_DENIAL",
+                    "severity": "high",
+                    "strategy": "quarantine_log",
+                    "error": f"risk_tier {risk_tier} requires yubikey_verified: true in CPS payload",
+                    "validity_checked": True,
+                }
+
         ops = cps.get("ops", [])
         expect = cps.get("expect", {})
 

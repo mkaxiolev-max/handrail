@@ -98,6 +98,7 @@ from nss.jobs.san_uspto import (
 )
 from nss.models.registry import get_registry_with_status
 from nss.models.router import get_router
+from nss.kernel.dignity import get_quorum
 
 
 class ExecRequest(BaseModel):
@@ -438,6 +439,52 @@ def create_app() -> FastAPI:
             "error": None if client_id_set else "client_id_not_configured",
             "instructions": "POST /auth/yubikey with {\"otp\": \"<44-char modhex OTP from key touch>\"}",
         }
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # STEP 4 — DIGNITY KERNEL: YubiKey quorum endpoints
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    _kernel_last_verified_at: dict = {"ts": None}   # mutable cell for last verify ts
+
+    @app.get("/kernel/yubikey/challenge")
+    async def kernel_yubikey_challenge():
+        """Issue a new 32-byte nonce challenge. TTL=5 min."""
+        quorum = get_quorum()
+        challenge = quorum.generate_challenge()
+        receipt_chain.emit("KERNEL_CHALLENGE_ISSUED",
+                           {"kind": "kernel", "ref": challenge["challenge_id"]},
+                           {"nonce_len": len(challenge["nonce"])}, {})
+        return challenge
+
+    @app.post("/kernel/yubikey/verify")
+    async def kernel_yubikey_verify(request: Request):
+        """Verify a YubiKey OTP against an issued challenge."""
+        body = await request.json()
+        otp          = (body.get("otp") or "").strip()
+        challenge_id = body.get("challenge_id", "")
+        if not otp:
+            return JSONResponse({"ok": False, "error": "otp required"}, status_code=400)
+
+        quorum = get_quorum()
+        result = await asyncio.to_thread(quorum.verify_otp, otp, challenge_id or None)
+        verified = result.get("verified", False)
+
+        if verified:
+            _kernel_last_verified_at["ts"] = datetime.now(timezone.utc).isoformat()
+
+        receipt_chain.emit(
+            "KERNEL_YUBIKEY_VERIFY",
+            {"kind": "kernel", "ref": challenge_id or "direct"},
+            {"verified": verified, "device_id": result.get("device_id", "")},
+            {"receipt_id": result.get("receipt_id", "")},
+        )
+        return {"ok": verified, **result}
+
+    @app.get("/kernel/yubikey/status")
+    async def kernel_yubikey_status():
+        """Return quorum status — serial, slots, verified_at."""
+        quorum = get_quorum()
+        return quorum.status(last_verified_at=_kernel_last_verified_at.get("ts"))
 
     # ═══════════════════════════════════════════════════════════════════════════
     # WEBSOCKET

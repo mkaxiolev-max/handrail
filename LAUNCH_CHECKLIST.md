@@ -78,6 +78,21 @@
 - [x] boot.sh updated — Console UI, Voice, SMS, Memory endpoints in banner (voice-polish-v1)
 - [x] CLAUDE.md — Meet Adapter doc + updated adapter registry (32 ops/11 domains) (voice-polish-v1)
 
+### BLACK KNIGHT Step 4 — YubiKey Hardware Binding (Session April 2)
+
+- [x] YubikeyQuorum class in services/ns/nss/kernel/dignity.py — 2-of-3 model (1-of-1 active, serial 26116460) (yubikey-binding-v1)
+- [x] Challenge-response: 32-byte nonce, 5-min TTL, replay protection, YubiCloud live verify (yubikey-binding-v1)
+- [x] Violation receipts emitted to Alexandria kernel_decisions.jsonl on DENY (yubikey-binding-v1)
+- [x] R3/R4 gate in CPSExecutor.execute — blocks before Dignity Kernel never-event check (yubikey-binding-v1)
+- [x] R3 without yubikey_verified → POLICY_DENIAL ✅ (yubikey-binding-v1)
+- [x] R4 without yubikey_verified → POLICY_DENIAL ✅ (yubikey-binding-v1)
+- [x] R3 with yubikey_verified:true → ALLOW + receipt ✅ (yubikey-binding-v1)
+- [x] GET /kernel/yubikey/challenge — nonce issued (yubikey-binding-v1)
+- [x] POST /kernel/yubikey/verify — OTP + challenge_id → verified + receipt_id (yubikey-binding-v1)
+- [x] GET /kernel/yubikey/status — serial=26116460, quorum_satisfied=true (yubikey-binding-v1)
+- [x] sovereign_boot v3 — 11/11 ops pass, /kernel/yubikey/status healthy (sovereign-boot-v3)
+- [x] CPSRequest schema: risk_tier + yubikey_verified fields (yubikey-binding-v1)
+
 ### M2 — Jarvis Moment + Program Library v1 (Session April 2 continued)
 
 - [x] Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops (program-library-v1)
