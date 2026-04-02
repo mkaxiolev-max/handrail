@@ -217,6 +217,52 @@ Outcome receipts written to `/Volumes/NSExternal/ALEXANDRIA/ledger/model_decisio
 - **Failure classification**: all OP_DISPATCH failures classified → `failure_events.jsonl`
 - **Temporal validity gate**: `_memory_clock` auto-refreshes if >5 min stale
 
+## Three-Reality Architecture (v5 canonical)
+- Lexicon (semantic reality): canonical meanings, USDL gate library, state capsule
+- Alexandria (knowledge reality): receipts, sessions, MaRS dual-lattice, canon, provenance
+- SAN (legal/territorial reality): territory nodes, claim coordinates, whitespace, risk zones, filings, licensing targets
+- NS synchronizes all three. Architecture law: owning words → owning knowledge → owning territory.
+
+## SAN Adapter (san namespace — 8 ops)
+`san.add_territory`, `san.map_claim`, `san.find_whitespace`, `san.flag_risk`,
+`san.file_intent`, `san.add_licensing_target`, `san.query_territory`, `san.sync_with_lexicon`
+State: `/Volumes/NSExternal/ALEXANDRIA/san/` (fallback: `~/.axiolev/san/`)
+
+## Semantic Feedback Binder
+Path: `services/ns/nss/semantic/feedback_binder.py`
+Every execution run produces: (1) operational receipt + (2) semantic update candidate
+Objects: `ExecutionOutcome` → `SemanticImpactReport` → `MeaningRefinementCandidate` → `CanonCommitProposal`
+Endpoints: `GET /semantic/candidates`, `GET /semantic/proposals`, `POST /semantic/promote`
+
+## Capability Graph
+Path: `services/ns/nss/capability/graph.py`
+18 nodes, 9 states. Missingness is explicit state.
+Endpoints: `GET /capability/graph`, `GET /capability/unresolved`, `POST /capability/update`
+Top unresolved (by strategic_value): usdl_decoder_live (8), 2nd_yubikey (8), policy_evolution (7)
+
+## Ring Completion Status
+
+| Ring | Name | Status | Milestone |
+|------|------|--------|-----------|
+| Ring 1 | Foundations | ✅ COMPLETE | M1 Founder MVP — boot, voice, receipts, Alexandria, Handrail CPS |
+| Ring 2 | Intelligence | ✅ COMPLETE | M2 Jarvis — Program Library v1, Model Router, Proactive Intel, Console v2 |
+| Ring 3 | Sovereign | ✅ COMPLETE | BLACK KNIGHT — YubiKey quorum, Dignity Kernel, Continuum v1, Boot Proof |
+| Ring 4 | Capability | ✅ COMPLETE | Adapter expansion, SAN, Semantic Binder, determinism/perf/crash proofs |
+| Ring 5 | Production | ⛔ BLOCKED | Stripe live keys, production domain, legal entity formation |
+
+## BLACK KNIGHT Milestones
+
+| Step | Name | Status |
+|------|------|--------|
+| Step 1 | Constitutional Boot | ✅ Complete |
+| Step 2 | Receipt Chain | ✅ Complete |
+| Step 3 | Alexandria Merkle Proof | ✅ Complete |
+| Step 4 | YubiKey Binding — 2-of-3 quorum, R3/R4 gate, live YubiCloud | ✅ Complete |
+| Step 5 | Dignity Kernel — NE1/NE2/NE3/NE4 never-events, NS Boot Proof, Continuum v1 | ✅ Complete |
+
+Sovereign boot plan: `.cps/sovereign_boot.json` — 14 ops, 9 expect assertions.
+Boot proof: `proofs/ns_boot_proof.json` — canonical identity attestation.
+
 ## Docker Compose
 
 ```bash

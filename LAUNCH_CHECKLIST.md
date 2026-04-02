@@ -113,6 +113,16 @@
 - [x] sovereign_boot v2 — 10/10 ops pass, expect_passed=true (sovereign-boot-v2)
 - [x] Total tags: 169
 
+### M3 — Three-Reality Architecture + Structural Honesty (April 2 sprint 3)
+
+- [x] SAN adapter — 8 ops, six object schemas, ALEXANDRIA/san/ persistence (san-adapter-v1)
+- [x] Semantic Feedback Binder — execution metabolism, canon proposals, /semantic/* (semantic-binder-v1)
+- [x] Capability Graph — 18 nodes, 9 states, missingness explicit, /capability/* (capability-graph-v1)
+- [x] sovereign_boot 14 ops — all pass, expect_passed=true (sovereign-boot-v3)
+- [x] CLAUDE.md updated — three-reality architecture documented
+- [ ] YubiKey Step 4 — T1 in progress
+- [ ] Stripe Ring 5 — LLC docs pending
+
 ## ⚠️ REMAINING BLOCKERS
 
 - [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)
