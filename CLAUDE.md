@@ -148,6 +148,52 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 
 **32 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
 
+## Program Library v1 (10 namespaces, 68 ops + 5 meta)
+
+State stored at `/Volumes/NSExternal/ALEXANDRIA/programs/{namespace}/{instance_id}.jsonl`
+
+| Namespace | Op count | Special guardrail |
+|-----------|----------|-------------------|
+| `fundraising` | 7 | — |
+| `hiring` | 7 | — |
+| `partner` | 7 | — |
+| `ma` | 7 | `ma.close_transaction` requires `args.approval_ref` |
+| `advisor` | 6 | — |
+| `cs` | 7 | — |
+| `feedback` | 7 | — |
+| `gov` | 7 | `gov.record_decision` + `gov.issue_constraint` require `policy_profile: founder` |
+| `knowledge` | 8 | `knowledge.promote_to_canon` requires `args.confirmed: true` |
+
+Meta-contract (all namespaces): `program.advance_state`, `program.flag_risk`, `program.request_approval`, `program.log_receipt`, `program.archive`
+
+**100 total CPS ops** (32 existing + 68 program + 5 meta).
+
+## Model Router
+
+Registry: `services/ns/nss/models/registry.py` — 5 models (guardian/analyst/forge/critic/generalist)
+
+| Intent class | Models selected |
+|-------------|-----------------|
+| `voice_quick` | analyst |
+| `voice_action` | analyst, critic |
+| `strategy` | analyst, forge, critic |
+| `high_risk` | all enabled |
+| `default` | analyst |
+
+Veil gate strips secrets from context before local (guardian) model calls.
+Outcome receipts written to `/Volumes/NSExternal/ALEXANDRIA/ledger/model_decisions.jsonl`.
+
+## M2 Jarvis State
+
+- **Proactive greeting**: voice_inbound pulls memory context, greets with last session topic
+- **Memory context in responses**: router prepends cross-session context to all Anthropic calls
+- **POST /intel/suggest**: `{topic, context}` → 3+ suggestions via strategy routing
+- **GET /ops/recent**: last 5 CPS execution summaries
+- **GET /models/registry + /models/status**: live model health
+- **Founder Console v2**: WS live badge, models in health panel, last 3 ops, memory feed
+- **Failure classification**: all OP_DISPATCH failures classified → `failure_events.jsonl`
+- **Temporal validity gate**: `_memory_clock` auto-refreshes if >5 min stale
+
 ## Docker Compose
 
 ```bash

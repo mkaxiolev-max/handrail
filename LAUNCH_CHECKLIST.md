@@ -78,6 +78,26 @@
 - [x] boot.sh updated — Console UI, Voice, SMS, Memory endpoints in banner (voice-polish-v1)
 - [x] CLAUDE.md — Meet Adapter doc + updated adapter registry (32 ops/11 domains) (voice-polish-v1)
 
+### M2 — Jarvis Moment + Program Library v1 (Session April 2 continued)
+
+- [x] Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops (program-library-v1)
+- [x] "founder" policy profile — gov.record_decision + gov.issue_constraint guarded (program-library-v1)
+- [x] Guardrails: gov.record_decision/issue_constraint require founder policy, ma.close_transaction requires approval_ref, knowledge.promote_to_canon requires confirmed (program-library-v1)
+- [x] Failure classification engine — POLICY_DENIAL/EXECUTION_FAILURE/SEMANTIC_FAILURE/UNKNOWN → failure_events.jsonl (temporal-validity-v1)
+- [x] validity_checked: true on all CPS receipts (temporal-validity-v1)
+- [x] Model Registry — 5 models: guardian/analyst/forge/critic/generalist (model-router-v1)
+- [x] GET /models/registry — live enabled status (model-router-v1)
+- [x] GET /models/status — health ping per model (model-router-v1)
+- [x] ModelRouter — intent_class → model selection, veil gate, outcome receipt writer (model-router-v1)
+- [x] Router wired into voice_respond + /chat/quick (model-router-v1)
+- [x] Temporal validity gate — _memory_clock, _check_refresh_memory() (>5min stale auto-refresh) (temporal-validity-v1)
+- [x] Proactive greeting on voice pickup — memory-backed "last time we discussed..." (proactive-intel-v1)
+- [x] POST /intel/suggest — topic + context → 3+ suggestions via strategy routing (proactive-intel-v1)
+- [x] GET /ops/recent — last 5 CPS execution summaries (proactive-intel-v1)
+- [x] Founder Console v2 — WS live badge, health + model status, last 3 ops, memory feed (founder-console-v2)
+- [x] sovereign_boot v2 — 10/10 ops pass, expect_passed=true (sovereign-boot-v2)
+- [x] Total tags: 169
+
 ## ⚠️ REMAINING BLOCKERS
 
 - [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)

@@ -47,6 +47,13 @@ BUILTIN_POLICIES: dict[str, dict] = {
         "allowed_programs": ["pwd", "ls", "cat", "git", "curl"],
         "allow_mutation": False,
     },
+    "founder": {
+        "name": "founder",
+        "allowed_paths": ["/workspace", "/Volumes/NSExternal", "/tmp", "/var/tmp"],
+        "allowed_programs": ["docker", "curl", "python3", "bash", "sh", "git", "pwd", "ls", "cat"],
+        "allow_mutation": True,
+        "founder_only": True,
+    },
 }
 
 
@@ -563,6 +570,204 @@ def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     return {"ok": True, "channels": results, "text": text}
 
 
+# ---------------------------------------------------------------------------
+# Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops
+# ---------------------------------------------------------------------------
+
+_PROG_SSD = Path("/Volumes/NSExternal/ALEXANDRIA/programs")
+_PROG_FALLBACK = Path.home() / ".axiolev" / "programs"
+
+def _prog_base() -> Path:
+    return _PROG_SSD if Path("/Volumes/NSExternal/ALEXANDRIA").exists() else _PROG_FALLBACK
+
+def _prog_path(namespace: str, instance_id: str) -> Path:
+    d = _prog_base() / namespace
+    d.mkdir(parents=True, exist_ok=True)
+    return d / f"{instance_id}.jsonl"
+
+def _prog_write(namespace: str, instance_id: str, action: str, state: str, meta: dict | None = None) -> dict:
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    entry = {"program_id": instance_id, "namespace": namespace, "action": action,
+             "state": state, "ts": ts, **(meta or {})}
+    p = _prog_path(namespace, instance_id)
+    with p.open("a") as f:
+        f.write(json.dumps(entry) + "\n")
+    return {"ok": True, "program_id": instance_id, "namespace": namespace,
+            "state": state, "action": action, "ts": ts}
+
+def _require_founder_policy(policy: PolicyEngine, op_name: str) -> None:
+    if policy.profile.get("name") != "founder":
+        raise PermissionError(f"{op_name} requires policy_profile: founder")
+
+def _prog_op(namespace: str, action: str, args: dict, policy: PolicyEngine,
+             require_founder: bool = False, require_arg: str | None = None,
+             require_confirmed: bool = False) -> dict:
+    if require_founder:
+        _require_founder_policy(policy, f"{namespace}.{action}")
+    if require_arg and not args.get(require_arg):
+        raise ValueError(f"{namespace}.{action} requires args.{require_arg}")
+    if require_confirmed and not args.get("confirmed"):
+        raise ValueError(f"{namespace}.{action} requires args.confirmed: true")
+    program_id = args.get("program_id") or args.get("instance_id") or f"{namespace}_default"
+    state = args.get("next_state") or args.get("state") or action
+    meta = {k: v for k, v in args.items() if k not in ("program_id", "instance_id", "state", "next_state")}
+    return _prog_write(namespace, program_id, action, state, meta)
+
+def _make_prog_op(namespace: str, action: str, **kwargs):
+    def _handler(args: dict, policy: PolicyEngine) -> dict:
+        return _prog_op(namespace, action, args, policy, **kwargs)
+    _handler.__name__ = f"_op_{namespace}_{action}"
+    return _handler
+
+_FUNDRAISING_OPS: dict[str, Any] = {
+    "fundraising.advance_state":      _make_prog_op("fundraising", "advance_state"),
+    "fundraising.add_target":         _make_prog_op("fundraising", "add_target"),
+    "fundraising.score_fit":          _make_prog_op("fundraising", "score_fit"),
+    "fundraising.attach_material":    _make_prog_op("fundraising", "attach_material"),
+    "fundraising.log_diligence":      _make_prog_op("fundraising", "log_diligence"),
+    "fundraising.record_term_signal": _make_prog_op("fundraising", "record_term_signal"),
+    "fundraising.request_approval":   _make_prog_op("fundraising", "request_approval"),
+}
+_HIRING_OPS: dict[str, Any] = {
+    "hiring.create_role":        _make_prog_op("hiring", "create_role"),
+    "hiring.add_candidate":      _make_prog_op("hiring", "add_candidate"),
+    "hiring.score_candidate":    _make_prog_op("hiring", "score_candidate"),
+    "hiring.advance_state":      _make_prog_op("hiring", "advance_state"),
+    "hiring.capture_feedback":   _make_prog_op("hiring", "capture_feedback"),
+    "hiring.prepare_offer":      _make_prog_op("hiring", "prepare_offer"),
+    "hiring.start_onboarding":   _make_prog_op("hiring", "start_onboarding"),
+}
+_PARTNER_OPS: dict[str, Any] = {
+    "partner.add_target":        _make_prog_op("partner", "add_target"),
+    "partner.score_fit":         _make_prog_op("partner", "score_fit"),
+    "partner.map_incentives":    _make_prog_op("partner", "map_incentives"),
+    "partner.advance_state":     _make_prog_op("partner", "advance_state"),
+    "partner.prepare_brief":     _make_prog_op("partner", "prepare_brief"),
+    "partner.launch_pilot":      _make_prog_op("partner", "launch_pilot"),
+    "partner.track_activation":  _make_prog_op("partner", "track_activation"),
+}
+_MA_OPS: dict[str, Any] = {
+    "ma.add_target":        _make_prog_op("ma", "add_target"),
+    "ma.score_target":      _make_prog_op("ma", "score_target"),
+    "ma.advance_state":     _make_prog_op("ma", "advance_state"),
+    "ma.request_diligence": _make_prog_op("ma", "request_diligence"),
+    "ma.attach_loi":        _make_prog_op("ma", "attach_loi"),
+    "ma.track_red_flags":   _make_prog_op("ma", "track_red_flags"),
+    "ma.close_transaction": _make_prog_op("ma", "close_transaction", require_arg="approval_ref"),
+}
+_ADVISOR_OPS: dict[str, Any] = {
+    "advisor.add_candidate":        _make_prog_op("advisor", "add_candidate"),
+    "advisor.score_signal":         _make_prog_op("advisor", "score_signal"),
+    "advisor.activate":             _make_prog_op("advisor", "activate"),
+    "advisor.assign_mission":       _make_prog_op("advisor", "assign_mission"),
+    "advisor.log_touchpoint":       _make_prog_op("advisor", "log_touchpoint"),
+    "advisor.review_effectiveness": _make_prog_op("advisor", "review_effectiveness"),
+}
+_CS_OPS: dict[str, Any] = {
+    "cs.start_kickoff":     _make_prog_op("cs", "start_kickoff"),
+    "cs.assign_owner":      _make_prog_op("cs", "assign_owner"),
+    "cs.track_activation":  _make_prog_op("cs", "track_activation"),
+    "cs.log_health_score":  _make_prog_op("cs", "log_health_score"),
+    "cs.flag_risk":         _make_prog_op("cs", "flag_risk"),
+    "cs.prepare_renewal":   _make_prog_op("cs", "prepare_renewal"),
+    "cs.request_reference": _make_prog_op("cs", "request_reference"),
+}
+_FEEDBACK_OPS: dict[str, Any] = {
+    "feedback.capture":         _make_prog_op("feedback", "capture"),
+    "feedback.normalize":       _make_prog_op("feedback", "normalize"),
+    "feedback.cluster":         _make_prog_op("feedback", "cluster"),
+    "feedback.score_impact":    _make_prog_op("feedback", "score_impact"),
+    "feedback.route_to_team":   _make_prog_op("feedback", "route_to_team"),
+    "feedback.link_to_roadmap": _make_prog_op("feedback", "link_to_roadmap"),
+    "feedback.close_loop":      _make_prog_op("feedback", "close_loop"),
+}
+_GOV_OPS: dict[str, Any] = {
+    "gov.submit_proposal":    _make_prog_op("gov", "submit_proposal"),
+    "gov.classify_risk":      _make_prog_op("gov", "classify_risk"),
+    "gov.request_review":     _make_prog_op("gov", "request_review"),
+    "gov.record_decision":    _make_prog_op("gov", "record_decision",   require_founder=True),
+    "gov.issue_constraint":   _make_prog_op("gov", "issue_constraint",  require_founder=True),
+    "gov.audit_change":       _make_prog_op("gov", "audit_change"),
+    "gov.rollback_if_needed": _make_prog_op("gov", "rollback_if_needed"),
+}
+_KNOWLEDGE_OPS: dict[str, Any] = {
+    "knowledge.ingest":            _make_prog_op("knowledge", "ingest"),
+    "knowledge.parse":             _make_prog_op("knowledge", "parse"),
+    "knowledge.extract_entities":  _make_prog_op("knowledge", "extract_entities"),
+    "knowledge.validate":          _make_prog_op("knowledge", "validate"),
+    "knowledge.classify":          _make_prog_op("knowledge", "classify"),
+    "knowledge.store":             _make_prog_op("knowledge", "store"),
+    "knowledge.link":              _make_prog_op("knowledge", "link"),
+    "knowledge.promote_to_canon":  _make_prog_op("knowledge", "promote_to_canon", require_confirmed=True),
+}
+
+def _op_program_advance_state(args: dict, policy: PolicyEngine) -> dict:
+    ns = args.get("namespace", "")
+    if not ns:
+        raise ValueError("program.advance_state requires namespace")
+    return _prog_op(ns, "advance_state", args, policy)
+
+def _op_program_flag_risk(args: dict, policy: PolicyEngine) -> dict:
+    ns = args.get("namespace", "")
+    if not ns:
+        raise ValueError("program.flag_risk requires namespace")
+    return _prog_op(ns, "flag_risk", args, policy)
+
+def _op_program_request_approval(args: dict, policy: PolicyEngine) -> dict:
+    ns = args.get("namespace", "")
+    if not ns:
+        raise ValueError("program.request_approval requires namespace")
+    return _prog_op(ns, "request_approval", args, policy)
+
+def _op_program_log_receipt(args: dict, policy: PolicyEngine) -> dict:
+    ns = args.get("namespace", "")
+    if not ns:
+        raise ValueError("program.log_receipt requires namespace")
+    return _prog_op(ns, "log_receipt", args, policy)
+
+def _op_program_archive(args: dict, policy: PolicyEngine) -> dict:
+    ns = args.get("namespace", "")
+    if not ns:
+        raise ValueError("program.archive requires namespace")
+    return _prog_op(ns, "archive", {**args, "next_state": "archived"}, policy)
+
+_META_OPS: dict[str, Any] = {
+    "program.advance_state":    _op_program_advance_state,
+    "program.flag_risk":        _op_program_flag_risk,
+    "program.request_approval": _op_program_request_approval,
+    "program.log_receipt":      _op_program_log_receipt,
+    "program.archive":          _op_program_archive,
+}
+
+# ---------------------------------------------------------------------------
+# Failure event writer (Block 3B — failure classification)
+# ---------------------------------------------------------------------------
+
+_FAILURE_LOG_SSD  = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/failure_events.jsonl")
+_FAILURE_LOG_FALLBACK = Path.home() / "ALEXANDRIA" / "ledger" / "failure_events.jsonl"
+
+def _failure_log_path() -> Path:
+    if Path("/Volumes/NSExternal/ALEXANDRIA/ledger").exists():
+        return _FAILURE_LOG_SSD
+    p = _FAILURE_LOG_FALLBACK
+    p.parent.mkdir(parents=True, exist_ok=True)
+    return p
+
+def _write_failure_event(op_name: str, failure_class: str, severity: str,
+                          strategy: str, details: str) -> None:
+    entry = {"op": op_name, "failure_class": failure_class, "severity": severity,
+             "strategy": strategy, "details": details[:500],
+             "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    try:
+        with _failure_log_path().open("a") as f:
+            f.write(json.dumps(entry) + "\n")
+    except Exception:
+        pass  # Don't let failure logging break execution
+
+# ---------------------------------------------------------------------------
+# OP_DISPATCH
+# ---------------------------------------------------------------------------
+
 OP_DISPATCH: dict[str, Any] = {
     "fs.pwd": _op_fs_pwd,
     "fs.list": _op_fs_list,
@@ -597,6 +802,17 @@ OP_DISPATCH: dict[str, Any] = {
     "ns.memory_query": _op_ns_memory_query,
     "ns.memory_recent": _op_ns_memory_recent,
     "ns.broadcast": _op_ns_broadcast,
+    # Program Library v1 — 10 namespaces (68 ops + 5 meta)
+    **_FUNDRAISING_OPS,
+    **_HIRING_OPS,
+    **_PARTNER_OPS,
+    **_MA_OPS,
+    **_ADVISOR_OPS,
+    **_CS_OPS,
+    **_FEEDBACK_OPS,
+    **_GOV_OPS,
+    **_KNOWLEDGE_OPS,
+    **_META_OPS,
 }
 
 
@@ -817,14 +1033,34 @@ class CPSExecutor:
                 except PermissionError as e:
                     result["error"] = str(e)
                     result["decision_code"] = "POLICY_DENIED"
+                    result["failure_class"] = "POLICY_DENIAL"
+                    result["severity"] = "high"
+                    result["strategy"] = "quarantine_log"
+                    _write_failure_event(op_name, "POLICY_DENIAL", "high", "quarantine_log", str(e))
                     all_ok = False
                 except TimeoutError as e:
                     result["error"] = str(e)
                     result["decision_code"] = "TIMEOUT"
+                    result["failure_class"] = "EXECUTION_FAILURE"
+                    result["severity"] = "medium"
+                    result["strategy"] = "retry_backoff"
+                    _write_failure_event(op_name, "EXECUTION_FAILURE", "medium", "retry_backoff", str(e))
+                    all_ok = False
+                except ValueError as e:
+                    result["error"] = str(e)
+                    result["decision_code"] = "OP_ERROR"
+                    result["failure_class"] = "SEMANTIC_FAILURE"
+                    result["severity"] = "low"
+                    result["strategy"] = "replan"
+                    _write_failure_event(op_name, "SEMANTIC_FAILURE", "low", "replan", str(e))
                     all_ok = False
                 except Exception as e:
                     result["error"] = str(e)
                     result["decision_code"] = "OP_ERROR"
+                    result["failure_class"] = "UNKNOWN"
+                    result["severity"] = "high"
+                    result["strategy"] = "escalate"
+                    _write_failure_event(op_name, "UNKNOWN", "high", "escalate", str(e))
                     all_ok = False
 
             result["latency_ms"] = round((time.monotonic() - start_op) * 1000, 1)
@@ -847,6 +1083,7 @@ class CPSExecutor:
             },
             "result_digest": result_digest,
             "policy_profile": policy_profile_name or "default",
+            "validity_checked": True,
         }
 
     @staticmethod

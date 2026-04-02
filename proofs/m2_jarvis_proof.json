@@ -1,0 +1,77 @@
+{
+  "proof_id": "m2-jarvis-v1",
+  "date": "2026-04-02",
+  "session": "M2 Jarvis Moment + Program Library v1",
+  "tag": "m2-jarvis-v1",
+  "blocks": {
+    "block_1_program_library": {
+      "status": "PASS",
+      "namespaces": ["fundraising","hiring","partner","ma","advisor","cs","feedback","gov","knowledge"],
+      "namespace_ops": 63,
+      "meta_ops": 5,
+      "total_program_ops": 68,
+      "guardrails_verified": {
+        "gov.record_decision_blocked_default_policy": true,
+        "gov.issue_constraint_blocked_default_policy": true,
+        "knowledge.promote_to_canon_requires_confirmed": true,
+        "ma.close_transaction_requires_approval_ref": true
+      },
+      "failure_classification": {
+        "POLICY_DENIAL": "quarantine_log",
+        "EXECUTION_FAILURE": "retry_backoff",
+        "SEMANTIC_FAILURE": "replan",
+        "UNKNOWN": "escalate"
+      },
+      "validity_checked_in_all_results": true,
+      "founder_policy_added": true
+    },
+    "block_2_model_router": {
+      "status": "PASS",
+      "models_registered": 5,
+      "models_enabled": ["guardian","analyst","generalist"],
+      "endpoint_models_registry": "GET /models/registry ok",
+      "endpoint_models_status": "GET /models/status ok",
+      "router_wired_to": ["voice_respond", "chat_quick"],
+      "intent_classes": ["voice_quick","voice_action","strategy","high_risk","default"],
+      "veil_gate": true,
+      "outcome_receipt_writer": true
+    },
+    "block_3_temporal_validity": {
+      "status": "PASS",
+      "memory_clock_stale_threshold_s": 300,
+      "validity_checked_in_cps_return": true,
+      "failure_events_log": "/Volumes/NSExternal/ALEXANDRIA/ledger/failure_events.jsonl"
+    },
+    "block_4_proactive_intel": {
+      "status": "PASS",
+      "proactive_greeting": "memory-backed, last session topic if available",
+      "memory_in_voice_responses": true,
+      "intel_suggest_endpoint": "POST /intel/suggest ok",
+      "intel_suggestions_returned": 4,
+      "intel_confidence": "high"
+    },
+    "block_5_console_v2": {
+      "status": "PASS",
+      "panels": ["conversation_feed", "system_health_with_models", "last_3_ops", "memory_feed"],
+      "ws_live_badge": true,
+      "backfill_from_memory_context": true,
+      "auto_refresh_ms": 5000,
+      "memory_refresh_ms": 10000
+    },
+    "block_6_integration": {
+      "status": "PASS",
+      "sovereign_boot_v2_ops": 10,
+      "sovereign_boot_v2_expect_passed": true,
+      "new_ops_verified": ["http.health_check /models/registry", "http.get /memory/recent", "http.health_check /founder"]
+    }
+  },
+  "system_health": {
+    "handrail_8011": "ok",
+    "ns_9000": "ok",
+    "continuum_8788": "ok"
+  },
+  "total_cps_ops": 100,
+  "program_library_ops": 68,
+  "meta_ops": 5,
+  "existing_ops": 32
+}

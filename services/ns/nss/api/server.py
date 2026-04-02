@@ -96,6 +96,8 @@ from nss.jobs.san_uspto import (
     get_san_engine, get_active_run, get_last_progress,
     TerrainConfig, TerrainMode
 )
+from nss.models.registry import get_registry_with_status
+from nss.models.router import get_router
 
 
 class ExecRequest(BaseModel):
@@ -1597,6 +1599,23 @@ def create_app() -> FastAPI:
         "You can take real actions through Handrail."
     )
 
+    # ── M2 Temporal validity clock ──────────────────────────────────────────
+    _memory_clock: dict = {"last_refresh": None, "context_cache": None}
+
+    def _check_refresh_memory() -> dict:
+        """Refresh memory cache if stale (>5 min). Returns current context."""
+        now = datetime.now(timezone.utc)
+        last = _memory_clock.get("last_refresh")
+        stale = (last is None) or ((now - last).total_seconds() > 300)
+        if stale:
+            try:
+                ctx = _get_memory_context(5)
+                _memory_clock["context_cache"] = ctx
+                _memory_clock["last_refresh"] = now
+            except Exception:
+                pass
+        return _memory_clock.get("context_cache") or {}
+
     _sms_sessions: dict = {}  # phone → list of {ts, heard, spoke}
 
     def _sms_session_path(phone: str) -> Path:
@@ -1667,11 +1686,31 @@ def create_app() -> FastAPI:
                             {"kind": "voice", "ref": call_sid},
                             {"caller": caller, "tier": tier}, {})
         respond_url = f"{base}/voice/respond"
+
+        # ── M2 Proactive greeting — memory-backed ──────────────────────────
+        greeting = "Northstar online. How can I serve you?"
+        try:
+            mem = _check_refresh_memory()
+            voice_turns = mem.get("voice_turns", [])
+            if voice_turns:
+                last_turn = voice_turns[-1]
+                last_heard = last_turn.get("heard", "")[:60]
+                if last_heard:
+                    greeting = (
+                        f"Welcome back. Last time we discussed: {last_heard}. What's next?"
+                        if tier == TIER_F
+                        else "NS online. Go ahead."
+                    )
+            elif tier == TIER_F:
+                greeting = "NS online. How can I help?"
+        except Exception:
+            pass
+
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Gather input="speech" action="{respond_url}" method="POST"
           speechTimeout="auto" timeout="3">
-    <Say voice="Polly.Matthew" language="en-US">Northstar online. How can I serve you?</Say>
+    <Say voice="Polly.Matthew" language="en-US">{greeting}</Say>
   </Gather>
   <Redirect method="POST">{respond_url}</Redirect>
 </Response>"""
@@ -1706,33 +1745,29 @@ def create_app() -> FastAPI:
 </Response>"""
             return Response(content=twiml, media_type="application/xml")
 
-        # Wire in memory context for cross-session awareness
+        # Wire in memory context (M2 temporal validity)
+        mem_ctx = _check_refresh_memory()
         try:
-            _mem_data = _get_memory_context(3)
-            _recent = (_mem_data.get("voice_turns", []) + _mem_data.get("sms_turns", []))[-3:]
+            _recent = (mem_ctx.get("voice_turns", []) + mem_ctx.get("sms_turns", []))[-3:]
             _mem_context = ("Context from recent sessions: " +
                 " | ".join(f"{t.get('heard', '')[:50]}" for t in _recent) + "\n\n"
             ) if _recent else ""
         except Exception:
             _mem_context = ""
 
-        # Call Anthropic — NS personality, streaming API, voice-optimized
-        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        # Classify intent for model routing
+        _action_words = {"run", "execute", "send", "commit", "deploy", "call",
+                         "email", "message", "advance", "create", "add", "start"}
+        _intent = "voice_action" if any(w in transcript.lower().split() for w in _action_words) else "voice_quick"
+
+        # Route through ModelRouter
         response_text = "I couldn't reach my intelligence layer right now. Please try again."
         try:
-            import anthropic as _anthropic
-            client = _anthropic.Anthropic(api_key=anthropic_key)
-
-            def _stream_voice():
-                with client.messages.stream(
-                    model="claude-sonnet-4-6",
-                    max_tokens=200,
-                    system=_NS_VOICE_SYSTEM,
-                    messages=[{"role": "user", "content": _mem_context + transcript}],
-                ) as stream:
-                    return stream.get_final_text()
-
-            response_text = await asyncio.to_thread(_stream_voice)
+            router = get_router()
+            result = await asyncio.to_thread(
+                router.route_sync, transcript, _mem_context + _NS_VOICE_SYSTEM, _intent
+            )
+            response_text = result["response"]
         except Exception as exc:
             receipt_chain.emit("VOICE_ERROR", {"kind": "voice", "ref": call_sid},
                                {"error": str(exc)[:200]}, {})
@@ -2760,28 +2795,22 @@ setInterval(refresh, 5000);
         if not text:
             return JSONResponse({"error": "text required"}, status_code=400)
 
+        mem_ctx = _check_refresh_memory()
         try:
-            _mem_data = _get_memory_context(5)
-            _recent = (_mem_data.get("voice_turns", []) + _mem_data.get("sms_turns", []))[-3:]
+            _recent = (mem_ctx.get("voice_turns", []) + mem_ctx.get("sms_turns", []))[-3:]
             mem_summary = ("Recent sessions: " +
                 " | ".join(f"[{t['channel']}] {t.get('heard','')[:60]}" for t in _recent) + "\n\n"
             ) if _recent else ""
         except Exception:
             mem_summary = ""
 
-        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
         response = "Intelligence layer unavailable."
         try:
-            import anthropic as _anthropic
-            client = _anthropic.Anthropic(api_key=anthropic_key)
-            ai_resp = await asyncio.to_thread(
-                client.messages.create,
-                model="claude-sonnet-4-6",
-                max_tokens=500,
-                system=_NS_VOICE_SYSTEM + ("\n\n" + mem_summary if mem_summary else ""),
-                messages=[{"role": "user", "content": text}],
+            router = get_router()
+            result = await asyncio.to_thread(
+                router.route_sync, text, mem_summary + _NS_VOICE_SYSTEM, "default"
             )
-            response = ai_resp.content[0].text.strip()
+            response = result["response"]
         except Exception:
             pass
 
@@ -2797,9 +2826,115 @@ setInterval(refresh, 5000);
             pass
         return {"response": response, "ts": ts_now}
 
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M2 — Model Registry + Status
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/models/registry")
+    async def models_registry():
+        return {"models": get_registry_with_status(), "count": 5}
+
+    @app.get("/models/status")
+    async def models_status():
+        import httpx as _httpx
+        models = get_registry_with_status()
+        results = []
+        for m in models:
+            if not m["enabled"]:
+                results.append({**m, "health": "disabled", "latency_ms": None})
+                continue
+            provider = m.get("provider", "")
+            start = time.monotonic()
+            health = "unknown"
+            try:
+                if provider == "local_ollama":
+                    r = _httpx.get("http://localhost:11434/api/tags", timeout=2)
+                    health = "ok" if r.status_code == 200 else "error"
+                elif provider == "anthropic":
+                    health = "ok" if os.environ.get("ANTHROPIC_API_KEY") else "no_key"
+                else:
+                    health = "configured" if m["enabled"] else "no_key"
+            except Exception as e:
+                health = f"error: {str(e)[:40]}"
+            latency_ms = round((time.monotonic() - start) * 1000, 1)
+            results.append({**m, "health": health, "latency_ms": latency_ms})
+        return {"models": results, "ts": datetime.now(timezone.utc).isoformat()}
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M2 — GET /ops/recent (last 5 CPS execution summaries from receipts)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/ops/recent")
+    async def ops_recent(n: int = 5):
+        all_receipts = receipt_chain.recent(50)
+        cps_receipts = [r for r in all_receipts if "CPS" in r.get("event_type", "")]
+        summaries = []
+        for r in cps_receipts[-n:]:
+            src = r.get("source") or {}
+            out = r.get("output") or {}
+            summaries.append({
+                "ts": r.get("ts_utc"),
+                "event_type": r.get("event_type"),
+                "ref": src.get("ref", ""),
+                "plan_id": src.get("ref", ""),
+                "ok": out.get("ok", None),
+            })
+        return {"ops": summaries[::-1], "count": len(summaries)}
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # M2 — POST /intel/suggest (proactive Jarvis-style suggestions)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.post("/intel/suggest")
+    async def intel_suggest(request: Request):
+        body = await request.json()
+        topic = body.get("topic", "").strip()
+        context = body.get("context", "").strip()
+        if not topic:
+            return JSONResponse({"error": "topic required"}, status_code=400)
+
+        mem_ctx = _check_refresh_memory()
+        receipts_summary = ", ".join(
+            r.get("event", "") for r in (mem_ctx.get("recent_receipts") or [])[-5:]
+            if r.get("event")
+        )
+        sources = ["memory"]
+        if receipts_summary:
+            sources.append("recent_ops")
+
+        prompt = (
+            f"Topic: {topic}\n"
+            f"Context: {context}\n"
+            f"Recent system activity: {receipts_summary}\n\n"
+            "Provide 3 concise, actionable suggestions. Format as a numbered list."
+        )
+
+        suggestions = []
+        try:
+            router = get_router()
+            result = await asyncio.to_thread(router.route_sync, prompt, "", "strategy")
+            raw = result["response"]
+            import re as _re
+            suggestions = [s.strip() for s in _re.split(r'\n\d+\.', raw) if s.strip()]
+            if not suggestions:
+                suggestions = [raw[:300]]
+        except Exception as exc:
+            receipt_chain.emit("INTEL_ERROR", {"kind": "intel", "ref": topic},
+                               {"error": str(exc)[:200]}, {})
+
+        receipt_chain.emit("INTEL_SUGGEST", {"kind": "intel", "ref": topic},
+                           {"topic_len": len(topic)}, {"suggestion_count": len(suggestions)})
+        return {
+            "topic": topic,
+            "suggestions": suggestions,
+            "confidence": "high" if len(suggestions) >= 3 else "medium",
+            "sources": sources,
+            "ts": datetime.now(timezone.utc).isoformat(),
+        }
+
     @app.get("/founder", response_class=HTMLResponse)
     async def founder_console():
-        """Founder MVP Console — two-panel real-time UI."""
+        """Founder MVP Console v2 — full Jarvis two-panel UI."""
         from nss.ui.founder import FOUNDER_HTML
         return HTMLResponse(content=FOUNDER_HTML)
 

@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "7-op sovereignty verification — health + proof + yubikey + adapters",
+  "objective": "10-op sovereignty verification — health + proof + yubikey + adapters + M2 capabilities",
   "policy_profile": "readonly.local",
   "ops": [
     {
@@ -30,11 +30,25 @@
     {
       "op": "sys.disk_usage",
       "args": { "path": "/Volumes/NSExternal" }
+    },
+    {
+      "op": "http.health_check",
+      "args": { "url": "http://ns:9000/models/registry", "expect_status": 200 }
+    },
+    {
+      "op": "http.get",
+      "args": { "url": "http://ns:9000/memory/recent?n=3" }
+    },
+    {
+      "op": "http.health_check",
+      "args": { "url": "http://ns:9000/founder", "expect_status": 200 }
     }
   ],
   "expect": {
     "results[1].data.healthy": true,
     "results[2].data.healthy": true,
-    "results[3].data.body.proof_valid": true
+    "results[3].data.body.proof_valid": true,
+    "results[7].data.healthy": true,
+    "results[9].data.healthy": true
   }
 }
