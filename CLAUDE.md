@@ -94,6 +94,42 @@ These operations are constitutionally prohibited — never implement, route, or 
 | Continuum | `POST /append` | Append event to stream |
 | Continuum | `POST /receipts` | Append receipt to operational stream |
 
+## Adapter Registry (CPS OP_DISPATCH)
+
+All ops routed through `POST /ops/cps` via `cps_engine.py`:
+
+| Domain | Op | Notes |
+|--------|----|-------|
+| `fs` | `fs.pwd` | Current working directory |
+| `fs` | `fs.list` | Directory listing (policy-gated path) |
+| `fs` | `fs.read` | File read (policy-gated path) |
+| `git` | `git.status` | Porcelain status for repo |
+| `git` | `git.log` | Recent commits |
+| `git` | `git.diff` | Diff stat vs ref |
+| `git` | `git.commit` | Commit with message (mutation policy required) |
+| `proc` | `proc.run_readonly` | Run allowlisted read-only command |
+| `proc` | `proc.run_allowed` | Run allowlisted command (policy-gated) |
+| `docker` | `docker.compose_ps` | List compose services |
+| `docker` | `docker.compose_up` | Start compose services (mutation policy required) |
+| `http` | `http.get` | HTTP GET |
+| `http` | `http.post` | HTTP POST with JSON body |
+| `http` | `http.health_check` | Health check with expect_status |
+| `sys` | `sys.env_get` | Read allowlisted env var (masked) |
+| `sys` | `sys.disk_usage` | Disk usage for path |
+| `sys` | `sys.uptime` | System uptime |
+| `slack` | `slack.post_message` | Post to Slack webhook URL |
+| `slack` | `slack.notify` | Notify founder via SLACK_WEBHOOK_URL |
+| `email` | `email.send` | Send email via SMTP |
+| `email` | `email.notify` | Notify FOUNDER_EMAIL via SMTP |
+| `stripe` | `stripe.get_balance` | Stripe account balance |
+| `stripe` | `stripe.list_customers` | List Stripe customers |
+| `stripe` | `stripe.list_payments` | List Stripe payment intents |
+| `schedule` | `schedule.run_at` | Schedule a CPS plan at ISO8601 time |
+| `schedule` | `schedule.list` | List scheduled plans |
+| `schedule` | `schedule.cancel` | Cancel scheduled plan by plan_id |
+
+**30 ops across 10 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe).
+
 ## Docker Compose
 
 ```bash
