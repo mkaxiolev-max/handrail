@@ -62,6 +62,22 @@
 - [x] Full system: /health/full ok, /alexandria/proof proof_valid=true, /auth/yubikey/test client_id_set=true mode=live_yubicloud
 - [x] Total tags: 155
 
+### M1 — Founder MVP (Session April 2 continued)
+
+- [x] Voice polish — NS personality system prompt, streaming API, barge-in (Say inside Gather), timeout 10→3 (voice-polish-v1)
+- [x] GET /voice/status endpoint (no auth) — active sessions, ngrok URL, last call ts (voice-polish-v1)
+- [x] POST /sms/inbound — Anthropic direct (NS personality), session persistence to Alexandria JSONL, broadcast to WS (sms-adapter-v1)
+- [x] GET /sms/status — session count, last message ts (sms-adapter-v1)
+- [x] Twilio SMS webhook wired in boot.sh → {NORTHSTAR_WEBHOOK_BASE}/sms/inbound (sms-adapter-v1)
+- [x] Memory surfacing API — /memory/recent, /memory/search, /memory/sessions, /memory/context (memory-api-v1)
+- [x] Memory wired into voice_respond — cross-session context injected into NS Anthropic call (memory-api-v1)
+- [x] POST /chat/quick — no-auth chat endpoint for Founder Console (founder-ui-v1)
+- [x] Founder MVP Console UI — /founder — two-panel: Conversation + Health/Activity/Memory (founder-ui-v1)
+- [x] POST /meet/transcript — observe/respond/escalate classification, Alexandria log (meet-adapter-v1)
+- [x] NS comms ops in CPS OP_DISPATCH — ns.sms_send, ns.voice_call, ns.memory_query, ns.memory_recent, ns.broadcast (adapter-ns-comms-v1)
+- [x] boot.sh updated — Console UI, Voice, SMS, Memory endpoints in banner (voice-polish-v1)
+- [x] CLAUDE.md — Meet Adapter doc + updated adapter registry (32 ops/11 domains) (voice-polish-v1)
+
 ## ⚠️ REMAINING BLOCKERS
 
 - [ ] **DNS propagation** — root.axiolev.com not resolving yet (Vercel alias set, DNS pending)
