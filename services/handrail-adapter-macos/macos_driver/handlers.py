@@ -4,6 +4,9 @@ from pathlib import Path
 from typing import Any
 from adapter_core.contract import AdapterRequest, AdapterResponse
 from adapter_core.registry import AdapterRegistry
+from network_driver.handlers import build_network_handlers
+from proc_extended_driver.handlers import build_proc_extended_handlers
+from file_watch_driver.handlers import build_file_watch_handlers
 
 IS_MACOS = platform.system() == "Darwin"
 MOCK_MODE = not IS_MACOS
@@ -217,4 +220,7 @@ def build_registry():
         "vision.screenshot": vision_screenshot, "vision.ocr_region": vision_ocr_region,
         "fs.read_text": fs_read_text, "fs.write_text": fs_write_text, "fs.list": fs_list,
     })
+    reg.register_all(build_network_handlers())
+    reg.register_all(build_proc_extended_handlers())
+    reg.register_all(build_file_watch_handlers())
     return reg

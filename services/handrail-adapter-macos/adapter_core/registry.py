@@ -6,11 +6,14 @@ Adding a new adapter = registering its namespace prefix here.
 The CPS engine never changes. Only this registry grows.
 
 Current drivers:
-  env.*    → MacOSEnvAdapter
-  window.* → MacOSWindowAdapter
-  input.*  → MacOSInputAdapter
-  vision.* → MacOSVisionAdapter
-  fs.*     → MacOSFSAdapter
+  env.*            → MacOSEnvAdapter
+  window.*         → MacOSWindowAdapter
+  input.*          → MacOSInputAdapter
+  vision.*         → MacOSVisionAdapter
+  fs.*             → MacOSFSAdapter
+  network.*        → NetworkAdapter       (http_get, port_check, dns_resolve)
+  proc_extended.*  → ProcExtendedAdapter  (list_processes, kill_pid, get_memory_usage)
+  file_watch.*     → FileWatchAdapter     (watch_path, read_recent_changes)
 """
 from __future__ import annotations
 import time
