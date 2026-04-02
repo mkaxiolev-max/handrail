@@ -128,7 +128,7 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `schedule` | `schedule.list` | List scheduled plans |
 | `schedule` | `schedule.cancel` | Cancel scheduled plan by plan_id |
 
-**30 ops across 10 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe).
+**27 ops across 10 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe).
 
 ## Docker Compose
 

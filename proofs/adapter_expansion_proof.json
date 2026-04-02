@@ -1,0 +1,78 @@
+{
+  "proof_id": "adapter_expansion_proof_v2",
+  "timestamp": "2026-04-02T18:36:31Z",
+  "method": "container via POST /ops/cps + direct Python verification",
+  "op_count": 27,
+  "ops_registered": [
+    "fs.pwd",
+    "fs.list",
+    "fs.read",
+    "git.status",
+    "git.log",
+    "git.diff",
+    "git.commit",
+    "proc.run_readonly",
+    "docker.compose_ps",
+    "docker.compose_up",
+    "http.get",
+    "http.post",
+    "http.health_check",
+    "proc.run_allowed",
+    "sys.env_get",
+    "sys.disk_usage",
+    "sys.uptime",
+    "slack.post_message",
+    "slack.notify",
+    "email.send",
+    "email.notify",
+    "stripe.get_balance",
+    "stripe.list_customers",
+    "stripe.list_payments",
+    "schedule.run_at",
+    "schedule.list",
+    "schedule.cancel"
+  ],
+  "test_summary": {
+    "slack.notify": {
+      "ok": true,
+      "code": "OK",
+      "skipped": true,
+      "reason": "SLACK_WEBHOOK_URL not configured"
+    },
+    "email.notify": {
+      "ok": true,
+      "code": "OK",
+      "skipped": true,
+      "reason": "FOUNDER_EMAIL not configured"
+    },
+    "stripe.get_balance": {
+      "ok": true,
+      "code": "OK",
+      "route_wired": true,
+      "auth_required": true
+    },
+    "schedule.run_at": {
+      "ok": true,
+      "code": "OK"
+    },
+    "schedule.list": {
+      "ok": true,
+      "code": "OK"
+    },
+    "schedule.cancel": {
+      "ok": true,
+      "code": "OK"
+    },
+    "sys.disk_usage": {
+      "ok": true,
+      "code": "OK",
+      "ssd_gb": 1995.22
+    },
+    "sys.uptime": {
+      "ok": true,
+      "code": "OK"
+    }
+  },
+  "handrail_health": "http://localhost:8011/healthz => {\"status\":\"ok\"}",
+  "verdict": "PASS \u2014 all 27 ops in OP_DISPATCH, all new adapter routes confirmed"
+}
