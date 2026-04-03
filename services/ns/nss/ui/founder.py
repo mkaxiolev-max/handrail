@@ -73,6 +73,16 @@ main{display:flex;flex:1;overflow:hidden}
 .mem-ts{color:var(--mu);font-size:9px}
 .mem-heard{color:var(--s)}
 .mem-spoke{color:var(--t)}
+
+/* Proactive Intel rows */
+.intel-row{padding:5px 0;border-bottom:1px solid rgba(17,34,64,.35);font-size:11px;line-height:1.5}
+.intel-row:last-child{border-bottom:none}
+.intel-sug{color:var(--t);margin-bottom:2px}
+.intel-op{color:var(--mu);font-size:9px;letter-spacing:1px}
+.pri-critical{color:var(--r);border-color:var(--r)}
+.pri-high{color:var(--a);border-color:var(--a)}
+.pri-medium{color:#f0e030;border-color:#f0e030}
+.pri-low{color:var(--mu);border-color:var(--mu)}
 </style>
 </head>
 <body>
@@ -102,7 +112,7 @@ main{display:flex;flex:1;overflow:hidden}
     </div>
   </div>
 
-  <!-- ── RIGHT: Health + CPS + Memory ── -->
+  <!-- ── RIGHT: Health + CPS + Memory + Intel ── -->
   <div class="right">
     <!-- Health -->
     <div class="section">
@@ -118,6 +128,11 @@ main{display:flex;flex:1;overflow:hidden}
     <div class="section">
       <div class="ph">MEMORY FEED</div>
       <div class="sec-body" id="mem-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- Proactive Intel -->
+    <div class="section">
+      <div class="ph">PROACTIVE INTEL <span id="intel-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="intel-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
   </div>
 </main>
@@ -316,6 +331,31 @@ async function sendChat() {
 
 document.getElementById('chat-in').addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
 
+// ── Proactive Intel ──
+async function refreshIntel() {
+  try {
+    const r = await fetch(NS+'/intel/proactive').then(x=>x.json());
+    const sugs = r.suggestions || [];
+    document.getElementById('intel-ts').textContent = fts(r.ts);
+    if (!sugs.length) {
+      const reason = r.reason || '';
+      document.getElementById('intel-body').innerHTML =
+        `<div class="dim" style="font-size:10px;padding:4px">${reason === 'model_unavailable' ? 'Model unavailable — check ANTHROPIC_API_KEY' : 'No suggestions.'}</div>`;
+      return;
+    }
+    document.getElementById('intel-body').innerHTML = sugs.map(s => {
+      const pri = (s.priority || 'low').toLowerCase();
+      const priClass = 'pri-' + pri;
+      return `<div class="intel-row">
+        <div class="intel-sug"><span class="badge ${priClass}" style="margin-right:5px">${pri.toUpperCase()}</span>${esc(s.suggestion || '')}</div>
+        ${s.action_op ? `<div class="intel-op">→ ${esc(s.action_op)}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('intel-body').innerHTML = '<div class="dim" style="font-size:10px;padding:4px">—</div>';
+  }
+}
+
 // ── Refresh loop ──
 async function refreshAll() {
   document.getElementById('last-update').textContent = fts(new Date().toISOString());
@@ -324,8 +364,10 @@ async function refreshAll() {
 backfillConv();
 refreshAll();
 refreshMemory();
+refreshIntel();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
+setInterval(refreshIntel, 30000);
 </script>
 </body>
 </html>"""

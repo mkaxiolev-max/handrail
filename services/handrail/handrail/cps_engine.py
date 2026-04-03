@@ -637,6 +637,15 @@ def _op_ns_memory_recent(args: dict, _policy: PolicyEngine) -> dict:
         raise RuntimeError(f"ns.memory_recent failed: {e}")
 
 
+def _op_ns_proactive_intel(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/intel/proactive", timeout=10)
+        result = resp.json()
+        return {"ok": resp.status_code == 200, **result}
+    except Exception as e:
+        return {"ok": True, "suggestions": [], "reason": "ns_unreachable", "error": str(e)[:120]}
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1035,6 +1044,7 @@ OP_DISPATCH: dict[str, Any] = {
     "ns.memory_query": _op_ns_memory_query,
     "ns.memory_recent": _op_ns_memory_recent,
     "ns.broadcast": _op_ns_broadcast,
+    "ns.proactive_intel": _op_ns_proactive_intel,
     # Mac adapter bridge — audio.*, clipboard.*, notify.*
     "audio.get_volume":  _op_audio_get_volume,
     "audio.set_volume":  _op_audio_set_volume,

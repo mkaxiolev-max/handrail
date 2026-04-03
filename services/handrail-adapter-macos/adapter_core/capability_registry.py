@@ -54,6 +54,8 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"fs","op":"read_text","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":[],"schema_out":{"content":"str","size_bytes":"int"}},
     {"namespace":"fs","op":"write_text","version":"1.0","side_effects":"write","deterministic":True,"dignity_guards":[],"schema_out":{"bytes_written":"int"}},
     {"namespace":"fs","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"entries":"list"}},
+    # ns.*
+    {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]
 
 
