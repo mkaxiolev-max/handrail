@@ -145,8 +145,13 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `ns` | `ns.memory_query` | Search NS /memory/search with q param |
 | `ns` | `ns.memory_recent` | Get last N memory entries from NS |
 | `ns` | `ns.broadcast` | Send same message via SMS + console |
+| `ns` | `ns.proactive_intel` | Jarvis: 3 Haiku-generated suggestions from system state |
+| `ns` | `ns.capability_graph` | Full capability graph nodes + summary |
+| `ns` | `ns.flywheel` | Invention flywheel state (unresolved, candidates, SAN) |
+| `ns` | `ns.explain_recent` | Recent NS decision explanations |
+| `ns` | `ns.semantic_candidates` | Semantic feedback binder candidates |
 
-**32 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
+**37 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
 
 | `audio` | `audio.get_volume` | AppleScript: output volume; graceful skip if not macOS |
 | `audio` | `audio.set_volume` | AppleScript: set volume; Dignity Guard: 0–100 range |
@@ -163,10 +168,12 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `battery` | `battery.get_power_source` | pmset -g ps; graceful skip if not macOS |
 | `keychain` | `keychain.check_entry` | security find-generic-password exit code only; Dignity Guard: never returns secret; blocks shell metacharacters |
 | `keychain` | `keychain.list_services` | security dump-keychain svce lines only; Dignity Guard: strips pass/pwd/secret/token/key lines |
+| `vision` | `vision.screenshot` | screencapture -x → artifact PNG; Dignity Guard: screen_recording required |
+| `vision` | `vision.ocr_region` | screencapture region → tesseract OCR; graceful skip if no tesseract |
 
-**47 ops across 17 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions — graceful skip when adapter not running).
+**52 ops across 18 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions, vision.* — graceful skip when adapter not running).
 
-Formalization layer: `adapter_core/capability_registry.py` (37 ops typed/versioned), `adapter_core/artifact_writer.py` (path+hash+size+ts).
+Formalization layer: `adapter_core/capability_registry.py` (38 ops typed/versioned), `adapter_core/artifact_writer.py` (path+hash+size+ts).
 
 ## Dignity Kernel — YubiKey Binding (BLACK KNIGHT Step 4)
 

@@ -68,6 +68,10 @@ SAFE_CODEBOOK = [
     {"pattern": "run sovereign boot",        "op": "http.health_check",     "args": {"url": "http://ns:9000/healthz", "expect_status": 200},              "risk": "R0"},
     {"pattern": "show model status",         "op": "http.health_check",     "args": {"url": "http://ns:9000/models/status", "expect_status": 200},        "risk": "R0"},
     {"pattern": "check sms",                 "op": "http.health_check",     "args": {"url": "http://ns:9000/sms/health", "expect_status": 200},           "risk": "R0"},
+    # ── Vision ops ────────────────────────────────────────────────────────────
+    {"pattern": "take a screenshot",         "op": "vision.screenshot",     "args": {},                                                                   "risk": "R1"},
+    {"pattern": "capture my screen",         "op": "vision.screenshot",     "args": {},                                                                   "risk": "R1"},
+    {"pattern": "read text on screen",       "op": "vision.ocr_region",     "args": {},                                                                   "risk": "R1"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────

@@ -670,6 +670,22 @@ def _op_ns_explain_recent(args: dict, _policy: PolicyEngine) -> dict:
         return {"ok": False, "skipped": True, "reason": "ns_bridge_unavailable", "error": str(e)[:120]}
 
 
+def _op_ns_semantic_candidates(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/semantic/candidates", timeout=10)
+        return {"ok": resp.status_code == 200, **resp.json()}
+    except Exception as e:
+        return {"ok": True, "candidates": [], "reason": "ns_unreachable", "error": str(e)[:120]}
+
+
+def _op_vision_screenshot(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("vision", "screenshot", args)
+
+
+def _op_vision_ocr_region(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("vision", "ocr_region", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1069,9 +1085,10 @@ OP_DISPATCH: dict[str, Any] = {
     "ns.memory_recent": _op_ns_memory_recent,
     "ns.broadcast": _op_ns_broadcast,
     "ns.proactive_intel":   _op_ns_proactive_intel,
-    "ns.capability_graph":  _op_ns_capability_graph,
-    "ns.flywheel":          _op_ns_flywheel,
-    "ns.explain_recent":    _op_ns_explain_recent,
+    "ns.capability_graph":    _op_ns_capability_graph,
+    "ns.flywheel":            _op_ns_flywheel,
+    "ns.explain_recent":      _op_ns_explain_recent,
+    "ns.semantic_candidates": _op_ns_semantic_candidates,
     # Mac adapter bridge — audio.*, clipboard.*, notify.*
     "audio.get_volume":  _op_audio_get_volume,
     "audio.set_volume":  _op_audio_set_volume,
@@ -1080,7 +1097,9 @@ OP_DISPATCH: dict[str, Any] = {
     "clipboard.write":   _op_clipboard_write,
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
-    "env.permissions":   lambda args, policy: _mac_bridge("env", "permissions", args),
+    "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
+    "vision.screenshot":  _op_vision_screenshot,
+    "vision.ocr_region":  _op_vision_ocr_region,
     "display.get_info":        _op_display_get_info,
     "display.set_brightness":  _op_display_set_brightness,
     "display.screenshot_info": _op_display_screenshot_info,
