@@ -742,13 +742,25 @@ _MAC_ADAPTER_URL = "http://host.docker.internal:8765"
 
 def _mac_bridge(namespace: str, action: str, args: dict) -> dict:
     """POST to Mac adapter and return result, or graceful skip on connection failure."""
+    import hashlib as _hashlib, json as _json, time as _time
     try:
         resp = httpx.post(
             f"{_MAC_ADAPTER_URL}/ops/{namespace}/{action}",
             json=args,
             timeout=5,
         )
-        return resp.json()
+        result = resp.json()
+        # Deterministic response contract: op_hash + op_ts on every adapter result
+        try:
+            payload = _json.dumps(
+                {"op": f"{namespace}.{action}", "args": args, "result": result},
+                sort_keys=True, default=str
+            )
+            result["op_hash"] = _hashlib.sha256(payload.encode()).hexdigest()[:16]
+            result["op_ts"] = _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+        except Exception:
+            pass
+        return result
     except Exception:
         return {"ok": True, "skipped": True, "reason": "mac_adapter_not_running"}
 

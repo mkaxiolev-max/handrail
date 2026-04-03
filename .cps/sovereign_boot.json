@@ -1,27 +1,136 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "19-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel",
+  "objective": "20-op sovereignty \u2014 health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel + deterministic_contract",
   "policy_profile": "readonly.local",
   "ops": [
-    { "op": "fs.pwd",                    "args": {} },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/healthz",               "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://continuum:8788/state",           "expect_status": 200 } },
-    { "op": "http.get",                  "args": { "url": "http://ns:9000/alexandria/proof" } },
-    { "op": "http.get",                  "args": { "url": "http://ns:9000/auth/yubikey/test" } },
-    { "op": "http.get",                  "args": { "url": "http://ns:9000/health/full" } },
-    { "op": "sys.disk_usage",            "args": { "path": "/app" } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/models/registry",        "expect_status": 200 } },
-    { "op": "http.get",                  "args": { "url": "http://ns:9000/memory/recent?n=3" } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/founder",                "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/kernel/yubikey/status",  "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://continuum:8788/healthz",         "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/capability/graph",       "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/semantic/candidates",    "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/invention/flywheel",     "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/usdl/gates",             "expect_status": 200 } },
-    { "op": "sys.read_json",             "args": { "path": "/Users/axiolevns/axiolev_runtime/proofs/abi_freeze_proof.json" } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/sms/health",               "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/intel/proactive",          "expect_status": 200 } }
+    {
+      "op": "fs.pwd",
+      "args": {}
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/healthz",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://continuum:8788/state",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://ns:9000/alexandria/proof"
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://ns:9000/auth/yubikey/test"
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://ns:9000/health/full"
+      }
+    },
+    {
+      "op": "sys.disk_usage",
+      "args": {
+        "path": "/app"
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/models/registry",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://ns:9000/memory/recent?n=3"
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/founder",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/kernel/yubikey/status",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://continuum:8788/healthz",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/capability/graph",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/semantic/candidates",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/invention/flywheel",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/usdl/gates",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "sys.read_json",
+      "args": {
+        "path": "/Users/axiolevns/axiolev_runtime/proofs/abi_freeze_proof.json"
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/sms/health",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/intel/proactive",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "ns.proactive_intel",
+      "args": {}
+    }
   ],
   "expect": {
     "results[1].data.healthy": true,
