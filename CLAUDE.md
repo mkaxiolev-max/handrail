@@ -164,7 +164,9 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `keychain` | `keychain.check_entry` | security find-generic-password exit code only; Dignity Guard: never returns secret; blocks shell metacharacters |
 | `keychain` | `keychain.list_services` | security dump-keychain svce lines only; Dignity Guard: strips pass/pwd/secret/token/key lines |
 
-**46 ops across 17 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.* — graceful skip when adapter not running).
+**47 ops across 17 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions — graceful skip when adapter not running).
+
+Formalization layer: `adapter_core/capability_registry.py` (37 ops typed/versioned), `adapter_core/artifact_writer.py` (path+hash+size+ts).
 
 ## Dignity Kernel — YubiKey Binding (BLACK KNIGHT Step 4)
 
@@ -207,7 +209,7 @@ State stored at `/Volumes/NSExternal/ALEXANDRIA/programs/{namespace}/{instance_i
 
 Meta-contract (all namespaces): `program.advance_state`, `program.flag_risk`, `program.request_approval`, `program.log_receipt`, `program.archive`
 
-**119 total CPS ops** (32 existing + 68 program + 5 meta + 7 Mac adapter bridge v3: audio/clipboard/notify + 7 Mac adapter bridge v4: display/battery/keychain + 5 sys.* direct: get_env_var/write_file/read_json/list_dir/now).
+**125 total CPS ops** (32 existing + 68 program + 5 meta + 7 Mac adapter bridge v3: audio/clipboard/notify + 7 Mac adapter bridge v4: display/battery/keychain + 5 sys.* direct + 1 env.permissions).
 
 ## Model Router
 

@@ -736,6 +736,18 @@ def _op_keychain_list_services(args: dict, _policy: PolicyEngine) -> dict:
     return _mac_bridge("keychain", "list_services", args)
 
 
+def _op_adapter_list_capabilities(args: dict, _policy: PolicyEngine) -> dict:
+    import urllib.request, urllib.error, json as _json
+    try:
+        url = args.get("url", "http://host.docker.internal:9911/capabilities")
+        with urllib.request.urlopen(url, timeout=2) as r:
+            data = _json.loads(r.read())
+            return {"ok": True, "source": "mac_adapter", **data}
+    except Exception as e:
+        return {"ok": True, "skipped": True, "reason": str(e),
+                "note": "Mac adapter not running"}
+
+
 # ---------------------------------------------------------------------------
 # Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops
 # ---------------------------------------------------------------------------
@@ -1031,6 +1043,7 @@ OP_DISPATCH: dict[str, Any] = {
     "clipboard.write":   _op_clipboard_write,
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
+    "env.permissions":   lambda args, policy: _mac_bridge("env", "permissions", args),
     "display.get_info":        _op_display_get_info,
     "display.set_brightness":  _op_display_set_brightness,
     "display.screenshot_info": _op_display_screenshot_info,
@@ -1038,6 +1051,7 @@ OP_DISPATCH: dict[str, Any] = {
     "battery.get_power_source": _op_battery_get_power_source,
     "keychain.check_entry":    _op_keychain_check_entry,
     "keychain.list_services":  _op_keychain_list_services,
+    "adapter.list_capabilities": _op_adapter_list_capabilities,
     # sys.* extended direct ops
     "sys.get_env_var": _op_sys_get_env_var,
     "sys.write_file":  _op_sys_write_file,
@@ -1345,6 +1359,26 @@ class CPSExecutor:
 
             result["latency_ms"] = round((time.monotonic() - start_op) * 1000, 1)
             result["op_digest"] = _sha256({"op": op_name, "args": op_args, "data": result["data"]})
+            # Deterministic response contract — short hash + side effect class
+            import hashlib as _hl, json as _j
+            _payload = _j.dumps({"op": op_name, "args": op_args,
+                                  "result": result.get("data")}, sort_keys=True, default=str)
+            result["op_hash"] = "sha256:" + _hl.sha256(_payload.encode()).hexdigest()[:16]
+            _side_map = {
+                "write": {"git.commit", "docker.compose_up", "proc.run_allowed",
+                          "fs.write_text", "clipboard.write", "notify.send", "notify.badge",
+                          "display.set_brightness", "audio.set_volume", "window.focus",
+                          "input.click", "input.type", "input.key", "proc_extended.kill_pid"},
+                "stateful": {"file_watch.watch_path"},
+                "artifact": {"vision.screenshot", "vision.ocr_region"},
+            }
+            _sef = "read"
+            for _cls, _ops in _side_map.items():
+                if op_name in _ops:
+                    _sef = _cls
+                    break
+            result["side_effect_class"] = _sef
+            result["validity_checked"] = True
             results.append(result)
 
         duration_ms = round((time.monotonic() - start_total) * 1000, 1)

@@ -18,6 +18,7 @@ class OperationStatus(str, Enum):
     FAILURE = "failure"
     TIMEOUT = "timeout"
     DENIED  = "denied"   # dignity_kernel blocked this op
+    SKIPPED = "skipped"  # graceful skip (non-macOS or missing capability)
 
 
 class AdapterRequest(BaseModel):

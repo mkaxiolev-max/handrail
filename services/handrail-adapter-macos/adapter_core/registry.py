@@ -6,7 +6,7 @@ Adding a new adapter = registering its namespace prefix here.
 The CPS engine never changes. Only this registry grows.
 
 Current drivers:
-  env.*            → MacOSEnvAdapter
+  env.*            → MacOSEnvAdapter + env_driver.permissions (env.permissions)
   window.*         → MacOSWindowAdapter
   input.*          → MacOSInputAdapter
   vision.*         → MacOSVisionAdapter
@@ -14,6 +14,16 @@ Current drivers:
   network.*        → NetworkAdapter       (http_get, port_check, dns_resolve)
   proc_extended.*  → ProcExtendedAdapter  (list_processes, kill_pid, get_memory_usage)
   file_watch.*     → FileWatchAdapter     (watch_path, read_recent_changes)
+  audio.*          → AudioDriver          (get_volume, set_volume, get_playing)
+  clipboard.*      → ClipboardDriver      (read, write)
+  notify.*         → NotifyDriver         (send, badge)
+  display.*        → DisplayDriver        (get_info, set_brightness, screenshot_info)
+  battery.*        → BatteryDriver        (get_status, get_power_source)
+  keychain.*       → KeychainDriver       (check_entry, list_services)
+
+Formalization layer:
+  capability_registry.py — typed manifest, 37 ops across 14 namespaces
+  artifact_writer.py     — path + hash + size + ts for all file outputs
 """
 from __future__ import annotations
 import time
