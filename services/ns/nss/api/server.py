@@ -1807,12 +1807,56 @@ def create_app() -> FastAPI:
                          "email", "message", "advance", "create", "add", "start"}
         _intent = "voice_action" if any(w in transcript.lower().split() for w in _action_words) else "voice_quick"
 
+        # ── HIC pre-check — R0 auto-execute / veto enforcement ────────────────
+        from nss.hic.compiler import get_hic
+        _hic_result = get_hic().compile(transcript)
+        if _hic_result.get("veto"):
+            _veto_twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Gather input="speech" action="{respond_url}" method="POST"
+          speechTimeout="auto" timeout="3">
+    <Say voice="Polly.Matthew" language="en-US">I can't help with that.</Say>
+  </Gather>
+  <Redirect method="POST">{respond_url}</Redirect>
+</Response>"""
+            receipt_chain.emit("VOICE_VETO",
+                                {"kind": "voice", "ref": call_sid},
+                                {"transcript": transcript[:100]},
+                                {"veto_reason": _hic_result.get("veto_reason", "")[:200]})
+            return Response(content=_veto_twiml, media_type="application/xml")
+
+        _hic_context = ""
+        if _hic_result.get("ok") and _hic_result.get("risk") == "R0":
+            import httpx as _httpx
+            try:
+                _cps_payload = {
+                    "cps_id": f"hic_voice_{_hic_result['op'].replace('.','_')}",
+                    "objective": f"HIC voice R0: {transcript[:60]}",
+                    "policy_profile": "readonly.local",
+                    "ops": [{"op": _hic_result["op"], "args": _hic_result["args"]}],
+                }
+                _cps_resp = _httpx.post("http://handrail:8011/ops/cps",
+                                        json=_cps_payload, timeout=5)
+                _cps_data = _cps_resp.json()
+                _hic_context = (
+                    f"[HIC R0 auto-executed '{_hic_result['matched_pattern']}' → "
+                    f"{_hic_result['op']}: "
+                    f"{str(_cps_data.get('results', [{}])[0].get('data', ''))[:200]}]\n\n"
+                )
+                receipt_chain.emit("VOICE_HIC_EXECUTE",
+                                    {"kind": "voice", "ref": call_sid},
+                                    {"op": _hic_result["op"],
+                                     "matched": _hic_result.get("matched_pattern")},
+                                    {"cps_ok": _cps_data.get("ok")})
+            except Exception:
+                _hic_context = ""
+
         # Route through ModelRouter
         response_text = "I couldn't reach my intelligence layer right now. Please try again."
         try:
             router = get_router()
             result = await asyncio.to_thread(
-                router.route_sync, transcript, _mem_context + _NS_VOICE_SYSTEM, _intent
+                router.route_sync, transcript, _hic_context + _mem_context + _NS_VOICE_SYSTEM, _intent
             )
             response_text = result["response"]
         except Exception as exc:
