@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "14-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder",
+  "objective": "15-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + sys.now",
   "policy_profile": "readonly.local",
   "ops": [
     { "op": "fs.pwd",                    "args": {} },
@@ -16,7 +16,8 @@
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/kernel/yubikey/status",  "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://continuum:8788/healthz",         "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/capability/graph",       "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/semantic/candidates",    "expect_status": 200 } }
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/semantic/candidates",    "expect_status": 200 } },
+    { "op": "sys.now",                   "args": {} }
   ],
   "expect": {
     "results[1].data.healthy": true,
@@ -27,6 +28,7 @@
     "results[10].data.healthy": true,
     "results[11].data.healthy": true,
     "results[12].data.healthy": true,
-    "results[13].data.healthy": true
+    "results[13].data.healthy": true,
+    "results[14].data.tz": "UTC"
   }
 }

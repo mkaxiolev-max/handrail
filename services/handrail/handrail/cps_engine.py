@@ -299,6 +299,94 @@ def _op_sys_uptime(args: dict, _policy: PolicyEngine) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# sys.* extended direct ops (pure Python, no Mac adapter)
+# ---------------------------------------------------------------------------
+
+_SYS_SECRET_ENV_VARS = frozenset([
+    "ANTHROPIC_API_KEY", "TWILIO_AUTH_TOKEN", "STRIPE_SECRET_KEY", "YUBIKEY_SECRET_KEY",
+])
+
+_SYS_WRITE_ALLOWED_PREFIXES = (
+    "/tmp/",
+    "/Volumes/NSExternal/ALEXANDRIA/programs/",
+    "/Volumes/NSExternal/ALEXANDRIA/san/",
+)
+_SYS_WRITE_ALLOWED_HOME_PREFIXES = (".axiolev/",)
+_SYS_WRITE_BLOCKED_PATHS = ("ALEXANDRIA/ledger", "ALEXANDRIA/canon")
+_SYS_READ_JSON_MAX_BYTES = 5 * 1024 * 1024  # 5 MB
+
+
+def _op_sys_get_env_var(args: dict, _policy: PolicyEngine) -> dict:
+    import os
+    key = args.get("key", "")
+    if not key:
+        raise ValueError("sys.get_env_var requires key")
+    exists = key in os.environ
+    if key in _SYS_SECRET_ENV_VARS:
+        return {"key": key, "exists": exists, "value": "REDACTED"}
+    return {"key": key, "exists": exists, "value": os.environ.get(key)}
+
+
+def _op_sys_write_file(args: dict, _policy: PolicyEngine) -> dict:
+    raw_path = args.get("path", "")
+    content  = args.get("content", "")
+    if not raw_path:
+        raise ValueError("sys.write_file requires path")
+    p = Path(raw_path).resolve()
+    p_str = str(p)
+    # Dignity Guard — block writes to ledger/canon (NE2)
+    for blocked in _SYS_WRITE_BLOCKED_PATHS:
+        if blocked in p_str:
+            raise PermissionError(f"sys.write_file: writes to {blocked} are constitutionally prohibited (NE2)")
+    # Dignity Guard — path must be under an allowed prefix
+    home = str(Path.home())
+    allowed = (
+        any(p_str.startswith(pfx) for pfx in _SYS_WRITE_ALLOWED_PREFIXES) or
+        any(p_str.startswith(home + "/" + sfx) for sfx in _SYS_WRITE_ALLOWED_HOME_PREFIXES)
+    )
+    if not allowed:
+        raise PermissionError(f"sys.write_file: path {p_str!r} is outside allowed write zones")
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(content)
+    return {"ok": True, "path": p_str, "bytes_written": len(content.encode())}
+
+
+def _op_sys_read_json(args: dict, _policy: PolicyEngine) -> dict:
+    raw_path = args.get("path", "")
+    if not raw_path:
+        raise ValueError("sys.read_json requires path")
+    p = Path(raw_path)
+    if not p.exists():
+        raise FileNotFoundError(f"sys.read_json: path not found: {p}")
+    size = p.stat().st_size
+    if size > _SYS_READ_JSON_MAX_BYTES:
+        raise ValueError(f"sys.read_json: file too large ({size} bytes, max {_SYS_READ_JSON_MAX_BYTES})")
+    data = json.loads(p.read_text())
+    return {"ok": True, "path": str(p), "data": data}
+
+
+def _op_sys_list_dir(args: dict, _policy: PolicyEngine) -> dict:
+    raw_path = args.get("path", "")
+    if not raw_path:
+        raise ValueError("sys.list_dir requires path")
+    p = Path(raw_path)
+    if not p.exists():
+        raise FileNotFoundError(f"sys.list_dir: path not found: {p}")
+    entries = sorted(item.name for item in p.iterdir())
+    return {"ok": True, "entries": entries, "count": len(entries)}
+
+
+def _op_sys_now(args: dict, _policy: PolicyEngine) -> dict:
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    return {
+        "ts": now.isoformat(),
+        "epoch": now.timestamp(),
+        "tz": "UTC",
+    }
+
+
+# ---------------------------------------------------------------------------
 # Slack adapter
 # ---------------------------------------------------------------------------
 
@@ -620,6 +708,34 @@ def _op_notify_badge(args: dict, _policy: PolicyEngine) -> dict:
     return _mac_bridge("notify", "badge", args)
 
 
+def _op_display_get_info(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("display", "get_info", args)
+
+
+def _op_display_set_brightness(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("display", "set_brightness", args)
+
+
+def _op_display_screenshot_info(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("display", "screenshot_info", args)
+
+
+def _op_battery_get_status(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("battery", "get_status", args)
+
+
+def _op_battery_get_power_source(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("battery", "get_power_source", args)
+
+
+def _op_keychain_check_entry(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("keychain", "check_entry", args)
+
+
+def _op_keychain_list_services(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("keychain", "list_services", args)
+
+
 # ---------------------------------------------------------------------------
 # Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops
 # ---------------------------------------------------------------------------
@@ -915,6 +1031,19 @@ OP_DISPATCH: dict[str, Any] = {
     "clipboard.write":   _op_clipboard_write,
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
+    "display.get_info":        _op_display_get_info,
+    "display.set_brightness":  _op_display_set_brightness,
+    "display.screenshot_info": _op_display_screenshot_info,
+    "battery.get_status":      _op_battery_get_status,
+    "battery.get_power_source": _op_battery_get_power_source,
+    "keychain.check_entry":    _op_keychain_check_entry,
+    "keychain.list_services":  _op_keychain_list_services,
+    # sys.* extended direct ops
+    "sys.get_env_var": _op_sys_get_env_var,
+    "sys.write_file":  _op_sys_write_file,
+    "sys.read_json":   _op_sys_read_json,
+    "sys.list_dir":    _op_sys_list_dir,
+    "sys.now":         _op_sys_now,
     # Program Library v1 — 10 namespaces (68 ops + 5 meta)
     **_FUNDRAISING_OPS,
     **_HIRING_OPS,

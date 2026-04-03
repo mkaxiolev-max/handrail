@@ -3055,6 +3055,103 @@ setInterval(refresh, 5000);
         from nss.semantic.feedback_binder import get_binder
         return get_binder().promote_to_canon(proposal_id, body.get("approved_by", "founder"))
 
+    # ── Policy Evolution ──────────────────────────────────────────────────────
+
+    @app.get("/policy/proposals")
+    async def policy_list_proposals(status: str = None):
+        from nss.policy.evolution import get_engine
+        proposals = get_engine().list_proposals(status=status)
+        return {"ok": True, "count": len(proposals), "proposals": proposals}
+
+    @app.post("/policy/proposals")
+    async def policy_submit_proposal(request: Request):
+        body = await request.json()
+        from nss.policy.evolution import get_engine
+        try:
+            proposal = get_engine().submit_proposal(
+                title=body.get("title", ""),
+                description=body.get("description", ""),
+                proposer=body.get("proposer", "founder"),
+                risk_tier=body.get("risk_tier", "R1"),
+            )
+            return {**proposal, "ok": True}
+        except ValueError as e:
+            return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+    @app.post("/policy/proposals/{proposal_id}/vote")
+    async def policy_vote(proposal_id: str, request: Request):
+        body = await request.json()
+        from nss.policy.evolution import get_engine
+        return get_engine().vote(proposal_id, body.get("actor", "founder"),
+                                 bool(body.get("vote", True)))
+
+    @app.post("/policy/proposals/{proposal_id}/activate")
+    async def policy_activate(proposal_id: str, request: Request):
+        body = await request.json()
+        from nss.policy.evolution import get_engine
+        return get_engine().activate(proposal_id, body.get("actor", "founder"),
+                                     body.get("yubikey_verified", False))
+
+    @app.get("/policy/{policy_name}/active")
+    async def policy_active_version(policy_name: str):
+        from nss.policy.evolution import get_engine
+        v = get_engine().get_active_policy(policy_name)
+        if v is None:
+            return JSONResponse({"ok": False, "error": "no active version"}, status_code=404)
+        return {"ok": True, "version": v}
+
+    @app.get("/policy/{policy_name}/audit")
+    async def policy_audit(policy_name: str):
+        from nss.policy.evolution import get_engine
+        return {"ok": True, "entries": get_engine().audit_log(policy_name)}
+
+    @app.post("/policy/{policy_name}/rollback")
+    async def policy_rollback(policy_name: str, request: Request):
+        body = await request.json()
+        from nss.policy.evolution import get_engine
+        return get_engine().rollback(policy_name, body.get("actor", "founder"))
+
+    # ── Explainability ────────────────────────────────────────────────────────
+
+    @app.get("/explain/run/{run_id}")
+    async def explain_run(run_id: str):
+        from nss.explainability.engine import get_engine
+        return get_engine().explain_run(run_id)
+
+    @app.get("/explain/decision/{decision_id}")
+    async def explain_decision(decision_id: str):
+        from nss.explainability.engine import get_engine
+        return get_engine().explain_decision(decision_id)
+
+    @app.get("/explain/recent")
+    async def explain_recent():
+        from nss.explainability.engine import get_engine
+        decisions = get_engine().recent_decisions(10)
+        return {"ok": True, "count": len(decisions), "decisions": decisions}
+
+    # ── USDL Decoder ──────────────────────────────────────────────────────────
+
+    @app.get("/usdl/gates")
+    async def usdl_gates():
+        from nss.usdl.decoder import get_decoder, SEED_GENOME
+        return {"ok": True, "count": len(SEED_GENOME), "gates": SEED_GENOME}
+
+    @app.post("/usdl/eval")
+    async def usdl_eval(request: Request):
+        body = await request.json()
+        state_capsule = body.get("state_capsule", {})
+        from nss.usdl.decoder import USDLDecoder
+        decoder = USDLDecoder(state_capsule=state_capsule)
+        return decoder.execute()
+
+    @app.get("/usdl/lineage")
+    async def usdl_lineage():
+        from nss.usdl.decoder import get_decoder
+        lineage = get_decoder().get_lineage(20)
+        return {"ok": True, "count": len(lineage), "lineage": lineage}
+
+    # ── Invention Flywheel ────────────────────────────────────────────────────
+
     @app.get("/invention/flywheel")
     async def invention_flywheel():
         """Invention Flywheel — current cycle state across all three realities."""

@@ -156,7 +156,15 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `notify` | `notify.send` | AppleScript: display notification; graceful skip if not macOS |
 | `notify` | `notify.badge` | AppleScript: dock tile badge; graceful skip if not macOS |
 
-**39 ops across 14 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.* — graceful skip when adapter not running).
+| `display` | `display.get_info` | system_profiler + osascript brightness; graceful skip if not macOS |
+| `display` | `display.set_brightness` | AppleScript set brightness; Dignity Guard: 0.0–1.0 |
+| `display` | `display.screenshot_info` | Quartz/CoreGraphics via python3; graceful skip if no Quartz |
+| `battery` | `battery.get_status` | pmset -g batt; graceful skip if no battery/not macOS |
+| `battery` | `battery.get_power_source` | pmset -g ps; graceful skip if not macOS |
+| `keychain` | `keychain.check_entry` | security find-generic-password exit code only; Dignity Guard: never returns secret; blocks shell metacharacters |
+| `keychain` | `keychain.list_services` | security dump-keychain svce lines only; Dignity Guard: strips pass/pwd/secret/token/key lines |
+
+**46 ops across 17 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.* — graceful skip when adapter not running).
 
 ## Dignity Kernel — YubiKey Binding (BLACK KNIGHT Step 4)
 
@@ -199,7 +207,7 @@ State stored at `/Volumes/NSExternal/ALEXANDRIA/programs/{namespace}/{instance_i
 
 Meta-contract (all namespaces): `program.advance_state`, `program.flag_risk`, `program.request_approval`, `program.log_receipt`, `program.archive`
 
-**107 total CPS ops** (32 existing + 68 program + 5 meta + 7 Mac adapter bridge: audio/clipboard/notify).
+**119 total CPS ops** (32 existing + 68 program + 5 meta + 7 Mac adapter bridge v3: audio/clipboard/notify + 7 Mac adapter bridge v4: display/battery/keychain + 5 sys.* direct: get_env_var/write_file/read_json/list_dir/now).
 
 ## Model Router
 
@@ -270,7 +278,7 @@ Top unresolved (by strategic_value): usdl_decoder_live (8), 2nd_yubikey (8), pol
 | Step 4 | YubiKey Binding — 2-of-3 quorum, R3/R4 gate, live YubiCloud | ✅ Complete |
 | Step 5 | Dignity Kernel — NE1/NE2/NE3/NE4 never-events, NS Boot Proof, Continuum v1 | ✅ Complete |
 
-Sovereign boot plan: `.cps/sovereign_boot.json` — 14 ops, 9 expect assertions.
+Sovereign boot plan: `.cps/sovereign_boot.json` — 15 ops, 10 expect assertions (Op 15: sys.now, assert tz=UTC).
 Boot proof: `proofs/ns_boot_proof.json` — canonical identity attestation.
 
 ## Docker Compose
