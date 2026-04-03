@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "18-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health",
+  "objective": "19-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel",
   "policy_profile": "readonly.local",
   "ops": [
     { "op": "fs.pwd",                    "args": {} },
@@ -20,7 +20,8 @@
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/invention/flywheel",     "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/usdl/gates",             "expect_status": 200 } },
     { "op": "sys.read_json",             "args": { "path": "/Users/axiolevns/axiolev_runtime/proofs/abi_freeze_proof.json" } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/sms/health",               "expect_status": 200 } }
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/sms/health",               "expect_status": 200 } },
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/intel/proactive",          "expect_status": 200 } }
   ],
   "expect": {
     "results[1].data.healthy": true,

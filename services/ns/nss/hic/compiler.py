@@ -57,6 +57,17 @@ SAFE_CODEBOOK = [
     {"pattern": "list semantic candidates", "op": "http.health_check",  "args": {"url": "http://ns:9000/semantic/candidates", "expect_status": 200},      "risk": "R0"},
     {"pattern": "check policy proposals","op": "http.health_check",     "args": {"url": "http://ns:9000/semantic/proposals", "expect_status": 200},       "risk": "R0"},
     {"pattern": "recent ops",            "op": "http.health_check",     "args": {"url": "http://ns:9000/ops/recent", "expect_status": 200},               "risk": "R0"},
+    # ── Voice-natural proactive intel patterns ────────────────────────────────
+    {"pattern": "what are my next actions",  "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "give me suggestions",       "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "what should i focus on",    "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "show capability graph",     "op": "ns.capability_graph",   "args": {},                                                                   "risk": "R0"},
+    {"pattern": "explain recent decisions",  "op": "ns.explain_recent",     "args": {},                                                                   "risk": "R0"},
+    {"pattern": "open founder console",      "op": "http.health_check",     "args": {"url": "http://ns:9000/founder", "expect_status": 200},              "risk": "R0"},
+    {"pattern": "check voice health",        "op": "http.health_check",     "args": {"url": "http://ns:9000/voice/health", "expect_status": 200},         "risk": "R0"},
+    {"pattern": "run sovereign boot",        "op": "http.health_check",     "args": {"url": "http://ns:9000/healthz", "expect_status": 200},              "risk": "R0"},
+    {"pattern": "show model status",         "op": "http.health_check",     "args": {"url": "http://ns:9000/models/status", "expect_status": 200},        "risk": "R0"},
+    {"pattern": "check sms",                 "op": "http.health_check",     "args": {"url": "http://ns:9000/sms/health", "expect_status": 200},           "risk": "R0"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────

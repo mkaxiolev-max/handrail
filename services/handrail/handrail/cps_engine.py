@@ -646,6 +646,30 @@ def _op_ns_proactive_intel(args: dict, _policy: PolicyEngine) -> dict:
         return {"ok": True, "suggestions": [], "reason": "ns_unreachable", "error": str(e)[:120]}
 
 
+def _op_ns_capability_graph(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/capability/graph", timeout=10)
+        return {"ok": resp.status_code == 200, **resp.json()}
+    except Exception as e:
+        return {"ok": False, "skipped": True, "reason": "ns_bridge_unavailable", "error": str(e)[:120]}
+
+
+def _op_ns_flywheel(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/invention/flywheel", timeout=10)
+        return {"ok": resp.status_code == 200, **resp.json()}
+    except Exception as e:
+        return {"ok": False, "skipped": True, "reason": "ns_bridge_unavailable", "error": str(e)[:120]}
+
+
+def _op_ns_explain_recent(args: dict, _policy: PolicyEngine) -> dict:
+    try:
+        resp = httpx.get(f"{_get_ns_url()}/explain/recent", timeout=10)
+        return {"ok": resp.status_code == 200, **resp.json()}
+    except Exception as e:
+        return {"ok": False, "skipped": True, "reason": "ns_bridge_unavailable", "error": str(e)[:120]}
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1044,7 +1068,10 @@ OP_DISPATCH: dict[str, Any] = {
     "ns.memory_query": _op_ns_memory_query,
     "ns.memory_recent": _op_ns_memory_recent,
     "ns.broadcast": _op_ns_broadcast,
-    "ns.proactive_intel": _op_ns_proactive_intel,
+    "ns.proactive_intel":   _op_ns_proactive_intel,
+    "ns.capability_graph":  _op_ns_capability_graph,
+    "ns.flywheel":          _op_ns_flywheel,
+    "ns.explain_recent":    _op_ns_explain_recent,
     # Mac adapter bridge — audio.*, clipboard.*, notify.*
     "audio.get_volume":  _op_audio_get_volume,
     "audio.set_volume":  _op_audio_set_volume,
