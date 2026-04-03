@@ -1,0 +1,52 @@
+{
+  "proof_id": "omega-checkpoint-v2",
+  "date": "2026-04-03",
+  "status": "NEAR_OMEGA",
+  "completed": [
+    "ring_1_built",
+    "ring_2_provable",
+    "ring_3_sovereign",
+    "ring_4_durable",
+    "program_library_v1",
+    "model_router",
+    "proactive_intel",
+    "founder_console_v3",
+    "san_adapter",
+    "semantic_binder",
+    "capability_graph",
+    "policy_evolution",
+    "explainability_engine",
+    "usdl_decoder",
+    "invention_flywheel",
+    "adapter_expansion_v1_v5",
+    "dignity_kernel",
+    "yubikey_step4",
+    "sovereign_boot_19ops",
+    "abi_freeze_proof",
+    "hic_compiler_53patterns",
+    "voice_lane_live",
+    "sms_channel_live",
+    "mac_adapter_live_36ops",
+    "proactive_intel_haiku",
+    "vision_driver",
+    "fs_driver",
+    "ns_bridge_ops_x5",
+    "mobile_app_shell"
+  ],
+  "blocked": {
+    "M_ring5": "Stripe LLC docs \u2014 dashboard.stripe.com",
+    "M_hardware": "2nd YubiKey 5 NFC \u2014 physical procurement",
+    "M_github_tags": "2 tags blocked by push protection \u2014 omega-checkpoint-v1, sms-channel-v1"
+  },
+  "omega_definition": "NS is sovereign, self-proving, commercially live, physically trusted",
+  "remaining_software_work": [
+    "usdl_decoder_promotion_production",
+    "mobile_app_xcode_project"
+  ],
+  "total_tags_local": 199,
+  "total_cps_ops": 131,
+  "sovereign_boot_ops": 19,
+  "hic_patterns": 53,
+  "adapter_methods": 36,
+  "tests_passing": 179
+}

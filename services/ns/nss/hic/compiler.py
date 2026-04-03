@@ -72,6 +72,14 @@ SAFE_CODEBOOK = [
     {"pattern": "take a screenshot",         "op": "vision.screenshot",     "args": {},                                                                   "risk": "R1"},
     {"pattern": "capture my screen",         "op": "vision.screenshot",     "args": {},                                                                   "risk": "R1"},
     {"pattern": "read text on screen",       "op": "vision.ocr_region",     "args": {},                                                                   "risk": "R1"},
+    # ── Additional voice-natural patterns ─────────────────────────────────────
+    {"pattern": "how am i doing",            "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "morning briefing",          "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "what happened recently",    "op": "ns.explain_recent",     "args": {},                                                                   "risk": "R0"},
+    {"pattern": "show me the flywheel",      "op": "ns.flywheel",           "args": {},                                                                   "risk": "R0"},
+    {"pattern": "list my capabilities",      "op": "ns.capability_graph",   "args": {},                                                                   "risk": "R0"},
+    {"pattern": "what is my current status", "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
+    {"pattern": "alexandria search",         "op": "ns.memory_query",       "args": {},                                                                   "risk": "R0"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────

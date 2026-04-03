@@ -670,6 +670,30 @@ def _op_ns_explain_recent(args: dict, _policy: PolicyEngine) -> dict:
         return {"ok": False, "skipped": True, "reason": "ns_bridge_unavailable", "error": str(e)[:120]}
 
 
+def _op_input_type(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("input", "type", args)
+
+
+def _op_input_click(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("input", "click", args)
+
+
+def _op_input_key(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("input", "key", args)
+
+
+def _op_window_list(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("window", "list", args)
+
+
+def _op_window_focus(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("window", "focus", args)
+
+
+def _op_window_get_focused(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("window", "get_focused", args)
+
+
 def _op_ns_semantic_candidates(args: dict, _policy: PolicyEngine) -> dict:
     try:
         resp = httpx.get(f"{_get_ns_url()}/semantic/candidates", timeout=10)
@@ -1100,6 +1124,12 @@ OP_DISPATCH: dict[str, Any] = {
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
     "vision.screenshot":  _op_vision_screenshot,
     "vision.ocr_region":  _op_vision_ocr_region,
+    "input.type":         _op_input_type,
+    "input.click":        _op_input_click,
+    "input.key":          _op_input_key,
+    "window.list":        _op_window_list,
+    "window.focus":       _op_window_focus,
+    "window.get_focused": _op_window_get_focused,
     "display.get_info":        _op_display_get_info,
     "display.set_brightness":  _op_display_set_brightness,
     "display.screenshot_info": _op_display_screenshot_info,

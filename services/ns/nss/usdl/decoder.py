@@ -69,6 +69,36 @@ SEED_GENOME = [
         "action": "validate_against_canon",
         "fires_post_execution": True,
     },
+    {
+        "id": "gate_6",
+        "type": "operator",
+        "name": "dignity_block",
+        "description": "Blocks execution if dignity kernel never-events are at risk",
+        "conditions": {"risk_score": {"op": ">", "value": 0.95}},
+        "priority": 250,
+        "action": "block_execution",
+    },
+    {
+        "id": "gate_7",
+        "type": "enhancer",
+        "name": "sovereignty_boost",
+        "description": "Amplifies priority for sovereignty-critical operations",
+        "conditions": {
+            "constraint_pressure": {"op": ">", "value": 0.7},
+            "capability_gap": {"op": "<", "value": 0.5},
+        },
+        "priority": 130,
+        "action": "amplify_priority",
+    },
+    {
+        "id": "gate_8",
+        "type": "riboswitch",
+        "name": "founder_presence_sensor",
+        "description": "Gates high-risk ops on founder session presence",
+        "conditions": {"ATP_level": {"op": ">", "value": 0.6}},
+        "priority": 175,
+        "action": "conditional_enable",
+    },
 ]
 
 # ── Storage ───────────────────────────────────────────────────────────────────

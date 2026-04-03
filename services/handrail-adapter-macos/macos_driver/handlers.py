@@ -15,6 +15,8 @@ from battery_driver.handlers import build_battery_handlers
 from keychain_driver.handlers import build_keychain_handlers
 from vision_driver.handlers import build_vision_handlers
 from fs_driver.handlers import build_fs_handlers
+from input_driver.handlers import build_input_handlers
+from window_driver.handlers import build_window_handlers
 
 IS_MACOS = platform.system() == "Darwin"
 MOCK_MODE = not IS_MACOS
@@ -226,11 +228,11 @@ def build_registry():
     reg = AdapterRegistry()
     reg.register_all({
         "env.health": env_health, "env.capabilities": env_capabilities, "env.version": env_version,
-        "window.list": window_list, "window.focus": window_focus, "window.get_focused": window_get_focused,
-        "input.click": input_click, "input.type": input_type, "input.key": input_key,
     })
     reg.register_all(build_vision_handlers())
     reg.register_all(build_fs_handlers())
+    reg.register_all(build_input_handlers())
+    reg.register_all(build_window_handlers())
     reg.register_all(build_network_handlers())
     reg.register_all(build_proc_extended_handlers())
     reg.register_all(build_file_watch_handlers())

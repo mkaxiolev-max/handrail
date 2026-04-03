@@ -39,14 +39,14 @@ CAPABILITY_REGISTRY: list[dict] = [
     # file_watch.*
     {"namespace":"file_watch","op":"watch_path","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":[],"schema_out":{"watch_id":"str","entry_count":"int"}},
     {"namespace":"file_watch","op":"read_recent_changes","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"changes":"list","change_count":"int"}},
-    # window.*
-    {"namespace":"window","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"windows":"list"}},
-    {"namespace":"window","op":"focus","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"focused_app":"str"}},
-    {"namespace":"window","op":"get_focused","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"app":"str","title":"str"}},
-    # input.*
-    {"namespace":"input","op":"click","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility"],"schema_out":{"clicked":"dict"}},
-    {"namespace":"input","op":"type","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility"],"schema_out":{"typed_length":"int"}},
-    {"namespace":"input","op":"key","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility"],"schema_out":{"key":"str"}},
+    # window.* — standalone window_driver, graceful skip on -1719
+    {"namespace":"window","op":"list","version":"2.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_accessibility"],"schema_out":{"windows":"list","count":"int"}},
+    {"namespace":"window","op":"focus","version":"2.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"ok":"bool","focused_app":"str"}},
+    {"namespace":"window","op":"get_focused","version":"2.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_accessibility"],"schema_out":{"app":"str","title":"str"}},
+    # input.* — standalone input_driver, dignity guards: accessibility + bounds + whitelist
+    {"namespace":"input","op":"type","version":"2.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility","max_500_chars"],"schema_out":{"ok":"bool","typed_length":"int"}},
+    {"namespace":"input","op":"click","version":"2.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility","bounds_0_7680_x_4320"],"schema_out":{"ok":"bool","clicked":"dict"}},
+    {"namespace":"input","op":"key","version":"2.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility","key_whitelist","blocked_cmd_q"],"schema_out":{"ok":"bool","key":"str"}},
     # vision.*
     {"namespace":"vision","op":"screenshot","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written"],"schema_out":{"path":"str","hash":"str"}},
     {"namespace":"vision","op":"ocr_region","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission"],"schema_out":{"text":"str"}},
