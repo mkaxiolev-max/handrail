@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "15-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + sys.now",
+  "objective": "16-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates",
   "policy_profile": "readonly.local",
   "ops": [
     { "op": "fs.pwd",                    "args": {} },
@@ -9,7 +9,7 @@
     { "op": "http.get",                  "args": { "url": "http://ns:9000/alexandria/proof" } },
     { "op": "http.get",                  "args": { "url": "http://ns:9000/auth/yubikey/test" } },
     { "op": "http.get",                  "args": { "url": "http://ns:9000/health/full" } },
-    { "op": "sys.disk_usage",            "args": { "path": "/Volumes/NSExternal" } },
+    { "op": "sys.disk_usage",            "args": { "path": "/app" } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/models/registry",        "expect_status": 200 } },
     { "op": "http.get",                  "args": { "url": "http://ns:9000/memory/recent?n=3" } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/founder",                "expect_status": 200 } },
@@ -17,7 +17,8 @@
     { "op": "http.health_check",         "args": { "url": "http://continuum:8788/healthz",         "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/capability/graph",       "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/semantic/candidates",    "expect_status": 200 } },
-    { "op": "sys.now",                   "args": {} }
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/invention/flywheel",     "expect_status": 200 } },
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/usdl/gates",             "expect_status": 200 } }
   ],
   "expect": {
     "results[1].data.healthy": true,
@@ -29,6 +30,7 @@
     "results[11].data.healthy": true,
     "results[12].data.healthy": true,
     "results[13].data.healthy": true,
-    "results[14].data.tz": "UTC"
+    "results[14].data.healthy": true,
+    "results[15].data.healthy": true
   }
 }
