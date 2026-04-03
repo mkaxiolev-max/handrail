@@ -13,6 +13,7 @@ from notify_driver.handlers import build_notify_handlers
 from display_driver.handlers import build_display_handlers
 from battery_driver.handlers import build_battery_handlers
 from keychain_driver.handlers import build_keychain_handlers
+from env_driver.handlers import build_env_handlers
 from vision_driver.handlers import build_vision_handlers
 from fs_driver.handlers import build_fs_handlers
 from input_driver.handlers import build_input_handlers
@@ -226,9 +227,7 @@ async def fs_list(req):
 
 def build_registry():
     reg = AdapterRegistry()
-    reg.register_all({
-        "env.health": env_health, "env.capabilities": env_capabilities, "env.version": env_version,
-    })
+    reg.register_all(build_env_handlers())
     reg.register_all(build_vision_handlers())
     reg.register_all(build_fs_handlers())
     reg.register_all(build_input_handlers())

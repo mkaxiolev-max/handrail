@@ -49,10 +49,10 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"input","op":"key","version":"2.0","side_effects":"write","deterministic":False,"dignity_guards":["requires_accessibility","key_whitelist","blocked_cmd_q"],"schema_out":{"ok":"bool","key":"str"}},
     # vision.*
     {"namespace":"vision","op":"screenshot","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written"],"schema_out":{"path":"str","hash":"str"}},
-    {"namespace":"vision","op":"ocr_region","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission"],"schema_out":{"text":"str"}},
+    {"namespace":"vision","op":"ocr_region","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written"],"schema_out":{"text":"str"}},
     # fs.*
-    {"namespace":"fs","op":"read_text","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":[],"schema_out":{"content":"str","size_bytes":"int"}},
-    {"namespace":"fs","op":"write_text","version":"1.0","side_effects":"write","deterministic":True,"dignity_guards":[],"schema_out":{"bytes_written":"int"}},
+    {"namespace":"fs","op":"read_text","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":["ledger_protect","max_100kb"],"schema_out":{"content":"str","size_bytes":"int"}},
+    {"namespace":"fs","op":"write_text","version":"1.0","side_effects":"write","deterministic":True,"dignity_guards":["path_allow_list_tmp_axiolev_programs"],"schema_out":{"bytes_written":"int"}},
     {"namespace":"fs","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"entries":"list"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
