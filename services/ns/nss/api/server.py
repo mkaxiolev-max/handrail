@@ -3055,6 +3055,22 @@ setInterval(refresh, 5000);
         from nss.semantic.feedback_binder import get_binder
         return get_binder().promote_to_canon(proposal_id, body.get("approved_by", "founder"))
 
+    # ── Adapter Capabilities ──────────────────────────────────────────────────
+
+    @app.get("/adapter/capabilities")
+    async def adapter_capabilities():
+        """Proxy to Mac adapter :9911/capabilities — graceful skip if not running."""
+        import urllib.request
+        import urllib.error
+        try:
+            with urllib.request.urlopen("http://host.docker.internal:9911/capabilities", timeout=2) as r:
+                import json as _json
+                data = _json.loads(r.read())
+                return {"ok": True, "source": "mac_adapter", **data}
+        except Exception as e:
+            return {"ok": True, "skipped": True, "reason": str(e),
+                    "note": "Mac adapter not running — start services/handrail-adapter-macos"}
+
     # ── Policy Evolution ──────────────────────────────────────────────────────
 
     @app.get("/policy/proposals")
