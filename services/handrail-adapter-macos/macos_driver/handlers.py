@@ -7,6 +7,9 @@ from adapter_core.registry import AdapterRegistry
 from network_driver.handlers import build_network_handlers
 from proc_extended_driver.handlers import build_proc_extended_handlers
 from file_watch_driver.handlers import build_file_watch_handlers
+from audio_driver.handlers import build_audio_handlers
+from clipboard_driver.handlers import build_clipboard_handlers
+from notify_driver.handlers import build_notify_handlers
 
 IS_MACOS = platform.system() == "Darwin"
 MOCK_MODE = not IS_MACOS
@@ -223,4 +226,7 @@ def build_registry():
     reg.register_all(build_network_handlers())
     reg.register_all(build_proc_extended_handlers())
     reg.register_all(build_file_watch_handlers())
+    reg.register_all(build_audio_handlers())
+    reg.register_all(build_clipboard_handlers())
+    reg.register_all(build_notify_handlers())
     return reg

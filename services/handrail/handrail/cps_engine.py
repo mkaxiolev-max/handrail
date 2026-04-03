@@ -571,6 +571,56 @@ def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Mac adapter bridge — audio.*, clipboard.*, notify.*
+# Calls the Mac adapter HTTP bridge on :8765.
+# Graceful skip when adapter not running (connection refused).
+# ---------------------------------------------------------------------------
+
+_MAC_ADAPTER_URL = "http://localhost:8765"
+
+
+def _mac_bridge(namespace: str, action: str, args: dict) -> dict:
+    """POST to Mac adapter and return result, or graceful skip on connection failure."""
+    try:
+        resp = httpx.post(
+            f"{_MAC_ADAPTER_URL}/ops/{namespace}/{action}",
+            json=args,
+            timeout=5,
+        )
+        return resp.json()
+    except Exception:
+        return {"ok": True, "skipped": True, "reason": "mac_adapter_not_running"}
+
+
+def _op_audio_get_volume(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("audio", "get_volume", args)
+
+
+def _op_audio_set_volume(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("audio", "set_volume", args)
+
+
+def _op_audio_get_playing(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("audio", "get_playing", args)
+
+
+def _op_clipboard_read(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("clipboard", "read", args)
+
+
+def _op_clipboard_write(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("clipboard", "write", args)
+
+
+def _op_notify_send(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("notify", "send", args)
+
+
+def _op_notify_badge(args: dict, _policy: PolicyEngine) -> dict:
+    return _mac_bridge("notify", "badge", args)
+
+
+# ---------------------------------------------------------------------------
 # Program Library v1 — 10 namespaces, 68 ops + 5 meta-contract ops
 # ---------------------------------------------------------------------------
 
@@ -857,6 +907,14 @@ OP_DISPATCH: dict[str, Any] = {
     "ns.memory_query": _op_ns_memory_query,
     "ns.memory_recent": _op_ns_memory_recent,
     "ns.broadcast": _op_ns_broadcast,
+    # Mac adapter bridge — audio.*, clipboard.*, notify.*
+    "audio.get_volume":  _op_audio_get_volume,
+    "audio.set_volume":  _op_audio_set_volume,
+    "audio.get_playing": _op_audio_get_playing,
+    "clipboard.read":    _op_clipboard_read,
+    "clipboard.write":   _op_clipboard_write,
+    "notify.send":       _op_notify_send,
+    "notify.badge":      _op_notify_badge,
     # Program Library v1 — 10 namespaces (68 ops + 5 meta)
     **_FUNDRAISING_OPS,
     **_HIRING_OPS,

@@ -148,6 +148,16 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 
 **32 ops across 11 domains.** Graceful skip on unconfigured external services (Slack, email, Stripe, Twilio).
 
+| `audio` | `audio.get_volume` | AppleScript: output volume; graceful skip if not macOS |
+| `audio` | `audio.set_volume` | AppleScript: set volume; Dignity Guard: 0–100 range |
+| `audio` | `audio.get_playing` | AppleScript: Music track; graceful skip if not running |
+| `clipboard` | `clipboard.read` | pbpaste; Dignity Guard: strips sk_/whsec_ secrets |
+| `clipboard` | `clipboard.write` | pbcopy; Dignity Guard: max 10000 chars |
+| `notify` | `notify.send` | AppleScript: display notification; graceful skip if not macOS |
+| `notify` | `notify.badge` | AppleScript: dock tile badge; graceful skip if not macOS |
+
+**39 ops across 14 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.* — graceful skip when adapter not running).
+
 ## Dignity Kernel — YubiKey Binding (BLACK KNIGHT Step 4)
 
 File: `services/ns/nss/kernel/dignity.py`
@@ -189,7 +199,7 @@ State stored at `/Volumes/NSExternal/ALEXANDRIA/programs/{namespace}/{instance_i
 
 Meta-contract (all namespaces): `program.advance_state`, `program.flag_risk`, `program.request_approval`, `program.log_receipt`, `program.archive`
 
-**100 total CPS ops** (32 existing + 68 program + 5 meta).
+**107 total CPS ops** (32 existing + 68 program + 5 meta + 7 Mac adapter bridge: audio/clipboard/notify).
 
 ## Model Router
 
