@@ -1,22 +1,19 @@
-# Copyright © 2026 Axiolev. All rights reserved.
 """
 NORTHSTAR API Server — Constitutional AI Operating System
 NS∞ / AXIOLEV Holdings — Conciliar Architecture v1.0
 
 Pillars:
-  1. Intelligence Layer  (Arbiter, quad-LLM, SafeSpeak)
-  2. Memory Layer        (Receipts, Alexandria, Canon)
-  3. Interface Layer     (VOICE — Computer lane)
-  4. Action Layer        (Trade actuator, market ingest)
-  5. Governance Layer    (Auth, roles, conciliar, founder veto)
+1. Intelligence Layer  (Arbiter, quad-LLM, SafeSpeak)
+2. Memory Layer        (Receipts, Alexandria, Canon)
+3. Interface Layer     (VOICE — Computer lane)
+4. Action Layer        (Trade actuator, market ingest)
+5. Governance Layer    (Auth, roles, conciliar, founder veto)
 
 Endpoints: /auth /chat /receipts /approvals /visuals /canon
-           /voice /actions /health /ws /console /
+/voice /actions /health /ws /console /
 """
 
 import os
-import requests
-from requests import exceptions as req_exc
 import sys
 import json
 import asyncio
@@ -25,39 +22,40 @@ from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, Body
+from starlette.requests import Request as StarletteRequest
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from nss.core.storage import bootstrap, health as storage_health, get_ether
 from nss.core.receipts import ReceiptChain
 from nss.core.arbiter import Arbiter
-from nss.core.auth import (
-    get_auth, require_auth, require_founder, require_permission,
-    AuthContext, PERMISSIONS
+from nss.core.auth import AuthContext, require_auth, require_founder, require_ops_key, require_permission
+
+get_auth, require_auth, require_founder, require_permission,
+AuthContext, PERMISSIONS
 )
 from nss.core.events import (
-    get_bus, get_chat, get_approvals, get_visuals, get_canon_store,
-    WSConnection
+get_bus, get_chat, get_approvals, get_visuals, get_canon_store,
+WSConnection
 )
 from nss.interfaces.voice_lane import (
-    get_or_create_session, close_session, active_sessions,
-    check_voice_configured, build_arbiter_context,
-    safe_speak_filter, load_persisted_sessions,
-    NORTHSTAR_WEBHOOK_BASE, TWILIO_PHONE_NUMBER,
-    TIER_F, TIER_E,
+get_or_create_session, close_session, active_sessions,
+check_voice_configured, build_arbiter_context,
+safe_speak_filter,
+NORTHSTAR_WEBHOOK_BASE, TWILIO_PHONE_NUMBER,
+TIER_F, TIER_E,
 )
 from nss.interfaces.twilio_voice import (
-    twiml_answer as _twiml_answer,
-    twiml_respond as _twiml_respond,
-    twiml_hangup as _twiml_hangup,
-    twiml_conference_join,
-    get_or_create_conference,
-    active_conferences,
-    _conferences,
+twiml_answer as _twiml_answer,
+twiml_respond as _twiml_respond,
+twiml_hangup as _twiml_hangup,
+twiml_conference_join,
+get_or_create_conference,
+active_conferences,
+_conferences,
 )
 
 def twiml_answer_for(session) -> str:
@@ -96,13 +94,7 @@ from nss.jobs.san_uspto import (
     get_san_engine, get_active_run, get_last_progress,
     TerrainConfig, TerrainMode
 )
-from nss.models.registry import get_registry_with_status
-from nss.models.router import get_router
-from nss.kernel.dignity import get_quorum
 
-
-class ExecRequest(BaseModel):
-    cmd: str
 
 def create_app() -> FastAPI:
     app = FastAPI(title="NORTHSTAR", version="2.0.0", docs_url="/docs", redoc_url=None, openapi_url="/openapi.json")
@@ -174,66 +166,11 @@ def create_app() -> FastAPI:
         watcher = get_drop_watcher(receipt_chain=receipt_chain)
         asyncio.create_task(watcher.run())
 
-    # ── Alexandria Boot Proof ──────────────────────────────────────────────────
-    _ALEXANDRIA_SNAPSHOTS_DIR = Path("/tmp/alexandria_snapshots")
-    _ALEXANDRIA_SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
-    _ALEXANDRIA_LEDGER = Path("/tmp/ns_alexandria_boot.jsonl")
-    # SSD persistence paths
-    _SSD_ALEXANDRIA = Path("/Volumes/NSExternal/ALEXANDRIA")
-    _SSD_SNAPSHOTS_DIR = _SSD_ALEXANDRIA / "snapshots"
-    _SSD_LEDGER_DIR = _SSD_ALEXANDRIA / "ledger"
-    _SSD_MOUNTED = _SSD_ALEXANDRIA.exists()
-    if _SSD_MOUNTED:
-        _SSD_SNAPSHOTS_DIR.mkdir(parents=True, exist_ok=True)
-        _SSD_LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-        (_SSD_ALEXANDRIA / "ether").mkdir(parents=True, exist_ok=True)
-    _boot_entry = json.dumps({"event": "NS_BOOT", "ts": datetime.utcnow().isoformat() + "Z",
-                               "version": "2.0.0"})
-    with _ALEXANDRIA_LEDGER.open("a") as _f:
-        _f.write(_boot_entry + "\n")
-    if _SSD_MOUNTED:
-        with (_SSD_LEDGER_DIR / "ns_receipt_chain.jsonl").open("a") as _f:
-            _f.write(_boot_entry + "\n")
-    try:
-        import hashlib as _hlib
-        _snap_data = {"tag": "boot", "ts": datetime.utcnow().isoformat() + "Z", "entry": _boot_entry}
-        _snap_hash = _hlib.sha256(json.dumps(_snap_data, sort_keys=True).encode()).hexdigest()
-        _snap_file = _ALEXANDRIA_SNAPSHOTS_DIR / f"snapshot_boot_{_snap_hash[:8]}.json"
-        with _snap_file.open("w") as _f:
-            json.dump({**_snap_data, "snapshot_hash": _snap_hash}, _f)
-        print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} written (local)")
-        if _SSD_MOUNTED:
-            _ssd_snap_file = _SSD_SNAPSHOTS_DIR / f"snapshot_boot_{_snap_hash[:8]}.json"
-            with _ssd_snap_file.open("w") as _f:
-                json.dump({**_snap_data, "snapshot_hash": _snap_hash, "ssd": True}, _f)
-            print(f"  ✓ Alexandria boot proof: snapshot {_snap_hash[:8]} mirrored to SSD")
-    except Exception as _ae:
-        print(f"  ⚠  Alexandria boot proof error: {_ae}")
-
-    # ── Voice Session Reload from SSD ──────────────────────────────────────────
-    try:
-        _persisted = load_persisted_sessions(max_age_hours=24)
-        if _persisted:
-            active_sessions.update(_persisted)
-            print(f"  ✓ Voice sessions reloaded from SSD: {len(_persisted)} sessions")
-        else:
-            print(f"  ✓ Voice sessions: no recent sessions on SSD")
-    except Exception as _vse:
-        print(f"  ⚠  Voice session reload error: {_vse}")
-
-    _SSD_RECEIPT_LEDGER = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
-
     async def emit_receipt(event_type: str, source: dict, inputs: dict, outputs: dict) -> dict:
         """Emit receipt and broadcast receipt.new to connected consoles."""
         receipt = receipt_chain.emit(event_type, source, inputs, outputs)
         try:
             await bus.broadcast("receipt.new", receipt)
-        except Exception:
-            pass
-        try:
-            if _SSD_RECEIPT_LEDGER.parent.exists():
-                with _SSD_RECEIPT_LEDGER.open("a") as _lf:
-                    _lf.write(json.dumps(receipt) + "\n")
         except Exception:
             pass
         return receipt
@@ -317,11 +254,11 @@ def create_app() -> FastAPI:
         return {"sessions": sessions}
 
     @app.get("/auth/users")
-    async def auth_users(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def auth_users(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         return {"users": auth.users.list_users()}
 
     @app.post("/auth/users/create")
-    async def auth_create_user(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def auth_create_user(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         try:
             user = auth.users.create_user(
@@ -336,155 +273,6 @@ def create_app() -> FastAPI:
             return user
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=400)
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # YUBIKEY AUTH
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    _YUBIKEY_SERIAL    = os.environ.get("YUBIKEY_SERIAL", "")
-    _YUBIKEY_CLIENT_ID = os.environ.get("YUBIKEY_CLIENT_ID", "").strip()
-    _YUBIKEY_SECRET    = os.environ.get("YUBIKEY_SECRET_KEY", "").strip()
-    _YUBIKEY_MODHEX    = "cbdefghijklnrtuv"
-    _YUBIKEY_SESSIONS: dict = {}
-
-    if not _YUBIKEY_CLIENT_ID:
-        print("  ⚠  YUBIKEY_CLIENT_ID not set — using public demo client (id=1). "
-              "Get a real key at https://upgrade.yubico.com/getapikey/")
-
-    def _is_modhex(s: str) -> bool:
-        return all(c in _YUBIKEY_MODHEX for c in s.lower())
-
-    async def _yubicloud_verify(otp: str, nonce: str) -> dict:
-        """Call YubiCloud OTP verification API (api.yubico.com).
-        Uses YUBIKEY_CLIENT_ID if set; falls back to public demo client id=1.
-        Returns dict with keys: status, nonce, t (timestamp), sl (sync level).
-        """
-        import urllib.parse
-        client_id = _YUBIKEY_CLIENT_ID or "1"
-        params = urllib.parse.urlencode({"id": client_id, "otp": otp, "nonce": nonce})
-        url = f"https://api.yubico.com/wsapi/2.0/verify?{params}"
-        try:
-            import httpx as _httpx
-            async with _httpx.AsyncClient(timeout=8.0) as _c:
-                resp = await _c.get(url)
-            lines = resp.text.strip().splitlines()
-            result = {}
-            for line in lines:
-                if "=" in line:
-                    k, _, v = line.partition("=")
-                    result[k.strip()] = v.strip()
-            return result
-        except Exception as e:
-            return {"status": "YUBICLOUD_UNREACHABLE", "error": str(e)}
-
-    @app.post("/auth/yubikey")
-    async def auth_yubikey(request: Request):
-        try:
-            body = await request.json()
-        except Exception:
-            form = dict(await request.form())
-            body = form
-        otp = (body.get("otp") or "").strip()
-        if not otp:
-            return JSONResponse({"ok": False, "error": "otp_required"}, status_code=400)
-        if len(otp) != 44 or not _is_modhex(otp):
-            return JSONResponse({"ok": False, "error": "invalid_otp_format",
-                                 "detail": "OTP must be 44 modhex characters"}, status_code=400)
-        device_id = otp[:12]
-        import hashlib, secrets
-        nonce = secrets.token_hex(16)
-        cloud = await _yubicloud_verify(otp, nonce)
-        cloud_status = cloud.get("status", "")
-        if cloud_status == "YUBICLOUD_UNREACHABLE":
-            return JSONResponse({"ok": False, "error": "yubicloud_unreachable",
-                                 "detail": cloud.get("error", "network error")}, status_code=503)
-        if cloud_status != "OK":
-            return JSONResponse({"ok": False, "error": "otp_rejected",
-                                 "yubicloud_status": cloud_status,
-                                 "device_id": device_id}, status_code=401)
-        # OTP valid — issue session token
-        token_payload = f"{device_id}:{_YUBIKEY_SERIAL}:{datetime.utcnow().isoformat()}"
-        token = "ysk_" + hashlib.sha256((token_payload + nonce).encode()).hexdigest()[:32]
-        _YUBIKEY_SESSIONS[token] = {
-            "device_id": device_id,
-            "serial": _YUBIKEY_SERIAL,
-            "issued_at": datetime.utcnow().isoformat() + "Z",
-            "yubicloud_status": cloud_status,
-            "yubicloud_sl": cloud.get("sl", ""),
-        }
-        receipt_chain.emit("YUBIKEY_AUTH", {"kind": "auth", "ref": device_id},
-                           {"serial": _YUBIKEY_SERIAL, "device_id": device_id,
-                            "yubicloud_status": cloud_status}, {})
-        return {
-            "ok": True,
-            "token": token,
-            "device_id": device_id,
-            "serial": _YUBIKEY_SERIAL,
-            "yubicloud_status": cloud_status,
-            "issued_at": _YUBIKEY_SESSIONS[token]["issued_at"],
-        }
-
-    @app.get("/auth/yubikey/test")
-    async def auth_yubikey_test():
-        """Diagnostic endpoint — reports YubiKey config state without auth."""
-        client_id_set = bool(_YUBIKEY_CLIENT_ID)
-        return {
-            "ok": client_id_set,
-            "client_id_set": client_id_set,
-            "client_id": _YUBIKEY_CLIENT_ID if client_id_set else None,
-            "secret_set": bool(_YUBIKEY_SECRET),
-            "serial_set": bool(_YUBIKEY_SERIAL),
-            "serial": _YUBIKEY_SERIAL or None,
-            "mode": "live_yubicloud" if client_id_set else "demo_client_id_1",
-            "error": None if client_id_set else "client_id_not_configured",
-            "instructions": "POST /auth/yubikey with {\"otp\": \"<44-char modhex OTP from key touch>\"}",
-        }
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # STEP 4 — DIGNITY KERNEL: YubiKey quorum endpoints
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    _kernel_last_verified_at: dict = {"ts": None}   # mutable cell for last verify ts
-
-    @app.get("/kernel/yubikey/challenge")
-    async def kernel_yubikey_challenge():
-        """Issue a new 32-byte nonce challenge. TTL=5 min."""
-        quorum = get_quorum()
-        challenge = quorum.generate_challenge()
-        receipt_chain.emit("KERNEL_CHALLENGE_ISSUED",
-                           {"kind": "kernel", "ref": challenge["challenge_id"]},
-                           {"nonce_len": len(challenge["nonce"])}, {})
-        return challenge
-
-    @app.post("/kernel/yubikey/verify")
-    async def kernel_yubikey_verify(request: Request):
-        """Verify a YubiKey OTP against an issued challenge."""
-        body = await request.json()
-        otp          = (body.get("otp") or "").strip()
-        challenge_id = body.get("challenge_id", "")
-        if not otp:
-            return JSONResponse({"ok": False, "error": "otp required"}, status_code=400)
-
-        quorum = get_quorum()
-        result = await asyncio.to_thread(quorum.verify_otp, otp, challenge_id or None)
-        verified = result.get("verified", False)
-
-        if verified:
-            _kernel_last_verified_at["ts"] = datetime.now(timezone.utc).isoformat()
-
-        receipt_chain.emit(
-            "KERNEL_YUBIKEY_VERIFY",
-            {"kind": "kernel", "ref": challenge_id or "direct"},
-            {"verified": verified, "device_id": result.get("device_id", "")},
-            {"receipt_id": result.get("receipt_id", "")},
-        )
-        return {"ok": verified, **result}
-
-    @app.get("/kernel/yubikey/status")
-    async def kernel_yubikey_status():
-        """Return quorum status — serial, slots, verified_at."""
-        quorum = get_quorum()
-        return quorum.status(last_verified_at=_kernel_last_verified_at.get("ts"))
 
     # ═══════════════════════════════════════════════════════════════════════════
     # WEBSOCKET
@@ -761,7 +549,7 @@ def create_app() -> FastAPI:
 
     @app.post("/pressure/{domain}/commit")
     async def pressure_commit(domain: str, request: Request,
-                               ctx: AuthContext = Depends(require_founder)):
+                               ctx: AuthContext = Depends(require_ops_key)):
         """Commit a winning trajectory for a domain. Founder only."""
         body = await request.json()
         cct_id = body.get("cct_id", "")
@@ -813,81 +601,14 @@ def create_app() -> FastAPI:
 
     # ── ETHER INGEST ───────────────────────────────────────────────────────────
 
-    @app.post("/ingest/exec")
-    async def ingest_exec(req: ExecRequest, request: Request):
-        ops_key = request.headers.get("X-NS-OPS-KEY", "")
-        _ops_guard(ops_key)
-
-        body = {
-            "task_type": "ops_exec_cmd",
-            "objective": f"execute governed command through ns authenticated ingest: {req.cmd}",
-            "payload": {"cmd": req.cmd},
-        }
-
-        r = requests.post("http://handrail:8011/v1/task", json=body, timeout=30)
-        try:
-            payload = r.json()
-        except Exception:
-            payload = {
-                "ok": r.ok,
-                "status_code": r.status_code,
-                "raw_text": r.text,
-            }
-        return JSONResponse(status_code=r.status_code, content=payload)
-
-
-    @app.post("/ingest/snapshot")
-    async def ingest_snapshot(request: Request):
-        ops_key = request.headers.get("X-NS-OPS-KEY", "")
-        _ops_guard(ops_key)
-
-        body = {
-            "task_type": "ops_snapshot",
-            "objective": "capture governed snapshot through ns authenticated ingest",
-            "payload": {},
-        }
-
-        try:
-            r = requests.post("http://handrail:8011/v1/task", json=body, timeout=120)
-            try:
-                payload = r.json()
-            except Exception:
-                payload = {
-                    "ok": r.ok,
-                    "status_code": r.status_code,
-                    "raw_text": r.text,
-                }
-            return JSONResponse(status_code=r.status_code, content=payload)
-        except req_exc.Timeout as e:
-            return JSONResponse(
-                status_code=504,
-                content={
-                    "ok": False,
-                    "status_code": 504,
-                    "error": "snapshot_bridge_timeout",
-                    "detail": str(e),
-                },
-            )
-        except req_exc.RequestException as e:
-            return JSONResponse(
-                status_code=502,
-                content={
-                    "ok": False,
-                    "status_code": 502,
-                    "error": "snapshot_bridge_request_error",
-                    "detail": str(e),
-                },
-            )
-
-
     @app.get("/ingest/status")
-    async def ingest_status(ctx: AuthContext = Depends(require_auth)):
+    async def ingest_status(ctx: AuthContext = Depends(require_ops_key)):
         stats = ingest.get_stats()
         return stats
 
     @app.post("/ingest/bootstrap")
     async def ingest_bootstrap(request: Request,
-                                ctx: AuthContext = Depends(require_auth)):
+                                ctx: AuthContext = Depends(require_ops_key)):
         """Bootstrap ingest from an existing directory."""
         body = await request.json()
         directory = body.get("directory", "")
@@ -913,7 +634,7 @@ def create_app() -> FastAPI:
 
     @app.post("/ingest/url")
     async def ingest_url(request: Request,
-                          ctx: AuthContext = Depends(require_auth)):
+                          ctx: AuthContext = Depends(require_ops_key)):
         """Ingest a single URL into ether."""
         body = await request.json()
         url = body.get("url", "")
@@ -928,10 +649,9 @@ def create_app() -> FastAPI:
         return result
 
     @app.post("/ingest/crawl")
-    async def ingest_crawl(request: Request,
-                            ctx: AuthContext = Depends(require_founder)):
+    async def ingest_crawl(payload: dict = Body(...), ctx: AuthContext = Depends(require_ops_key)):
         """Crawl from a seed URL. Founder only."""
-        body = await request.json()
+        body = payload
         seed = body.get("seed_url", "")
         if not seed:
             return JSONResponse({"error": "seed_url required"}, status_code=400)
@@ -941,17 +661,16 @@ def create_app() -> FastAPI:
         result = await crawler.crawl(seed, depth=depth,
                                      domain_limit=domain_limit, rate_limit=1.0)
         return result
-
     @app.get("/ingest/search")
     async def ingest_search(q: str, limit: int = 10,
-                             ctx: AuthContext = Depends(require_auth)):
+                             ctx: AuthContext = Depends(require_ops_key)):
         """Full-text search over ingested ether."""
         results = ingest.search(q, limit=limit)
         return {"query": q, "results": results, "count": len(results)}
 
     @app.post("/ingest/file")
     async def ingest_file_endpoint(request: Request,
-                                    ctx: AuthContext = Depends(require_auth)):
+                                    ctx: AuthContext = Depends(require_ops_key)):
         """Ingest a file by path."""
         body = await request.json()
         file_path = body.get("path", "")
@@ -964,7 +683,7 @@ def create_app() -> FastAPI:
     # ── SAN USPTO TERRAIN ─────────────────────────────────────────────────────
 
     @app.get("/san/status")
-    async def san_status(ctx: AuthContext = Depends(require_auth)):
+    async def san_status(ctx: AuthContext = Depends(require_ops_key)):
         stats = san.store.get_stats()
         recent = san.store.get_recent_patents(limit=10)
         progress = get_last_progress()
@@ -977,18 +696,19 @@ def create_app() -> FastAPI:
         }
 
     @app.post("/san/hello")
-    async def san_hello(ctx: AuthContext = Depends(require_auth)):
+    async def san_hello(ctx: AuthContext = Depends(require_ops_key)):
         """Quick smoke test — verify pipeline, fetch sample. < 1MB."""
         config = TerrainConfig(mode=TerrainMode.HELLO)
         engine = get_san_engine(config=config, receipt_chain=receipt_chain)
         progress_log = []
-        async def _cb(p): progress_log.append(p)
+        async def _cb(p):
+            progress_log.append(p)
         result = await engine.run(progress_cb=_cb)
         return {"result": result, "progress": progress_log}
 
     @app.post("/san/terrain")
     async def san_run_terrain(request: Request,
-                               ctx: AuthContext = Depends(require_auth)):
+                               ctx: AuthContext = Depends(require_ops_key)):
         """Run targeted terrain build. Cap-aware, < 500MB."""
         global _active_run
         body = await request.json()
@@ -1019,7 +739,7 @@ def create_app() -> FastAPI:
 
     @app.post("/san/overnight")
     async def san_run_overnight(request: Request,
-                                 ctx: AuthContext = Depends(require_founder)):
+                                 ctx: AuthContext = Depends(require_ops_key)):
         """Schedule overnight full terrain build. Founder only."""
         body = await request.json()
         cpc_codes = body.get("cpc_codes", ["G06F", "G06N", "G06Q", "H04L"])
@@ -1050,7 +770,7 @@ def create_app() -> FastAPI:
                 "message": "Overnight terrain build started. Monitor via /san/status."}
 
     @app.post("/san/cancel")
-    async def san_cancel(ctx: AuthContext = Depends(require_founder)):
+    async def san_cancel(ctx: AuthContext = Depends(require_ops_key)):
         """Cancel active terrain run."""
         engine = get_san_engine()
         engine.cancel()
@@ -1138,7 +858,7 @@ def create_app() -> FastAPI:
 
     @app.post("/san/snapshot")
     async def san_snapshot(request: Request,
-                            ctx: AuthContext = Depends(require_founder)):
+                            ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         snap = terrain.take_snapshot(
             cpc_scope=body.get("cpc_scope", []),
@@ -1147,15 +867,14 @@ def create_app() -> FastAPI:
         return asdict(snap) if hasattr(snap, '__dataclass_fields__') else snap.__dict__
 
     @app.get("/san/ingest/status")
-    async def san_ingest_status(ctx: AuthContext = Depends(require_auth)):
+    async def san_ingest_status(ctx: AuthContext = Depends(require_ops_key)):
         ingest_eng = get_uspto_ingest(terrain_engine=terrain,
                                       receipt_chain=receipt_chain)
         return ingest_eng.status()
 
     @app.post("/san/ingest/plan")
-    async def san_ingest_plan(request: Request,
-                               ctx: AuthContext = Depends(require_founder)):
-        body = await request.json()
+    async def san_ingest_plan(payload: dict = Body(...), ctx: AuthContext = Depends(require_ops_key)):
+        body = payload
         mode = body.get("mode", "terrain")
         cpc_scope = body.get("cpc_scope", [])
         budget_gb = body.get("budget_gb", None)
@@ -1182,46 +901,23 @@ def create_app() -> FastAPI:
         }
 
     @app.post("/san/ingest/execute")
-    async def san_ingest_execute(request: Request,
-                                  ctx: AuthContext = Depends(require_founder)):
+    async def san_ingest_execute(payload: dict = Body(...), ctx: AuthContext = Depends(require_ops_key)):
         """Start an ingest run. Returns immediately; run executes as background task."""
-        body = await request.json()
+        body = payload
         mode = body.get("mode", "terrain")
         cpc_scope = body.get("cpc_scope", [])
-        budget_gb = body.get("budget_gb", 10.0)  # Safe default: 10GB
-        ingest_eng = get_uspto_ingest(terrain_engine=terrain,
-                                       receipt_chain=receipt_chain)
-        ingest_eng.set_budget(soft_limit_pct=0.80)
-
+        budget_gb = body.get("budget_gb", None)
+        year_range = tuple(body.get("year_range", [2020, 2026]))
+        ingest_eng = get_uspto_ingest(terrain_engine=terrain, receipt_chain=receipt_chain)
         if mode == "terrain":
-            run = ingest_eng.plan_terrain_run(cpc_scope=cpc_scope,
-                                               budget_gb=budget_gb)
+            run = ingest_eng.plan_terrain_run(cpc_scope=cpc_scope, budget_gb=budget_gb)
         else:
-            run = ingest_eng.plan_deep_run(
-                cpc_scope=cpc_scope,
-                budget_gb=budget_gb,
-                year_range=tuple(body.get("year_range", [2020, 2026]))
-            )
-
-        async def _run():
-            def on_prog(evt):
-                asyncio.create_task(bus.broadcast(
-                    "san.ingest.progress", evt, min_role="FOUNDER"))
-            await ingest_eng.execute_run(run, on_progress=on_prog)
-            await bus.broadcast("san.ingest.complete",
-                                {"run_id": run.run_id, "status": run.status,
-                                 "patents": run.patents_processed,
-                                 "bandwidth_gb": round(run.bandwidth_used_gb, 3)},
-                                min_role="FOUNDER")
-
-        asyncio.create_task(_run())
-        return {"started": True, "run_id": run.run_id, "mode": mode,
-                "job_count": len(run.jobs)}
-
+            run = ingest_eng.plan_deep_run(cpc_scope=cpc_scope, year_range=year_range, budget_gb=budget_gb)
+        out = ingest_eng.execute(run)
+        return out
     @app.post("/san/ingest/budget")
-    async def san_set_budget(request: Request,
-                              ctx: AuthContext = Depends(require_founder)):
-        body = await request.json()
+    async def san_set_budget(payload: dict = Body(...), ctx: AuthContext = Depends(require_ops_key)):
+        body = payload
         ingest_eng = get_uspto_ingest(terrain_engine=terrain,
                                        receipt_chain=receipt_chain)
         ingest_eng.set_budget(
@@ -1232,7 +928,7 @@ def create_app() -> FastAPI:
 
     @app.post("/san/lexicon/anchor")
     async def san_lexicon_anchor(request: Request,
-                                  ctx: AuthContext = Depends(require_auth)):
+                                  ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         anchor = terrain.create_lexicon_anchor(
             term_id=body.get("term_id", ""),
@@ -1274,68 +970,6 @@ def create_app() -> FastAPI:
     async def healthz():
         return await health()
 
-    @app.get("/health/full")
-    async def health_full():
-        """Unified system status — no auth required. Checks all services."""
-        import asyncio
-        import aiohttp
-
-        async def _get(url: str) -> dict:
-            try:
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url, timeout=aiohttp.ClientTimeout(total=4)) as r:
-                        body = await r.json()
-                        return {"status": "ok", "code": r.status, "data": body}
-            except Exception as e:
-                return {"status": "error", "error": str(e)}
-
-        handrail_res, continuum_res = await asyncio.gather(
-            _get("http://handrail:8011/healthz"),
-            _get("http://continuum:8788/continuum/status"),
-        )
-
-        snap_dir = Path("/tmp/alexandria_snapshots")
-        ssd_snapshots_dir = Path("/Volumes/NSExternal/ALEXANDRIA/snapshots")
-        ssd_ledger = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
-        alexandria = {
-            "local_snapshots": len(list(snap_dir.glob("*.json"))) if snap_dir.exists() else 0,
-            "ssd_snapshots": len(list(ssd_snapshots_dir.glob("*.json"))) if ssd_snapshots_dir.exists() else 0,
-            "ssd_ledger_entries": sum(1 for _ in ssd_ledger.open()) if ssd_ledger.exists() else 0,
-            "ssd_mounted": Path("/Volumes/NSExternal/ALEXANDRIA").exists(),
-        }
-
-        voice_cfg = check_voice_configured()
-        ngrok_url = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
-        ngrok_live = bool(ngrok_url and "REPLACE" not in ngrok_url and "localhost" not in ngrok_url)
-
-        yubikey_serial = os.environ.get("YUBIKEY_SERIAL", "")
-
-        all_ok = (
-            handrail_res["status"] == "ok"
-            and continuum_res["status"] == "ok"
-            and alexandria["ssd_mounted"]
-        )
-
-        return {
-            "ok": all_ok,
-            "ts": datetime.utcnow().isoformat() + "Z",
-            "services": {
-                "handrail": {"url": "http://handrail:8011/healthz", **handrail_res},
-                "continuum": {"url": "http://continuum:8788/continuum/status", **continuum_res},
-                "ns": {"status": "ok", "version": "2.0.0"},
-            },
-            "alexandria": alexandria,
-            "voice": {
-                "webhook_configured": voice_cfg.get("webhook_configured", False),
-                "ngrok_live": ngrok_live,
-                "ngrok_url": ngrok_url,
-            },
-            "yubikey": {
-                "serial_set": bool(yubikey_serial),
-                "client_id_set": bool(os.environ.get("YUBIKEY_CLIENT_ID", "")),
-            },
-        }
-
     @app.get("/health/voice")
     async def health_voice():
         return check_voice_configured()
@@ -1347,56 +981,6 @@ def create_app() -> FastAPI:
             "ssd_mounted": ssd.exists(),
             "path": str(ssd / "ALEXANDRIA") if ssd.exists() else None,
             "ether_active": (ssd / "ALEXANDRIA" / "ether").exists() if ssd.exists() else False,
-        }
-
-    @app.get("/alexandria/status")
-    async def alexandria_status():
-        snap_dir = Path("/tmp/alexandria_snapshots")
-        snapshots = list(snap_dir.glob("*.json")) if snap_dir.exists() else []
-        ssd_snapshots_dir = Path("/Volumes/NSExternal/ALEXANDRIA/snapshots")
-        ssd_ledger_file = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
-        ssd_snaps = list(ssd_snapshots_dir.glob("snapshot_*.json")) if ssd_snapshots_dir.exists() else []
-        ssd_ledger_entries = 0
-        if ssd_ledger_file.exists():
-            with ssd_ledger_file.open() as _f:
-                ssd_ledger_entries = sum(1 for line in _f if line.strip())
-        total = len(snapshots) + len(ssd_snaps)
-        return {
-            "ok": total > 0,
-            "snapshot_count": total,
-            "local_snapshots": len(snapshots),
-            "ssd_snapshots": len(ssd_snaps),
-            "ssd_snapshots_dir": str(ssd_snapshots_dir),
-            "ssd_ledger_entries": ssd_ledger_entries,
-            "snapshots_dir": str(snap_dir),
-        }
-
-    @app.get("/alexandria/proof")
-    async def alexandria_proof(n: int = 50):
-        """Compute SHA256 Merkle chain over last N ledger entries. Returns root_hash + chain_length + proof_valid."""
-        import hashlib
-        ssd_ledger_file = Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl")
-        local_ledger_file = Path("/tmp/ns_alexandria_boot.jsonl")
-        ledger_file = ssd_ledger_file if ssd_ledger_file.exists() else local_ledger_file
-        if not ledger_file.exists():
-            return JSONResponse({"ok": False, "error": "ledger not found", "proof_valid": False}, status_code=404)
-        lines = []
-        with ledger_file.open() as _f:
-            for line in _f:
-                line = line.strip()
-                if line:
-                    lines.append(line)
-        entries = lines[-n:] if len(lines) >= n else lines
-        chain_hash = "0" * 64
-        for entry in entries:
-            chain_hash = hashlib.sha256((chain_hash + entry).encode()).hexdigest()
-        return {
-            "ok": True,
-            "root_hash": "sha256:" + chain_hash,
-            "chain_length": len(entries),
-            "total_entries": len(lines),
-            "ledger_source": str(ledger_file),
-            "proof_valid": len(entries) > 0,
         }
 
     @app.get("/health/models")
@@ -1513,7 +1097,7 @@ def create_app() -> FastAPI:
 
     @app.post("/receipts/{receipt_id}/export")
     async def export_receipt(receipt_id: str, request: Request,
-                              ctx: AuthContext = Depends(require_founder)):
+                              ctx: AuthContext = Depends(require_ops_key)):
         receipt = receipt_chain.get(receipt_id)
         if not receipt:
             return JSONResponse({"error": "Not found"}, status_code=404)
@@ -1585,7 +1169,7 @@ def create_app() -> FastAPI:
         return approval
 
     @app.post("/actions/confirm")
-    async def confirm_action(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def confirm_action(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         approval_id = body.get("approval_id")
         nonce = body.get("nonce", "")
@@ -1628,93 +1212,13 @@ def create_app() -> FastAPI:
 
     @app.post("/visuals/{visual_id}/mark_shareable")
     async def mark_shareable(visual_id: str, request: Request,
-                              ctx: AuthContext = Depends(require_founder)):
+                              ctx: AuthContext = Depends(require_ops_key)):
         visual_store.mark_shareable(visual_id)
         return {"status": "shareable"}
 
     # ═══════════════════════════════════════════════════════════════════════════
     # VOICE (Twilio + upload)
     # ═══════════════════════════════════════════════════════════════════════════
-
-    # ── M1 Shared State + Helpers (used by voice, SMS, memory, meet) ───────────
-
-    _NS_VOICE_SYSTEM = (
-        "You are NS, the executive intelligence of AXIOLEV Holdings. "
-        "You speak with precision and confidence. "
-        "Responses are concise — 1-3 sentences unless asked for more. "
-        "You remember context from this session. "
-        "You can take real actions through Handrail."
-    )
-
-    # ── M2 Temporal validity clock ──────────────────────────────────────────
-    _memory_clock: dict = {"last_refresh": None, "context_cache": None}
-
-    def _check_refresh_memory() -> dict:
-        """Refresh memory cache if stale (>5 min). Returns current context."""
-        now = datetime.now(timezone.utc)
-        last = _memory_clock.get("last_refresh")
-        stale = (last is None) or ((now - last).total_seconds() > 300)
-        if stale:
-            try:
-                ctx = _get_memory_context(5)
-                _memory_clock["context_cache"] = ctx
-                _memory_clock["last_refresh"] = now
-            except Exception:
-                pass
-        return _memory_clock.get("context_cache") or {}
-
-    _sms_sessions: dict = {}  # phone → list of {ts, heard, spoke}
-
-    def _sms_session_path(phone: str) -> Path:
-        safe = phone.replace("+", "").replace("-", "").replace(" ", "")
-        base = (Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
-                if Path("/Volumes/NSExternal/ALEXANDRIA").exists()
-                else Path.home() / "ALEXANDRIA" / "sessions")
-        return base / f"sms_{safe}.jsonl"
-
-    def _log_sms_turn(phone: str, heard: str, spoke: str) -> None:
-        p = _sms_session_path(phone)
-        p.parent.mkdir(parents=True, exist_ok=True)
-        entry = {"ts": datetime.now(timezone.utc).isoformat(), "heard": heard[:500], "spoke": spoke[:500]}
-        with p.open("a") as f:
-            f.write(json.dumps(entry) + "\n")
-        _sms_sessions.setdefault(phone, []).append(entry)
-
-    def _read_ledger_entries(n: int = 10) -> list:
-        for p in [
-            Path("/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl"),
-            Path("/tmp/ns_alexandria_boot.jsonl"),
-        ]:
-            if p.exists():
-                lines = [ln for ln in p.read_text().splitlines() if ln.strip()]
-                entries = []
-                for line in lines[-(n * 3):]:
-                    try:
-                        entries.append(json.loads(line))
-                    except Exception:
-                        pass
-                if entries:
-                    return entries[-n:]
-        return receipt_chain.recent(n)
-
-    def _get_memory_context(n: int = 5) -> dict:
-        voice_turns = []
-        for s in sorted(active_sessions.values(), key=lambda x: x.started_at, reverse=True)[:3]:
-            for t in s.turns[-n:]:
-                voice_turns.append({"channel": "voice", "ts": t.get("timestamp", ""),
-                                    "heard": t.get("heard", "")[:100], "spoke": t.get("spoke", "")[:100]})
-        sms_turns = []
-        for phone, turns in list(_sms_sessions.items())[-3:]:
-            for t in turns[-n:]:
-                sms_turns.append({"channel": "sms", "ts": t.get("ts", ""),
-                                  "heard": t.get("heard", "")[:100], "spoke": t.get("spoke", "")[:100]})
-        receipts = receipt_chain.recent(n)
-        return {
-            "voice_turns": voice_turns[-n:],
-            "sms_turns": sms_turns[-n:],
-            "recent_receipts": [{"ts": r.get("ts_utc"), "event": r.get("event_type"),
-                                  "ref": (r.get("source") or {}).get("ref", "")} for r in receipts],
-        }
 
     @app.get("/voice/health")
     async def voice_health():
@@ -1725,171 +1229,48 @@ def create_app() -> FastAPI:
         raw = await request.form()
         form = dict(raw)
         call_sid = form.get("CallSid", "unknown")
-        caller   = form.get("From", "unknown")
-        base     = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "").rstrip("/")
-        tier     = TIER_F if caller == os.environ.get("FOUNDER_PHONE", "") else TIER_E
-        get_or_create_session(call_sid, caller, os.environ.get("TWILIO_PHONE_NUMBER", ""))
+        caller = form.get("From", "unknown")
+        tier = TIER_F if caller == os.environ.get("FOUNDER_PHONE", "") else TIER_E
+        session = get_or_create_session(call_sid, caller, os.environ.get("TWILIO_PHONE_NUMBER", ""))
         receipt_chain.emit("VOICE_INBOUND",
                             {"kind": "voice", "ref": call_sid},
                             {"caller": caller, "tier": tier}, {})
-        respond_url = f"{base}/voice/respond"
-
-        # ── M2 Proactive greeting — memory-backed ──────────────────────────
-        greeting = "Northstar online. How can I serve you?"
-        try:
-            mem = _check_refresh_memory()
-            voice_turns = mem.get("voice_turns", [])
-            if voice_turns:
-                last_turn = voice_turns[-1]
-                last_heard = last_turn.get("heard", "")[:60]
-                if last_heard:
-                    greeting = (
-                        f"Welcome back. Last time we discussed: {last_heard}. What's next?"
-                        if tier == TIER_F
-                        else "NS online. Go ahead."
-                    )
-            elif tier == TIER_F:
-                greeting = "NS online. How can I help?"
-        except Exception:
-            pass
-
-        twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Gather input="speech" action="{respond_url}" method="POST"
-          speechTimeout="auto" timeout="3">
-    <Say voice="Polly.Matthew" language="en-US">{greeting}</Say>
-  </Gather>
-  <Redirect method="POST">{respond_url}</Redirect>
-</Response>"""
-        return Response(content=twiml, media_type="application/xml")
-
-    @app.post("/voice/respond")
-    async def voice_respond(request: Request):
-        raw = await request.form()
-        form = dict(raw)
-        call_sid   = form.get("CallSid", "unknown")
-        transcript = form.get("SpeechResult", "").strip()
-        caller     = form.get("From", "unknown")
-        base       = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "").rstrip("/")
-        respond_url = f"{base}/voice/respond"
-
-        # Null guard
-        session = active_sessions.get(call_sid)
-        if not session:
-            session = get_or_create_session(
-                call_sid, caller, os.environ.get("TWILIO_PHONE_NUMBER", "")
-            )
-
-        # No speech — re-prompt and loop
-        if not transcript:
-            twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Gather input="speech" action="{respond_url}" method="POST"
-          speechTimeout="auto" timeout="10">
-    <Say voice="Polly.Matthew" language="en-US">I didn't catch that. Go ahead.</Say>
-  </Gather>
-  <Redirect method="POST">{respond_url}</Redirect>
-</Response>"""
-            return Response(content=twiml, media_type="application/xml")
-
-        # Wire in memory context (M2 temporal validity)
-        mem_ctx = _check_refresh_memory()
-        try:
-            _recent = (mem_ctx.get("voice_turns", []) + mem_ctx.get("sms_turns", []))[-3:]
-            _mem_context = ("Context from recent sessions: " +
-                " | ".join(f"{t.get('heard', '')[:50]}" for t in _recent) + "\n\n"
-            ) if _recent else ""
-        except Exception:
-            _mem_context = ""
-
-        # Classify intent for model routing
-        _action_words = {"run", "execute", "send", "commit", "deploy", "call",
-                         "email", "message", "advance", "create", "add", "start"}
-        _intent = "voice_action" if any(w in transcript.lower().split() for w in _action_words) else "voice_quick"
-
-        # Route through ModelRouter
-        response_text = "I couldn't reach my intelligence layer right now. Please try again."
-        try:
-            router = get_router()
-            result = await asyncio.to_thread(
-                router.route_sync, transcript, _mem_context + _NS_VOICE_SYSTEM, _intent
-            )
-            response_text = result["response"]
-        except Exception as exc:
-            receipt_chain.emit("VOICE_ERROR", {"kind": "voice", "ref": call_sid},
-                               {"error": str(exc)[:200]}, {})
-
-        filtered, _blocked = safe_speak_filter(response_text)
-        if _blocked:
-            filtered += " Some details were withheld."
-
-        session.add_turn(heard=transcript, spoke=filtered)
-        receipt_chain.emit("VOICE_TURN",
-                            {"kind": "voice", "ref": call_sid},
-                            {"transcript": transcript[:100]},
-                            {"response_len": len(filtered), "safespeak": _blocked})
-
-        # Barge-in enabled: Say inside Gather so caller can interrupt NS mid-sentence
-        twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Gather input="speech" action="{respond_url}" method="POST"
-          speechTimeout="auto" timeout="3">
-    <Say voice="Polly.Matthew" language="en-US">{filtered}</Say>
-  </Gather>
-  <Say voice="Polly.Matthew" language="en-US">I didn't catch that. Go ahead.</Say>
-  <Redirect method="POST">{respond_url}</Redirect>
-</Response>"""
-        return Response(content=twiml, media_type="application/xml")
+        return Response(content=twiml_answer_for(session), media_type="application/xml")
 
     @app.post("/voice/transcription")
     async def voice_transcription(request: Request):
         raw = await request.form()
         form = dict(raw)
-        call_sid  = form.get("CallSid", "unknown")
-        transcript = form.get("SpeechResult", "").strip()
-
-        # Null guard: recreate session if missing (restart / race)
+        call_sid = form.get("CallSid", "unknown")
+        transcript = form.get("SpeechResult", "")
         session = active_sessions.get(call_sid)
-        if not session:
-            caller  = form.get("From", "unknown")
-            session = get_or_create_session(
-                call_sid, caller, os.environ.get("TWILIO_PHONE_NUMBER", "")
-            )
-
         if not transcript:
-            base = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
-            return Response(
-                content=twiml_respond_for("I didn't catch that. Go ahead.", session),
-                media_type="application/xml"
-            )
-
-        # Build voice-aware context: tier scope + UX constitution
-        arb_ctx = build_arbiter_context(session, transcript)
-
-        # Frame query for voice: short, speakable, no markdown
-        voice_query = (
-            f"[VOICE CALL | TIER: {session.tier} | "
-            f"TURN: {len(session.turns) + 1} | "
-            f"Respond in 2-3 plain spoken sentences max. No lists, no markdown.]\n\n"
-            f"Caller said: {transcript}"
-        )
-
+            return Response(content=twiml_hangup_for(), media_type="application/xml")
+        ctx_str_dict = build_arbiter_context(session, transcript)
+        # ── Mac Adapter: enrich context with focused window ───────────────────
         try:
-            result = await asyncio.to_thread(
-                arbiter.route, voice_query, arb_ctx.get("ux_constitution", "")
+            import urllib.request as _urlreq, json as _json
+            _req = _urlreq.Request(
+                "http://host.docker.internal:8765/adapter/v1/run",
+                data=_json.dumps({"method": "window.get_focused", "params": {}}).encode(),
+                headers={"Content-Type": "application/json"},
+                method="POST",
             )
-            response_text = result.fused_response if result else "I couldn't process that request."
-        except Exception as exc:
-            response_text = "I ran into an issue. Please try again."
-            receipt_chain.emit("VOICE_ERROR", {"kind": "voice", "ref": call_sid},
-                               {"error": str(exc)[:200]}, {})
-
+            with _urlreq.urlopen(_req, timeout=1) as _r:
+                _wd = _json.loads(_r.read())
+                _app = _wd.get("result", {}).get("app") or _wd.get("data", {}).get("app", "")
+                _title = _wd.get("result", {}).get("title") or _wd.get("data", {}).get("title", "")
+                if _app:
+                    ctx_str_dict["mac_context"] = f"Founder is currently in: {_app} — {_title}"
+        except Exception:
+            pass
+        # ─────────────────────────────────────────────────────────────────────
+        ctx_str = str(ctx_str_dict)
+        result = await asyncio.to_thread(arbiter.route, transcript, {"tier": session.tier})
+        response_text = result.fused_response if result else "I couldn't process that."
         filtered, _blocked = safe_speak_filter(response_text)
         if _blocked:
-            filtered += " Some details were withheld for security."
-
-        session.add_turn(heard=transcript, spoke=filtered)
-
+            filtered = filtered + " Some details were withheld for security."
         receipt_chain.emit("VOICE_TURN",
                             {"kind": "voice", "ref": call_sid},
                             {"transcript": transcript[:100]},
@@ -1934,15 +1315,9 @@ def create_app() -> FastAPI:
 
     @app.get("/voice/sessions")
     async def voice_sessions(request: Request, ctx: AuthContext = Depends(require_auth)):
-        ssd_sessions_dir = Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
-        persisted_count = len(list(ssd_sessions_dir.glob("*.json"))) if ssd_sessions_dir.exists() else 0
-        return {
-            "active_sessions": len(active_sessions),
-            "persisted_sessions": persisted_count,
-            "sessions_dir": str(ssd_sessions_dir),
-            "sessions": [{"call_sid": k, "tier": v.tier, "turns": len(v.turns)}
-                         for k, v in active_sessions.items()],
-        }
+        return {"active_sessions": len(active_sessions),
+                "sessions": [{"call_sid": k, "tier": v.tier}
+                              for k, v in active_sessions.items()]}
 
     # ── Twilio URL alias (what Twilio console is configured to hit) ────────────
     @app.post("/voice/incoming")
@@ -2026,7 +1401,7 @@ def create_app() -> FastAPI:
 
     # ── Conference endpoints ──────────────────────────────────────────────────
     @app.post("/voice/conference/create")
-    async def conference_create(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def conference_create(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         """Create a conference room and return join TwiML. FOUNDER only."""
         body = await request.json()
         room  = body.get("room", f"NS-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M')}")
@@ -2057,7 +1432,7 @@ def create_app() -> FastAPI:
         return Response(content=twiml_conference_join(room), media_type="application/xml")
 
     @app.post("/voice/conference/dial")
-    async def conference_dial(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def conference_dial(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         """Dial a third party into an active conference. FOUNDER only."""
         body = await request.json()
         to_number = body.get("to")
@@ -2087,7 +1462,7 @@ def create_app() -> FastAPI:
             return JSONResponse({"error": str(e)}, status_code=500)
 
     @app.post("/voice/conference/ns_speak")
-    async def conference_ns_speak(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def conference_ns_speak(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         """Inject NS voice into active conference (explicit invite only). FOUNDER only."""
         body = await request.json()
         room = body.get("room")
@@ -2130,7 +1505,7 @@ def create_app() -> FastAPI:
         return {"conferences": active_conferences()}
 
     @app.post("/voice/say")
-    async def voice_say(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def voice_say(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         text = body.get("text", "")
         call_sid = body.get("call_sid", "")
@@ -2215,7 +1590,7 @@ def create_app() -> FastAPI:
 
     @app.post("/canon/proposals/{proposal_id}/ratify")
     async def canon_ratify(proposal_id: str, request: Request,
-                            ctx: AuthContext = Depends(require_founder)):
+                            ctx: AuthContext = Depends(require_ops_key)):
         result = canon_store.ratify(proposal_id, ctx.user_id)
         if not result:
             return JSONResponse({"error": "Proposal not found"}, status_code=404)
@@ -2228,7 +1603,7 @@ def create_app() -> FastAPI:
 
     @app.post("/canon/proposals/{proposal_id}/expire")
     async def canon_expire(proposal_id: str, request: Request,
-                            ctx: AuthContext = Depends(require_founder)):
+                            ctx: AuthContext = Depends(require_ops_key)):
         result = canon_store.expire(proposal_id)
         if not result:
             return JSONResponse({"error": "Proposal not found"}, status_code=404)
@@ -2256,7 +1631,7 @@ def create_app() -> FastAPI:
     ENV_PATH_SERVER = Path.home() / "NSS" / ".env"
 
     @app.get("/credential/status")
-    async def credential_status(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def credential_status(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         keys = {}
         for key in ROTATION_URLS.keys():
             val = os.environ.get(key, "")
@@ -2266,7 +1641,7 @@ def create_app() -> FastAPI:
 
     @app.get("/credential/rotate/{key_name}")
     async def credential_rotate_open(key_name: str, request: Request,
-                                      ctx: AuthContext = Depends(require_founder)):
+                                      ctx: AuthContext = Depends(require_ops_key)):
         import subprocess
         url = ROTATION_URLS.get(key_name.upper())
         if not url:
@@ -2275,7 +1650,7 @@ def create_app() -> FastAPI:
         return {"opened": url, "key": key_name.upper()}
 
     @app.post("/credential/update")
-    async def credential_update(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def credential_update(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         import re, subprocess
         body = await request.json()
         key_name = body.get("key", "").upper()
@@ -2305,7 +1680,7 @@ def create_app() -> FastAPI:
         return {"updated": key_name, "env_written": True, "keychain": True, "live": True}
 
     @app.get("/credential/rotate-all")
-    async def credential_rotate_all(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def credential_rotate_all(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         import subprocess
         opened = []
         for key, url in ROTATION_URLS.items():
@@ -2319,7 +1694,7 @@ def create_app() -> FastAPI:
     # ═══════════════════════════════════════════════════════════════════════════
 
     @app.post("/trade/request")
-    async def trade_request(request: Request, ctx: AuthContext = Depends(require_founder)):
+    async def trade_request(request: Request, ctx: AuthContext = Depends(require_ops_key)):
         if not ctx.can_access_domain("trading"):
             return JSONResponse({"error": "Trading domain not in allowed_domains"}, status_code=403)
         body = await request.json()
@@ -2445,7 +1820,7 @@ def create_app() -> FastAPI:
 
     @app.post("/lexicon/concepts/{concept_id}/split")
     async def lexicon_split_concept(concept_id: str, request: Request,
-                                     ctx: AuthContext = Depends(require_founder)):
+                                     ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         children = sfe.split_concept(
             parent_id=concept_id,
@@ -2492,7 +1867,7 @@ def create_app() -> FastAPI:
 
     @app.post("/lexicon/bootstrap")
     async def lexicon_bootstrap(request: Request,
-                                 ctx: AuthContext = Depends(require_founder)):
+                                 ctx: AuthContext = Depends(require_ops_key)):
         body = await request.json()
         report = sfe.bootstrap_lexicon_v0(
             corpus_terms=body.get("terms", []),
@@ -2639,701 +2014,6 @@ setInterval(refresh, 5000);
         alpaca_health = alpaca.health()
         alpaca_ok = alpaca_health.get("status") == "ok"
         return get_dashboard_html(vh, llm_keys, ssd_ok, alpaca_ok, active_sessions, alpaca)
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M1 — PHASE 1d: GET /voice/status (no auth — distinct from POST /voice/status)
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/voice/status")
-    async def get_voice_status():
-        ssd_dir = Path("/Volumes/NSExternal/ALEXANDRIA/sessions")
-        persisted = len(list(ssd_dir.glob("*.json"))) if ssd_dir.exists() else 0
-        last_ts = None
-        for s in active_sessions.values():
-            if s.turns:
-                t = s.turns[-1].get("timestamp")
-                if t and (last_ts is None or t > last_ts):
-                    last_ts = t
-        ngrok_url = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "")
-        return {
-            "active_sessions": len(active_sessions),
-            "persisted_sessions": persisted,
-            "last_call_ts": last_ts,
-            "ngrok_url": ngrok_url,
-            "webhook_status": "configured" if ngrok_url else "missing",
-            "phone_number": os.environ.get("TWILIO_PHONE_NUMBER", "NOT SET"),
-        }
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M1 — PHASE 2: SMS Inbound (Anthropic direct + session persistence)
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.post("/sms/inbound")
-    async def sms_inbound(request: Request):
-        """Twilio SMS webhook — NS personality, session persistence, Alexandria log."""
-        form = dict(await request.form())
-        msg_sid = form.get("MessageSid", "unknown")
-        from_n  = form.get("From", "unknown")
-        body    = (form.get("Body") or "").strip()
-
-        receipt_chain.emit("SMS_INBOUND", {"kind": "sms", "ref": msg_sid},
-                           {"from_len": len(from_n), "body_len": len(body)}, {})
-
-        if not body:
-            return Response(content=_twiml_sms("Speak clearly. I'm listening."), media_type="application/xml")
-
-        # Build session context from prior turns
-        prior = _sms_sessions.get(from_n, [])[-5:]
-        context_str = ""
-        if prior:
-            context_str = "\nRecent SMS context:\n" + "\n".join(
-                f"You said: {t['heard']}\nNS: {t['spoke']}" for t in prior
-            )
-
-        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        reply = "I couldn't reach my intelligence layer right now."
-        try:
-            import anthropic as _anthropic
-            client = _anthropic.Anthropic(api_key=anthropic_key)
-            ai_resp = await asyncio.to_thread(
-                client.messages.create,
-                model="claude-sonnet-4-6",
-                max_tokens=300,
-                system=_NS_VOICE_SYSTEM + context_str,
-                messages=[{"role": "user", "content": body}],
-            )
-            reply = ai_resp.content[0].text.strip()
-        except Exception as exc:
-            receipt_chain.emit("SMS_ERROR", {"kind": "sms", "ref": msg_sid},
-                               {"error": str(exc)[:200]}, {})
-
-        reply, _blocked = safe_speak_filter(reply)
-        if _blocked:
-            reply += " Some details were withheld."
-        if len(reply) > 1200:
-            reply = reply[:1190] + "…"
-
-        _log_sms_turn(from_n, body, reply)
-        receipt_chain.emit("SMS_TURN", {"kind": "sms", "ref": msg_sid},
-                           {"heard": body[:120]}, {"reply_len": len(reply)})
-
-        try:
-            await bus.broadcast("sms.message.new", {
-                "channel": "sms", "from": from_n[:4] + "***",
-                "heard": body, "spoke": reply,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            })
-        except Exception:
-            pass
-
-        return Response(content=_twiml_sms(reply), media_type="application/xml")
-
-    @app.get("/sms/status")
-    async def sms_status():
-        last_ts = None
-        for turns in _sms_sessions.values():
-            if turns:
-                t = turns[-1].get("ts")
-                if t and (last_ts is None or t > last_ts):
-                    last_ts = t
-        return {
-            "sms_session_count": len(_sms_sessions),
-            "last_message_ts": last_ts,
-            "phone_number": os.environ.get("TWILIO_PHONE_NUMBER", "NOT SET"),
-            "webhook_path": "/sms/inbound",
-        }
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M1 — PHASE 3: Memory Surfacing API
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/memory/recent")
-    async def memory_recent(n: int = 10):
-        entries = _read_ledger_entries(n)
-        return {"entries": entries, "count": len(entries)}
-
-    @app.get("/memory/search")
-    async def memory_search(q: str, n: int = 20):
-        all_entries = _read_ledger_entries(n * 5)
-        q_lower = q.lower()
-        matches = [e for e in all_entries
-                   if q_lower in json.dumps(e, default=str).lower()]
-        return {"query": q, "matches": matches[:n], "count": len(matches[:n])}
-
-    @app.get("/memory/sessions")
-    async def memory_sessions():
-        voice = [{"call_sid": k, "tier": v.tier, "turns": len(v.turns),
-                  "started": v.started_at} for k, v in active_sessions.items()]
-        sms = [{"phone": k[:4] + "***", "turns": len(v)} for k, v in _sms_sessions.items()]
-        return {"voice_sessions": voice, "sms_sessions": sms,
-                "voice_count": len(voice), "sms_count": len(sms)}
-
-    @app.get("/memory/context")
-    async def memory_context(n: int = 5):
-        ctx = _get_memory_context(n)
-        return {"context": ctx, "generated_at": datetime.now(timezone.utc).isoformat()}
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M1 — PHASE 5: Meet / Conference Transcript Intake
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.post("/meet/transcript")
-    async def meet_transcript(request: Request):
-        body = await request.json()
-        speaker    = body.get("speaker", "unknown")
-        text       = body.get("text", "").strip()
-        meeting_id = body.get("meeting_id", "default")
-
-        if not text:
-            return JSONResponse({"error": "text required"}, status_code=400)
-
-        ssd = Path("/Volumes/NSExternal/ALEXANDRIA")
-        meet_dir = (ssd if ssd.exists() else Path.home() / "ALEXANDRIA") / "sessions"
-        meet_dir.mkdir(parents=True, exist_ok=True)
-        entry = {"ts": datetime.now(timezone.utc).isoformat(), "meeting_id": meeting_id,
-                 "speaker": speaker, "text": text}
-        with (meet_dir / f"meet_{meeting_id}.jsonl").open("a") as f:
-            f.write(json.dumps(entry) + "\n")
-
-        # Intent classification: observe / respond / escalate
-        action = "observe"
-        text_lower = text.lower()
-        if any(k in text_lower for k in ["urgent", "critical", "emergency", "escalate"]):
-            action = "escalate"
-        elif any(k in text_lower for k in ["what do you think", "ns,", "northstar,",
-                                             "your view", "summarize", "action item", "ns please"]):
-            action = "respond"
-
-        receipt_chain.emit("MEET_TRANSCRIPT", {"kind": "meet", "ref": meeting_id},
-                           {"speaker": speaker, "text_len": len(text), "action": action}, {})
-
-        session_id = f"meet_{meeting_id}"
-        if action == "observe":
-            return {"action": "logged", "session_id": session_id, "response": None}
-
-        anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        ns_response = "Noted. I'll flag this for follow-up."
-        try:
-            import anthropic as _anthropic
-            client = _anthropic.Anthropic(api_key=anthropic_key)
-            ai_resp = await asyncio.to_thread(
-                client.messages.create,
-                model="claude-sonnet-4-6",
-                max_tokens=200,
-                system=_NS_VOICE_SYSTEM + " You are observing a meeting. Respond only when directly addressed.",
-                messages=[{"role": "user", "content": f"Meeting — {speaker} said: {text}"}],
-            )
-            ns_response = ai_resp.content[0].text.strip()
-        except Exception as exc:
-            receipt_chain.emit("MEET_ERROR", {"kind": "meet", "ref": meeting_id},
-                               {"error": str(exc)[:200]}, {})
-
-        return {"action": action, "session_id": session_id, "response": ns_response}
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M1 — PHASE 4: No-auth chat + Founder Console
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.post("/chat/quick")
-    async def chat_quick(request: Request):
-        """No-auth chat for Founder Console. Local-only service."""
-        body = await request.json()
-        text = body.get("text", "").strip()
-        if not text:
-            return JSONResponse({"error": "text required"}, status_code=400)
-
-        mem_ctx = _check_refresh_memory()
-        try:
-            _recent = (mem_ctx.get("voice_turns", []) + mem_ctx.get("sms_turns", []))[-3:]
-            mem_summary = ("Recent sessions: " +
-                " | ".join(f"[{t['channel']}] {t.get('heard','')[:60]}" for t in _recent) + "\n\n"
-            ) if _recent else ""
-        except Exception:
-            mem_summary = ""
-
-        response = "Intelligence layer unavailable."
-        try:
-            router = get_router()
-            result = await asyncio.to_thread(
-                router.route_sync, text, mem_summary + _NS_VOICE_SYSTEM, "default"
-            )
-            response = result["response"]
-        except Exception:
-            pass
-
-        ts_now = datetime.now(timezone.utc).isoformat()
-        receipt_chain.emit("CHAT_QUICK", {"kind": "console", "ref": "founder"},
-                           {"query_len": len(text)}, {"response_len": len(response)})
-        try:
-            await bus.broadcast("chat.message.new", {
-                "channel": "console", "role": "assistant",
-                "content": response, "timestamp": ts_now,
-            })
-        except Exception:
-            pass
-
-        # Semantic Feedback Binder — every run produces a semantic update candidate
-        try:
-            from nss.semantic.feedback_binder import get_binder, ExecutionOutcome as _EO
-            import uuid as _uuid
-            get_binder().run_full_cycle(_EO(
-                run_id=str(_uuid.uuid4())[:8],
-                ops_executed=["ns.chat_quick"],
-                success=True,
-                latency_ms=0.0,
-                failure_class=None,
-                ts=ts_now,
-            ))
-        except Exception:
-            pass
-
-        return {"response": response, "ts": ts_now}
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M2 — Model Registry + Status
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/models/registry")
-    async def models_registry():
-        return {"models": get_registry_with_status(), "count": 5}
-
-    @app.get("/models/status")
-    async def models_status():
-        import httpx as _httpx
-        models = get_registry_with_status()
-        results = []
-        for m in models:
-            if not m["enabled"]:
-                results.append({**m, "health": "disabled", "latency_ms": None})
-                continue
-            provider = m.get("provider", "")
-            start = time.monotonic()
-            health = "unknown"
-            try:
-                if provider == "local_ollama":
-                    r = _httpx.get("http://localhost:11434/api/tags", timeout=2)
-                    health = "ok" if r.status_code == 200 else "error"
-                elif provider == "anthropic":
-                    health = "ok" if os.environ.get("ANTHROPIC_API_KEY") else "no_key"
-                else:
-                    health = "configured" if m["enabled"] else "no_key"
-            except Exception as e:
-                health = f"error: {str(e)[:40]}"
-            latency_ms = round((time.monotonic() - start) * 1000, 1)
-            results.append({**m, "health": health, "latency_ms": latency_ms})
-        return {"models": results, "ts": datetime.now(timezone.utc).isoformat()}
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M2 — GET /ops/recent (last 5 CPS execution summaries from receipts)
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/ops/recent")
-    async def ops_recent(n: int = 5):
-        all_receipts = receipt_chain.recent(50)
-        cps_receipts = [r for r in all_receipts if "CPS" in r.get("event_type", "")]
-        summaries = []
-        for r in cps_receipts[-n:]:
-            src = r.get("source") or {}
-            out = r.get("output") or {}
-            summaries.append({
-                "ts": r.get("ts_utc"),
-                "event_type": r.get("event_type"),
-                "ref": src.get("ref", ""),
-                "plan_id": src.get("ref", ""),
-                "ok": out.get("ok", None),
-            })
-        return {"ops": summaries[::-1], "count": len(summaries)}
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # M2 — POST /intel/suggest (proactive Jarvis-style suggestions)
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.post("/intel/suggest")
-    async def intel_suggest(request: Request):
-        body = await request.json()
-        topic = body.get("topic", "").strip()
-        context = body.get("context", "").strip()
-        if not topic:
-            return JSONResponse({"error": "topic required"}, status_code=400)
-
-        mem_ctx = _check_refresh_memory()
-        receipts_summary = ", ".join(
-            r.get("event", "") for r in (mem_ctx.get("recent_receipts") or [])[-5:]
-            if r.get("event")
-        )
-        sources = ["memory"]
-        if receipts_summary:
-            sources.append("recent_ops")
-
-        prompt = (
-            f"Topic: {topic}\n"
-            f"Context: {context}\n"
-            f"Recent system activity: {receipts_summary}\n\n"
-            "Provide 3 concise, actionable suggestions. Format as a numbered list."
-        )
-
-        suggestions = []
-        try:
-            router = get_router()
-            result = await asyncio.to_thread(router.route_sync, prompt, "", "strategy")
-            raw = result["response"]
-            import re as _re
-            suggestions = [s.strip() for s in _re.split(r'\n\d+\.', raw) if s.strip()]
-            if not suggestions:
-                suggestions = [raw[:300]]
-        except Exception as exc:
-            receipt_chain.emit("INTEL_ERROR", {"kind": "intel", "ref": topic},
-                               {"error": str(exc)[:200]}, {})
-
-        receipt_chain.emit("INTEL_SUGGEST", {"kind": "intel", "ref": topic},
-                           {"topic_len": len(topic)}, {"suggestion_count": len(suggestions)})
-        return {
-            "topic": topic,
-            "suggestions": suggestions,
-            "confidence": "high" if len(suggestions) >= 3 else "medium",
-            "sources": sources,
-            "ts": datetime.now(timezone.utc).isoformat(),
-        }
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # Capability Graph endpoints
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/capability/graph")
-    async def capability_graph_endpoint():
-        from nss.capability.graph import get_graph
-        g = get_graph()
-        return {"nodes": g.all_nodes(), "summary": g.summary(),
-                "ts": datetime.now(timezone.utc).isoformat()}
-
-    @app.get("/capability/unresolved")
-    async def capability_unresolved():
-        from nss.capability.graph import get_graph
-        g = get_graph()
-        return {"nodes": g.unresolved_nodes(), "top_3": g.top_unresolved(3),
-                "count": len(g.unresolved_nodes()),
-                "ts": datetime.now(timezone.utc).isoformat()}
-
-    @app.post("/capability/update")
-    async def capability_update(request: Request):
-        body = await request.json()
-        node_id = body.get("node_id", "")
-        if not node_id:
-            return JSONResponse({"error": "node_id required"}, status_code=400)
-        from nss.capability.graph import get_graph
-        return get_graph().update_node(
-            node_id,
-            state=body.get("state"),
-            proof_ref=body.get("proof_ref"),
-            blocked_reason=body.get("blocked_reason"),
-        )
-
-    # ═══════════════════════════════════════════════════════════════════════════
-    # Semantic Feedback Binder endpoints
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    @app.get("/semantic/candidates")
-    async def semantic_candidates():
-        from nss.semantic.feedback_binder import get_binder
-        candidates = get_binder().list_candidates()
-        return {"candidates": candidates, "count": len(candidates),
-                "ts": datetime.now(timezone.utc).isoformat()}
-
-    @app.get("/semantic/proposals")
-    async def semantic_proposals():
-        from nss.semantic.feedback_binder import get_binder
-        proposals = get_binder().list_proposals()
-        return {"proposals": proposals, "count": len(proposals),
-                "ts": datetime.now(timezone.utc).isoformat()}
-
-    @app.post("/semantic/promote")
-    async def semantic_promote(request: Request):
-        body = await request.json()
-        proposal_id = body.get("proposal_id", "")
-        if not proposal_id:
-            return JSONResponse({"error": "proposal_id required"}, status_code=400)
-        from nss.semantic.feedback_binder import get_binder
-        return get_binder().promote_to_canon(proposal_id, body.get("approved_by", "founder"))
-
-    # ── Adapter Capabilities ──────────────────────────────────────────────────
-
-    @app.get("/adapter/capabilities")
-    async def adapter_capabilities():
-        """Proxy to Mac adapter :9911/capabilities — graceful skip if not running."""
-        import urllib.request
-        import urllib.error
-        try:
-            with urllib.request.urlopen("http://host.docker.internal:9911/capabilities", timeout=2) as r:
-                import json as _json
-                data = _json.loads(r.read())
-                return {"ok": True, "source": "mac_adapter", **data}
-        except Exception as e:
-            return {"ok": True, "skipped": True, "reason": str(e),
-                    "note": "Mac adapter not running — start services/handrail-adapter-macos"}
-
-    # ── Policy Evolution ──────────────────────────────────────────────────────
-
-    @app.get("/policy/proposals")
-    async def policy_list_proposals(status: str = None):
-        from nss.policy.evolution import get_engine
-        proposals = get_engine().list_proposals(status=status)
-        return {"ok": True, "count": len(proposals), "proposals": proposals}
-
-    @app.post("/policy/proposals")
-    async def policy_submit_proposal(request: Request):
-        body = await request.json()
-        from nss.policy.evolution import get_engine
-        try:
-            proposal = get_engine().submit_proposal(
-                title=body.get("title", ""),
-                description=body.get("description", ""),
-                proposer=body.get("proposer", "founder"),
-                risk_tier=body.get("risk_tier", "R1"),
-            )
-            return {**proposal, "ok": True}
-        except ValueError as e:
-            return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
-
-    @app.post("/policy/proposals/{proposal_id}/vote")
-    async def policy_vote(proposal_id: str, request: Request):
-        body = await request.json()
-        from nss.policy.evolution import get_engine
-        return get_engine().vote(proposal_id, body.get("actor", "founder"),
-                                 bool(body.get("vote", True)))
-
-    @app.post("/policy/proposals/{proposal_id}/activate")
-    async def policy_activate(proposal_id: str, request: Request):
-        body = await request.json()
-        from nss.policy.evolution import get_engine
-        return get_engine().activate(proposal_id, body.get("actor", "founder"),
-                                     body.get("yubikey_verified", False))
-
-    @app.get("/policy/{policy_name}/active")
-    async def policy_active_version(policy_name: str):
-        from nss.policy.evolution import get_engine
-        v = get_engine().get_active_policy(policy_name)
-        if v is None:
-            return JSONResponse({"ok": False, "error": "no active version"}, status_code=404)
-        return {"ok": True, "version": v}
-
-    @app.get("/policy/{policy_name}/audit")
-    async def policy_audit(policy_name: str):
-        from nss.policy.evolution import get_engine
-        return {"ok": True, "entries": get_engine().audit_log(policy_name)}
-
-    @app.post("/policy/{policy_name}/rollback")
-    async def policy_rollback(policy_name: str, request: Request):
-        body = await request.json()
-        from nss.policy.evolution import get_engine
-        return get_engine().rollback(policy_name, body.get("actor", "founder"))
-
-    # ── Explainability ────────────────────────────────────────────────────────
-
-    @app.get("/explain/run/{run_id}")
-    async def explain_run(run_id: str):
-        from nss.explainability.engine import get_engine
-        return get_engine().explain_run(run_id)
-
-    @app.get("/explain/decision/{decision_id}")
-    async def explain_decision(decision_id: str):
-        from nss.explainability.engine import get_engine
-        return get_engine().explain_decision(decision_id)
-
-    @app.get("/explain/recent")
-    async def explain_recent():
-        from nss.explainability.engine import get_engine
-        decisions = get_engine().recent_decisions(10)
-        return {"ok": True, "count": len(decisions), "decisions": decisions}
-
-    # ── USDL Decoder ──────────────────────────────────────────────────────────
-
-    @app.get("/usdl/gates")
-    async def usdl_gates():
-        from nss.usdl.decoder import get_decoder, SEED_GENOME
-        return {"ok": True, "count": len(SEED_GENOME), "gates": SEED_GENOME}
-
-    @app.post("/usdl/eval")
-    async def usdl_eval(request: Request):
-        body = await request.json()
-        state_capsule = body.get("state_capsule", {})
-        from nss.usdl.decoder import USDLDecoder
-        decoder = USDLDecoder(state_capsule=state_capsule)
-        return decoder.execute()
-
-    @app.get("/usdl/lineage")
-    async def usdl_lineage():
-        from nss.usdl.decoder import get_decoder
-        lineage = get_decoder().get_lineage(20)
-        return {"ok": True, "count": len(lineage), "lineage": lineage}
-
-    # ── Invention Flywheel ────────────────────────────────────────────────────
-
-    @app.get("/invention/flywheel")
-    async def invention_flywheel():
-        """Invention Flywheel — current cycle state across all three realities."""
-        from nss.capability.graph import get_graph
-        from nss.semantic.feedback_binder import get_binder
-        import json
-        from pathlib import Path
-
-        g = get_graph()
-        binder = get_binder()
-
-        # SAN: count territories, filings, whitespace
-        san_root = Path("/Volumes/NSExternal/ALEXANDRIA/san")
-        if not san_root.exists():
-            san_root = Path.home() / ".axiolev" / "san"
-        territories = list((san_root / "territories").glob("*.json")) if (san_root / "territories").exists() else []
-        filings = list((san_root / "filings").glob("*.json")) if (san_root / "filings").exists() else []
-
-        # Capability graph: unresolved nodes = next invention targets
-        unresolved = g.unresolved_nodes()
-        top_targets = g.top_unresolved(3)
-
-        # Semantic binder: pending canon commits
-        candidates = binder.list_candidates()
-        proposals = binder.list_proposals()
-
-        # Knowledge: provisional nodes
-        provisional = [n for n in g.all_nodes() if n.get("state") == "provisional"]
-
-        return {
-            "flywheel": "Invention Flywheel — SAN → Alexandria circular engine",
-            "cycle": {
-                "input_synthesis": {
-                    "provisional_nodes": len(provisional),
-                    "pending_canon_candidates": len(candidates),
-                    "pending_proposals": len(proposals),
-                },
-                "governance_triple_commit": {
-                    "proposals_awaiting_approval": len([p for p in proposals if p.get("requires_quorum")]),
-                    "auto_promotable": len([p for p in proposals if not p.get("requires_quorum")]),
-                },
-                "san_legal_knowledge": {
-                    "territories": len(territories),
-                    "filing_intents": len(filings),
-                },
-                "lexicon_moat": {
-                    "semantic_candidates": len(candidates),
-                    "domains_with_drift": len(set(c.get("term","") for c in candidates)),
-                },
-                "whitespace_detection": {
-                    "top_targets": [{"id": n["id"], "state": n["state"], "strategic_value": n.get("strategic_value",0)} for n in top_targets],
-                    "total_unresolved": len(unresolved),
-                },
-            },
-            "next_cycle_inputs": [n["id"] for n in top_targets],
-            "ts": datetime.now(timezone.utc).isoformat(),
-        }
-
-    # ── HIC — Holographic Intent Compiler ────────────────────────────────────
-
-    @app.post("/hic/compile")
-    async def hic_compile(request: Request):
-        body = await request.json()
-        text = body.get("text", "")
-        if not text:
-            return JSONResponse({"error": "text required"}, status_code=400)
-        from nss.hic.compiler import get_hic
-        return get_hic().compile(text)
-
-    @app.get("/hic/codebook")
-    async def hic_codebook():
-        from nss.hic.compiler import get_hic
-        hic = get_hic()
-        return {"ok": True, "count": len(hic.codebook()), "codebook": hic.codebook(),
-                "veto_patterns": hic.veto_patterns()}
-
-    @app.post("/hic/execute")
-    async def hic_execute(request: Request):
-        body = await request.json()
-        text = body.get("text", "")
-        from nss.hic.compiler import get_hic
-        result = get_hic().compile(text)
-        if not result["ok"]:
-            return result
-        if result.get("risk") not in ["R0"]:
-            return {**result, "executed": False,
-                    "reason": "R1+ ops require explicit approval"}
-        import httpx as _httpx
-        cps_payload = {
-            "cps_id": f"hic_auto_{result['op'].replace('.','_')}",
-            "objective": f"HIC auto-execute: {text[:60]}",
-            "policy_profile": "readonly.local",
-            "ops": [{"op": result["op"], "args": result["args"]}],
-        }
-        try:
-            resp = _httpx.post("http://handrail:8011/ops/cps",
-                               json=cps_payload, timeout=10)
-            return {**result, "executed": True, "cps_result": resp.json()}
-        except Exception as e:
-            return {**result, "executed": False, "error": str(e)}
-
-    # ── SMS Channel ───────────────────────────────────────────────────────────
-
-    @app.post("/sms/inbound")
-    async def sms_inbound(request: Request):
-        form = dict(await request.form())
-        from_number = form.get("From", "")
-        body_text = form.get("Body", "")
-        if not body_text:
-            return Response(content="<Response/>", media_type="text/xml")
-
-        # Route through HIC for intent classification
-        from nss.hic.compiler import get_hic
-        hic_result = get_hic().compile(body_text)
-
-        # Get NS response via memory + model context
-        try:
-            mem = memory.search(body_text, top_k=2)
-            mem_ctx = " | ".join(m.get("text", "") for m in mem[:2]) if mem else ""
-        except Exception:
-            mem_ctx = ""
-
-        hic_note = ""
-        if hic_result.get("ok") and hic_result.get("op"):
-            hic_note = f" [Intent: {hic_result['matched_pattern']} → {hic_result['op']}]"
-        elif hic_result.get("veto"):
-            reply_text = "I can't help with that — it conflicts with constitutional constraints."
-            twiml = f"<Response><Message>{reply_text}</Message></Response>"
-            return Response(content=twiml, media_type="text/xml")
-
-        # Generate reply using Anthropic if available
-        try:
-            import anthropic as _anthropic, os as _os
-            _client = _anthropic.Anthropic(api_key=_os.environ.get("ANTHROPIC_API_KEY", ""))
-            _msgs = [{"role": "user", "content": f"[SMS from {from_number}]{hic_note}\n{body_text}"}]
-            if mem_ctx:
-                _msgs[0]["content"] = f"Context: {mem_ctx[:200]}\n\n" + _msgs[0]["content"]
-            _r = _client.messages.create(
-                model="claude-haiku-4-5-20251001",
-                max_tokens=160,
-                system="You are NS, a sovereign AI assistant. Reply concisely via SMS (under 160 chars).",
-                messages=_msgs,
-            )
-            reply_text = _r.content[0].text[:160]
-        except Exception:
-            reply_text = f"NS received: {body_text[:80]}. Processing."
-
-        receipt_chain.emit("SMS_TURN",
-                           {"kind": "sms", "from": from_number},
-                           {"body": body_text[:100]},
-                           {"reply_len": len(reply_text), "hic_op": hic_result.get("op")})
-        twiml = f"<Response><Message>{reply_text}</Message></Response>"
-        return Response(content=twiml, media_type="text/xml")
-
-    @app.get("/sms/health")
-    async def sms_health():
-        import os
-        sid = os.environ.get("TWILIO_ACCOUNT_SID", "")
-        return {"ok": True, "twilio_sid_set": bool(sid), "channel": "sms",
-                "endpoint": "/sms/inbound"}
-
-    @app.get("/founder", response_class=HTMLResponse)
-    async def founder_console():
-        """Founder MVP Console v2 — full Jarvis two-panel UI."""
-        from nss.ui.founder import FOUNDER_HTML
-        return HTMLResponse(content=FOUNDER_HTML)
 
     return app
 

@@ -108,11 +108,45 @@ async def capabilities_namespace(namespace: str):
     from adapter_core.capability_registry import REGISTRY_BY_NAMESPACE
     ops = REGISTRY_BY_NAMESPACE.get(namespace)
     if ops is None:
-        from fastapi.responses import JSONResponse
         return JSONResponse({"ok": False, "error": f"namespace '{namespace}' not found"}, status_code=404)
     return {"ok": True, "namespace": namespace, "count": len(ops), "ops": ops}
 
 
+# ── CPS bridge routes — /ops/{namespace}/{action} (port 8765 compat) ─────────
+# cps_engine._mac_bridge() calls POST /ops/{ns}/{action} with JSON args body.
+# Response must be a flat dict {ok, ...data} for the CPS result layer.
+
+@app.post("/ops/{namespace}/{action}")
+async def ops_bridge(namespace: str, action: str, raw: Request):
+    method = f"{namespace}.{action}"
+    try:
+        args = await raw.json()
+    except Exception:
+        args = {}
+
+    req = AdapterRequest(method=method, params=args if isinstance(args, dict) else {})
+
+    denial = kernel.check(req)
+    if denial:
+        resp = AdapterResponse.denied(req, denial)
+        return JSONResponse({"ok": False, "error": resp.error, "op": method})
+
+    resp = await registry.dispatch(req)
+    icon = "✓" if resp.status.value == "success" else "✗"
+    log.info(f"{icon} [bridge] {method} → {resp.status} [{resp.latency_ms}ms]")
+
+    if resp.status.value in ("success", "skipped"):
+        return {"ok": True, "op": method, **(resp.data or {})}
+    return JSONResponse({"ok": False, "op": method, "error": resp.error or resp.status.value}, status_code=200)
+
+
+@app.get("/ops")
+async def list_ops():
+    return {"ok": True, "ops": registry.available_methods(), "count": len(registry.available_methods())}
+
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server:app", host="0.0.0.0", port=9911, reload=False)
+    import sys
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)

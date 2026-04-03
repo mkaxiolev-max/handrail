@@ -1,0 +1,26 @@
+{
+  "proof_id": "hic-v1",
+  "date": "2026-04-02",
+  "component": "Holographic Intent Compiler",
+  "status": "IMPLEMENTED",
+  "capabilities": {
+    "semantic_veto": true,
+    "safe_codebook_ops": 20,
+    "veto_patterns": 14,
+    "threshold": 0.25,
+    "deterministic": true,
+    "stochastic": false
+  },
+  "endpoints": [
+    {"path": "/hic/compile", "method": "POST", "description": "Compile natural language to CPS op candidate"},
+    {"path": "/hic/execute", "method": "POST", "description": "Compile and auto-execute R0 ops"},
+    {"path": "/hic/codebook", "method": "GET", "description": "List safe action codebook"}
+  ],
+  "test_results": {
+    "veto_delete_all": "VETOED",
+    "compile_check_memory": {"ok": true, "op": "ns.memory_recent", "confidence": 1.0},
+    "execute_what_time": {"ok": true, "executed": true}
+  },
+  "integration": "voice_transcription context enrichment + SMS inbound routing",
+  "constitutional_law": "Veto patterns are checked BEFORE codebook matching — dignity invariants are pre-algebraic"
+}
