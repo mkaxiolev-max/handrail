@@ -103,6 +103,9 @@ async def window_get_focused(req):
 end tell"""
     rc, out, err = await _run(["osascript", "-e", script])
     if rc != 0:
+        # -1719 = Accessibility not granted — return graceful skip rather than failure
+        if "-1719" in err or "assistive access" in err.lower():
+            return AdapterResponse.success(req, {"app": "", "title": "", "skipped": True, "reason": "accessibility_permission_required"})
         return AdapterResponse.failure(req, "get_focused failed: " + err)
     parts = out.split("|", 1)
     return AdapterResponse.success(req, {"app": parts[0].strip() if parts else "", "title": parts[1].strip() if len(parts) > 1 else ""})

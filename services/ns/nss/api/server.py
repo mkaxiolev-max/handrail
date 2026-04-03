@@ -3040,6 +3040,100 @@ setInterval(refresh, 5000);
         }
 
     # ═══════════════════════════════════════════════════════════════════════════
+    # GET /intel/proactive — Jarvis background intelligence surface
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/intel/proactive")
+    async def intel_proactive():
+        """Fetch system state from 4 sources, call Haiku, return 3 actionable suggestions."""
+        import httpx as _httpx
+        base = "http://localhost:9000"
+        context_used = []
+
+        async def _safe_get(path, **params):
+            try:
+                r = await asyncio.to_thread(
+                    lambda: _httpx.get(f"{base}{path}", params=params, timeout=3)
+                )
+                return r.json() if r.status_code == 200 else {}
+            except Exception:
+                return {}
+
+        unresolved, candidates, flywheel, memory = await asyncio.gather(
+            _safe_get("/capability/unresolved"),
+            _safe_get("/semantic/candidates"),
+            _safe_get("/invention/flywheel"),
+            _safe_get("/memory/recent", n=5),
+        )
+
+        # Build terse context string
+        parts = []
+        if unresolved.get("top_3"):
+            parts.append("Unresolved capabilities: " + ", ".join(
+                n.get("node_id", "") for n in unresolved["top_3"][:3]
+            ))
+            context_used.append("capability/unresolved")
+        if candidates.get("candidates"):
+            parts.append(f"Semantic candidates pending: {candidates['count']}")
+            context_used.append("semantic/candidates")
+        if flywheel.get("summary"):
+            s = flywheel["summary"]
+            parts.append(f"Flywheel: unresolved={s.get('unresolved_count',0)} candidates={s.get('candidate_count',0)}")
+            context_used.append("invention/flywheel")
+        if memory.get("entries"):
+            recent_events = [e.get("event_type","") for e in memory["entries"][:3] if e.get("event_type")]
+            if recent_events:
+                parts.append("Recent events: " + ", ".join(recent_events))
+                context_used.append("memory/recent")
+
+        state_summary = "\n".join(parts) if parts else "No active system signals detected."
+
+        suggestions = []
+        try:
+            anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+            if not anthropic_key:
+                raise RuntimeError("no_api_key")
+            import anthropic as _anthropic
+            client = _anthropic.Anthropic(api_key=anthropic_key)
+            ai_resp = await asyncio.to_thread(
+                client.messages.create,
+                model="claude-haiku-4-5-20251001",
+                max_tokens=300,
+                system=(
+                    "You are NS, the executive intelligence of AXIOLEV Holdings. "
+                    "Based on the system state provided, generate 3 specific, actionable "
+                    "intelligence suggestions for the founder. Be concise and directive. "
+                    "Format as a JSON array: [{\"suggestion\": \"...\", \"priority\": \"critical|high|medium|low\", \"action_op\": \"...\"}]"
+                ),
+                messages=[{"role": "user", "content": f"System state:\n{state_summary}"}],
+            )
+            raw = ai_resp.content[0].text.strip()
+            # Extract JSON array from response
+            import re as _re
+            m = _re.search(r'\[.*\]', raw, _re.DOTALL)
+            if m:
+                suggestions = json.loads(m.group())[:3]
+        except Exception as exc:
+            return {
+                "ok": True,
+                "suggestions": [],
+                "reason": "model_unavailable",
+                "error": str(exc)[:120],
+                "context_used": context_used,
+                "ts": datetime.now(timezone.utc).isoformat(),
+            }
+
+        receipt_chain.emit("INTEL_PROACTIVE", {"kind": "intel", "ref": "proactive"},
+                           {"context_sources": len(context_used)},
+                           {"suggestion_count": len(suggestions)})
+        return {
+            "ok": True,
+            "suggestions": suggestions,
+            "context_used": context_used,
+            "ts": datetime.now(timezone.utc).isoformat(),
+        }
+
+    # ═══════════════════════════════════════════════════════════════════════════
     # Capability Graph endpoints
     # ═══════════════════════════════════════════════════════════════════════════
 
