@@ -1,0 +1,149 @@
+{
+  "proof_id": "ns_boot_proof_v1",
+  "ts": "2026-04-02T21:31:55Z",
+  "description": "NS∞ sovereign boot proof — three-reality architecture identity attestation",
+  "system_identity": {
+    "project": "axiolev_runtime",
+    "architecture": "Handrail(8011) → NS(9000) → Continuum(8788)",
+    "boot_sequence": "docker-compose up → handrail healthy → ns healthy → continuum healthy"
+  },
+  "services": {
+    "handrail": {
+      "port": 8011,
+      "status": "ok",
+      "healthy": true
+    },
+    "ns": {
+      "port": 9000,
+      "status": "ok",
+      "version": "2.0.0",
+      "healthy": true
+    },
+    "continuum": {
+      "port": 8788,
+      "status": "ok",
+      "version": "v1",
+      "healthy": true,
+      "global_tier": 0,
+      "ssd_mounted": true
+    }
+  },
+  "alexandria": {
+    "ssd_mounted": true,
+    "ssd_snapshots": 18,
+    "ssd_ledger_entries": 18,
+    "ledger_path": "/Volumes/NSExternal/ALEXANDRIA/ledger/ns_receipt_chain.jsonl",
+    "proof_valid": true,
+    "root_hash": "sha256:a0bc7c16c13ab980641a4a63cb7e5d8ed523dc5b868e38bd1e993bb593dbab4c",
+    "chain_length": 18
+  },
+  "dignity_kernel": {
+    "never_events": [
+      {
+        "id": "NE1",
+        "name": "financial_wire_prohibition",
+        "status": "active",
+        "gate": "blocks wire ops without R4 tier"
+      },
+      {
+        "id": "NE2",
+        "name": "ledger_tamper_prohibition",
+        "status": "active",
+        "gate": "blocks fs/proc ops targeting ALEXANDRIA/ledger"
+      },
+      {
+        "id": "NE3",
+        "name": "secret_exposure_prohibition",
+        "status": "active",
+        "gate": "blocks ops with sk_live_/whsec_/AUTH_TOKEN patterns in args"
+      },
+      {
+        "id": "NE4",
+        "name": "structural_no_bypass",
+        "status": "active",
+        "gate": "never-event check called before every OP_DISPATCH execution"
+      }
+    ],
+    "ne_count": 4,
+    "all_active": true
+  },
+  "yubikey_quorum": {
+    "serial": "26116460",
+    "quorum_threshold": 1,
+    "active_slots": 1,
+    "quorum_satisfied": true,
+    "mode": "live_yubicloud",
+    "r3_r4_gate": "active — requires yubikey_verified:true for risk_tier R3/R4"
+  },
+  "rings": {
+    "ring_1": {
+      "name": "Foundations",
+      "status": "complete",
+      "milestone": "M1 Founder MVP — boot, voice, receipts, alexandria, handrail CPS"
+    },
+    "ring_2": {
+      "name": "Intelligence",
+      "status": "complete",
+      "milestone": "M2 Jarvis — Program Library v1, Model Router, Proactive Intel, Console v2"
+    },
+    "ring_3": {
+      "name": "Sovereign",
+      "status": "complete",
+      "milestone": "BLACK KNIGHT Steps 1-5 — YubiKey, Dignity Kernel, Continuum, Boot Proof"
+    },
+    "ring_4": {
+      "name": "Capability",
+      "status": "complete",
+      "milestone": "Adapter expansion, SAN, Semantic Binder, determinism/perf/crash proofs"
+    },
+    "ring_5": {
+      "name": "Production",
+      "status": "blocked",
+      "blocker": "Stripe live keys, production domain, legal entity formation"
+    }
+  },
+  "three_reality_architecture": {
+    "r1_code_reality": {
+      "description": "Git-tracked, versioned, auditable code",
+      "status": "healthy",
+      "tags": 173,
+      "latest_commit": "15be3fc"
+    },
+    "r2_runtime_reality": {
+      "description": "Live Docker containers, SSD state, in-memory rings",
+      "status": "healthy",
+      "containers": ["handrail", "ns", "continuum"]
+    },
+    "r3_human_reality": {
+      "description": "Founder-bound, YubiKey-gated, dignity-constrained",
+      "status": "active",
+      "yubikey_bound": true,
+      "dignity_kernel": true
+    }
+  },
+  "sovereign_boot": {
+    "cps_plan": ".cps/sovereign_boot.json",
+    "op_count": 12,
+    "expect_assertions": 7,
+    "covers": [
+      "fs.pwd",
+      "handrail health",
+      "continuum /state health",
+      "alexandria proof",
+      "yubikey test",
+      "health/full",
+      "disk usage",
+      "models registry",
+      "memory recent",
+      "founder console",
+      "kernel/yubikey/status",
+      "continuum /healthz"
+    ]
+  },
+  "git_state": {
+    "tags": 173,
+    "branch": "adapter-expansion-v2",
+    "latest_tag_group": ["yubikey-cloud-live-v1", "yubikey-hardware-v1", "yubikey-binding-v1"]
+  },
+  "proof_valid": true
+}

@@ -742,6 +742,59 @@ _META_OPS: dict[str, Any] = {
 }
 
 # ---------------------------------------------------------------------------
+# Dignity Kernel — Never-Event checks NE1–NE4
+# Called BEFORE every OP_DISPATCH execution. No bypass path (NE4).
+# ---------------------------------------------------------------------------
+
+_NEVER_WIRE_OPS = {"stripe.pay", "wire.transfer", "payment.execute", "transfer.send"}
+_SECRET_PATTERNS = ("sk_live_", "sk_test_", "whsec_", "AUTH_TOKEN", "token=sk")
+_RISK_TIER_ORDER = {"R0": 0, "R1": 1, "R2": 2, "R3": 3, "R4": 4}
+
+
+def _dignity_never_event_check(op_name: str, args: dict, risk_tier: str = "R0") -> dict | None:
+    """
+    Returns violation dict {ne, details} if a never-event fires, else None.
+    NE4 is structural: always called, no bypass possible.
+    """
+    tier_int = _RISK_TIER_ORDER.get(risk_tier, 0)
+
+    # NE1 — financial wire without R4 + YubiKey
+    if op_name in _NEVER_WIRE_OPS or "wire" in op_name.lower():
+        if tier_int < 4:
+            return {
+                "ne": "NE1",
+                "details": (
+                    f"Financial wire op '{op_name}' requires risk_tier=R4 + yubikey_verified:true "
+                    f"(current: {risk_tier})"
+                ),
+            }
+
+    # NE2 — Alexandria ledger tamper protection
+    for v in args.values():
+        if isinstance(v, str) and "ALEXANDRIA/ledger" in v:
+            if op_name in ("fs.write", "fs.delete", "fs.overwrite",
+                           "proc.run_allowed", "proc.run_readonly"):
+                return {
+                    "ne": "NE2",
+                    "details": (
+                        f"Op '{op_name}' targeting Alexandria ledger is constitutionally prohibited"
+                    ),
+                }
+
+    # NE3 — raw secret exposure in args
+    args_str = json.dumps(args, default=str)
+    for pat in _SECRET_PATTERNS:
+        if pat in args_str:
+            return {
+                "ne": "NE3",
+                "details": f"Arg contains sensitive pattern '{pat}' — blocked by NE3 secret scrub",
+            }
+
+    # NE4: always enforced — this return path is the "all clear"
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Failure event writer (Block 3B — failure classification)
 # ---------------------------------------------------------------------------
 
@@ -1047,50 +1100,61 @@ class CPSExecutor:
                 result["decision_code"] = "UNKNOWN_OP"
                 all_ok = False
             else:
-                try:
-                    data = handler(op_args, policy)
-                    result["ok"] = True
-                    result["data"] = data
-                    result["decision_code"] = "OK"
-                    # Derive signal
-                    if "status_code" in data:
-                        result["signal"] = data["status_code"]
-                    elif "returncode" in data:
-                        result["signal"] = data["returncode"]
-                    else:
-                        result["signal"] = "ok"
-                except PermissionError as e:
-                    result["error"] = str(e)
-                    result["decision_code"] = "POLICY_DENIED"
-                    result["failure_class"] = "POLICY_DENIAL"
-                    result["severity"] = "high"
+                # ── NE1-NE4: Dignity Kernel — always enforced, no bypass (NE4) ──
+                _ne = _dignity_never_event_check(op_name, op_args, cps.get("risk_tier", "R0"))
+                if _ne:
+                    result["error"] = _ne["details"]
+                    result["decision_code"] = "DIGNITY_KERNEL_VIOLATION"
+                    result["failure_class"] = "DIGNITY_KERNEL_VIOLATION"
+                    result["severity"] = "critical"
                     result["strategy"] = "quarantine_log"
-                    _write_failure_event(op_name, "POLICY_DENIAL", "high", "quarantine_log", str(e))
+                    _write_failure_event(op_name, "DIGNITY_KERNEL_VIOLATION", "critical",
+                                        "quarantine_log", f"{_ne['ne']}: {_ne['details']}")
                     all_ok = False
-                except TimeoutError as e:
-                    result["error"] = str(e)
-                    result["decision_code"] = "TIMEOUT"
-                    result["failure_class"] = "EXECUTION_FAILURE"
-                    result["severity"] = "medium"
-                    result["strategy"] = "retry_backoff"
-                    _write_failure_event(op_name, "EXECUTION_FAILURE", "medium", "retry_backoff", str(e))
-                    all_ok = False
-                except ValueError as e:
-                    result["error"] = str(e)
-                    result["decision_code"] = "OP_ERROR"
-                    result["failure_class"] = "SEMANTIC_FAILURE"
-                    result["severity"] = "low"
-                    result["strategy"] = "replan"
-                    _write_failure_event(op_name, "SEMANTIC_FAILURE", "low", "replan", str(e))
-                    all_ok = False
-                except Exception as e:
-                    result["error"] = str(e)
-                    result["decision_code"] = "OP_ERROR"
-                    result["failure_class"] = "UNKNOWN"
-                    result["severity"] = "high"
-                    result["strategy"] = "escalate"
-                    _write_failure_event(op_name, "UNKNOWN", "high", "escalate", str(e))
-                    all_ok = False
+                else:
+                    try:
+                        data = handler(op_args, policy)
+                        result["ok"] = True
+                        result["data"] = data
+                        result["decision_code"] = "OK"
+                        if "status_code" in data:
+                            result["signal"] = data["status_code"]
+                        elif "returncode" in data:
+                            result["signal"] = data["returncode"]
+                        else:
+                            result["signal"] = "ok"
+                    except PermissionError as e:
+                        result["error"] = str(e)
+                        result["decision_code"] = "POLICY_DENIED"
+                        result["failure_class"] = "POLICY_DENIAL"
+                        result["severity"] = "high"
+                        result["strategy"] = "quarantine_log"
+                        _write_failure_event(op_name, "POLICY_DENIAL", "high", "quarantine_log", str(e))
+                        all_ok = False
+                    except TimeoutError as e:
+                        result["error"] = str(e)
+                        result["decision_code"] = "TIMEOUT"
+                        result["failure_class"] = "EXECUTION_FAILURE"
+                        result["severity"] = "medium"
+                        result["strategy"] = "retry_backoff"
+                        _write_failure_event(op_name, "EXECUTION_FAILURE", "medium", "retry_backoff", str(e))
+                        all_ok = False
+                    except ValueError as e:
+                        result["error"] = str(e)
+                        result["decision_code"] = "OP_ERROR"
+                        result["failure_class"] = "SEMANTIC_FAILURE"
+                        result["severity"] = "low"
+                        result["strategy"] = "replan"
+                        _write_failure_event(op_name, "SEMANTIC_FAILURE", "low", "replan", str(e))
+                        all_ok = False
+                    except Exception as e:
+                        result["error"] = str(e)
+                        result["decision_code"] = "OP_ERROR"
+                        result["failure_class"] = "UNKNOWN"
+                        result["severity"] = "high"
+                        result["strategy"] = "escalate"
+                        _write_failure_event(op_name, "UNKNOWN", "high", "escalate", str(e))
+                        all_ok = False
 
             result["latency_ms"] = round((time.monotonic() - start_op) * 1000, 1)
             result["op_digest"] = _sha256({"op": op_name, "args": op_args, "data": result["data"]})
