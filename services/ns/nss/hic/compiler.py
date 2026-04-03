@@ -33,6 +33,30 @@ SAFE_CODEBOOK = [
     {"pattern": "list processes",        "op": "proc_extended.list_processes", "args": {},                                                                "risk": "R0"},
     {"pattern": "memory usage",          "op": "proc_extended.get_memory_usage", "args": {},                                                              "risk": "R0"},
     {"pattern": "network check",         "op": "network.port_check",    "args": {"host": "ns", "port": 9000},                                            "risk": "R0"},
+    # ── Program library ops ───────────────────────────────────────────────────
+    {"pattern": "advance fundraising",   "op": "program.advance_state", "args": {"namespace": "fundraising"},                                             "risk": "R0"},
+    {"pattern": "add candidate",         "op": "program.advance_state", "args": {"namespace": "hiring"},                                                  "risk": "R0"},
+    {"pattern": "log partner",           "op": "program.advance_state", "args": {"namespace": "partner"},                                                 "risk": "R0"},
+    {"pattern": "record decision",       "op": "gov.record_decision",   "args": {},                                                                       "risk": "R0"},
+    {"pattern": "ingest knowledge",      "op": "program.advance_state", "args": {"namespace": "knowledge"},                                               "risk": "R0"},
+    {"pattern": "capture feedback",      "op": "program.advance_state", "args": {"namespace": "feedback"},                                                "risk": "R0"},
+    # ── Adapter ops ───────────────────────────────────────────────────────────
+    {"pattern": "check battery",         "op": "battery.get_status",    "args": {},                                                                       "risk": "R0"},
+    {"pattern": "show notification",     "op": "notify.send",           "args": {},                                                                       "risk": "R1"},
+    {"pattern": "list windows",          "op": "proc_extended.list_processes", "args": {},                                                                "risk": "R0"},
+    {"pattern": "get display info",      "op": "display.get_info",      "args": {},                                                                       "risk": "R0"},
+    # ── System ops ────────────────────────────────────────────────────────────
+    {"pattern": "check disk",            "op": "sys.disk_usage",        "args": {"path": "/app"},                                                         "risk": "R0"},
+    {"pattern": "list directory",        "op": "fs.list",               "args": {},                                                                       "risk": "R0"},
+    {"pattern": "get environment",       "op": "sys.env_get",           "args": {},                                                                       "risk": "R0"},
+    {"pattern": "check git log",         "op": "git.log",               "args": {},                                                                       "risk": "R0"},
+    {"pattern": "get git status",        "op": "git.status",            "args": {},                                                                       "risk": "R0"},
+    # ── NS self-awareness ─────────────────────────────────────────────────────
+    {"pattern": "check capability gaps", "op": "http.health_check",     "args": {"url": "http://ns:9000/capability/unresolved", "expect_status": 200},    "risk": "R0"},
+    {"pattern": "show flywheel state",   "op": "http.health_check",     "args": {"url": "http://ns:9000/invention/flywheel", "expect_status": 200},       "risk": "R0"},
+    {"pattern": "list semantic candidates", "op": "http.health_check",  "args": {"url": "http://ns:9000/semantic/candidates", "expect_status": 200},      "risk": "R0"},
+    {"pattern": "check policy proposals","op": "http.health_check",     "args": {"url": "http://ns:9000/semantic/proposals", "expect_status": 200},       "risk": "R0"},
+    {"pattern": "recent ops",            "op": "http.health_check",     "args": {"url": "http://ns:9000/ops/recent", "expect_status": 200},               "risk": "R0"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────
