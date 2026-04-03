@@ -54,6 +54,9 @@ async def audio_get_volume(req: AdapterRequest) -> AdapterResponse:
     try:
         volume = float(out_vol)
     except ValueError:
+        # Mac Studio / headless: no output device — graceful skip
+        if "missing value" in out_vol.lower() or out_vol.strip() == "":
+            return AdapterResponse.success(req, {"volume": 0.0, "muted": True, "skipped": True, "reason": "no_audio_device"})
         return AdapterResponse.failure(req, f"unexpected volume output: {out_vol!r}")
 
     muted = out_mute.lower() == "true" if rc_mute == 0 else False

@@ -664,7 +664,7 @@ def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
 # Graceful skip when adapter not running (connection refused).
 # ---------------------------------------------------------------------------
 
-_MAC_ADAPTER_URL = "http://localhost:8765"
+_MAC_ADAPTER_URL = "http://host.docker.internal:8765"
 
 
 def _mac_bridge(namespace: str, action: str, args: dict) -> dict:
