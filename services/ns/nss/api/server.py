@@ -3055,6 +3055,64 @@ setInterval(refresh, 5000);
         from nss.semantic.feedback_binder import get_binder
         return get_binder().promote_to_canon(proposal_id, body.get("approved_by", "founder"))
 
+    @app.get("/invention/flywheel")
+    async def invention_flywheel():
+        """Invention Flywheel — current cycle state across all three realities."""
+        from nss.capability.graph import get_graph
+        from nss.semantic.feedback_binder import get_binder
+        import json
+        from pathlib import Path
+
+        g = get_graph()
+        binder = get_binder()
+
+        # SAN: count territories, filings, whitespace
+        san_root = Path("/Volumes/NSExternal/ALEXANDRIA/san")
+        if not san_root.exists():
+            san_root = Path.home() / ".axiolev" / "san"
+        territories = list((san_root / "territories").glob("*.json")) if (san_root / "territories").exists() else []
+        filings = list((san_root / "filings").glob("*.json")) if (san_root / "filings").exists() else []
+
+        # Capability graph: unresolved nodes = next invention targets
+        unresolved = g.unresolved_nodes()
+        top_targets = g.top_unresolved(3)
+
+        # Semantic binder: pending canon commits
+        candidates = binder.list_candidates()
+        proposals = binder.list_proposals()
+
+        # Knowledge: provisional nodes
+        provisional = [n for n in g.all_nodes() if n.get("state") == "provisional"]
+
+        return {
+            "flywheel": "Invention Flywheel — SAN → Alexandria circular engine",
+            "cycle": {
+                "input_synthesis": {
+                    "provisional_nodes": len(provisional),
+                    "pending_canon_candidates": len(candidates),
+                    "pending_proposals": len(proposals),
+                },
+                "governance_triple_commit": {
+                    "proposals_awaiting_approval": len([p for p in proposals if p.get("requires_quorum")]),
+                    "auto_promotable": len([p for p in proposals if not p.get("requires_quorum")]),
+                },
+                "san_legal_knowledge": {
+                    "territories": len(territories),
+                    "filing_intents": len(filings),
+                },
+                "lexicon_moat": {
+                    "semantic_candidates": len(candidates),
+                    "domains_with_drift": len(set(c.get("term","") for c in candidates)),
+                },
+                "whitespace_detection": {
+                    "top_targets": [{"id": n["id"], "state": n["state"], "strategic_value": n.get("strategic_value",0)} for n in top_targets],
+                    "total_unresolved": len(unresolved),
+                },
+            },
+            "next_cycle_inputs": [n["id"] for n in top_targets],
+            "ts": datetime.now(timezone.utc).isoformat(),
+        }
+
     @app.get("/founder", response_class=HTMLResponse)
     async def founder_console():
         """Founder MVP Console v2 — full Jarvis two-panel UI."""
