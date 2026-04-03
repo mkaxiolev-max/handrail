@@ -1,0 +1,36 @@
+{
+  "proof_id": "abi-freeze-v1",
+  "date": "2026-04-02",
+  "schemas": {
+    "IntentPacket_v1": {
+      "frozen": true,
+      "fields": [
+        "schema", "version", "intent", "args", "constraints",
+        "idempotency_key", "caller_id", "session_id", "timestamp", "signature"
+      ]
+    },
+    "CPSPacket_v1": {
+      "frozen": true,
+      "fields": [
+        "cps_id", "ops", "policy_profile", "risk_tier", "yubikey_verified", "expect"
+      ]
+    },
+    "KernelDecisionReceipt_v1": {
+      "frozen": true,
+      "fields": [
+        "receipt_id", "allowed", "decision", "reason", "reason_codes", "verifier_signature"
+      ]
+    },
+    "ReturnBlock_v3": {
+      "frozen": true,
+      "fields": [
+        "ok", "ops_count", "ops_results", "result_digest",
+        "policy_profile", "validity_checked", "latency_ms"
+      ]
+    }
+  },
+  "abi_law": "CPSPacket is the ONLY artifact crossing intelligence\u2192execution boundary",
+  "extension_rule": "New fields may be added (additive only). No field may be removed or renamed without a version bump.",
+  "status": "FROZEN",
+  "witnessed_by": "sovereign_boot_v5"
+}

@@ -91,6 +91,27 @@ async def run_adapter(raw: Request):
 async def list_methods():
     return {"methods": registry.available_methods()}
 
+@app.get("/capabilities")
+async def capabilities_all():
+    from adapter_core.capability_registry import CAPABILITY_REGISTRY, REGISTRY_BY_NAMESPACE
+    return {
+        "ok": True,
+        "total": len(CAPABILITY_REGISTRY),
+        "namespaces": sorted(REGISTRY_BY_NAMESPACE.keys()),
+        "capabilities": {ns: [e["op"] for e in ops]
+                         for ns, ops in REGISTRY_BY_NAMESPACE.items()},
+        "full": CAPABILITY_REGISTRY,
+    }
+
+@app.get("/capabilities/{namespace}")
+async def capabilities_namespace(namespace: str):
+    from adapter_core.capability_registry import REGISTRY_BY_NAMESPACE
+    ops = REGISTRY_BY_NAMESPACE.get(namespace)
+    if ops is None:
+        from fastapi.responses import JSONResponse
+        return JSONResponse({"ok": False, "error": f"namespace '{namespace}' not found"}, status_code=404)
+    return {"ok": True, "namespace": namespace, "count": len(ops), "ops": ops}
+
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "16-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates",
+  "objective": "17-op sovereignty — health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze",
   "policy_profile": "readonly.local",
   "ops": [
     { "op": "fs.pwd",                    "args": {} },
@@ -18,7 +18,8 @@
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/capability/graph",       "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/semantic/candidates",    "expect_status": 200 } },
     { "op": "http.health_check",         "args": { "url": "http://ns:9000/invention/flywheel",     "expect_status": 200 } },
-    { "op": "http.health_check",         "args": { "url": "http://ns:9000/usdl/gates",             "expect_status": 200 } }
+    { "op": "http.health_check",         "args": { "url": "http://ns:9000/usdl/gates",             "expect_status": 200 } },
+    { "op": "sys.read_json",             "args": { "path": "/Users/axiolevns/axiolev_runtime/proofs/abi_freeze_proof.json" } }
   ],
   "expect": {
     "results[1].data.healthy": true,
@@ -31,6 +32,7 @@
     "results[12].data.healthy": true,
     "results[13].data.healthy": true,
     "results[14].data.healthy": true,
-    "results[15].data.healthy": true
+    "results[15].data.healthy": true,
+    "results[16].data.data.status": "FROZEN"
   }
 }

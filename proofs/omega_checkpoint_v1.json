@@ -1,0 +1,45 @@
+{
+  "proof_id": "omega-checkpoint-v1",
+  "date": "2026-04-02",
+  "status": "PRE_OMEGA",
+  "completed": [
+    "ring_1_built",
+    "ring_2_provable",
+    "ring_3_sovereign",
+    "ring_4_durable",
+    "program_library_v1",
+    "model_router",
+    "proactive_intel",
+    "founder_console_v2",
+    "san_adapter",
+    "semantic_binder",
+    "capability_graph",
+    "policy_evolution",
+    "explainability_engine",
+    "usdl_decoder",
+    "invention_flywheel",
+    "adapter_capability_registry",
+    "deterministic_response_contract",
+    "adapter_expansion_v1_v4",
+    "dignity_kernel",
+    "yubikey_step4",
+    "sovereign_boot_17ops",
+    "abi_freeze_proof",
+    "hr_workspace_permanent"
+  ],
+  "blocked": {
+    "M_voice": "Twilio auth token needs refresh — console.twilio.com → Account Info",
+    "M_ring5": "Stripe LLC docs — dashboard.stripe.com",
+    "M_hardware": "2nd YubiKey 5 NFC — physical procurement"
+  },
+  "omega_definition": "NS is sovereign, self-proving, commercially live, physically trusted",
+  "remaining_software_work": [
+    "mobile_app_shell",
+    "usdl_decoder_promotion_to_production"
+  ],
+  "sovereign_boot_ops": 17,
+  "total_tags": 186,
+  "total_cps_ops": 125,
+  "all_sovereign_boot_pass": true,
+  "abi_frozen": true
+}
