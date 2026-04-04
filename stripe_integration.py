@@ -14,7 +14,7 @@ def create_subscription(email,plan):
         customer=stripe.Customer.create(email=email)
         subscription=stripe.Subscription.create(
             customer=customer.id,
-            items=[{'price':'price_1ABC123XYZ'}]  # Replace with your price ID
+            items=[{'price':'PRICE_ID_PENDING'}]  # PRICE_ID_PENDING — replace with real Stripe Price ID from dashboard.stripe.com → Products
         )
         return {
             'status':'active',
