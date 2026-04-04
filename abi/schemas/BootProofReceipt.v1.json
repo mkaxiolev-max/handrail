@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axiolev/abi/BootProofReceipt.v1",
+  "title": "BootProofReceipt",
+  "version": "1",
+  "description": "Proof receipt emitted after every sovereign boot. sovereign=true only when boot_mode=FULL and all phases pass. Appended to Alexandria ledger.",
+  "type": "object",
+  "required": ["receipt_id","boot_id","boot_mode","all_phases_hash","schema_fingerprints","sovereign","timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^BPR-[A-Z0-9]{8}$",
+      "description": "Unique boot proof receipt identifier"
+    },
+    "boot_id":   {"type": "string", "description": "References the BootMissionGraph.boot_id"},
+    "boot_mode": {"type": "string", "description": "Boot mode achieved — mirrors BootMissionGraph.boot_mode"},
+    "all_phases_hash": {
+      "type": "string",
+      "description": "SHA256 of the serialized phases array — canonical tamper-evident fingerprint"
+    },
+    "schema_fingerprints": {
+      "type": "object",
+      "description": "Live freeze_manifest() snapshot at receipt emission time"
+    },
+    "sovereign": {
+      "type": "boolean",
+      "description": "true only if boot_mode=FULL and every phase.status=pass"
+    },
+    "timestamp": {"type": "string", "format": "date-time"}
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "cps_id": "boot_mission_graph",
+  "objective": "28-op sovereign boot with CPS-governed mission graph and proof receipt",
+  "policy_profile": "readonly.local",
+  "ops_count": 29,
+  "phases": [
+    {"phase_id": "P1", "name": "Infrastructure",    "ops": [0,1,2]},
+    {"phase_id": "P2", "name": "Identity",          "ops": [3,4,5]},
+    {"phase_id": "P3", "name": "Resources",         "ops": [6]},
+    {"phase_id": "P4", "name": "Core Services",     "ops": [7,8,9,10,11,12,13,14,15]},
+    {"phase_id": "P5", "name": "ABI Integrity",     "ops": [16]},
+    {"phase_id": "P6", "name": "Connectivity",      "ops": [17,18,19]},
+    {"phase_id": "P7", "name": "System State",      "ops": [20,21,22]},
+    {"phase_id": "P8", "name": "Adapter Mesh",      "ops": [23]},
+    {"phase_id": "P9", "name": "Extended Services", "ops": [24,25,26,27]}
+  ],
+  "ops": [
+    {"op": "fs.pwd", "args": {}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/healthz", "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://continuum:8788/state", "expect_status": 200}},
+    {"op": "http.get",          "args": {"url": "http://ns:9000/alexandria/proof"}},
+    {"op": "http.get",          "args": {"url": "http://ns:9000/auth/yubikey/test"}},
+    {"op": "http.get",          "args": {"url": "http://ns:9000/health/full"}},
+    {"op": "sys.disk_usage",    "args": {"path": "/app"}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/models/registry",       "expect_status": 200}},
+    {"op": "http.get",          "args": {"url": "http://ns:9000/memory/recent?n=3"}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/founder",               "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/kernel/yubikey/status", "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://continuum:8788/healthz",        "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/capability/graph",      "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/semantic/candidates",   "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/invention/flywheel",    "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/usdl/gates",            "expect_status": 200}},
+    {"op": "sys.read_json",     "args": {"path": "/Users/axiolevns/axiolev_runtime/proofs/abi_freeze_proof.json"}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/sms/health",            "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/intel/proactive",       "expect_status": 200}},
+    {"op": "ns.proactive_intel","args": {}},
+    {"op": "process.list",      "args": {}},
+    {"op": "sys.memory",        "args": {}},
+    {"op": "ns_query.health_full", "args": {}},
+    {"op": "http.health_check", "args": {"url": "http://host.docker.internal:8765/healthz", "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/models/registry",       "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/models/status",         "expect_status": 200}},
+    {"op": "http.health_check", "args": {"url": "http://ns:9000/san/summary",           "expect_status": 200}},
+    {
+      "op": "http.health_check",
+      "args": {"url": "http://ns:9000/autopoietic/specs", "expect_status": 200},
+      "description": "autopoietic loop live"
+    },
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://handrail:8011/boot/proof",
+        "timeout_ms": 10000,
+        "body": {
+          "boot_id": "BOOT-SVRNBT28",
+          "boot_mode": "FULL",
+          "policy_bundle_hash": "78c4d634090b1f17",
+          "schema_versions": {
+            "IntentPacket.v1":          "f128e412bcd71a83",
+            "CPSPacket.v1":             "6e94e465117d84c8",
+            "ReturnBlock.v2":           "c9e1d4b0bbc1b217",
+            "KernelDecisionReceipt.v1": "0cdbd5e8b2374a86",
+            "CommitEvent.v1":           "48b6b2d3fab25424"
+          },
+          "adapter_inventory": ["ns", "continuum", "handrail-adapter-macos"],
+          "founder_present": false,
+          "phases": [
+            {"phase_id": "P1", "name": "Infrastructure",    "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P2", "name": "Identity",          "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P3", "name": "Resources",         "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P4", "name": "Core Services",     "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P5", "name": "ABI Integrity",     "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P6", "name": "Connectivity",      "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P7", "name": "System State",      "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P8", "name": "Adapter Mesh",      "cps_packet_ref": "boot_mission_graph", "status": "pass"},
+            {"phase_id": "P9", "name": "Extended Services", "cps_packet_ref": "boot_mission_graph", "status": "pass"}
+          ],
+          "timestamp": "2026-04-04T00:00:00+00:00"
+        }
+      },
+      "description": "emit BootProofReceipt — constitutional boot proof"
+    }
+  ],
+  "expect": {
+    "results[1].data.healthy": true,
+    "results[2].data.healthy": true,
+    "results[3].data.body.proof_valid": true,
+    "results[7].data.healthy": true,
+    "results[9].data.healthy": true,
+    "results[10].data.healthy": true,
+    "results[11].data.healthy": true,
+    "results[12].data.healthy": true,
+    "results[13].data.healthy": true,
+    "results[14].data.healthy": true,
+    "results[15].data.healthy": true,
+    "results[16].data.data.status": "FROZEN"
+  }
+}

@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
+import asyncio
 import re
 import subprocess
 import hashlib
@@ -49,6 +50,97 @@ def health():
 def abi_status():
     """Return all frozen schema names and their freeze_hash fingerprints."""
     return {"schemas": _abi.freeze_manifest()}
+
+
+_BOOT_RECEIPTS_PATH = Path("/Volumes/NSExternal/.run/boot_receipts.jsonl")
+_BOOT_RECEIPTS_FALLBACK = WORKSPACE / ".runs" / "boot_receipts.jsonl"
+
+
+class BootPhase(BaseModel):
+    phase_id: str
+    name: str
+    cps_packet_ref: str
+    status: str  # pending / pass / fail / degraded
+
+
+class BootProofRequest(BaseModel):
+    boot_id: str
+    phases: List[BootPhase]
+    boot_mode: str
+    policy_bundle_hash: str
+    schema_versions: Dict[str, str]
+    adapter_inventory: List[str]
+    timestamp: str
+    founder_present: bool
+
+
+@app.post("/boot/proof")
+async def boot_proof(req: BootProofRequest):
+    """Accept a BootMissionGraph, validate it, emit and persist a BootProofReceipt."""
+    graph = req.model_dump()
+    # Validate incoming graph against frozen BootMissionGraph.v1
+    graph_check = _abi.validate("BootMissionGraph.v1", graph)
+    if not graph_check["ok"]:
+        return JSONResponse(
+            {
+                "ok": False,
+                "abi_violation": True,
+                "schema": "BootMissionGraph.v1",
+                "errors": graph_check["errors"],
+            },
+            status_code=400,
+        )
+
+    # Determine sovereignty: FULL boot_mode + every phase passes
+    all_pass = all(p["status"] == "pass" for p in graph["phases"])
+    sovereign = (graph["boot_mode"] == "FULL") and all_pass
+
+    # Canonical hash of all phase results
+    phases_canonical = json.dumps(
+        [{"phase_id": p["phase_id"], "status": p["status"]} for p in graph["phases"]],
+        sort_keys=True,
+    )
+    all_phases_hash = hashlib.sha256(phases_canonical.encode()).hexdigest()
+
+    receipt = {
+        "receipt_id":        _abi.make_bpr_id(),
+        "boot_id":           graph["boot_id"],
+        "boot_mode":         graph["boot_mode"],
+        "all_phases_hash":   all_phases_hash,
+        "schema_fingerprints": _abi.freeze_manifest(),
+        "sovereign":         sovereign,
+        "timestamp":         datetime.now(timezone.utc).isoformat(),
+    }
+
+    # Validate the receipt itself before persisting
+    receipt_check = _abi.validate("BootProofReceipt.v1", receipt)
+    if not receipt_check["ok"]:
+        _log.warning("BootProofReceipt.v1 validation warning: %s", receipt_check["errors"])
+
+    # Append to Alexandria ledger (NSExternal), fall back to .runs dir
+    _receipts_file = _BOOT_RECEIPTS_PATH if _BOOT_RECEIPTS_PATH.parent.exists() else _BOOT_RECEIPTS_FALLBACK
+    try:
+        _receipts_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(_receipts_file, "a") as f:
+            f.write(json.dumps(receipt) + "\n")
+    except Exception as e:
+        _log.warning("boot_proof: failed to persist receipt to %s: %s", _receipts_file, e)
+
+    return JSONResponse({"ok": True, "receipt": receipt, "sovereign": sovereign})
+
+
+@app.get("/boot/latest-proof")
+def boot_latest_proof():
+    """Return the most recently emitted BootProofReceipt."""
+    for path in (_BOOT_RECEIPTS_PATH, _BOOT_RECEIPTS_FALLBACK):
+        if path.exists():
+            try:
+                lines = [l.strip() for l in path.read_text().splitlines() if l.strip()]
+                if lines:
+                    return JSONResponse({"ok": True, "receipt": json.loads(lines[-1])})
+            except Exception as e:
+                return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
+    return JSONResponse({"ok": False, "error": "no boot receipts found"}, status_code=404)
 
 
 def run(cmd):
@@ -128,7 +220,10 @@ async def ops_cps(req: CPSRequest, http_request: Request):
                 "policy_profile": req.policy_profile,
                 "risk_tier": req.risk_tier or "R0",
                 "yubikey_verified": bool(req.yubikey_verified)}
-    result = CPSExecutor.execute(cps_dict, WORKSPACE)
+    # Run synchronous executor in a thread pool so the event loop stays free
+    # to handle any re-entrant calls made by ops (e.g. http.post to /boot/proof)
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(None, CPSExecutor.execute, cps_dict, WORKSPACE)
 
     # Post-execution: Dignity Kernel returnblock validation
     dk = DignityKernel()

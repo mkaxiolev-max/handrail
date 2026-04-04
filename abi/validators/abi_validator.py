@@ -18,6 +18,8 @@ SCHEMAS = {
     "ReturnBlock.v2":           _load("ReturnBlock.v2"),
     "KernelDecisionReceipt.v1": _load("KernelDecisionReceipt.v1"),
     "CommitEvent.v1":           _load("CommitEvent.v1"),
+    "BootMissionGraph.v1":      _load("BootMissionGraph.v1"),
+    "BootProofReceipt.v1":      _load("BootProofReceipt.v1"),
 }
 
 def validate(schema_name: str, data: dict) -> dict:
@@ -45,6 +47,12 @@ def make_kdr_id() -> str:
 
 def make_cmt_id() -> str:
     return "CMT-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
+
+def make_boot_id() -> str:
+    return "BOOT-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
+
+def make_bpr_id() -> str:
+    return "BPR-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
 def freeze_hash(schema_name: str) -> str:
     """SHA256 of schema file — canonical freeze fingerprint"""
