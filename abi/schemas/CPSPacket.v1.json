@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axiolev/abi/CPSPacket.v1",
+  "title": "CPSPacket",
+  "version": "1",
+  "description": "Execution instruction. Handrail validates, executes, and receipts every packet.",
+  "type": "object",
+  "required": ["cps_id","intent_id","objective","ops","risk_tier","timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "cps_id":            {"type":"string","pattern":"^CPS-[A-Z0-9]{8}$"},
+    "intent_id":         {"type":"string","pattern":"^INT-[A-Z0-9]{8}$"},
+    "objective":         {"type":"string","minLength":1},
+    "ops":               {"type":"array","minItems":1,"items":{"type":"object"}},
+    "risk_tier":         {"type":"string","enum":["R0","R1","R2","R3","R4"]},
+    "policy_profile":    {"type":"string","default":"default"},
+    "mission_graph_id":  {"type":"string"},
+    "simulation_required":{"type":"boolean","default":false},
+    "timestamp":         {"type":"string","format":"date-time"},
+    "dignity_gate":      {"type":"boolean","default":true}
+  }
+}

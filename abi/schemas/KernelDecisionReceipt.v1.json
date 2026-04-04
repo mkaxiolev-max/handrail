@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axiolev/abi/KernelDecisionReceipt.v1",
+  "title": "KernelDecisionReceipt",
+  "version": "1",
+  "description": "Bridge between policy gate and execution. Separates allowed from executed.",
+  "type": "object",
+  "required": ["receipt_id","cps_id","decision","policy_profile","dignity_score","timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "receipt_id":     {"type":"string","pattern":"^KDR-[A-Z0-9]{8}$"},
+    "cps_id":         {"type":"string"},
+    "decision":       {"type":"string","enum":["ALLOW","DENY","DEGRADE","HOLD_FOR_FOUNDER"]},
+    "policy_profile": {"type":"string"},
+    "dignity_score":  {"type":"number","minimum":0,"maximum":1},
+    "risk_tier":      {"type":"string","enum":["R0","R1","R2","R3","R4"]},
+    "reason":         {"type":"string"},
+    "founder_required":{"type":"boolean","default":false},
+    "timestamp":      {"type":"string","format":"date-time"}
+  }
+}

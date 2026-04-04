@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "axiolev/abi/ReturnBlock.v2",
+  "title": "ReturnBlock",
+  "version": "2",
+  "description": "3-layer authoritative evidence envelope. Every execution returns this.",
+  "type": "object",
+  "required": ["return_id","cps_id","ok","summary","timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "return_id":   {"type":"string","pattern":"^RET-[A-Z0-9]{8}$"},
+    "cps_id":      {"type":"string"},
+    "ok":          {"type":"boolean"},
+    "summary":     {"type":"string","description":"Layer 1: human-readable outcome"},
+    "detail":      {"type":"object","description":"Layer 2: structured result data"},
+    "evidence":    {"type":"array","description":"Layer 3: receipts, hashes, adapter outputs"},
+    "dignity_score":{"type":"number","minimum":0,"maximum":1},
+    "duration_ms": {"type":"number"},
+    "timestamp":   {"type":"string","format":"date-time"}
+  }
+}
