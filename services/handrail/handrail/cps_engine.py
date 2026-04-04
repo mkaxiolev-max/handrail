@@ -1264,6 +1264,78 @@ def _write_failure_event(op_name: str, failure_class: str, severity: str,
         pass  # Don't let failure logging break execution
 
 # ---------------------------------------------------------------------------
+# Autopoietic mutation ops — Tier 2
+# ---------------------------------------------------------------------------
+
+def _op_fs_apply_patch(args: dict, policy) -> dict:
+    """Apply a unified diff patch to a workspace file. dry_run=True by default."""
+    import subprocess, hashlib
+    target  = args.get("target_file", "")
+    patch   = args.get("patch_content", "")
+    dry_run = args.get("dry_run", True)
+
+    if not target or not patch:
+        return {"ok": False, "error": "target_file and patch_content required"}
+
+    allowed_prefixes = ("services/", "tests/", ".cps/", "CLAUDE.md")
+    if not any(target.startswith(p) for p in allowed_prefixes):
+        return {"ok": False, "error": f"mutation blocked: {target} outside allowed scope"}
+
+    if dry_run:
+        return {"ok": True, "dry_run": True, "target": target,
+                "patch_lines": len(patch.splitlines())}
+
+    try:
+        import tempfile, os
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".patch", delete=False) as f:
+            f.write(patch)
+            patch_file = f.name
+        result = subprocess.run(
+            ["patch", "--forward", target, patch_file],
+            capture_output=True, text=True
+        )
+        os.unlink(patch_file)
+        content = Path(target).read_bytes() if Path(target).exists() else b""
+        after_hash = hashlib.sha256(content).hexdigest()[:16]
+        return {
+            "ok": result.returncode == 0,
+            "target": target,
+            "after_hash": after_hash,
+            "stdout": result.stdout[:200],
+            "stderr": result.stderr[:200],
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _op_fs_run_tests(args: dict, policy) -> dict:
+    """Run pytest in a bounded directory. Returns pass/fail summary."""
+    import subprocess
+    test_path = args.get("test_path", "tests/")
+    timeout   = min(int(args.get("timeout_sec", 30)), 120)
+    try:
+        result = subprocess.run(
+            ["python3", "-m", "pytest", test_path,
+             "--asyncio-mode=auto", "-q", "--tb=short", "--no-header"],
+            capture_output=True, text=True, timeout=timeout,
+            cwd=args.get("cwd", ".")
+        )
+        lines = result.stdout.splitlines()
+        summary = next((l for l in reversed(lines)
+                        if "passed" in l or "failed" in l or "error" in l), "")
+        return {
+            "ok": result.returncode == 0,
+            "summary": summary,
+            "stdout": result.stdout[-800:],
+            "returncode": result.returncode,
+        }
+    except subprocess.TimeoutExpired:
+        return {"ok": False, "error": "test timeout", "timeout_sec": timeout}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+# ---------------------------------------------------------------------------
 # OP_DISPATCH
 # ---------------------------------------------------------------------------
 
@@ -1394,6 +1466,9 @@ OP_DISPATCH: dict[str, Any] = {
     **_META_OPS,
     # SAN — Sovereign Authority Namespace (legal/territorial reality layer)
     **_SAN_OPS,
+    # Autopoietic mutation ops — Tier 2
+    "fs.apply_patch": _op_fs_apply_patch,
+    "fs.run_tests":   _op_fs_run_tests,
 }
 
 

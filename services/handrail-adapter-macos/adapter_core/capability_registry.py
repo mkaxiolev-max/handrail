@@ -54,6 +54,8 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"fs","op":"read_text","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":["ledger_protect","max_100kb"],"schema_out":{"content":"str","size_bytes":"int"}},
     {"namespace":"fs","op":"write_text","version":"1.0","side_effects":"write","deterministic":True,"dignity_guards":["path_allow_list_tmp_axiolev_programs"],"schema_out":{"bytes_written":"int"}},
     {"namespace":"fs","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"entries":"list"}},
+    {"namespace":"fs","op":"apply_patch","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["allowed_paths_only","dry_run_default","tier2_mutation"],"schema_out":{"ok":"bool","target":"str","after_hash":"str"}},
+    {"namespace":"fs","op":"run_tests","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["bounded_timeout","cwd_scoped"],"schema_out":{"ok":"bool","summary":"str"}},
     # process.*
     {"namespace":"process","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"processes":"list","count":"int"}},
     {"namespace":"process","op":"info","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"pid":"int","found":"bool"}},
