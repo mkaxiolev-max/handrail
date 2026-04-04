@@ -710,6 +710,31 @@ def _op_vision_ocr_region(args: dict, policy: PolicyEngine) -> dict:
     return _mac_bridge("vision", "ocr_region", args)
 
 
+
+def _op_process_list(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("process", "list", args)
+
+
+def _op_process_info(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("process", "info", args)
+
+
+def _op_process_kill(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("process", "kill", args)
+
+
+def _op_sys_disk_usage(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("sys", "disk_usage", args)
+
+
+def _op_sys_memory(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("sys", "memory", args)
+
+
+def _op_sys_uptime(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("sys", "uptime", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1134,6 +1159,12 @@ OP_DISPATCH: dict[str, Any] = {
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
+        "process.list":       _op_process_list,
+    "process.info":       _op_process_info,
+    "process.kill":       _op_process_kill,
+    "sys.disk_usage":     _op_sys_disk_usage,
+    "sys.memory":         _op_sys_memory,
+    "sys.uptime":         _op_sys_uptime,
     "vision.screenshot":  _op_vision_screenshot,
     "vision.ocr_region":  _op_vision_ocr_region,
     "input.type":         _op_input_type,

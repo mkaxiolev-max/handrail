@@ -54,6 +54,14 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"fs","op":"read_text","version":"1.0","side_effects":"read","deterministic":True,"dignity_guards":["ledger_protect","max_100kb"],"schema_out":{"content":"str","size_bytes":"int"}},
     {"namespace":"fs","op":"write_text","version":"1.0","side_effects":"write","deterministic":True,"dignity_guards":["path_allow_list_tmp_axiolev_programs"],"schema_out":{"bytes_written":"int"}},
     {"namespace":"fs","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"entries":"list"}},
+    # process.*
+    {"namespace":"process","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"processes":"list","count":"int"}},
+    {"namespace":"process","op":"info","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"pid":"int","found":"bool"}},
+    {"namespace":"process","op":"kill","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["blocks_system_pids_lt_500","kill_logged_to_alexandria"],"schema_out":{"ok":"bool","killed":"bool"}},
+    # sys.*
+    {"namespace":"sys","op":"disk_usage","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"total":"str","used":"str","pct":"str"}},
+    {"namespace":"sys","op":"memory","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"total_gb":"float","used_gb":"float","pct_used":"float"}},
+    {"namespace":"sys","op":"uptime","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"uptime_str":"str"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]

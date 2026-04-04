@@ -14,6 +14,8 @@ from display_driver.handlers import build_display_handlers
 from battery_driver.handlers import build_battery_handlers
 from keychain_driver.handlers import build_keychain_handlers
 from env_driver.handlers import build_env_handlers
+from process_driver.handlers import build_process_handlers
+from sys_driver.handlers import build_sys_handlers
 from vision_driver.handlers import build_vision_handlers
 from fs_driver.handlers import build_fs_handlers
 from input_driver.handlers import build_input_handlers
@@ -241,4 +243,6 @@ def build_registry():
     reg.register_all(build_display_handlers())
     reg.register_all(build_battery_handlers())
     reg.register_all(build_keychain_handlers())
+    reg.register_all(build_process_handlers())
+    reg.register_all(build_sys_handlers())
     return reg
