@@ -3,6 +3,33 @@
 
 ---
 
+## Update — 2026-04-04 Session 2
+
+**Continuum restored:** `docker compose up -d continuum` — container exited cleanly (exit 0), restarted and reached healthy in ~11s.
+
+**sovereign_boot re-run:** **28/28 ops passing, all 10 expect assertions pass.** Continuum ops 2 + 11 now ✅.
+
+**ROOT Stripe checkout flow wired:**
+- `api/checkout.js` — Vercel serverless function at `/api/checkout` (POST)
+  - Accepts `{email, plan: "pro"|"auto"}`
+  - Creates Stripe Checkout Session when `STRIPE_SECRET_KEY` is live
+  - Returns `{pending:true}` with graceful message while keys are pending
+  - Verified live: `POST https://root-jade-kappa.vercel.app/api/checkout` → 200
+- `index.html` — ROOT product card now has two CTAs: "Get ROOT Pro" + "Get Auto ($99/mo)"
+  - Click opens email modal (dark, matches design system)
+  - Email validation → POST `/api/checkout` → redirect to Stripe URL
+  - Pending state shows: "ROOT is launching soon. We've noted your interest."
+- `package.json` — `stripe@^14.0.0` added as dependency
+- Deployed: `dpl_Dbe6EBdzh2HPSvULGyL3XiVDCefU` (root-jade-kappa.vercel.app)
+
+**Remaining to activate ROOT payments (after Stripe LLC verification):**
+1. Set `STRIPE_SECRET_KEY=sk_live_...` in Vercel project env vars (dashboard.vercel.com → root → Settings → Environment Variables)
+2. Create ROOT Pro ($49/mo) + Auto ($99/mo) prices in Stripe → get Price IDs
+3. Set `STRIPE_PRICE_ID_ROOT_PRO=price_...` and `STRIPE_PRICE_ID_ROOT_AUTO=price_...` in Vercel env vars
+4. Redeploy (or auto-redeploys on next push)
+
+---
+
 ## System Health — Live Snapshot
 
 | Service | Port | Status | Notes |
