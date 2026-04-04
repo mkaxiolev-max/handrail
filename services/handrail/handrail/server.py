@@ -7,14 +7,23 @@ import re
 import subprocess
 import hashlib
 import json
+import logging
 import os
+import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = FastAPI(title="Handrail Core")
 
 RUNS_DIR = Path(os.environ.get("HR_WORKSPACE", "/app")) / ".runs"
 WORKSPACE = Path(os.environ.get("HR_WORKSPACE", "/app"))
+
+# Ensure project root is on path so abi package resolves in Docker (WORKDIR=/app, project root at HR_WORKSPACE)
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+from abi.validators import abi_validator as _abi  # noqa: E402
+
+_log = logging.getLogger("handrail")
 
 
 def now_id() -> str:
@@ -34,6 +43,12 @@ class CPSRequest(BaseModel):
 @app.get("/healthz")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/abi/status")
+def abi_status():
+    """Return all frozen schema names and their freeze_hash fingerprints."""
+    return {"schemas": _abi.freeze_manifest()}
 
 
 def run(cmd):
@@ -59,6 +74,31 @@ def _validate_ysk_token(token: str) -> bool:
 async def ops_cps(req: CPSRequest, http_request: Request):
     from handrail.cps_engine import CPSExecutor
     from handrail.kernel.dignity_kernel import DignityKernel
+
+    # ABI gate: validate incoming packet against frozen CPSPacket.v1 schema.
+    # Synthesize envelope fields (intent_id, timestamp) not carried in CPSRequest;
+    # enforce content fields (objective, ops shape, risk_tier enum).
+    _cps_packet = {
+        "cps_id":    _abi.make_cps_id(),
+        "intent_id": _abi.make_intent_id(),
+        "objective": req.objective,
+        "ops":       req.ops,
+        "risk_tier": req.risk_tier or "R0",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    if req.policy_profile:
+        _cps_packet["policy_profile"] = req.policy_profile
+    _cps_check = _abi.validate("CPSPacket.v1", _cps_packet)
+    if not _cps_check["ok"]:
+        return JSONResponse(
+            {
+                "ok": False,
+                "abi_violation": True,
+                "schema": "CPSPacket.v1",
+                "errors": _cps_check["errors"],
+            },
+            status_code=400,
+        )
 
     # Quorum gate: boot.runtime requires a valid YubiKey session token
     if req.policy_profile == "boot.runtime":
@@ -125,4 +165,20 @@ async def ops_cps(req: CPSRequest, http_request: Request):
     except Exception as e:
         result["bk_error"] = str(e)
     result.update({"run_id": run_id, "run_dir": str(run_dir), "dignity_enforced": True})
+
+    # ABI gate: validate outgoing result against frozen ReturnBlock.v2 schema.
+    # Warn on mismatch but never suppress the response.
+    _ret_block = {
+        "return_id":  _abi.make_return_id(),
+        "cps_id":     req.cps_id,
+        "ok":         bool(result.get("ok")),
+        "summary":    "execution ok" if result.get("ok") else "execution failed",
+        "detail":     {k: v for k, v in result.items()},
+        "evidence":   [{"run_id": run_id, "ledger": result.get("ledger")}],
+        "timestamp":  datetime.now(timezone.utc).isoformat(),
+    }
+    _rb_check = _abi.validate("ReturnBlock.v2", _ret_block)
+    if not _rb_check["ok"]:
+        _log.warning("ReturnBlock.v2 validation warning — run %s: %s", run_id, _rb_check["errors"])
+
     return JSONResponse(result)
