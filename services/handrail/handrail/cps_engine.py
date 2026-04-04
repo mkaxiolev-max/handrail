@@ -764,6 +764,31 @@ def _op_ns_query_last_error(args: dict, policy: PolicyEngine) -> dict:
     return _mac_bridge("ns_query", "last_error", args)
 
 
+
+def _op_alert_dialog(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("alert", "dialog", args)
+
+
+def _op_alert_confirm(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("alert", "confirm", args)
+
+
+def _op_alert_input(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("alert", "input", args)
+
+
+def _op_calendar_list(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("calendar", "list", args)
+
+
+def _op_calendar_today(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("calendar", "today", args)
+
+
+def _op_calendar_upcoming(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("calendar", "upcoming", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1188,7 +1213,13 @@ OP_DISPATCH: dict[str, Any] = {
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
-            "app.launch":             _op_app_launch,
+                "alert.dialog":         _op_alert_dialog,
+    "alert.confirm":        _op_alert_confirm,
+    "alert.input":          _op_alert_input,
+    "calendar.list":        _op_calendar_list,
+    "calendar.today":       _op_calendar_today,
+    "calendar.upcoming":    _op_calendar_upcoming,
+    "app.launch":             _op_app_launch,
     "app.quit":               _op_app_quit,
     "app.is_running":         _op_app_is_running,
     "app.list_open":          _op_app_list_open,

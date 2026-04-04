@@ -171,7 +171,13 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `vision` | `vision.screenshot` | screencapture -x → artifact PNG; Dignity Guard: screen_recording required |
 | `vision` | `vision.ocr_region` | screencapture region → tesseract OCR; graceful skip if no tesseract |
 
-**52 ops across 18 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions, vision.* — graceful skip when adapter not running).
+| `alert` | `alert.dialog` | Modal dialog with custom buttons; returns button pressed; max 500 chars |
+| `alert` | `alert.confirm` | Yes/No confirm dialog; returns bool |
+| `alert` | `alert.input` | Text input dialog; returns value (never logged — Dignity Guard) |
+| `calendar` | `calendar.list` | List all calendar names via osascript |
+| `calendar` | `calendar.today` | Today's events; graceful skip if no permission |
+| `calendar` | `calendar.upcoming` | Next N events (max 20); 7-day window |
+**64 ops across 22 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions, vision.* — graceful skip when adapter not running).
 
 Formalization layer: `adapter_core/capability_registry.py` (38 ops typed/versioned), `adapter_core/artifact_writer.py` (path+hash+size+ts).
 

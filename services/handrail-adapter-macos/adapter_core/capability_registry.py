@@ -71,6 +71,14 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"ns_query","op":"health_full","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","subsystems":"dict"}},
     {"namespace":"ns_query","op":"context","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","context":"dict"}},
     {"namespace":"ns_query","op":"last_error","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","last_error":"any"}},
+    # alert.*
+    {"namespace":"alert","op":"dialog","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["max_500_chars","no_screen_recording_block"],"schema_out":{"ok":"bool","button":"str","cancelled":"bool"}},
+    {"namespace":"alert","op":"confirm","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"ok":"bool","confirmed":"bool"}},
+    {"namespace":"alert","op":"input","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["input_never_logged","max_200_chars"],"schema_out":{"ok":"bool","value":"str","cancelled":"bool"}},
+    # calendar.*
+    {"namespace":"calendar","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission"],"schema_out":{"calendars":"list","count":"int"}},
+    {"namespace":"calendar","op":"today","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission"],"schema_out":{"events":"list","count":"int"}},
+    {"namespace":"calendar","op":"upcoming","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission","max_20_events"],"schema_out":{"events":"list","count":"int"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]
