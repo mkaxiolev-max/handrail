@@ -134,6 +134,11 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph">PROACTIVE INTEL <span id="intel-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="intel-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    <!-- Model Council -->
+    <div class="section">
+      <div class="ph">MODEL COUNCIL <span id="council-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="council-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
   </div>
 </main>
 
@@ -356,6 +361,47 @@ async function refreshIntel() {
   }
 }
 
+// ── Model Council ──
+async function refreshCouncil() {
+  try {
+    const [ms, san] = await Promise.all([
+      fetch(NS+'/models/status').then(x=>x.json()).catch(()=>({models:[]})),
+      fetch(NS+'/san/summary').then(x=>x.json()).catch(()=>null),
+    ]);
+    const models = ms.models||[];
+    const ROLE_COLORS = {guardian:'#7c3aed',analyst:'#0ea5e9',forge:'#f59e0b',critic:'#ef4444',generalist:'#22c55e'};
+    let rows = models.map(m=>{
+      const color = ROLE_COLORS[m.model_key]||'#94a3b8';
+      const st = m.health||'–';
+      const stBadge = st==='ok'||st==='configured'
+        ? `<span class="badge ok">${st}</span>`
+        : st==='disabled'||st==='no_key'
+          ? `<span class="badge warn">${st}</span>`
+          : `<span class="badge err">${st}</span>`;
+      const latency = m.latency_ms!=null ? `<span style="color:var(--mu);font-size:9px">${m.latency_ms}ms</span>` : '';
+      return `<div class="hrow">
+        <div class="hk"><span style="color:${color};font-weight:600">${m.model_key}</span><span style="color:var(--mu);font-size:9px;margin-left:4px">${m.model_id||''}</span></div>
+        <div class="hv">${stBadge} ${latency}</div>
+      </div>`;
+    }).join('');
+    if (san) {
+      const sanColor = san.can_execute_financial_ops ? 'var(--ok)' : 'var(--err)';
+      const sanLabel = san.can_execute_financial_ops ? 'FINANCIAL OPS: ENABLED' : `FINANCIAL OPS: BLOCKED (${san.blocker_count})`;
+      rows += `<div class="hrow" style="margin-top:6px;border-top:1px solid rgba(17,34,64,.4);padding-top:6px">
+        <div class="hk" style="color:var(--mu)">SAN</div>
+        <div class="hv"><span style="color:${sanColor};font-size:10px">${sanLabel}</span></div>
+      </div>`;
+      if (san.blockers&&san.blockers.length) {
+        rows += san.blockers.map(b=>`<div class="hrow"><div class="hk" style="color:var(--mu);font-size:9px">↳</div><div class="hv" style="color:var(--mu);font-size:9px">${esc(b)}</div></div>`).join('');
+      }
+    }
+    document.getElementById('council-body').innerHTML = rows||'<div class="dim" style="font-size:10px;padding:4px">–</div>';
+    document.getElementById('council-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('council-body').innerHTML = '<div class="dim" style="font-size:10px;padding:4px">–</div>';
+  }
+}
+
 // ── Refresh loop ──
 async function refreshAll() {
   document.getElementById('last-update').textContent = fts(new Date().toISOString());
@@ -365,9 +411,11 @@ backfillConv();
 refreshAll();
 refreshMemory();
 refreshIntel();
+refreshCouncil();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
 setInterval(refreshIntel, 30000);
+setInterval(refreshCouncil, 15000);
 </script>
 </body>
 </html>"""

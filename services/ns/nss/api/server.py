@@ -15,6 +15,7 @@ Endpoints: /auth /chat /receipts /approvals /visuals /canon
 """
 
 import os
+import time
 import requests
 from requests import exceptions as req_exc
 import sys
@@ -98,6 +99,7 @@ from nss.jobs.san_uspto import (
 )
 from nss.models.registry import get_registry_with_status
 from nss.models.router import get_router
+from nss.san import state as san_state
 from nss.kernel.dignity import get_quorum
 
 
@@ -2966,6 +2968,28 @@ setInterval(refresh, 5000);
             latency_ms = round((time.monotonic() - start) * 1000, 1)
             results.append({**m, "health": health, "latency_ms": latency_ms})
         return {"models": results, "ts": datetime.now(timezone.utc).isoformat()}
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SAN — Sovereign Authority Node legal-reality state
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/san/summary")
+    async def san_summary_endpoint():
+        return san_state.san_summary()
+
+    @app.get("/san/state")
+    async def san_state_endpoint():
+        return san_state.get_state()
+
+    @app.post("/san/update")
+    async def san_update_endpoint(request: Request):
+        body = await request.json()
+        field = body.get("field", "")
+        value = body.get("value")
+        if not field:
+            from fastapi.responses import JSONResponse
+            return JSONResponse({"ok": False, "error": "field required"}, status_code=400)
+        return san_state.update(field, value)
 
     # ═══════════════════════════════════════════════════════════════════════════
     # M2 — GET /ops/recent (last 5 CPS execution summaries from receipts)

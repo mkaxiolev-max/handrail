@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "20-op sovereignty \u2014 health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel + deterministic_contract",
+  "objective": "27-op sovereignty \u2014 health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel + deterministic_contract + model_registry + model_status + san_summary",
   "policy_profile": "readonly.local",
   "ops": [
     {
@@ -147,6 +147,27 @@
       "op": "http.health_check",
       "args": {
         "url": "http://host.docker.internal:8765/healthz",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/models/registry",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/models/status",
+        "expect_status": 200
+      }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/san/summary",
         "expect_status": 200
       }
     }
