@@ -186,6 +186,27 @@ process.list, sys.memory, ns.proactive_intel
 ## V2 Closure Layer
 See [NS_CLOSURE_LAYER.md](NS_CLOSURE_LAYER.md) for the 4 explicit V2 closure layers.
 
+
+## Session Update — 2026-04-04
+
+### Added this session
+- **Multi-model routing:** Guardian (Ollama/llama3.2) + Analyst (Claude) concurrent
+- **Veil Gate:** full/private_cloud/abstracted context sanitization
+- **SAN layer:** LLC/EIN/Stripe/YubiKey truth table, append-only, /san/summary live
+- **Founder Console v7:** 7 panels — health, memory, intel, chat/ask, model council, autopoietic, cap_graph
+- **Autopoietic Loop Phase 2:** CapabilityPlanner (spec → plan), CommitEvent governance
+- **Fix:** router.py `route` import error resolved (stale export removed)
+- **Alexandria specs:** founder_memory_panel_v1.json + autopoietic_loop_v1.json seeded
+- **sovereign_boot:** 28/28 ops passing
+- **capability_graph:** 10 implemented, 7 provisional, 6 desired
+- **Tags:** 229
+- **Last commit:** 03e4624 feat: SAN sovereign state layer + Model Council panel v5
+
+### SAN blockers (3 remaining)
+1. EIN → IRS Form SS-4
+2. Stripe LLC verification (unblocks revenue)
+3. YubiKey slot 2 (2-of-2 quorum)
+
 ## SOFTWARE: COMPLETE ✅
 ## FROZEN: software-freeze-v1
 

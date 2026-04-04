@@ -100,6 +100,8 @@ from nss.jobs.san_uspto import (
 from nss.models.registry import get_registry_with_status
 from nss.models.router import get_router
 from nss.san import state as san_state
+from nss.autopoietic import planner as cap_planner
+from nss.autopoietic import commit_event as commit_svc
 from nss.kernel.dignity import get_quorum
 
 
@@ -2990,6 +2992,68 @@ setInterval(refresh, 5000);
             from fastapi.responses import JSONResponse
             return JSONResponse({"ok": False, "error": "field required"}, status_code=400)
         return san_state.update(field, value)
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Model Council — /chat/ask (async route through council)
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.post("/chat/ask")
+    async def chat_ask(request: Request):
+        """Route a prompt through the model council (analyst primary + guardian shadow)."""
+        body = await request.json()
+        prompt       = body.get("prompt", "").strip()
+        context      = body.get("context", "")
+        intent_class = body.get("intent_class")
+        if not prompt:
+            return JSONResponse({"ok": False, "error": "prompt required"}, status_code=400)
+        router = get_router()
+        result = await asyncio.to_thread(router.route_sync, prompt, context, intent_class or "default")
+        return result
+
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Autopoietic Loop — spec → plan → commit
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    @app.get("/autopoietic/specs")
+    async def list_specs():
+        return {"ok": True, "specs": cap_planner.list_specs()}
+
+    @app.post("/autopoietic/plan")
+    async def build_plan(request: Request):
+        body = await request.json()
+        spec_id = body.get("spec_id", "")
+        if not spec_id:
+            return JSONResponse({"ok": False, "error": "spec_id required"}, status_code=400)
+        result = cap_planner.build_plan(spec_id)
+        if result.get("ok"):
+            plan = result["plan"]
+            event = commit_svc.create_event(plan["plan_id"], spec_id)
+            result["commit_event"] = event
+        return result
+
+    @app.get("/autopoietic/plans")
+    async def list_plans():
+        return {"ok": True, "plans": cap_planner.list_plans()}
+
+    @app.post("/autopoietic/commit/approve")
+    async def approve_commit(request: Request):
+        body = await request.json()
+        event_id = body.get("event_id", "")
+        if not event_id:
+            return JSONResponse({"ok": False, "error": "event_id required"}, status_code=400)
+        return commit_svc.approve(event_id, approved_by="founder")
+
+    @app.post("/autopoietic/commit/reject")
+    async def reject_commit(request: Request):
+        body = await request.json()
+        event_id  = body.get("event_id", "")
+        reason    = body.get("reason", "")
+        return commit_svc.reject(event_id, reason)
+
+    @app.get("/autopoietic/events")
+    async def list_events():
+        return {"ok": True, "events": commit_svc.recent_events(20)}
 
     # ═══════════════════════════════════════════════════════════════════════════
     # M2 — GET /ops/recent (last 5 CPS execution summaries from receipts)

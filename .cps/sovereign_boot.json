@@ -1,6 +1,6 @@
 {
   "cps_id": "sovereign_boot",
-  "objective": "27-op sovereignty \u2014 health + proof + yubikey + adapters + M2 + dignity kernel + continuum + capability graph + semantic binder + invention flywheel + usdl gates + abi freeze + sms health + proactive intel + deterministic_contract + model_registry + model_status + san_summary",
+  "objective": "28-op sovereignty",
   "policy_profile": "readonly.local",
   "ops": [
     {
@@ -170,6 +170,14 @@
         "url": "http://ns:9000/san/summary",
         "expect_status": 200
       }
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://ns:9000/autopoietic/specs",
+        "expect_status": 200
+      },
+      "description": "autopoietic loop live"
     }
   ],
   "expect": {
@@ -185,5 +193,6 @@
     "results[14].data.healthy": true,
     "results[15].data.healthy": true,
     "results[16].data.data.status": "FROZEN"
-  }
+  },
+  "ops_count": 28
 }

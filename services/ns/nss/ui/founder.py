@@ -134,6 +134,34 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph">PROACTIVE INTEL <span id="intel-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="intel-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    <!-- Chat / Ask NS∞ -->
+    <div class="section">
+      <div class="ph">CHAT / ASK NS∞</div>
+      <div class="sec-body" style="padding:6px">
+        <div id="ask-out" style="min-height:40px;max-height:120px;overflow-y:auto;font-size:10px;color:var(--fg);margin-bottom:6px;border-bottom:1px solid rgba(17,34,64,.3);padding-bottom:4px"></div>
+        <div style="display:flex;gap:4px">
+          <input id="ask-in" type="text" placeholder="ask ns∞…"
+            style="flex:1;background:rgba(17,34,64,.6);border:1px solid rgba(100,180,255,.2);border-radius:4px;color:var(--fg);font-size:10px;padding:4px 6px;outline:none"
+            onkeydown="if(event.key==='Enter')askNS()"/>
+          <button onclick="askNS()"
+            style="background:var(--ok);border:none;border-radius:4px;color:#000;font-size:10px;padding:4px 8px;cursor:pointer;font-weight:700">ASK</button>
+        </div>
+      </div>
+    </div>
+    <!-- Autopoietic Loop -->
+    <div class="section">
+      <div class="ph">AUTOPOIETIC LOOP</div>
+      <div class="sec-body" style="padding:6px">
+        <div id="auto-specs" style="font-size:10px;color:var(--fg);margin-bottom:6px"></div>
+        <div style="display:flex;gap:4px;margin-bottom:4px">
+          <input id="auto-spec-id" type="text" placeholder="spec_id e.g. founder_memory_panel_v1"
+            style="flex:1;background:rgba(17,34,64,.6);border:1px solid rgba(100,180,255,.2);border-radius:4px;color:var(--fg);font-size:9px;padding:3px 5px;outline:none"/>
+          <button onclick="buildPlan()"
+            style="background:#7c3aed;border:none;border-radius:4px;color:#fff;font-size:9px;padding:3px 8px;cursor:pointer;font-weight:700">PLAN</button>
+        </div>
+        <div id="auto-result" style="font-size:9px;color:var(--mu);min-height:20px"></div>
+      </div>
+    </div>
     <!-- Model Council -->
     <div class="section">
       <div class="ph">MODEL COUNCIL <span id="council-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
@@ -359,6 +387,81 @@ async function refreshIntel() {
   } catch(e) {
     document.getElementById('intel-body').innerHTML = '<div class="dim" style="font-size:10px;padding:4px">—</div>';
   }
+}
+
+
+// ── Autopoietic Loop ──
+async function loadSpecs() {
+  try {
+    const r = await fetch(NS+'/autopoietic/specs');
+    const d = await r.json();
+    const specs = d.specs||[];
+    document.getElementById('auto-specs').innerHTML =
+      specs.length ? specs.map(s=>
+        `<div class="hrow"><div class="hk" style="cursor:pointer;color:var(--acc)"
+          onclick="document.getElementById('auto-spec-id').value='${s.spec_id}'">${s.spec_id}</div>
+         <div class="hv"><span class="badge ${s.status==='seeded'?'ok':'warn'}">${s.status}</span></div></div>`
+      ).join('') : '<div class="dim" style="font-size:9px">no specs</div>';
+  } catch(e) {}
+}
+async function buildPlan() {
+  const specId = document.getElementById('auto-spec-id').value.trim();
+  const res = document.getElementById('auto-result');
+  if (!specId) { res.textContent='enter spec_id'; return; }
+  res.textContent='building plan…';
+  try {
+    const r = await fetch(NS+'/autopoietic/plan', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({spec_id: specId})
+    });
+    const d = await r.json();
+    if (d.ok) {
+      const plan = d.plan;
+      const evt  = d.commit_event;
+      res.innerHTML = `<span style="color:var(--ok)">plan ${plan.plan_id} ready</span> · ${plan.cps_ops.length} ops · <span style="color:#7c3aed">commit_event ${evt.event_id}</span>`;
+    } else {
+      res.innerHTML = `<span style="color:var(--err)">${d.error}</span>`;
+    }
+  } catch(e) {
+    res.innerHTML = '<span style="color:var(--err)">error</span>';
+  }
+}
+loadSpecs();
+setInterval(loadSpecs, 30000);
+
+// ── Ask NS∞ ──
+async function askNS() {
+  const inp = document.getElementById('ask-in');
+  const out = document.getElementById('ask-out');
+  const prompt = inp.value.trim();
+  if (!prompt) return;
+  inp.value = '';
+  out.innerHTML += `<div style="color:var(--mu)">▶ ${esc(prompt)}</div>`;
+  out.scrollTop = out.scrollHeight;
+  try {
+    const r = await fetch(NS+'/chat/ask', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt, intent_class: classify_intent_js(prompt)})
+    });
+    const d = await r.json();
+    const resp = d.response||d.error||'–';
+    const model = d.model_used||'?';
+    const ms = d.latency_ms||'?';
+    out.innerHTML += `<div style="color:var(--fg);margin-top:2px">${esc(resp.slice(0,300))}</div>`;
+    out.innerHTML += `<div style="color:var(--mu);font-size:9px;margin-top:1px">${model} · ${ms}ms</div>`;
+  } catch(e) {
+    out.innerHTML += `<div style="color:var(--err)">error</div>`;
+  }
+  out.scrollTop = out.scrollHeight;
+}
+function classify_intent_js(text) {
+  const actionWords = ['run','execute','send','commit','deploy','call','delete','remove','kill','stop','restart','buy','pay','launch','post','push'];
+  const stratWords  = ['plan','strategy','should','recommend','analyze','evaluate','decide','advise','compare','assess','suggest','review'];
+  const lower = text.toLowerCase();
+  if (actionWords.some(w => lower.includes(w))) return 'voice_action';
+  if (stratWords.some(w => lower.includes(w))) return 'strategy';
+  return 'voice_quick';
 }
 
 // ── Model Council ──
