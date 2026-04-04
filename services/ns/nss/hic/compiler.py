@@ -95,6 +95,13 @@ SAFE_CODEBOOK = [
     {"pattern": "show app usage",            "op": "app.list_open",         "args": {}, "risk": "R0"},
     {"pattern": "is safari running",         "op": "app.is_running",        "args": {"app": "Safari"}, "risk": "R0"},
 
+    # ── Launch readiness patterns ───────────────────────────────────────────
+    {"pattern": "am i ready to launch",      "op": "ns.proactive_intel",    "args": {}, "risk": "R0"},
+    {"pattern": "pre launch check",          "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
+    {"pattern": "show launch status",        "op": "ns.proactive_intel",    "args": {}, "risk": "R0"},
+    {"pattern": "check yubikey",             "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
+    {"pattern": "stripe status",             "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
+
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────

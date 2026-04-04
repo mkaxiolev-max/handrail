@@ -142,6 +142,13 @@
     {
       "op": "ns_query.health_full",
       "args": {}
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://host.docker.internal:8765/healthz",
+        "expect_status": 200
+      }
     }
   ],
   "expect": {

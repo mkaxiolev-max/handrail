@@ -14,11 +14,11 @@
 | Handrail | 8011 | ✅ healthy |
 | NS∞ | 9000 | ✅ healthy |
 | Continuum | 8788 | ✅ healthy |
-| Mac Adapter | 8765 | ✅ 43 methods |
+| Mac Adapter | 8765 | ✅ 56 methods |
 
 ### Sovereign Boot
-- 22/22 ops passing (process.list + sys.memory added)
-- Tags: sovereign-boot-v9
+- 24/24 ops passing (process.list + sys.memory added)
+- Tags: sovereign-boot-v10
 
 ### Voice + SMS
 - Twilio number: +1 (307) 202-4418
@@ -27,17 +27,17 @@
 - CALL_READY: True
 
 ### CPS Engine
-- 58+ ops across 20 domains
+- 64+ ops across 22 domains
 - ns.proactive_intel, ns.capability_graph, ns.flywheel, ns.explain_recent, ns.semantic_candidates
 - vision.screenshot, vision.ocr_region
 - input.type, input.click, input.key
 - window.list, window.focus, window.get_focused
 - process.list, sys.memory, sys.disk_usage, sys.uptime
 
-### Mac Adapter (16 driver modules)
+### Mac Adapter (19 driver modules)
 - env, audio, clipboard, notify, display, battery, keychain, vision, fs, input, window, network, proc_extended, file_watch, process, sys
-- 252 tests passing
-- capability_registry: 44 ops, 100% truth completeness on write guards
+- 281 tests passing
+- capability_registry: 57 ops, 100% truth completeness on write guards
 
 ### Intelligence
 - /intel/proactive: Haiku-powered 3 suggestions from system state
@@ -46,7 +46,7 @@
 - USDL decoder: 8 gates
 
 ### HIC Codebook
-- 68 patterns across voice + system + memory + capability domains
+- 77 patterns across voice + system + memory + capability domains
 - system awareness patterns: process.list, sys.memory, sys.disk_usage, sys.uptime
 - All patterns resolving at 1.0 confidence
 
@@ -60,6 +60,13 @@
 - Slot 1: enrolled, serial=26116460, hash=245e5646aef9c7c0
 - Slot 2: pending (procure 2nd YubiKey 5 NFC)
 - yubikey_bind.py: scripts/yubikey_bind.py
+
+
+### Capability Persistence
+- Alexandria SSD: /Volumes/NSExternal/ALEXANDRIA/capability_graph.json
+- Docker volume: ./.runs:/app/.runs (fallback) + /Volumes/NSExternal mount
+- Verified restart-proof: 0 unresolved nodes survive NS container restarts
+- LAUNCH_CHECKLIST.md: written
 
 ### Mobile
 - SwiftUI shell: 7 Swift files (Chat/Voice/Memory/Status/NSClient/NSApp/ContentView)
