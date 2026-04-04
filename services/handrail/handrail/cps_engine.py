@@ -789,6 +789,43 @@ def _op_calendar_upcoming(args: dict, policy: PolicyEngine) -> dict:
     return _mac_bridge("calendar", "upcoming", args)
 
 
+
+def _op_contacts_search(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("contacts", "search", args)
+
+
+def _op_contacts_count(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("contacts", "count", args)
+
+
+def _op_contacts_vcard(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("contacts", "vcard", args)
+
+
+def _op_reminders_list(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("reminders", "list", args)
+
+
+def _op_reminders_add(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("reminders", "add", args)
+
+
+def _op_reminders_complete(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("reminders", "complete", args)
+
+
+def _op_url_open(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("url", "open", args)
+
+
+def _op_url_fetch(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("url", "fetch", args)
+
+
+def _op_url_qr(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("url", "qr", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1213,7 +1250,16 @@ OP_DISPATCH: dict[str, Any] = {
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
-                "alert.dialog":         _op_alert_dialog,
+                    "contacts.search":    _op_contacts_search,
+    "contacts.count":     _op_contacts_count,
+    "contacts.vcard":     _op_contacts_vcard,
+    "reminders.list":     _op_reminders_list,
+    "reminders.add":      _op_reminders_add,
+    "reminders.complete": _op_reminders_complete,
+    "url.open":           _op_url_open,
+    "url.fetch":          _op_url_fetch,
+    "url.qr":             _op_url_qr,
+    "alert.dialog":         _op_alert_dialog,
     "alert.confirm":        _op_alert_confirm,
     "alert.input":          _op_alert_input,
     "calendar.list":        _op_calendar_list,

@@ -177,7 +177,16 @@ All ops routed through `POST /ops/cps` via `cps_engine.py`:
 | `calendar` | `calendar.list` | List all calendar names via osascript |
 | `calendar` | `calendar.today` | Today's events; graceful skip if no permission |
 | `calendar` | `calendar.upcoming` | Next N events (max 20); 7-day window |
-**64 ops across 22 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions, vision.* — graceful skip when adapter not running).
+| `contacts` | `contacts.search` | Search contacts by name/email; max 10 results; read-only |
+| `contacts` | `contacts.count` | Total contact count |
+| `contacts` | `contacts.vcard` | Export contact as vCard; name+email only |
+| `reminders` | `reminders.list` | List incomplete reminders; graceful skip on no permission |
+| `reminders` | `reminders.add` | Add reminder; max 200 chars dignity guard |
+| `reminders` | `reminders.complete` | Complete reminder by exact name match; no bulk ops |
+| `url` | `url.open` | Open URL in browser; https only, no file/javascript schemes |
+| `url` | `url.fetch` | Fetch URL content; timeout 10s, max 5000 chars |
+| `url` | `url.qr` | Generate QR code PNG (base64); https only |
+**73 ops across 25 domains** (Mac adapter bridge: audio.*, clipboard.*, notify.*, display.*, battery.*, keychain.*, env.permissions, vision.* — graceful skip when adapter not running).
 
 Formalization layer: `adapter_core/capability_registry.py` (38 ops typed/versioned), `adapter_core/artifact_writer.py` (path+hash+size+ts).
 

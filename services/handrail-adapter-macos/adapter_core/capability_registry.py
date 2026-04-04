@@ -79,6 +79,18 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"calendar","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission"],"schema_out":{"calendars":"list","count":"int"}},
     {"namespace":"calendar","op":"today","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission"],"schema_out":{"events":"list","count":"int"}},
     {"namespace":"calendar","op":"upcoming","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission","max_20_events"],"schema_out":{"events":"list","count":"int"}},
+    # contacts.*
+    {"namespace":"contacts","op":"search","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["max_10_results","read_only"],"schema_out":{"contacts":"list","count":"int"}},
+    {"namespace":"contacts","op":"count","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"count":"int"}},
+    {"namespace":"contacts","op":"vcard","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["read_only","name_field_only"],"schema_out":{"vcard":"str","found":"bool"}},
+    # reminders.*
+    {"namespace":"reminders","op":"list","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["graceful_skip_no_permission"],"schema_out":{"reminders":"list","count":"int"}},
+    {"namespace":"reminders","op":"add","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["max_200_chars"],"schema_out":{"ok":"bool","added":"bool"}},
+    {"namespace":"reminders","op":"complete","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["exact_name_only","no_bulk_delete"],"schema_out":{"ok":"bool","completed":"bool"}},
+    # url.*
+    {"namespace":"url","op":"open","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["https_only","no_file_scheme","no_javascript_scheme"],"schema_out":{"ok":"bool","opened":"bool"}},
+    {"namespace":"url","op":"fetch","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["https_only","timeout_10s","max_5000_chars"],"schema_out":{"ok":"bool","content":"str","status":"int"}},
+    {"namespace":"url","op":"qr","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["https_only"],"schema_out":{"ok":"bool","qr_base64":"str"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]

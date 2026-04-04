@@ -14,6 +14,9 @@ from display_driver.handlers import build_display_handlers
 from battery_driver.handlers import build_battery_handlers
 from keychain_driver.handlers import build_keychain_handlers
 from env_driver.handlers import build_env_handlers
+from contacts_driver.handlers import build_contacts_handlers
+from reminders_driver.handlers import build_reminders_handlers
+from url_driver.handlers import build_url_handlers
 from alert_driver.handlers import build_alert_handlers
 from calendar_driver.handlers import build_calendar_handlers
 from app_driver.handlers import build_app_handlers
@@ -253,4 +256,7 @@ def build_registry():
     reg.register_all(build_ns_query_handlers())
     reg.register_all(build_alert_handlers())
     reg.register_all(build_calendar_handlers())
+    reg.register_all(build_contacts_handlers())
+    reg.register_all(build_reminders_handlers())
+    reg.register_all(build_url_handlers())
     return reg
