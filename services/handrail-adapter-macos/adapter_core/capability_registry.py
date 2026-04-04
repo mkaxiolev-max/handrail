@@ -62,6 +62,15 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"sys","op":"disk_usage","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"total":"str","used":"str","pct":"str"}},
     {"namespace":"sys","op":"memory","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"total_gb":"float","used_gb":"float","pct_used":"float"}},
     {"namespace":"sys","op":"uptime","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"uptime_str":"str"}},
+    # app.*
+    {"namespace":"app","op":"launch","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["blocked_shell_apps","launch_logged"],"schema_out":{"ok":"bool","launched":"bool"}},
+    {"namespace":"app","op":"quit","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"ok":"bool","quit":"bool"}},
+    {"namespace":"app","op":"is_running","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"running":"bool"}},
+    {"namespace":"app","op":"list_open","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"apps":"list","count":"int"}},
+    # ns_query.*
+    {"namespace":"ns_query","op":"health_full","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","subsystems":"dict"}},
+    {"namespace":"ns_query","op":"context","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","context":"dict"}},
+    {"namespace":"ns_query","op":"last_error","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","last_error":"any"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]

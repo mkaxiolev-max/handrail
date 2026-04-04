@@ -735,6 +735,35 @@ def _op_sys_uptime(args: dict, policy: PolicyEngine) -> dict:
     return _mac_bridge("sys", "uptime", args)
 
 
+
+def _op_app_launch(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("app", "launch", args)
+
+
+def _op_app_quit(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("app", "quit", args)
+
+
+def _op_app_is_running(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("app", "is_running", args)
+
+
+def _op_app_list_open(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("app", "list_open", args)
+
+
+def _op_ns_query_health_full(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("ns_query", "health_full", args)
+
+
+def _op_ns_query_context(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("ns_query", "context", args)
+
+
+def _op_ns_query_last_error(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("ns_query", "last_error", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1159,7 +1188,14 @@ OP_DISPATCH: dict[str, Any] = {
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
-        "process.list":       _op_process_list,
+            "app.launch":             _op_app_launch,
+    "app.quit":               _op_app_quit,
+    "app.is_running":         _op_app_is_running,
+    "app.list_open":          _op_app_list_open,
+    "ns_query.health_full":   _op_ns_query_health_full,
+    "ns_query.context":       _op_ns_query_context,
+    "ns_query.last_error":    _op_ns_query_last_error,
+    "process.list":       _op_process_list,
     "process.info":       _op_process_info,
     "process.kill":       _op_process_kill,
     "sys.disk_usage":     _op_sys_disk_usage,
