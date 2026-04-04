@@ -14,10 +14,10 @@
 | Handrail | 8011 | ✅ healthy |
 | NS∞ | 9000 | ✅ healthy |
 | Continuum | 8788 | ✅ healthy |
-| Mac Adapter | 8765 | ✅ 56 methods |
+| Mac Adapter | 8765 | ✅ 81 methods |
 
 ### Sovereign Boot
-- 24/24 ops passing (process.list + sys.memory added)
+- 24/24 ops passing
 - Tags: sovereign-boot-v10
 
 ### Voice + SMS
@@ -27,17 +27,17 @@
 - CALL_READY: True
 
 ### CPS Engine
-- 64+ ops across 22 domains
+- 90+ ops across 26 domains
 - ns.proactive_intel, ns.capability_graph, ns.flywheel, ns.explain_recent, ns.semantic_candidates
 - vision.screenshot, vision.ocr_region
 - input.type, input.click, input.key
 - window.list, window.focus, window.get_focused
 - process.list, sys.memory, sys.disk_usage, sys.uptime
 
-### Mac Adapter (19 driver modules)
-- env, audio, clipboard, notify, display, battery, keychain, vision, fs, input, window, network, proc_extended, file_watch, process, sys
-- 281 tests passing
-- capability_registry: 57 ops, 100% truth completeness on write guards
+### Mac Adapter (26 driver modules)
+- env, audio, clipboard, notify, display, battery, keychain, vision, fs, input, window, network, proc_extended, file_watch, process, sys, app, ns_query, alert, calendar, contacts, reminders, url, speech, power, media
+- 306 tests passing
+- capability_registry: 66 ops, 100% truth completeness on write guards
 
 ### Intelligence
 - /intel/proactive: Haiku-powered 3 suggestions from system state
@@ -87,5 +87,8 @@
 | Ring 5 — Economic | Complete LLC business verification | dashboard.stripe.com |
 | YubiKey slot_2 | Procure 2nd YubiKey 5 NFC → `python3 scripts/yubikey_bind.py --enroll --slot 2` | Physical procurement |
 | GitHub tags x2 | Mark omega-checkpoint-v1, sms-channel-v1 as false positives | github.com/mkaxiolev-max/handrail/security/secret-scanning |
+
+## Master Reference
+See [AXIOLEV_STATE.md](AXIOLEV_STATE.md) for complete institutional state.
 
 ## SOFTWARE: COMPLETE

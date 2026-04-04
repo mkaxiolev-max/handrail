@@ -10,7 +10,7 @@
 - [x] Handrail (port 8011) — deterministic CPS execution, 23-op sovereign_boot
 - [x] NS∞ (port 9000) — constitutional AI OS, voice + SMS live
 - [x] Continuum (port 8788) — healthy
-- [x] Mac Adapter (port 8765) — 56 methods, 19 driver modules, 281 tests
+- [x] Mac Adapter (port 8765) — 81 methods, 19 driver modules, 281 tests
 - [x] Alexandria SSD — capability graph persists across restarts
 - [x] ngrok static domain — monica-problockade-caylee.ngrok-free.dev (launchd auto-start)
 
