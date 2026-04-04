@@ -183,6 +183,9 @@ process.list, sys.memory, ns.proactive_intel
 
 ---
 
+## V2 Closure Layer
+See [NS_CLOSURE_LAYER.md](NS_CLOSURE_LAYER.md) for the 4 explicit V2 closure layers.
+
 ## SOFTWARE: COMPLETE ✅
 ## FROZEN: software-freeze-v1
 

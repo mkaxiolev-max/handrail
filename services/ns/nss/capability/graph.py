@@ -107,6 +107,27 @@ SEED_NODES: list[dict] = [
      "description":"Full Council → Primary+Critic → Primary → Guardian → Safe Mode",
      "depends_on":["model_routing"],"strategic_value":7,"conflicts_with":[],
      "blocked_reason":"","san_position":"","lexicon_anchor":"","proof_refs":["model-router-v1"]},
+    # ── V2 Desired Nodes (Layer D honesty invariant) ──────────────────────────
+    {"id":"san_sync_layer","name":"SAN/Legal-Reality Sync","domain":"legal","state":"desired",
+     "description":"LLC, Stripe, IP, equity table, YubiKey quorum verified against Alexandria",
+     "depends_on":[],"strategic_value":9,"conflicts_with":[],"blocked_reason":"",
+     "san_position":"filing","lexicon_anchor":"san_sync","proof_refs":[]},
+    {"id":"semantic_feedback_binder","name":"Semantic Feedback Binder V2","domain":"intelligence","state":"desired",
+     "description":"Execution outcomes → Lexicon/HIC canon update loop via SemanticFeedbackProcessor",
+     "depends_on":["memory_surfacing","model_routing"],"strategic_value":8,"conflicts_with":[],
+     "blocked_reason":"","san_position":"","lexicon_anchor":"semantic_feedback","proof_refs":[]},
+    {"id":"degradation_kernel","name":"Cognitive Degradation Kernel","domain":"reliability","state":"desired",
+     "description":"4-tier: nominal→degraded→minimal→safe-shutdown with formal documented behavior",
+     "depends_on":["model_routing","cognitive_failover"],"strategic_value":8,"conflicts_with":[],
+     "blocked_reason":"","san_position":"","lexicon_anchor":"degradation","proof_refs":[]},
+    {"id":"multi_model_routing","name":"Multi-Model Tier Routing","domain":"intelligence","state":"desired",
+     "description":"Haiku/Sonnet/Opus tier routing by task complexity + cost envelope",
+     "depends_on":["model_routing"],"strategic_value":7,"conflicts_with":[],
+     "blocked_reason":"","san_position":"","lexicon_anchor":"model_routing","proof_refs":[]},
+    {"id":"wearable_power_adapter","name":"Wearable Power Consortium Adapter","domain":"commercial","state":"desired",
+     "description":"Dean Schlingmann / Wearable Power Consortium CPS integration layer (25% equity)",
+     "depends_on":[],"strategic_value":8,"conflicts_with":[],"blocked_reason":"",
+     "san_position":"licensing","lexicon_anchor":"wearable","proof_refs":[]},
 ]
 
 
