@@ -102,6 +102,19 @@ SAFE_CODEBOOK = [
     {"pattern": "check yubikey",             "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
     {"pattern": "stripe status",             "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
 
+    # ── Media + Speech + Power patterns ─────────────────────────────────────
+    {"pattern": "what is playing",           "op": "media.now_playing",     "args": {}, "risk": "R0"},
+    {"pattern": "play pause music",          "op": "media.play_pause",      "args": {}, "risk": "R1"},
+    {"pattern": "next track",                "op": "media.next",            "args": {}, "risk": "R1"},
+    {"pattern": "say hello",                 "op": "speech.say",            "args": {"text": "Hello from NS"}, "risk": "R1"},
+    {"pattern": "what voices are available", "op": "speech.voices",         "args": {}, "risk": "R0"},
+    {"pattern": "battery level",             "op": "power.battery",         "args": {}, "risk": "R0"},
+    {"pattern": "how is the battery",        "op": "power.battery",         "args": {}, "risk": "R0"},
+    {"pattern": "take a region screenshot",  "op": "screenshot.region",     "args": {}, "risk": "R1"},
+    {"pattern": "open this url",             "op": "url.open",              "args": {}, "risk": "R1"},
+    {"pattern": "search my contacts",        "op": "contacts.search",       "args": {}, "risk": "R0"},
+    {"pattern": "add a reminder",            "op": "reminders.add",         "args": {}, "risk": "R1"},
+    {"pattern": "show my reminders",         "op": "reminders.list",        "args": {}, "risk": "R0"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────

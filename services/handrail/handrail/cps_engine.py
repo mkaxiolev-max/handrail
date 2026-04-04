@@ -826,6 +826,71 @@ def _op_url_qr(args: dict, policy: PolicyEngine) -> dict:
     return _mac_bridge("url", "qr", args)
 
 
+
+def _op_speech_say(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("speech", "say", args)
+
+
+def _op_speech_say_async(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("speech", "say_async", args)
+
+
+def _op_speech_voices(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("speech", "voices", args)
+
+
+def _op_speech_stop(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("speech", "stop", args)
+
+
+def _op_power_battery(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("power", "battery", args)
+
+
+def _op_power_sleep(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("power", "sleep", args)
+
+
+def _op_power_wake_lock(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("power", "wake_lock", args)
+
+
+def _op_power_cancel_wake_lock(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("power", "cancel_wake_lock", args)
+
+
+def _op_media_now_playing(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("media", "now_playing", args)
+
+
+def _op_media_play_pause(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("media", "play_pause", args)
+
+
+def _op_media_next(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("media", "next", args)
+
+
+def _op_media_volume(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("media", "volume", args)
+
+
+def _op_screenshot_region(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("screenshot", "region", args)
+
+
+def _op_screenshot_window(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("screenshot", "window", args)
+
+
+def _op_screenshot_annotate(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("screenshot", "annotate", args)
+
+
+def _op_screenshot_diff(args: dict, policy: PolicyEngine) -> dict:
+    return _mac_bridge("screenshot", "diff", args)
+
+
 def _op_ns_broadcast(args: dict, policy: PolicyEngine) -> dict:
     import os
     text = args.get("text", "")
@@ -1250,7 +1315,23 @@ OP_DISPATCH: dict[str, Any] = {
     "notify.send":       _op_notify_send,
     "notify.badge":      _op_notify_badge,
     "env.permissions":    lambda args, policy: _mac_bridge("env", "permissions", args),
-                    "contacts.search":    _op_contacts_search,
+                        "speech.say":              _op_speech_say,
+    "speech.say_async":        _op_speech_say_async,
+    "speech.voices":           _op_speech_voices,
+    "speech.stop":             _op_speech_stop,
+    "power.battery":           _op_power_battery,
+    "power.sleep":             _op_power_sleep,
+    "power.wake_lock":         _op_power_wake_lock,
+    "power.cancel_wake_lock":  _op_power_cancel_wake_lock,
+    "media.now_playing":       _op_media_now_playing,
+    "media.play_pause":        _op_media_play_pause,
+    "media.next":              _op_media_next,
+    "media.volume":            _op_media_volume,
+    "screenshot.region":       _op_screenshot_region,
+    "screenshot.window":       _op_screenshot_window,
+    "screenshot.annotate":     _op_screenshot_annotate,
+    "screenshot.diff":         _op_screenshot_diff,
+    "contacts.search":    _op_contacts_search,
     "contacts.count":     _op_contacts_count,
     "contacts.vcard":     _op_contacts_vcard,
     "reminders.list":     _op_reminders_list,

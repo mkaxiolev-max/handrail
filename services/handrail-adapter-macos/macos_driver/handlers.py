@@ -14,6 +14,10 @@ from display_driver.handlers import build_display_handlers
 from battery_driver.handlers import build_battery_handlers
 from keychain_driver.handlers import build_keychain_handlers
 from env_driver.handlers import build_env_handlers
+from speech_driver.handlers import build_speech_handlers
+from power_driver.handlers import build_power_handlers
+from media_driver.handlers import build_media_handlers
+from screenshot_driver.handlers import build_screenshot_handlers
 from contacts_driver.handlers import build_contacts_handlers
 from reminders_driver.handlers import build_reminders_handlers
 from url_driver.handlers import build_url_handlers
@@ -259,4 +263,8 @@ def build_registry():
     reg.register_all(build_contacts_handlers())
     reg.register_all(build_reminders_handlers())
     reg.register_all(build_url_handlers())
+    reg.register_all(build_speech_handlers())
+    reg.register_all(build_power_handlers())
+    reg.register_all(build_media_handlers())
+    reg.register_all(build_screenshot_handlers())
     return reg

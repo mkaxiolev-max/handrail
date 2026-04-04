@@ -91,6 +91,26 @@ CAPABILITY_REGISTRY: list[dict] = [
     {"namespace":"url","op":"open","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["https_only","no_file_scheme","no_javascript_scheme"],"schema_out":{"ok":"bool","opened":"bool"}},
     {"namespace":"url","op":"fetch","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["https_only","timeout_10s","max_5000_chars"],"schema_out":{"ok":"bool","content":"str","status":"int"}},
     {"namespace":"url","op":"qr","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":["https_only"],"schema_out":{"ok":"bool","qr_base64":"str"}},
+    # speech.*
+    {"namespace":"speech","op":"say","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["max_1000_chars","say_logged"],"schema_out":{"ok":"bool","said":"str"}},
+    {"namespace":"speech","op":"say_async","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["max_1000_chars"],"schema_out":{"ok":"bool","queued":"bool"}},
+    {"namespace":"speech","op":"voices","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"voices":"list","count":"int"}},
+    {"namespace":"speech","op":"stop","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","stopped":"bool"}},
+    # power.*
+    {"namespace":"power","op":"battery","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"charge_pct":"int","status":"str"}},
+    {"namespace":"power","op":"sleep","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["min_5_minute_delay"],"schema_out":{"ok":"bool","scheduled_minutes":"int"}},
+    {"namespace":"power","op":"wake_lock","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["max_4_hours"],"schema_out":{"ok":"bool","seconds":"int"}},
+    {"namespace":"power","op":"cancel_wake_lock","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":[],"schema_out":{"ok":"bool","cancelled":"bool"}},
+    # media.*
+    {"namespace":"media","op":"now_playing","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"playing":"bool","track":"str"}},
+    {"namespace":"media","op":"play_pause","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"ok":"bool","toggled":"bool"}},
+    {"namespace":"media","op":"next","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["graceful_skip_non_macos"],"schema_out":{"ok":"bool","skipped":"bool"}},
+    {"namespace":"media","op":"volume","version":"1.0","side_effects":"write","deterministic":False,"dignity_guards":["range_0_100"],"schema_out":{"ok":"bool","volume":"int"}},
+    # screenshot.*
+    {"namespace":"screenshot","op":"region","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written","logged"],"schema_out":{"ok":"bool","path":"str","hash":"str"}},
+    {"namespace":"screenshot","op":"window","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written"],"schema_out":{"ok":"bool","path":"str","hash":"str"}},
+    {"namespace":"screenshot","op":"annotate","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission","artifact_written","logged"],"schema_out":{"ok":"bool","path":"str","ts":"str"}},
+    {"namespace":"screenshot","op":"diff","version":"1.0","side_effects":"artifact","deterministic":False,"dignity_guards":["screen_recording_permission"],"schema_out":{"ok":"bool","changed":"bool","changed_pct":"int"}},
     # ns.*
     {"namespace":"ns","op":"proactive_intel","version":"1.0","side_effects":"read","deterministic":False,"dignity_guards":[],"schema_out":{"suggestions":"list"}},
 ]
