@@ -130,6 +130,14 @@
     {
       "op": "ns.proactive_intel",
       "args": {}
+    },
+    {
+      "op": "process.list",
+      "args": {}
+    },
+    {
+      "op": "sys.memory",
+      "args": {}
     }
   ],
   "expect": {

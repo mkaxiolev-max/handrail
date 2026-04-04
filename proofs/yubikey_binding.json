@@ -1,0 +1,12 @@
+{
+  "slots": {
+    "1": {
+      "slot": 1,
+      "serial": "26116460",
+      "enrolled_at": 1775267999,
+      "proof_hash": "245e5646aef9c7c0",
+      "ok": true
+    }
+  },
+  "quorum_required": 2
+}

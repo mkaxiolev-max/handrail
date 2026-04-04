@@ -80,6 +80,13 @@ SAFE_CODEBOOK = [
     {"pattern": "list my capabilities",      "op": "ns.capability_graph",   "args": {},                                                                   "risk": "R0"},
     {"pattern": "what is my current status", "op": "ns.proactive_intel",    "args": {},                                                                   "risk": "R0"},
     {"pattern": "alexandria search",         "op": "ns.memory_query",       "args": {},                                                                   "risk": "R0"},
+    # ── System awareness patterns ────────────────────────────────────────────
+    {"pattern": "what is running",           "op": "process.list",       "args": {}, "risk": "R0"},
+    {"pattern": "show running processes",    "op": "process.list",       "args": {}, "risk": "R0"},
+    {"pattern": "how is memory",             "op": "sys.memory",         "args": {}, "risk": "R0"},
+    {"pattern": "check disk space",          "op": "sys.disk_usage",     "args": {}, "risk": "R0"},
+    {"pattern": "how long have i been up",   "op": "sys.uptime",         "args": {}, "risk": "R0"},
+    {"pattern": "system status",             "op": "ns.proactive_intel", "args": {}, "risk": "R0"},
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────
