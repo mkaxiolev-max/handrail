@@ -10,8 +10,9 @@ import json, time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-_CAP_SSD  = Path("/Volumes/NSExternal/ALEXANDRIA/capability_graph.json")
-_CAP_FALL = Path.home() / ".axiolev" / "capability_graph.json"
+_CAP_SSD   = Path("/Volumes/NSExternal/ALEXANDRIA/capability_graph.json")
+_CAP_MOUNT = Path("/app/.runs/capability_graph.json")   # docker volume mount
+_CAP_FALL  = Path.home() / ".axiolev" / "capability_graph.json"
 
 VALID_STATES = {
     "desired","unresolved","provisional","implemented","validated",
@@ -24,6 +25,8 @@ def _ts() -> str:
 def _cap_path() -> Path:
     if Path("/Volumes/NSExternal/ALEXANDRIA").exists():
         return _CAP_SSD
+    if _CAP_MOUNT.parent.exists():
+        return _CAP_MOUNT
     p = _CAP_FALL; p.parent.mkdir(parents=True, exist_ok=True); return p
 
 SEED_NODES: list[dict] = [

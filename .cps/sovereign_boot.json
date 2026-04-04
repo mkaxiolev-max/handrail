@@ -138,6 +138,10 @@
     {
       "op": "sys.memory",
       "args": {}
+    },
+    {
+      "op": "ns_query.health_full",
+      "args": {}
     }
   ],
   "expect": {

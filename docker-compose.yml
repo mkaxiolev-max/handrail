@@ -22,6 +22,9 @@ services:
       - "9000:9000"
     env_file:
       - .env
+    volumes:
+      - ./.runs:/app/.runs
+      - /Volumes/NSExternal:/Volumes/NSExternal
     depends_on:
       handrail:
         condition: service_healthy

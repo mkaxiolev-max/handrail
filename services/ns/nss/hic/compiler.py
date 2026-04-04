@@ -87,6 +87,14 @@ SAFE_CODEBOOK = [
     {"pattern": "check disk space",          "op": "sys.disk_usage",     "args": {}, "risk": "R0"},
     {"pattern": "how long have i been up",   "op": "sys.uptime",         "args": {}, "risk": "R0"},
     {"pattern": "system status",             "op": "ns.proactive_intel", "args": {}, "risk": "R0"},
+    # ── NS Query shortcuts ───────────────────────────────────────────────────
+    {"pattern": "full health check",         "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
+    {"pattern": "show me all subsystems",    "op": "ns_query.health_full",  "args": {}, "risk": "R0"},
+    {"pattern": "show current context",      "op": "ns_query.context",      "args": {}, "risk": "R0"},
+    {"pattern": "what was the last error",   "op": "ns_query.last_error",   "args": {}, "risk": "R0"},
+    {"pattern": "show app usage",            "op": "app.list_open",         "args": {}, "risk": "R0"},
+    {"pattern": "is safari running",         "op": "app.is_running",        "args": {"app": "Safari"}, "risk": "R0"},
+
 ]
 
 # ── Constitutional veto patterns ──────────────────────────────────────────────
