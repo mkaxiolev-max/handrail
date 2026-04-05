@@ -182,6 +182,11 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph">ABI SCHEMAS <span id="abi-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="abi-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    <!-- Dignity Config -->
+    <div class="section">
+      <div class="ph">DIGNITY CONFIG <span id="dignity-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="dignity-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
   </div>
 </main>
 
@@ -595,6 +600,29 @@ async function refreshABI() {
   }
 }
 
+// ── Dignity Config ──
+async function refreshDignityConfig() {
+  try {
+    const r = await fetch('http://localhost:8011/dignity/config').then(x=>x.json());
+    const ne = (r.never_events || r.content_never_events || []);
+    const rows = [
+      ['η  (eta)',        `<span style="color:var(--ok);font-weight:700">${r.eta ?? '—'}</span>`],
+      ['β  (beta)',       `<span style="color:var(--ok);font-weight:700">${r.beta ?? '—'}</span>`],
+      ['Warn threshold',  `<span style="color:#f59e0b">${r.warn_threshold ?? '—'}</span>`],
+      ['Block threshold', `<span style="color:var(--err)">${r.block_threshold ?? '—'}</span>`],
+      ['State',          `<span class="badge ok">${esc(r.constitutional_state ?? 'NOMINAL')}</span>`],
+      ['Never-events',   ne.length
+        ? ne.map(n=>`<span class="badge err" style="font-size:8px;margin-right:2px">${esc(n)}</span>`).join('')
+        : `<span style="color:var(--mu);font-size:9px">none configured</span>`],
+    ];
+    document.getElementById('dignity-body').innerHTML =
+      rows.map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
+    document.getElementById('dignity-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('dignity-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/dignity/config</div>';
+  }
+}
+
 // ── Refresh loop ──
 async function refreshAll() {
   document.getElementById('last-update').textContent = fts(new Date().toISOString());
@@ -608,6 +636,7 @@ refreshCouncil();
 refreshBootProof();
 refreshYubiKey();
 refreshABI();
+refreshDignityConfig();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
 setInterval(refreshIntel, 30000);
@@ -615,6 +644,7 @@ setInterval(refreshCouncil, 15000);
 setInterval(refreshBootProof, 60000);
 setInterval(refreshYubiKey, 30000);
 setInterval(refreshABI, 60000);
+setInterval(refreshDignityConfig, 60000);
 </script>
 </body>
 </html>"""

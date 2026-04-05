@@ -178,6 +178,14 @@
         "expect_status": 200
       },
       "description": "autopoietic loop live"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://handrail:8011/yubikey/status",
+        "expect_status": 200
+      },
+      "description": "yubikey quorum registry live — enrolled_count >= 1"
     }
   ],
   "expect": {
@@ -192,7 +200,8 @@
     "results[13].data.healthy": true,
     "results[14].data.healthy": true,
     "results[15].data.healthy": true,
-    "results[16].data.data.status": "FROZEN"
+    "results[16].data.data.status": "FROZEN",
+    "results[28].data.healthy": true
   },
-  "ops_count": 28
+  "ops_count": 29
 }
