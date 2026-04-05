@@ -1,0 +1,10 @@
+{"bundle_id":"heidi_validation_policy_v1","version":"1.0.0","role":"heidi_validation_operator",
+ "memory_scope_spec":{"include":["validation_context_only"],"exclude":["pricing","deal_structure","fundraising","hiring","all_other_programs"]},
+ "hard_constraints":["max_3_sentences_per_response","clinical_scope_only","no_commercial_context","no_pricing","selective_validator_not_default_operator","output_is_review_not_endorsement"],
+ "rules":[
+  {"rule_id":"HP-001","action":"validation.provide_clinical_opinion","effect":"ALLOW","conditions":{}},
+  {"rule_id":"HP-002","action":"validation.schedule_assessment","effect":"ALLOW","conditions":{}},
+  {"rule_id":"HP-003","action":"commercial.*","effect":"DENY","conditions":{}},
+  {"rule_id":"HP-004","action":"fundraising.*","effect":"DENY","conditions":{}},
+  {"rule_id":"HP-005","action":"comms.send_intro","effect":"DENY","conditions":{}}
+ ]}

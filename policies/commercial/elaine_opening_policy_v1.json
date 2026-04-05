@@ -1,0 +1,13 @@
+{"bundle_id":"elaine_opening_policy_v1","version":"1.0.0","role":"elaine_access_operator",
+ "allowed_states":["S0_IDENTIFY","S1_OPEN","S2_FRAME","S3_QUALIFY","S4_CHAMPION"],
+ "memory_scope_spec":{"include":["prospect_background","prior_call_summaries","program_state"],"exclude":["pricing_history","deal_structure","competitor_terms","founder_notes"]},
+ "hard_constraints":["cannot_mention_pricing","cannot_commit_to_features","cannot_expose_founder_before_S5","cannot_send_full_data_room","no_legal_commitments"],
+ "rules":[
+  {"rule_id":"EP-001","action":"comms.send_intro","effect":"ALLOW","conditions":{}},
+  {"rule_id":"EP-002","action":"commercial.advance_state","effect":"ALLOW","conditions":{}},
+  {"rule_id":"EP-003","action":"commercial.identify_champion","effect":"ALLOW","conditions":{}},
+  {"rule_id":"EP-004","action":"program.generate_whisper","effect":"ALLOW","conditions":{}},
+  {"rule_id":"EP-005","action":"commercial.prepare_proposal","effect":"DENY","conditions":{}},
+  {"rule_id":"EP-006","action":"commercial.close_deal","effect":"DENY","conditions":{}},
+  {"rule_id":"EP-007","action":"deal.record_pricing_signal","effect":"DENY","conditions":{}}
+ ]}

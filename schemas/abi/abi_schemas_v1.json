@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "frozen_at": "2026-04-05",
+  "objects": {
+    "CpsIntent": {
+      "type": "object",
+      "required": ["cps_id","intent_id","ops","expected_evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "cps_id":             { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "intent_id":          { "type": "string" },
+        "ops":                { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["op","args"], "properties": { "op": {"type":"string"}, "args": {"type":"object"} } } },
+        "expected_evidence":  { "type": "array", "items": {"type":"string"} },
+        "policy_bundle":      { "type": "string" },
+        "program_id":         { "type": "string" }
+      }
+    },
+    "CpsReceipt": {
+      "type": "object",
+      "required": ["run_id","cps_id","timestamp","exec_ok","ops_executed","evidence_paths"],
+      "additionalProperties": false,
+      "properties": {
+        "run_id":            { "type": "string" },
+        "cps_id":            { "type": "string" },
+        "timestamp":         { "type": "string", "format": "date-time" },
+        "exec_ok":           { "type": "boolean" },
+        "ops_executed":      { "type": "integer", "minimum": 0 },
+        "evidence_paths":    { "type": "array", "items": {"type":"string"} },
+        "dignity_gate":      { "type": "string", "enum": ["PASS","BLOCKED","SKIP"] },
+        "policy_result":     { "type": "string", "enum": ["ALLOW","DENY","WARN"] },
+        "failure_class":     { "type": ["string","null"] },
+        "program_id":        { "type": ["string","null"] },
+        "program_run_id":    { "type": ["string","null"] }
+      }
+    },
+    "BootProofReceipt": {
+      "type": "object",
+      "required": ["boot_id","timestamp","phases","yubikey_quorum","schema_versions","adapter_inventory","policy_bundle_hash","alexandria_ledger_entry"],
+      "properties": {
+        "boot_id":                   { "type": "string", "pattern": "^BOOT-[0-9]{8}-[0-9]{6}$" },
+        "timestamp":                 { "type": "string", "format": "date-time" },
+        "phases":                    { "type": "array", "minItems": 12, "maxItems": 12 },
+        "yubikey_quorum":            { "type": "object", "required": ["required","present","authorized"] },
+        "schema_versions":           { "type": "object" },
+        "adapter_inventory":         { "type": "array", "items": {"type":"string"} },
+        "policy_bundle_hash":        { "type": "string" },
+        "alexandria_ledger_entry":   { "type": "string" }
+      }
+    },
+    "ProgramRuntime": {
+      "type": "object",
+      "required": ["program_id","program_run_id","state","active_role","policy_bundle","context","receipts"],
+      "properties": {
+        "program_id":      { "type": "string" },
+        "program_run_id":  { "type": "string", "pattern": "^prg_[a-z0-9_]+$" },
+        "state":           { "type": "string" },
+        "active_role":     { "type": "string" },
+        "policy_bundle":   { "type": "string" },
+        "context":         { "type": "object" },
+        "receipts":        { "type": "array" },
+        "created_at":      { "type": "string", "format": "date-time" },
+        "updated_at":      { "type": "string", "format": "date-time" }
+      }
+    },
+    "RoleBinding": {
+      "type": "object",
+      "required": ["role_id","role_name","allowed_states","allowed_ops","forbidden_ops","output_mode","constraints","memory_scope"],
+      "properties": {
+        "role_id":        { "type": "string" },
+        "role_name":      { "type": "string" },
+        "allowed_states": { "type": "array", "items": {"type":"string"} },
+        "allowed_ops":    { "type": "array", "items": {"type":"string"} },
+        "forbidden_ops":  { "type": "array", "items": {"type":"string"} },
+        "output_mode":    { "type": "string", "enum": ["whisper","direct_voice","text"] },
+        "constraints":    { "type": "array", "items": {"type":"string"} },
+        "memory_scope":   { "type": "object" }
+      }
+    },
+    "WhisperPacket": {
+      "type": "object",
+      "required": ["packet_id","program_run_id","state","signal","risk","move","suggested_line","handoff","approved","timestamp"],
+      "properties": {
+        "packet_id":       { "type": "string" },
+        "program_run_id":  { "type": "string" },
+        "state":           { "type": "string" },
+        "signal":          { "type": "string" },
+        "risk":            { "type": "string", "enum": ["LOW","MEDIUM","HIGH","CRITICAL"] },
+        "move":            { "type": "string" },
+        "suggested_line":  { "type": "string" },
+        "handoff":         { "type": ["string","null"] },
+        "approved":        { "type": "boolean" },
+        "timestamp":       { "type": "string", "format": "date-time" }
+      }
+    },
+    "ProgramTransitionReceipt": {
+      "type": "object",
+      "required": ["receipt_id","program_run_id","program_id","prior_state","next_state","trigger_event","active_role","policy_bundle","actions_executed","risk_flags","approval_path","next_state_patch","timestamp"],
+      "properties": {
+        "receipt_id":         { "type": "string" },
+        "program_run_id":     { "type": "string" },
+        "program_id":         { "type": "string" },
+        "prior_state":        { "type": "string" },
+        "next_state":         { "type": "string" },
+        "trigger_event":      { "type": "string" },
+        "active_role":        { "type": "string" },
+        "policy_bundle":      { "type": "string" },
+        "actions_executed":   { "type": "array", "items": {"type":"string"} },
+        "output_digest":      { "type": "string" },
+        "risk_flags":         { "type": "array", "items": {"type":"string"} },
+        "approval_path":      { "type": ["string","null"] },
+        "next_state_patch":   { "type": "object" },
+        "memory_update_intent": { "type": "array", "items": {"type":"string"} },
+        "timestamp":          { "type": "string", "format": "date-time" }
+      }
+    },
+    "PolicyBundle": {
+      "type": "object",
+      "required": ["bundle_id","version","rules"],
+      "properties": {
+        "bundle_id": { "type": "string" },
+        "version":   { "type": "string" },
+        "rules": { "type": "array", "items": { "type": "object", "required": ["rule_id","action","effect"] } }
+      }
+    },
+    "AlexandriaEntry": {
+      "type": "object",
+      "required": ["entry_id","timestamp","entry_type","payload","prev_hash","hash"],
+      "additionalProperties": false,
+      "properties": {
+        "entry_id":    { "type": "string" },
+        "timestamp":   { "type": "string", "format": "date-time" },
+        "entry_type":  { "type": "string", "enum": ["boot_proof","cps_receipt","program_event","policy_update","role_binding","system_event","transition_receipt","whisper_receipt","governance_event"] },
+        "payload":     { "type": "object" },
+        "prev_hash":   { "type": "string" },
+        "hash":        { "type": "string" }
+      }
+    },
+    "DignityKernelDecision": {
+      "type": "object",
+      "required": ["decision_id","op","hamiltonian_score","result","timestamp"],
+      "properties": {
+        "decision_id":           { "type": "string" },
+        "op":                    { "type": "string" },
+        "args_hash":             { "type": "string" },
+        "hamiltonian_score":     { "type": "number" },
+        "dignity_potential":     { "type": "number" },
+        "result":                { "type": "string", "enum": ["PASS","BLOCKED"] },
+        "never_event_triggered": { "type": ["string","null"] },
+        "timestamp":             { "type": "string", "format": "date-time" }
+      }
+    },
+    "ActiveSpeakerToken": {
+      "type": "object",
+      "required": ["token_id","program_run_id","active_role","acquired_at","ttl_seconds","priority"],
+      "properties": {
+        "token_id":        { "type": "string" },
+        "program_run_id":  { "type": "string" },
+        "active_role":     { "type": "string" },
+        "acquired_at":     { "type": "string", "format": "date-time" },
+        "ttl_seconds":     { "type": "integer" },
+        "priority":        { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    },
+    "ExceptionReceipt": {
+      "type": "object",
+      "required": ["exception_id","program_run_id","exception_type","requested_by","justification","approved_by","governance_run_id","timestamp"],
+      "properties": {
+        "exception_id":       { "type": "string" },
+        "program_run_id":     { "type": "string" },
+        "exception_type":     { "type": "string" },
+        "requested_by":       { "type": "string" },
+        "justification":      { "type": "string" },
+        "approved_by":        { "type": ["string","null"] },
+        "governance_run_id":  { "type": ["string","null"] },
+        "timestamp":          { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

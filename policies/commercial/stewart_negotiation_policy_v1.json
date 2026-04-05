@@ -1,0 +1,11 @@
+{"bundle_id":"stewart_negotiation_policy_v1","version":"1.0.0","role":"stewart_negotiation_operator",
+ "allowed_states":["S4_STRUCTURE","S5_VALIDATION","S6_NEGOTIATION","S7_CLOSE","S8_COMMIT"],
+ "memory_scope_spec":{"include":["pricing_history","objections","decision_map","prior_commitments","deal_structure"],"exclude":["founder_personal_notes","heidi_clinical_context","advisor_terms"]},
+ "hard_constraints":["cannot_discount_without_scope_change","must_log_every_term_signal","no_unilateral_close","founder_available_on_request"],
+ "rules":[
+  {"rule_id":"SP-001","action":"commercial.prepare_proposal","effect":"ALLOW","conditions":{}},
+  {"rule_id":"SP-002","action":"deal.capture_objection","effect":"ALLOW","conditions":{}},
+  {"rule_id":"SP-003","action":"deal.record_pricing_signal","effect":"ALLOW","conditions":{}},
+  {"rule_id":"SP-004","action":"commercial.close_deal","effect":"ALLOW","conditions":{"requires":"founder_approval_on_record"}},
+  {"rule_id":"SP-005","action":"commercial.discount","effect":"DENY","conditions":{"unless":"scope_change_logged"}}
+ ]}

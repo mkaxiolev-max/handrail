@@ -1,0 +1,13 @@
+{"program_library_version":"1.0.0","reference_implementation":"commercial_cps_program_v1",
+ "programs":[
+  {"program_id":"commercial_cps_program_v1","name":"Commercial","states":["S0_IDENTIFY","S1_OPEN","S2_FRAME","S3_QUALIFY","S4_CHAMPION","S5_VALIDATION","S6_NEGOTIATION","S7_CLOSE","S8_COMMIT","S9_ARCHIVE"],"roles":["elaine_access_operator","stewart_negotiation_operator","legal_operator","founder"],"policy_bundle":"commercial_policy_v1"},
+  {"program_id":"fundraising_cps_program_v1","name":"Fundraising","states":["F0_IDENTIFY","F1_WARM_INTRO","F2_NARRATIVE_FRAME","F3_QUALIFICATION","F4_DILIGENCE","F5_PARTNER_MEETING","F6_TERMS","F7_CLOSE","F8_ARCHIVE"]},
+  {"program_id":"hiring_cps_program_v1","name":"Hiring","states":["H0_ROLE_DEFINE","H1_SOURCE","H2_SCREEN","H3_CAPABILITY_VALIDATE","H4_ALIGNMENT_VALIDATE","H5_TEAM_INTERACTION","H6_OFFER","H7_ACCEPTANCE","H8_ONBOARDING","H9_REVIEW"]},
+  {"program_id":"partnership_cps_program_v1","name":"Partnership","states":["P0_IDENTIFY","P1_RELEVANCE_CHECK","P2_STRATEGIC_FIT","P3_INCENTIVE_ALIGNMENT","P4_STRUCTURE_DESIGN","P5_PILOT","P6_FORMAL_AGREEMENT","P7_EXPANSION","P8_REVIEW"]},
+  {"program_id":"ma_cps_program_v1","name":"M&A","states":["M0_IDENTIFY","M1_STRATEGIC_FIT","M2_PRELIMINARY_VALUE","M3_ENGAGEMENT","M4_DILIGENCE","M5_STRUCTURE","M6_NEGOTIATE","M7_CLOSE","M8_INTEGRATE","M9_REVIEW"]},
+  {"program_id":"advisor_san_cps_program_v1","name":"Advisor/SAN","states":["A0_IDENTIFY","A1_RELEVANCE","A2_SCOPE_DEFINE","A3_TERMS","A4_ONBOARD","A5_ACTIVE","A6_REVIEW","A7_EXIT"]},
+  {"program_id":"customer_success_cps_program_v1","name":"Customer Success","states":["CS0_ONBOARD","CS1_ACTIVATE","CS2_HEALTH_CHECK","CS3_EXPANSION","CS4_RENEWAL","CS5_REFERRAL","CS6_CHURN_RISK","CS7_RECOVER_OR_EXIT"]},
+  {"program_id":"product_feedback_cps_program_v1","name":"Product Feedback","states":["PF0_CAPTURE","PF1_CLASSIFY","PF2_PATTERN_DETECT","PF3_PRIORITIZE","PF4_SPEC","PF5_BUILD","PF6_VALIDATE","PF7_SHIP","PF8_CLOSE_LOOP"]},
+  {"program_id":"governance_cps_program_v1","name":"Governance","note":"Only path for Canon mutation. Schema changes must route through G5_RATIFIED.","states":["G0_MONITOR","G1_ANOMALY_DETECTED","G2_INVESTIGATE","G3_AMENDMENT_PROPOSED","G4_QUORUM_REVIEW","G5_RATIFIED","G6_DEPLOYED","G7_AUDITED"]},
+  {"program_id":"knowledge_ingestion_cps_program_v1","name":"Knowledge Ingestion","states":["K0_INGEST","K1_CLASSIFY","K2_VALIDATE","K3_ENRICH","K4_INDEX","K5_LINK","K6_RETIRE"]}
+ ]}

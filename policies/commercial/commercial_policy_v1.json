@@ -1,0 +1,10 @@
+{"bundle_id":"commercial_policy_v1","version":"1.0.0",
+ "precedence_note":"DK > Canon > this bundle > role binding > heuristic",
+ "rules":[
+  {"rule_id":"CP-001","action":"commercial.advance_state","effect":"ALLOW","conditions":{}},
+  {"rule_id":"CP-002","action":"commercial.close_deal","effect":"DENY","conditions":{"unless":"founder_approval_on_record"}},
+  {"rule_id":"CP-003","action":"commercial.request_founder_approval","effect":"ALLOW","conditions":{"min_state_index":5}},
+  {"rule_id":"CP-004","action":"comms.send_intro","effect":"ALLOW","conditions":{}},
+  {"rule_id":"CP-005","action":"program.generate_whisper","effect":"ALLOW","conditions":{}},
+  {"rule_id":"CP-006","action":"*","effect":"WARN","conditions":{"if_state":"S9_ARCHIVE"}}
+ ]}
