@@ -1,6 +1,8 @@
 services:
   handrail:
-    build: ./services/handrail
+    build:
+      context: .
+      dockerfile: services/handrail/Dockerfile
     environment:
       HR_WORKSPACE: ${HR_WORKSPACE}
     ports:

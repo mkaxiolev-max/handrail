@@ -29,7 +29,9 @@ RUN set -eux; \
 
 WORKDIR /app
 RUN pip install --no-cache-dir fastapi uvicorn pydantic pytest httpx jsonschema
-COPY handrail ./handrail
-COPY tests ./tests
+# Build context is project root — copy all packages needed at container startup
+COPY services/handrail/handrail ./handrail
+COPY services/handrail/tests    ./tests
+COPY abi                        ./abi
 EXPOSE 8011
 CMD ["uvicorn", "handrail.server:app", "--host", "0.0.0.0", "--port", "8011"]

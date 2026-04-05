@@ -1,0 +1,11 @@
+{
+  "quorum_threshold": 1,
+  "slots": {
+    "slot_1": {
+      "slot_id": "slot_1",
+      "serial": "26116460",
+      "enrolled_at": "2026-04-04T00:00:00+00:00",
+      "public_key_hash": "f9f7be28ee5d474d"
+    }
+  }
+}
