@@ -1,191 +1,119 @@
-# NS∞ v3 — SHUTDOWN DOCUMENTATION
-**Date:** 2026-04-05 | **Final tag:** `ns-infinity-v3` | **Author:** NS∞ autonomous constitutional compression sprint
+# NS∞ v4 — SHUTDOWN DOCUMENTATION
+**Date:** 2026-04-05 | **Final tag:** `ns-infinity-v4` | **Commit:** a19feb1
 
 ---
 
-## System State at Shutdown
+## Final system state
 
 | Check | Result |
 |-------|--------|
 | **Shalom** | ✅ **True — 8/8 checks passing** |
-| Handrail | ✅ `{"status":"ok"}` |
-| NS | ✅ `{"status":"ok","version":"2.0.0"}` |
-| Continuum | ✅ `{"healthy":true}` |
-| Proof registry | ✅ 16 entries — BOOT + SCHEMA_FREEZE |
-| State deltas | ✅ 66 transitions, associated deltas |
+| Handrail :8011 | ✅ `{"status":"ok"}` |
+| NS :9000 | ✅ `{"status":"ok","version":"2.0.0"}` |
+| Atomlex :8080 | ✅ 12 nodes, ACPT drift scoring live |
+| Continuum :8788 | ✅ healthy |
+| Proof registry | ✅ 16+ entries — BOOT + SCHEMA_FREEZE |
+| Regulation bloodstream | ✅ 100 transitions |
 | Lexicon | ✅ 50 entries loaded (P1=50) |
-| Atomlex | ✅ 12 nodes, 12 canonical roots |
-| ABI schemas | ✅ 10 FROZEN |
-| Sovereign boot | ✅ 31/31 ops passing |
-| Founder Console | ✅ v10 — 16 panels, NS∞ SYSTEM STATUS at top |
-| GET /system/status | ✅ canonical shalom endpoint live |
-| Policy Hierarchy | ✅ 6 layers documented in POLICY_HIERARCHY.md |
+| ABI schemas | ✅ 12 FROZEN |
+| Sovereign boot | ✅ **32/32 ops passing** |
+| Boot mission graph | ✅ **12/12 FULL — YubiKey 26116460 hardware** |
+| Founder Console | ✅ **v11 — Program Runtime panel live** |
+| GET /system/status | ✅ shalom score, 8 checks, ring_5 status |
+| /program/library | ✅ 10 programs registered |
+| /program/start | ✅ creates governed ProgramRuntime |
+| /program/advance | ✅ ledger-ratified state transitions |
+| /program/whisper | ✅ NS whispers to operator |
+| Dignity Kernel | ✅ loaded in Handrail (_DK_ACTIVE=True) |
+| Memory scope | ✅ hard-bounded context assembly |
+| State resolver | ✅ ledger-derived, never LLM inference |
+| Policy hierarchy | ✅ 6 layers documented |
 
 ---
 
-## Cold Start (after shutdown)
-
-```bash
-cd /Users/axiolevns/axiolev_runtime
-./boot.sh
-```
-
-Full cold start: Docker check → build → health-wait → ngrok → Twilio webhook.
-Produces `NS∞ BOOT COMPLETE` banner when all 3 containers healthy.
-
-**Or manual:**
-```bash
-DOCKER_HOST="unix:///Users/axiolevns/.docker/run/docker.sock" \
-  docker compose up -d handrail ns continuum
-sleep 10
-curl -s http://localhost:9000/healthz
-curl -s http://localhost:8011/healthz
-curl -s http://localhost:8788/healthz
-```
-
----
-
-## Tag Chain — mkaxiolev-max/handrail
+## Tag chain
 
 | Tag | Commit | Milestone |
 |-----|--------|-----------|
-| `ns-infinity-v3` | 7d94abb | **GET /system/status shalom score, policy hierarchy, Founder Console v10** |
-| `ns-infinity-v2` | 4c968da | **Atomlex NS proxy + ATOMLEX ENGINE console panel** |
+| `ns-infinity-v4` | a19feb1 | **Program Runtime wired, 12/12 FULL boot, /program/* live, Console v11** |
+| `ns-infinity-v3` | a9591ba | GET /system/status shalom score, policy hierarchy, Console v10 |
+| `ns-infinity-v2` | 87c34ba | Atomlex NS proxy + ATOMLEX ENGINE console panel |
+| `atomlex-v4` | 7ad46ae | Atomlex v4.0 constraint semantic graph engine |
 | `lexicon-substrate-v1` | ac69a49 | Gnoseogenic Lexicon 55 P1 words + analyze_intent |
 | `regulation-engine-v1` | aa34e82 | Constitutional Regulation Engine + typed state deltas |
 | `ns-infinity-final-v1` | efa0f76 | First Gnoseogenic Lexicon + Stripe commercial layer |
-| `launch-ready-v1` | 1db52b8 | ACTIVATION_CHECKLIST + LAUNCH_SEQUENCE |
-| `proof-registry-v1` | 41356bc | Universal proof registry |
-| `ns-infinity-v1` | 873ef26 | First full system complete |
-| `system-complete-v1` | 3822965 | BLACK KNIGHT all 5 steps |
-| `founder-console-v8` | a3b7040 | 10-panel Founder Console |
-| `yubikey-quorum-v1` | 95a7a41 | YubiKey slot_1 enrolled + quorum gate |
-| `sovereign-boot-proof-v1` | cb9f151 | Boot proof receipt + 3-reality attestation |
-| `abi-enforcement-v1` | 94acc39 | Hard ABI enforcement at Handrail boundary |
-| `autopoietic-loop-v1` | — | Planner + commit governance |
-| `permanent-webhook-v1` | f50bbc4 | ngrok LaunchAgent permanent webhook |
+
+Root repo: `root-prelaunch-v2` (e61744d)
 
 ---
 
-## Tag Chain — mkaxiolev-max/root
+## What is fully live
 
-| Tag | Commit | Milestone |
-|-----|--------|-----------|
-| `root-stripe-v1` | 254fcb5 | ROOT Stripe checkout flow live |
-| `root-payment-fix-v1` | 5b3fa7d | CTAs pointing to working Vercel URLs |
-| `stripe-live-v1` | 2f3e31c | Stripe env wired |
-| `stripe-webhook-v1` | f3821b7 | Webhook handler |
-| `distribution-v1` | 563f6c7 | ROOT distribution-ready |
+### Core architecture
+- **Handrail :8011** — CPS execution governor, 32-op sovereign_boot, /program/* endpoints
+- **NS :9000** — Cognition layer, Founder Console v11, voice handler
+- **Atomlex :8080** — Semantic constraint graph, 12 nodes, ACPT drift scoring
+- **Continuum :8788** — Simulation layer
 
----
+### Program Runtime (new in v4)
+- `/program/start` — creates governed ProgramRuntime (all 10 programs)
+- `/program/advance` — ledger-ratified state transitions with receipts
+- `/program/whisper` — NS whisper packets to human operator
+- `/program/status` — canonical state from Alexandria ledger
+- `/program/library` — all 10 programs: Commercial, Fundraising, Hiring, Partnership, M&A, Advisor/SAN, Customer Success, Product Feedback, Governance, Knowledge Ingestion
 
-## Founder Console — 15 Panels
+### Constitutional enforcement
+- Dignity Kernel: _DK_ACTIVE=True in Handrail, Hamiltonian gate, never-events
+- Memory scope: Elaine cannot see pricing_history. Stewart cannot see founder notes. Hard boundary at context assembly.
+- State resolver: ledger-derived first, LLM inference second, never reverse
+- Role router: deterministic, trigger-based overrides, speaker token arbitration
+- Policy hierarchy: 6 layers (DK > Canon > PolicyBundle > RoleBinding > heuristic)
 
-| # | Panel | Source | Refresh |
-|---|-------|--------|---------|
-| L | Conversation | WebSocket + /memory/context | Live WS |
-| 1 | System Health | /health/full + /models/registry | 5s |
-| 2 | Last 3 CPS Ops | /ops/recent | 5s |
-| 3 | Memory Feed | /memory/recent | 10s |
-| 4 | Proactive Intel | /intel/proactive | 30s |
-| 5 | Chat/Ask NS∞ | /chat/ask | on-demand |
-| 6 | Autopoietic Loop | /autopoietic/specs | 30s |
-| 7 | Model Council | /models/status + /san/summary | 15s |
-| 8 | Boot Proof | /alexandria/proof | 60s |
-| 9 | YubiKey Quorum | /kernel/yubikey/status | 30s |
-| 10 | ABI Schemas | :8011/abi/status | 60s |
-| 11 | Dignity Config | :8011/dignity/config | 60s |
-| 12 | State Regulation | :8011/state/summary | 30s |
-| 13 | **ATOMLEX ENGINE** | /atomlex/status | 120s |
-| 14 | Gnoseogenic Lexicon | /lexicon/status + /lexicon/analyze | 120s |
-| 15 | Founder Actions | :8011 authority verbs | on-demand |
+### Voice
+- +1(307)202-4418 — NS answers, Polly.Matthew, re-listens indefinitely
+- ngrok domain: monica-problockade-caylee.ngrok-free.dev (auto-start via voice_webhook_health.py)
 
----
+### YubiKey
+- Serial 26116460 enrolled in config/allowed_yubikey_serials.txt
+- Boot mission graph: phase 01 verify_substrate reads this file — FAIL_CLOSED if not present
 
-## Ring Completion at Shutdown
-
-| Ring | Name | Status |
-|------|------|--------|
-| Ring 1 | Foundations | ✅ COMPLETE |
-| Ring 2 | Intelligence | ✅ COMPLETE |
-| Ring 3 | Sovereign | ✅ COMPLETE |
-| Ring 4 | Capability | ✅ COMPLETE |
-| Ring 5 | Production | ⛔ BLOCKED — 5 manual steps |
+### Revenue infrastructure
+- ROOT: root-jade-kappa.vercel.app | /api/system-status | /api/checkout
+- Handrail: axiolevruntime.vercel.app
+- Hub: zeroguess.dev
+- Stripe: 4 products wired (ROOT Pro $49, ROOT Auto $99, Handrail Pro $29, Enterprise $299)
+- Launch plan: LAUNCH_SEQUENCE.md — Day 1 HN Show HN → Day 30 $3.9K MRR
 
 ---
 
-## Ring 5 Blockers — Manual Steps Required
+## RING 5 — 5 manual steps remaining before launch
 
-```
-1. Stripe LLC verification
-   → https://dashboard.stripe.com (Action required banner)
-   → EIN/SSN, address, business type, ID upload
-   → 1-3 business days
+| # | Step | URL | Action |
+|---|------|-----|--------|
+| 1 | Stripe LLC verification | https://dashboard.stripe.com | Find 'Action required' → upload AXIOLEV Holdings LLC Wyoming docs |
+| 2 | Stripe live keys | https://dashboard.stripe.com/apikeys | STRIPE_SECRET_KEY=sk_live_... in Vercel ROOT env |
+| 3 | ROOT price IDs | https://dashboard.stripe.com/products | ROOT Pro $49/mo + ROOT Auto $99/mo → STRIPE_PRICE_ID_ROOT_PRO/AUTO in Vercel |
+| 4 | YubiKey slot_2 | https://yubico.com | Buy YubiKey 5 NFC → ENROLL YUBIKEY in Founder Console |
+| 5 | DNS root.axiolev.com | Registrar DNS panel | CNAME: name=root, value=cname.vercel-dns.com |
 
-2. Stripe live keys
-   → dashboard.stripe.com → Developers → API Keys
-   → Edit .env: STRIPE_SK_PENDING → sk_live_...
-   → Restart: docker compose up -d --force-recreate handrail
+**Gate:** `curl https://root-jade-kappa.vercel.app/api/system-status` → `launch_ready: true`
+**Then:** Execute LAUNCH_SEQUENCE.md → Day 1
 
-3. ROOT price IDs (Vercel env vars)
-   → Create ROOT Pro $49/mo + ROOT Auto $99/mo in Stripe
-   → Vercel → root project → Settings → Environment Variables
-   → STRIPE_PRICE_ID_ROOT_PRO + STRIPE_PRICE_ID_ROOT_AUTO
+---
 
-4. YubiKey slot_2
-   → Order YubiKey 5 NFC from yubico.com (~$55)
-   → POST /yubikey/enroll via Founder Console or API
-   → Expands quorum from 1-of-1 to 2-of-3
+## How to boot next session
 
-5. root.axiolev.com DNS
-   → Domain registrar → axiolev.com DNS management
-   → Add CNAME: root → cname.vercel-dns.com (TTL 3600)
+```bash
+# Standard boot (with YubiKey plugged in)
+cd /Users/axiolevns/axiolev_runtime
+DOCKER_HOST="unix:///Users/axiolevns/.docker/run/docker.sock" docker compose up -d
+sleep 12
+python3 boot_mission_graph.py  # 12/12 FULL with YubiKey
+curl http://localhost:8011/system/status | python3 -c "import sys,json; d=json.load(sys.stdin); print('shalom:', d['shalom'], d['shalom_score'])"
+open http://localhost:9000/founder  # Founder Console v11
 ```
 
 ---
 
-## Vocabulary Substrate
-
-The system is now grounded in the Gnoseogenic Lexicon:
-
-| Root | PIE | System Mapping |
-|------|-----|----------------|
-| logos | `*leg-` "to gather" | Constitutional Regulation Engine — the gathering principle |
-| shalom | `*sol-` "whole" | Target state: sovereign=true + 29/29 ops + dignity + quorum |
-| kavod | `*dek-` "weight" | DignityKernel H = 0.85φ − 0.92V |
-| emet | `*deru-` "load-bearing" | ABI freeze fingerprints — immutable truth |
-| brit | `*leig-` "bind" | YubiKey slot_1 covenant — physical hardware binding |
-
-**Constitutional intent detection:** `analyze_intent("logos shalom dignity covenant authority")` → `is_constitutional_intent=True, max_tier=5`
-
----
-
-## Infrastructure at Shutdown
-
-| Component | Status |
-|-----------|--------|
-| ngrok LaunchAgent | `com.axiolev.ngrok` · PID active · `monica-problockade-caylee.ngrok-free.dev` |
-| Twilio +1 (307) 202-4418 | voice_url + sms_url → ngrok domain |
-| Vercel × 3 | zeroguess.dev · root-jade-kappa.vercel.app · axiolevruntime.vercel.app |
-| Alexandria SSD | `/Volumes/NSExternal/ALEXANDRIA/` — chain_length=36, proof_valid=true |
-| Docker Compose | handrail:8011 · ns:9000 · continuum:8788 |
-
----
-
-## What Ships When Ring 5 Activates
-
-Per `LAUNCH_SEQUENCE.md`:
-
-**Day 1-5:** ROOT launch
-- Twitter: `ROOT is live. State layer for the agentic era. root.axiolev.com`
-- HN Show HN: deterministic state diagnosis for AI agents
-- Reddit: r/programming + r/MachineLearning
-
-**Day 6-10:** Handrail launch
-- Twitter: `Handrail is live. Execution control plane for LLM agents.`
-- HN Show HN: deterministic CPS execution control
-
-**Revenue targets:**
-- Day 3: First paying customer ($49)
-- Day 10: 10 ROOT + 10 Handrail Pro → $780 MRR
-- Month 3: 200 customers → $14K+ MRR
+## Software phase: COMPLETE
+Next session: Ring 5 activation → LAUNCH_SEQUENCE.md Day 1
