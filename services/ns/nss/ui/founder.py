@@ -1,12 +1,12 @@
 # Copyright © 2026 Axiolev. All rights reserved.
-"""Founder Console v2 — full Jarvis two-panel sovereign interface."""
+"""Founder Console v8 — full Jarvis two-panel sovereign interface + Boot Proof + YubiKey + ABI panels."""
 
 FOUNDER_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NS∞ Founder Console v2</title>
+<title>NS∞ Founder Console v8</title>
 <style>
 :root{
   --bg:#050d1a;--p:#080f1e;--p2:#0c1628;--b:#112240;--b2:#1a3a5e;
@@ -87,7 +87,7 @@ main{display:flex;flex:1;overflow:hidden}
 </head>
 <body>
 <header>
-  <div class="logo">NS∞ FOUNDER CONSOLE v2</div>
+  <div class="logo">NS∞ FOUNDER CONSOLE v8</div>
   <div class="hdr-right">
     <div class="ws-badge">
       <div class="ws-dot" id="ws-dot"></div>
@@ -166,6 +166,21 @@ main{display:flex;flex:1;overflow:hidden}
     <div class="section">
       <div class="ph">MODEL COUNCIL <span id="council-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="council-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- Boot Proof -->
+    <div class="section">
+      <div class="ph">BOOT PROOF <span id="proof-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="proof-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- YubiKey -->
+    <div class="section">
+      <div class="ph">YUBIKEY QUORUM <span id="yubi-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="yubi-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- ABI Status -->
+    <div class="section">
+      <div class="ph">ABI SCHEMAS <span id="abi-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="abi-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
   </div>
 </main>
@@ -505,6 +520,81 @@ async function refreshCouncil() {
   }
 }
 
+// ── Boot Proof ──
+async function refreshBootProof() {
+  try {
+    const r = await fetch(NS+'/alexandria/proof').then(x=>x.json());
+    const valid = r.proof_valid;
+    const hash  = (r.root_hash||'').slice(0,20)+'…';
+    const len   = r.chain_length ?? r.total_entries ?? '?';
+    document.getElementById('proof-body').innerHTML = [
+      ['Proof Valid',    valid
+        ? '<span class="badge ok">VALID</span>'
+        : '<span class="badge err">INVALID</span>'],
+      ['Chain Length',   `<span class="ok">${len} entries</span>`],
+      ['Root Hash',      `<span style="color:var(--s);font-size:10px">${esc(hash)}</span>`],
+      ['Source',         `<span style="color:var(--mu);font-size:9px">Alexandria SSD</span>`],
+    ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
+    document.getElementById('proof-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('proof-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /alexandria/proof</div>';
+  }
+}
+
+// ── YubiKey Quorum ──
+async function refreshYubiKey() {
+  try {
+    const r = await fetch(NS+'/kernel/yubikey/status').then(x=>x.json());
+    const slots = r.quorum_slots || {};
+    const thresh = r.quorum_threshold ?? 1;
+    const active = r.active_slots ?? 0;
+    const satisfied = r.quorum_satisfied;
+    const rows = [
+      ['Quorum', satisfied
+        ? `<span class="badge ok">SATISFIED (${active}/${thresh})</span>`
+        : `<span class="badge err">UNSATISFIED (${active}/${thresh})</span>`],
+      ['Serial',  `<span style="color:var(--s)">${esc(r.serial||'—')}</span>`],
+      ['Mode',    `<span style="color:var(--mu);font-size:9px">${esc(r.mode||'—')}</span>`],
+    ];
+    Object.entries(slots).forEach(([slot, info]) => {
+      const active = info.active;
+      rows.push([
+        slot,
+        active
+          ? `<span class="badge ok">${esc(info.role)} · ${esc(info.serial||'?')}</span>`
+          : `<span class="badge dim">${esc(info.role)} · unprovisioned</span>`,
+      ]);
+    });
+    document.getElementById('yubi-body').innerHTML =
+      rows.map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
+    document.getElementById('yubi-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('yubi-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /kernel/yubikey/status</div>';
+  }
+}
+
+// ── ABI Status ──
+async function refreshABI() {
+  try {
+    const r = await fetch('http://localhost:8011/abi/status').then(x=>x.json());
+    const schemas = r.schemas || {};
+    const entries = Object.entries(schemas);
+    if (!entries.length) {
+      document.getElementById('abi-body').innerHTML = '<div class="dim" style="font-size:10px;padding:4px">No schemas</div>';
+      return;
+    }
+    document.getElementById('abi-body').innerHTML = entries.map(([name, hash]) =>
+      `<div class="hrow">
+        <div class="hk" style="font-size:10px;color:var(--bl)">${esc(name)}</div>
+        <div class="hv"><span class="badge ok">FROZEN</span> <span style="color:var(--mu);font-size:9px">${esc(hash)}</span></div>
+      </div>`
+    ).join('');
+    document.getElementById('abi-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('abi-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/abi/status</div>';
+  }
+}
+
 // ── Refresh loop ──
 async function refreshAll() {
   document.getElementById('last-update').textContent = fts(new Date().toISOString());
@@ -515,10 +605,16 @@ refreshAll();
 refreshMemory();
 refreshIntel();
 refreshCouncil();
+refreshBootProof();
+refreshYubiKey();
+refreshABI();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
 setInterval(refreshIntel, 30000);
 setInterval(refreshCouncil, 15000);
+setInterval(refreshBootProof, 60000);
+setInterval(refreshYubiKey, 30000);
+setInterval(refreshABI, 60000);
 </script>
 </body>
 </html>"""

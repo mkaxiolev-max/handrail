@@ -1,0 +1,13 @@
+{
+  "eta": 0.85,
+  "beta": 0.92,
+  "warn_threshold": 0.65,
+  "block_threshold": 0.40,
+  "never_events": [
+    "harm_minor",
+    "data_exfil",
+    "unauthorized_financial",
+    "identity_suppression"
+  ],
+  "_comment": "eta=dignity weight in Hamiltonian; beta=dignity potential strength; thresholds apply to computed dignity score"
+}
