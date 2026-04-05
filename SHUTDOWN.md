@@ -1,5 +1,5 @@
-# NS∞ v2 — SHUTDOWN DOCUMENTATION
-**Date:** 2026-04-05 | **Final tag:** `ns-infinity-v2` | **Author:** NS∞ autonomous final closure
+# NS∞ v3 — SHUTDOWN DOCUMENTATION
+**Date:** 2026-04-05 | **Final tag:** `ns-infinity-v3` | **Author:** NS∞ autonomous constitutional compression sprint
 
 ---
 
@@ -7,16 +7,19 @@
 
 | Check | Result |
 |-------|--------|
+| **Shalom** | ✅ **True — 8/8 checks passing** |
 | Handrail | ✅ `{"status":"ok"}` |
 | NS | ✅ `{"status":"ok","version":"2.0.0"}` |
 | Continuum | ✅ `{"healthy":true}` |
 | Proof registry | ✅ 16 entries — BOOT + SCHEMA_FREEZE |
-| State deltas | ✅ 29 deltas across 30 transitions |
+| State deltas | ✅ 66 transitions, associated deltas |
 | Lexicon | ✅ 50 entries loaded (P1=50) |
-| Atomlex | ✅ 12 nodes, 20 edges, 12 canonical roots |
-| Alexandria proof | ✅ proof_valid=true, chain_length=36 |
+| Atomlex | ✅ 12 nodes, 12 canonical roots |
 | ABI schemas | ✅ 10 FROZEN |
-| Founder Console | ✅ 15 panels live |
+| Sovereign boot | ✅ 31/31 ops passing |
+| Founder Console | ✅ v10 — 16 panels, NS∞ SYSTEM STATUS at top |
+| GET /system/status | ✅ canonical shalom endpoint live |
+| Policy Hierarchy | ✅ 6 layers documented in POLICY_HIERARCHY.md |
 
 ---
 
@@ -46,6 +49,7 @@ curl -s http://localhost:8788/healthz
 
 | Tag | Commit | Milestone |
 |-----|--------|-----------|
+| `ns-infinity-v3` | 7d94abb | **GET /system/status shalom score, policy hierarchy, Founder Console v10** |
 | `ns-infinity-v2` | 4c968da | **Atomlex NS proxy + ATOMLEX ENGINE console panel** |
 | `lexicon-substrate-v1` | ac69a49 | Gnoseogenic Lexicon 55 P1 words + analyze_intent |
 | `regulation-engine-v1` | aa34e82 | Constitutional Regulation Engine + typed state deltas |
