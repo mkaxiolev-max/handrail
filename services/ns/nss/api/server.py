@@ -3612,6 +3612,39 @@ setInterval(refresh, 5000);
         from nss.lexicon_substrate import analyze_intent
         return analyze_intent(text)
 
+
+    # ── Atomlex Constraint Graph Proxy ────────────────────────────────────────
+
+    @app.get("/atomlex/status")
+    def atomlex_proxy_status():
+        """Proxy to Atomlex graph status — node/edge count."""
+        try:
+            import urllib.request as _ur, json as _j
+            r = _ur.urlopen("http://atomlex:8080/graph/status", timeout=3)
+            return _j.loads(r.read())
+        except Exception as e:
+            return {"ok": False, "error": str(e), "service": "atomlex", "nodes": 0, "node_count": 0}
+
+    @app.get("/atomlex/word/{word}")
+    def atomlex_proxy_word(word: str):
+        """Proxy to Atomlex word query — full constraint propagation."""
+        try:
+            import urllib.request as _ur, json as _j
+            r = _ur.urlopen(f"http://atomlex:8080/word/{word}", timeout=3)
+            return _j.loads(r.read())
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    @app.get("/atomlex/analyze")
+    def atomlex_proxy_analyze(text: str = ""):
+        """Proxy to Atomlex analyze — constitutional vocabulary analysis."""
+        try:
+            import urllib.request as _ur, json as _j, urllib.parse as _up
+            r = _ur.urlopen(f"http://atomlex:8080/analyze?text={_up.quote(text)}", timeout=3)
+            return _j.loads(r.read())
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
     return app
 
 

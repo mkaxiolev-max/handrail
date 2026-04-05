@@ -192,6 +192,11 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph" style="color:var(--g);letter-spacing:2px">STATE REGULATION <span id="reg-ts" style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px"></span></div>
       <div class="sec-body" id="reg-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    <!-- Atomlex Engine -->
+    <div class="section" style="background:rgba(68,136,255,0.03);border-top:1px solid rgba(68,136,255,0.15)">
+      <div class="ph" style="color:var(--bl);letter-spacing:2px">ATOMLEX ENGINE <span id="atomlex-ts" style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px"></span></div>
+      <div class="sec-body" id="atomlex-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
     <!-- Gnoseogenic Lexicon -->
     <div class="section" style="background:rgba(240,160,48,0.03);border-top:1px solid rgba(240,160,48,0.12)">
       <div class="ph" style="color:var(--a);letter-spacing:2px">GNOSEOGENIC LEXICON <span id="lex-ts" style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px"></span></div>
@@ -722,6 +727,22 @@ async function refreshRegulation() {
   }
 }
 
+// ── Atomlex Engine ──
+async function refreshAtomlex() {
+  try {
+    const r = await fetch(NS+'/atomlex/status').then(x=>x.json());
+    const canonical = (r.canonical_roots||[]).map(w=>`<span style="background:rgba(68,136,255,0.15);border:1px solid rgba(68,136,255,0.3);border-radius:2px;padding:1px 4px;font-size:8px;color:var(--bl);margin:1px">${esc(w)}</span>`).join('');
+    document.getElementById('atomlex-body').innerHTML = [
+      ['Nodes',     `<span style="color:var(--ok)">${r.node_count||0}</span> · <span style="color:var(--mu);font-size:9px">${r.edge_count||0} edges</span>`],
+      ['Canonical', canonical || '<span style="color:var(--mu);font-size:9px">loading…</span>'],
+      ['P1 roots',  `<span style="color:var(--a)">${r.priority_p1||0}</span>`],
+    ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
+    document.getElementById('atomlex-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('atomlex-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach atomlex</div>';
+  }
+}
+
 // ── Gnoseogenic Lexicon ──
 const TIER_COLORS = {1:'#7090a8',2:'#6888c8',3:'#50a8d8',4:'#00e87a',5:'var(--a)'};
 async function refreshLexicon() {
@@ -890,6 +911,7 @@ refreshYubiKey();
 refreshABI();
 refreshDignityConfig();
 refreshRegulation();
+refreshAtomlex();
 refreshLexicon();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
@@ -900,6 +922,7 @@ setInterval(refreshYubiKey, 30000);
 setInterval(refreshABI, 60000);
 setInterval(refreshDignityConfig, 60000);
 setInterval(refreshRegulation, 30000);
+setInterval(refreshAtomlex, 120000);
 setInterval(refreshLexicon, 120000);
 </script>
 </body>
