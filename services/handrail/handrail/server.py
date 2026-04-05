@@ -615,6 +615,20 @@ async def ops_cps(req: CPSRequest, http_request: Request):
     return JSONResponse(result)
 
 
+
+# ── Dignity Kernel gate (wired into CPS execution) ──────────────────────────
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+    from dignity_kernel.dignity_kernel import get_kernel as _get_dk
+    _DK = _get_dk(ledger_path=Path("/Volumes/NSExternal/.run/dk_decisions.jsonl"))
+    _DK_ACTIVE = True
+except Exception as _dk_err:
+    _DK_ACTIVE = False
+    _DK = None
+    import logging as _logging
+    _logging.getLogger(__name__).warning("DignityKernel not loaded: %s", _dk_err)
+
 # ── Canonical system status ────────────────────────────────────────────────────
 
 @app.get("/system/status")
@@ -781,3 +795,140 @@ def system_status():
             "all_clear": False,
         },
     })
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# PROGRAM RUNTIME ENDPOINTS — Program Library v1
+# All 10 programs routed through Handrail as first-class governed ops
+# ════════════════════════════════════════════════════════════════════════════
+
+def _get_program_engine():
+    """Lazy-load program engine to avoid circular imports."""
+    import sys
+    sys.path.insert(0, str(WORKSPACE))
+    from runtime.program_engine import ProgramEngine
+    return ProgramEngine()
+
+
+@app.post("/program/start")
+async def program_start(request: Request):
+    """Start a new governed program runtime. Returns program_run_id."""
+    try:
+        body = await request.json()
+        program_id = body.get("program_id", "commercial_cps_program_v1")
+        context = body.get("context", {})
+        engine = _get_program_engine()
+        runtime = engine.start(program_id, context)
+        return JSONResponse({
+            "ok": True,
+            "program_run_id": runtime["program_run_id"],
+            "program_id": runtime["program_id"],
+            "state": runtime["state"],
+            "active_role": runtime["active_role"],
+            "policy_bundle": runtime["policy_bundle"],
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.post("/program/advance")
+async def program_advance(request: Request):
+    """Advance a program to next state. Ledger-ratified, role-routed, receipted."""
+    try:
+        body = await request.json()
+        run_id = body.get("program_run_id")
+        trigger = body.get("trigger", "manual_advance")
+        proposed_next = body.get("proposed_next_state")
+        engine = _get_program_engine()
+        runtime = engine.load(run_id)
+        if not runtime:
+            return JSONResponse({"ok": False, "error": f"program_run_id {run_id} not found"}, status_code=404)
+        result = engine.advance_state(runtime, trigger=trigger, proposed_next=proposed_next)
+        return JSONResponse({
+            "ok": True,
+            "program_run_id": run_id,
+            "prior_state": result["receipt"]["prior_state"],
+            "new_state": result["receipt"]["next_state"],
+            "active_role": result["runtime"]["active_role"],
+            "receipt_id": result["receipt"]["receipt_id"],
+            "handoff": result.get("handoff"),
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.post("/program/whisper")
+async def program_whisper(request: Request):
+    """Generate a whisper packet for the current program state."""
+    try:
+        body = await request.json()
+        run_id = body.get("program_run_id")
+        trigger = body.get("trigger")
+        signal = body.get("prospect_signal", "")
+        engine = _get_program_engine()
+        runtime = engine.load(run_id)
+        if not runtime:
+            return JSONResponse({"ok": False, "error": f"program_run_id {run_id} not found"}, status_code=404)
+        packet = engine.generate_whisper(runtime, trigger=trigger, prospect_signal=signal)
+        return JSONResponse({"ok": True, "whisper": packet})
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.get("/program/status/{run_id}")
+def program_status(run_id: str):
+    """Get canonical current state of a program runtime from ledger."""
+    try:
+        engine = _get_program_engine()
+        runtime = engine.load(run_id)
+        if not runtime:
+            return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
+        from runtime.state_resolver import StateResolver
+        resolution = StateResolver().resolve(runtime)
+        return JSONResponse({
+            "ok": True,
+            "program_run_id": run_id,
+            "program_id": runtime["program_id"],
+            "canonical_state": resolution["canonical_state"],
+            "state_source": resolution.get("state_source"),
+            "confidence": resolution.get("confidence"),
+            "active_role": runtime["active_role"],
+            "receipts_count": len(runtime.get("receipts", [])),
+            "next_state": resolution.get("next_state"),
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
+
+
+@app.get("/program/library")
+def program_library():
+    """List all available programs in the Program Library v1."""
+    try:
+        import json as _json
+        lib = WORKSPACE / "programs" / "program_library_v1.json"
+        if not lib.exists():
+            return JSONResponse({"ok": False, "error": "program_library_v1.json not found"})
+        data = _json.loads(lib.read_text())
+        return JSONResponse({
+            "ok": True,
+            "program_count": len(data.get("programs", [])),
+            "programs": [
+                {"program_id": p["program_id"], "name": p.get("name", p["program_id"]),
+                 "state_count": len(p.get("states", []))}
+                for p in data.get("programs", [])
+            ],
+            "reference_implementation": data.get("reference_implementation"),
+        })
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)})
+
+
+def _sync_json(request: Request) -> dict:
+    """Sync wrapper to read request JSON in sync endpoint context."""
+    import asyncio
+    try:
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(request.json())
+    except Exception:
+        return {}
+

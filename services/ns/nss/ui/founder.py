@@ -1,12 +1,12 @@
 # Copyright © 2026 Axiolev. All rights reserved.
-"""Founder Console v10 — canonical system status (shalom score) + full Jarvis two-panel sovereign interface + Boot Proof + YubiKey + ABI + STATE REGULATION panels."""
+"""Founder Console v11 — canonical system status (shalom score) + full Jarvis two-panel sovereign interface + Boot Proof + YubiKey + ABI + STATE REGULATION panels."""
 
 FOUNDER_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NS∞ Founder Console v10</title>
+<title>NS∞ Founder Console v11</title>
 <style>
 :root{
   --bg:#050d1a;--p:#080f1e;--p2:#0c1628;--b:#112240;--b2:#1a3a5e;
@@ -87,7 +87,7 @@ main{display:flex;flex:1;overflow:hidden}
 </head>
 <body>
 <header>
-  <div class="logo">NS∞ FOUNDER CONSOLE v10</div>
+  <div class="logo">NS∞ FOUNDER CONSOLE v11</div>
   <div class="hdr-right">
     <div class="ws-badge">
       <div class="ws-dot" id="ws-dot"></div>
@@ -119,6 +119,34 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph" style="color:#ffd700;letter-spacing:3px">NS∞ SYSTEM STATUS <span id="sys-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="sys-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    
+    <!-- Program Runtime Panel -->
+    <div class="section" style="background:rgba(68,136,255,0.04);border:1px solid rgba(68,136,255,0.15);border-radius:4px;margin-bottom:8px">
+      <div class="ph" style="color:var(--bl);letter-spacing:2px">PROGRAM RUNTIME <span id="prg-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="prg-body">
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <select id="prg-select" style="flex:1;background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:10px;padding:3px 6px;border-radius:3px">
+            <option value="commercial_cps_program_v1">Commercial</option>
+            <option value="fundraising_cps_program_v1">Fundraising</option>
+            <option value="hiring_cps_program_v1">Hiring</option>
+            <option value="governance_cps_program_v1">Governance</option>
+          </select>
+          <button onclick="startProgram()" style="background:rgba(68,136,255,0.2);border:1px solid rgba(68,136,255,0.4);border-radius:3px;color:var(--bl);font-family:inherit;font-size:10px;font-weight:700;padding:4px 10px;cursor:pointer">START</button>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:6px">
+          <input id="prg-run-id" type="text" placeholder="program_run_id…" style="flex:1;background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:9px;padding:3px 6px;border-radius:3px"/>
+          <button onclick="loadProgramStatus()" style="background:rgba(112,144,168,0.15);border:1px solid rgba(112,144,168,0.3);border-radius:3px;color:var(--s);font-family:inherit;font-size:9px;padding:3px 8px;cursor:pointer">STATUS</button>
+          <button onclick="advanceProgram()" style="background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.3);border-radius:3px;color:var(--ok);font-family:inherit;font-size:9px;padding:3px 8px;cursor:pointer">ADVANCE</button>
+          <button onclick="getWhisper()" style="background:rgba(240,160,48,0.12);border:1px solid rgba(240,160,48,0.3);border-radius:3px;color:var(--a);font-family:inherit;font-size:9px;padding:3px 8px;cursor:pointer">WHISPER</button>
+        </div>
+        <div id="prg-state-display" style="padding:4px 0;min-height:16px"></div>
+        <div id="prg-whisper-display" style="margin-top:4px;padding:6px;background:rgba(240,160,48,0.06);border:1px solid rgba(240,160,48,0.15);border-radius:3px;display:none">
+          <div style="font-size:8px;color:var(--mu);letter-spacing:1px;margin-bottom:3px">WHISPER</div>
+          <div id="prg-whisper-content" style="font-size:10px;color:var(--t)"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Health -->
     <div class="section">
       <div class="ph">SYSTEM HEALTH <span id="health-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
@@ -908,6 +936,94 @@ function founderApproveBootProof() { founderVerb('approve_boot'); }
 function founderEnrollYubiKey()    { founderVerbForm('enroll_yubikey'); }
 function founderViewProofChain()   { founderVerb('view_proof_chain'); }
 function founderSystemStatus()     { founderVerb('approve_boot'); }
+
+
+// ── Program Runtime Panel ──
+let _activeRunId = null;
+
+async function startProgram() {
+  const progId = document.getElementById('prg-select').value;
+  try {
+    const r = await fetch('http://localhost:8011/program/start', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({program_id: progId, context: {}})
+    }).then(x=>x.json());
+    if (r.ok) {
+      _activeRunId = r.program_run_id;
+      document.getElementById('prg-run-id').value = r.program_run_id;
+      document.getElementById('prg-state-display').innerHTML =
+        `<div class="hrow"><div class="hk">State</div><div class="hv"><span style="color:var(--bl)">${esc(r.state)}</span></div></div>
+         <div class="hrow"><div class="hk">Role</div><div class="hv" style="color:var(--a)">${esc(r.active_role)}</div></div>
+         <div class="hrow"><div class="hk">Run ID</div><div class="hv" style="color:var(--mu);font-size:9px">${esc(r.program_run_id)}</div></div>`;
+      document.getElementById('prg-ts').textContent = fts(new Date().toISOString());
+    } else {
+      document.getElementById('prg-state-display').innerHTML = `<span style="color:#f87171;font-size:10px">${esc(r.error)}</span>`;
+    }
+  } catch(e) {
+    document.getElementById('prg-state-display').innerHTML = `<span style="color:#f87171;font-size:10px">Cannot reach /program/start</span>`;
+  }
+}
+
+async function loadProgramStatus() {
+  const runId = document.getElementById('prg-run-id').value.trim();
+  if (!runId) return;
+  try {
+    const r = await fetch(`http://localhost:8011/program/status/${runId}`).then(x=>x.json());
+    if (r.ok) {
+      _activeRunId = runId;
+      document.getElementById('prg-state-display').innerHTML =
+        `<div class="hrow"><div class="hk">State</div><div class="hv"><span style="color:var(--bl)">${esc(r.canonical_state)}</span> <span style="color:var(--mu);font-size:9px">(${esc(r.state_source||'')})</span></div></div>
+         <div class="hrow"><div class="hk">Role</div><div class="hv" style="color:var(--a)">${esc(r.active_role)}</div></div>
+         <div class="hrow"><div class="hk">Receipts</div><div class="hv" style="color:var(--s)">${r.receipts_count} transitions logged</div></div>
+         <div class="hrow"><div class="hk">Next</div><div class="hv" style="color:var(--mu);font-size:9px">${esc(r.next_state||'terminal')}</div></div>`;
+    }
+  } catch(e) {}
+}
+
+async function advanceProgram() {
+  const runId = document.getElementById('prg-run-id').value.trim() || _activeRunId;
+  if (!runId) { document.getElementById('prg-state-display').innerHTML = '<span style="color:#f87171;font-size:10px">Paste run_id first</span>'; return; }
+  try {
+    const r = await fetch('http://localhost:8011/program/advance', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({program_run_id: runId, trigger: 'founder_advance'})
+    }).then(x=>x.json());
+    if (r.ok) {
+      document.getElementById('prg-state-display').innerHTML =
+        `<div class="hrow"><div class="hk">Advanced</div><div class="hv"><span style="color:var(--mu)">${esc(r.prior_state)}</span> → <span style="color:var(--ok)">${esc(r.new_state)}</span></div></div>
+         <div class="hrow"><div class="hk">Role</div><div class="hv" style="color:var(--a)">${esc(r.active_role)}</div></div>
+         ${r.handoff ? `<div class="hrow"><div class="hk">Handoff</div><div class="hv" style="color:var(--a);font-size:9px">${esc(r.handoff)}</div></div>` : ''}
+         <div class="hrow"><div class="hk">Receipt</div><div class="hv" style="color:var(--mu);font-size:9px">${esc(r.receipt_id)}</div></div>`;
+    } else {
+      document.getElementById('prg-state-display').innerHTML = `<span style="color:#f87171;font-size:10px">${esc(r.error)}</span>`;
+    }
+  } catch(e) { document.getElementById('prg-state-display').innerHTML = `<span style="color:#f87171;font-size:10px">advance failed: ${e.message}</span>`; }
+}
+
+async function getWhisper() {
+  const runId = document.getElementById('prg-run-id').value.trim() || _activeRunId;
+  if (!runId) return;
+  try {
+    const r = await fetch('http://localhost:8011/program/whisper', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({program_run_id: runId})
+    }).then(x=>x.json());
+    if (r.ok && r.whisper) {
+      const w = r.whisper;
+      const riskColor = {LOW:'var(--ok)',MEDIUM:'var(--a)',HIGH:'#f87171',CRITICAL:'#f87171'}[w.risk] || 'var(--mu)';
+      document.getElementById('prg-whisper-content').innerHTML =
+        `<div style="margin-bottom:3px"><span style="color:${riskColor};font-weight:700">${esc(w.risk)}</span> — ${esc(w.signal)}</div>
+         <div style="color:var(--s);margin-bottom:2px">MOVE: ${esc(w.move)}</div>
+         <div style="color:var(--t);font-style:italic">» ${esc(w.suggested_line)}</div>
+         ${w.handoff ? `<div style="color:var(--a);font-size:9px;margin-top:3px">⇒ ${esc(w.handoff)}</div>` : ''}
+         <div style="color:var(--mu);font-size:8px;margin-top:3px">role: ${esc(w.active_role)} | ${esc(w.packet_id||'')}</div>`;
+      document.getElementById('prg-whisper-display').style.display = 'block';
+    }
+  } catch(e) {}
+}
 
 // ── Canonical System Status ──
 async function refreshSystem() {
