@@ -185,7 +185,7 @@
         "url": "http://handrail:8011/yubikey/status",
         "expect_status": 200
       },
-      "description": "yubikey quorum registry live — enrolled_count >= 1"
+      "description": "yubikey quorum registry live \u2014 enrolled_count >= 1"
     },
     {
       "op": "http.health_check",
@@ -201,7 +201,15 @@
         "url": "http://handrail:8011/system/status",
         "expect_status": 200
       },
-      "description": "canonical system status endpoint live — shalom score readable"
+      "description": "canonical system status endpoint live \u2014 shalom score readable"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://handrail:8011/program/library",
+        "expect_status": 200
+      },
+      "description": "program library endpoint live \u2014 10 programs registered"
     }
   ],
   "expect": {
@@ -220,5 +228,5 @@
     "results[28].data.healthy": true,
     "results[29].data.healthy": true
   },
-  "ops_count": 31
+  "ops_count": 32
 }

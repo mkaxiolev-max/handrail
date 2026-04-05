@@ -1,0 +1,18 @@
+{
+  "cps_id": "deal_capture_signal",
+  "description": "Capture and log a deal signal into program context",
+  "ops": [
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://handrail:8011/program/advance",
+        "json": {
+          "program_run_id": "{{program_run_id}}",
+          "trigger": "{{signal_type}}"
+        },
+        "timeout_ms": 5000
+      }
+    }
+  ],
+  "policy": "commercial_policy_v1"
+}

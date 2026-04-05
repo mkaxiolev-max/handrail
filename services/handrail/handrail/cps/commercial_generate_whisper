@@ -1,0 +1,22 @@
+{
+  "cps_id": "commercial_generate_whisper",
+  "description": "Generate whisper packet for current commercial state",
+  "ops": [
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://handrail:8011/program/whisper",
+        "json": {
+          "program_run_id": "{{program_run_id}}",
+          "trigger": "{{trigger}}",
+          "prospect_signal": "{{prospect_signal}}"
+        },
+        "timeout_ms": 5000
+      }
+    }
+  ],
+  "expect": {
+    "results[0].ok": true
+  },
+  "policy": "commercial_policy_v1"
+}

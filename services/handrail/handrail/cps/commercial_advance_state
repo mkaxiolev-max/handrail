@@ -1,0 +1,22 @@
+{
+  "cps_id": "commercial_advance_state",
+  "description": "Advance a commercial program to next state with full governance",
+  "ops": [
+    {
+      "op": "http.post",
+      "args": {
+        "url": "http://handrail:8011/program/advance",
+        "json": {
+          "program_run_id": "{{program_run_id}}",
+          "trigger": "{{trigger}}",
+          "proposed_next_state": "{{proposed_next_state}}"
+        },
+        "timeout_ms": 5000
+      }
+    }
+  ],
+  "expect": {
+    "results[0].ok": true
+  },
+  "policy": "commercial_policy_v1"
+}
