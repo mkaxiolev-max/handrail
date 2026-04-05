@@ -613,3 +613,171 @@ async def ops_cps(req: CPSRequest, http_request: Request):
         _log.warning("ops_cps: regulation_engine failed (non-fatal): %s", _re_err)
 
     return JSONResponse(result)
+
+
+# ── Canonical system status ────────────────────────────────────────────────────
+
+@app.get("/system/status")
+def system_status():
+    """One canonical query. The entire NS∞ organism, legible in one response."""
+    from handrail.regulation_engine import RegulationEngine
+    from handrail.proof_registry import ProofRegistry
+    from handrail.kernel.dignity_kernel import DignityKernel
+
+    ts = datetime.now(timezone.utc).isoformat()
+
+    # --- Sovereignty ---
+    try:
+        latest_boot = ProofRegistry.latest("BOOT")
+        boot_sovereign = bool(latest_boot and latest_boot.get("metadata", {}).get("sovereign", False) or
+                              (latest_boot and latest_boot.get("sovereign", False)))
+        last_receipt = (latest_boot or {}).get("proof_id", "none")
+        last_boot_ts = (latest_boot or {}).get("timestamp", "never")
+    except Exception:
+        boot_sovereign, last_receipt, last_boot_ts = False, "error", "error"
+
+    # --- Quorum ---
+    try:
+        slots = QuorumStore.get_slots()
+        quorum_enrolled = len(slots)
+        quorum_threshold = 1
+        quorum_satisfied = quorum_enrolled >= quorum_threshold
+        quorum_slot_ids = [s.slot_id for s in slots] if slots else []
+    except Exception:
+        quorum_enrolled, quorum_satisfied, quorum_slot_ids = 0, False, []
+
+    # --- Dignity ---
+    try:
+        dk = DignityKernel()
+        dignity_config = dk.config_snapshot()
+        dignity_state = dignity_config.get("constitutional_state", "unknown")
+    except Exception:
+        dignity_config, dignity_state = {}, "error"
+
+    # --- ABI ---
+    try:
+        schema_count = len(_abi.SCHEMAS)
+        schema_names = sorted(_abi.SCHEMAS.keys())
+    except Exception:
+        schema_count, schema_names = 0, []
+
+    # --- Regulation ---
+    try:
+        reg_summary = RegulationEngine.state_summary()
+        total_transitions = reg_summary.get("total_transitions", 0)
+        total_deltas = reg_summary.get("total_state_deltas", 0)
+        latest_commercial = reg_summary.get("latest_commercial_event")
+    except Exception:
+        total_transitions, total_deltas, latest_commercial = 0, 0, None
+
+    # --- Proof chain ---
+    try:
+        chain = ProofRegistry.full_chain()
+        proof_count = len(chain)
+        proof_types = list(set(e.get("proof_type", "?") for e in chain))
+    except Exception:
+        proof_count, proof_types = 0, []
+
+    # --- Lexicon (proxy call to NS) ---
+    import urllib.request as _ur, json as _j
+    try:
+        lex = _j.loads(_ur.urlopen("http://ns:9000/lexicon/status", timeout=2).read())
+        lexicon_loaded = lex.get("loaded", False)
+        lexicon_count = lex.get("entry_count", 0)
+    except Exception:
+        lexicon_loaded, lexicon_count = False, 0
+
+    # --- Atomlex (proxy call) ---
+    try:
+        atx = _j.loads(_ur.urlopen("http://atomlex:8080/graph/status", timeout=2).read())
+        atomlex_nodes = atx.get("node_count", 0)
+        atomlex_edges = atx.get("edge_count", 0)
+    except Exception:
+        atomlex_nodes, atomlex_edges = 0, 0
+
+    # --- Shalom score: is everything present and nothing broken? ---
+    shalom_checks = {
+        "sovereign_boot":    boot_sovereign,
+        "quorum_satisfied":  quorum_satisfied,
+        "dignity_active":    dignity_state not in ("error", "unknown"),
+        "abi_frozen":        schema_count >= 10,
+        "proof_chain_live":  proof_count > 0,
+        "lexicon_loaded":    lexicon_loaded,
+        "atomlex_live":      atomlex_nodes >= 12,
+        "bloodstream_live":  total_transitions > 0,
+    }
+    shalom = all(shalom_checks.values())
+    shalom_score = sum(shalom_checks.values())
+    shalom_max = len(shalom_checks)
+
+    return JSONResponse({
+        "timestamp": ts,
+
+        # The one question
+        "shalom": shalom,
+        "shalom_score": f"{shalom_score}/{shalom_max}",
+        "shalom_checks": shalom_checks,
+
+        # Sovereignty
+        "sovereign": {
+            "boot_sovereign": boot_sovereign,
+            "last_receipt_id": last_receipt,
+            "last_boot_ts": last_boot_ts,
+        },
+
+        # Quorum
+        "quorum": {
+            "enrolled": quorum_enrolled,
+            "threshold": quorum_threshold,
+            "satisfied": quorum_satisfied,
+            "slots": quorum_slot_ids,
+        },
+
+        # Dignity
+        "dignity": {
+            "state": dignity_state,
+            "eta": dignity_config.get("eta"),
+            "beta": dignity_config.get("beta"),
+        },
+
+        # ABI
+        "abi": {
+            "schemas_frozen": schema_count,
+            "schema_names": schema_names,
+        },
+
+        # Regulation bloodstream
+        "regulation": {
+            "total_transitions": total_transitions,
+            "total_deltas": total_deltas,
+            "latest_commercial": latest_commercial,
+        },
+
+        # Proof chain
+        "proofs": {
+            "total": proof_count,
+            "types": proof_types,
+        },
+
+        # Vocabulary substrate
+        "lexicon": {
+            "loaded": lexicon_loaded,
+            "entry_count": lexicon_count,
+        },
+
+        # Semantic graph
+        "atomlex": {
+            "nodes": atomlex_nodes,
+            "edges": atomlex_edges,
+        },
+
+        # Ring 5 (manual blockers remaining)
+        "ring_5": {
+            "stripe_live_keys": False,
+            "stripe_llc_verified": False,
+            "yubikey_slot2": quorum_enrolled >= 2,
+            "root_price_ids": False,
+            "dns_cutover": False,
+            "all_clear": False,
+        },
+    })

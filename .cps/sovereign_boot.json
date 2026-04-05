@@ -194,6 +194,14 @@
         "expect_status": 200
       },
       "description": "atomlex constraint semantic graph engine live"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://handrail:8011/system/status",
+        "expect_status": 200
+      },
+      "description": "canonical system status endpoint live — shalom score readable"
     }
   ],
   "expect": {
@@ -212,5 +220,5 @@
     "results[28].data.healthy": true,
     "results[29].data.healthy": true
   },
-  "ops_count": 30
+  "ops_count": 31
 }
