@@ -3600,8 +3600,8 @@ setInterval(refresh, 5000);
     @app.get("/lexicon/status")
     async def gnoseogenic_lexicon_status():
         """Return loaded Gnoseogenic Lexicon summary — entry count, tiers, components."""
-        from nss.lexicon_substrate import status_summary
-        return status_summary()
+        from nss.lexicon_substrate import get_status as lexicon_get_status
+        return lexicon_get_status()
 
     @app.get("/lexicon/analyze")
     async def gnoseogenic_lexicon_analyze(text: str = ""):

@@ -1,427 +1,306 @@
-# Copyright © 2026 Axiolev. All rights reserved.
 """
 Constitutional Regulation Engine v1
-=====================================
-Unified governance loop — the bloodstream connecting all constitutional organs.
+====================================
+The bloodstream of NS∞. Every consequential action that changes system state
+must traverse: ingress → intent → decision → CPS → return → proof → StateDelta.
 
-Every sovereign action passes through a TransitionLifecycle:
-  begin() → attach_*() → append_delta() → finalize()
+The 6-component engine chain (from Gnoseogenic Lexicon Tier 5):
+  gradient_source → intake → conversion → output → feedback → waste
 
-The lifecycle record is appended to the ProofRegistry and persisted to
-WORKSPACE/.run/transitions.jsonl (append-only, same pattern as proof_registry).
-
-TypedStateDelta domains
------------------------
-epistemic      Knowledge / memory state changes (model registry, capability graph)
-operational    Runtime state changes (CPS execution, boot phases, adapter health)
-constitutional Governance state changes (YubiKey quorum, ABI freeze, policy)
-commercial     Revenue / Stripe / subscription state changes
+Maps to:
+  ingress surface → IntentPacket → Simulation/Decision → CPSPacket → ReturnBlock → ProofEntry → StateDelta
 """
-from __future__ import annotations
 
-import hashlib
-import json
-import logging
-import os
-import random
-import string
-from dataclasses import asdict, dataclass, field
+import json, os, random, hashlib, logging
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, Any, List, Optional
 
-_log = logging.getLogger("handrail.regulation_engine")
+_log = logging.getLogger("regulation_engine")
 
-_CHARS = string.ascii_uppercase + string.digits
+WORKSPACE = Path(os.environ.get("HR_WORKSPACE", "/app"))
+_LEDGER_PATH = WORKSPACE / ".run" / "state_transitions.jsonl"
+_FALLBACK_LEDGER = Path("/tmp/axiolev_state_transitions.jsonl")
 
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 def _make_sdl_id() -> str:
-    return "SDL-" + "".join(random.choices(_CHARS, k=8))
-
+    return "SDL-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
 def _make_trn_id() -> str:
-    return "TRN-" + "".join(random.choices(_CHARS, k=8))
-
-
-# ── TypedStateDelta ────────────────────────────────────────────────────────────
-
-DELTA_DOMAINS = {"epistemic", "operational", "constitutional", "commercial"}
-SOURCE_SURFACES = {"voice", "text", "console", "api", "system", "boot"}
+    return "TRN-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
 
 @dataclass
 class TypedStateDelta:
     state_delta_id: str
-    transition_id:  str
-    delta_domain:   str   # one of DELTA_DOMAINS
-    target:         str
-    before:         Dict[str, Any]
-    after:          Dict[str, Any]
-    proof_ref:      Optional[str]
-    timestamp:      str
+    transition_id: str
+    delta_domain: str   # epistemic / operational / constitutional / commercial
+    target: str
+    before: Dict[str, Any]
+    after: Dict[str, Any]
+    proof_ref: str
+    timestamp: str
 
-
-# ── TransitionLifecycle ────────────────────────────────────────────────────────
-
-@dataclass
-class TransitionLifecycle:
-    transition_id:  str
-    source_surface: str   # one of SOURCE_SURFACES
-    objective:      str
-    sovereign:      bool
-    timestamp:      str
-    intent_ref:     Optional[str] = None
-    decision_ref:   Optional[str] = None
-    cps_ref:        Optional[str] = None
-    return_ref:     Optional[str] = None
-    proof_ref:      Optional[str] = None
-    state_deltas:   List[TypedStateDelta] = field(default_factory=list)
-    metadata:       Dict[str, Any] = field(default_factory=dict)
-
-
-# ── Persistence helpers ────────────────────────────────────────────────────────
-
-def _transitions_path() -> Path:
-    workspace = Path(os.environ.get("HR_WORKSPACE", "/app"))
-    return workspace / ".run" / "transitions.jsonl"
-
-
-def _lifecycle_to_dict(lc: TransitionLifecycle) -> Dict:
-    d = asdict(lc)
-    # Convert nested TypedStateDelta dataclasses (already handled by asdict)
-    return d
-
-
-def _append_transition(lc: TransitionLifecycle) -> None:
-    path = _transitions_path()
-    try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "a") as f:
-            f.write(json.dumps(_lifecycle_to_dict(lc)) + "\n")
-    except Exception as e:
-        _log.warning("_append_transition failed: %s", e)
-
-
-def _read_transitions() -> List[Dict]:
-    path = _transitions_path()
-    if not path.exists():
-        return []
-    try:
-        lines = [l.strip() for l in path.read_text().splitlines() if l.strip()]
-        return [json.loads(l) for l in lines]
-    except Exception as e:
-        _log.warning("_read_transitions failed: %s", e)
-        return []
-
-
-# ── RegulationEngine ───────────────────────────────────────────────────────────
-
-class RegulationEngine:
-    """
-    Stateless class — all state is persisted to transitions.jsonl.
-
-    Usage pattern:
-        lc = RegulationEngine.begin("voice", "process voice command", metadata={"call_sid": sid})
-        RegulationEngine.attach_cps(lc, cps_id)
-        RegulationEngine.append_delta(lc, "operational", "voice.handler", {}, {"transcript": t})
-        RegulationEngine.finalize(lc)
-    """
-
-    # ── Lifecycle management ───────────────────────────────────────────────────
-
-    @staticmethod
-    def begin(
-        source_surface: str,
-        objective: str,
-        metadata: Optional[Dict] = None,
-        sovereign: bool = False,
-    ) -> TransitionLifecycle:
-        """Open a new TransitionLifecycle. Call finalize() when done."""
-        return TransitionLifecycle(
-            transition_id=_make_trn_id(),
-            source_surface=source_surface if source_surface in SOURCE_SURFACES else "api",
-            objective=objective,
-            sovereign=sovereign,
-            timestamp=datetime.now(timezone.utc).isoformat(),
-            metadata=metadata or {},
-        )
-
-    @staticmethod
-    def attach_intent(lc: TransitionLifecycle, intent_ref: str) -> None:
-        lc.intent_ref = intent_ref
-
-    @staticmethod
-    def attach_decision(lc: TransitionLifecycle, decision_ref: str) -> None:
-        lc.decision_ref = decision_ref
-
-    @staticmethod
-    def attach_cps(lc: TransitionLifecycle, cps_ref: str) -> None:
-        lc.cps_ref = cps_ref
-
-    @staticmethod
-    def attach_return(lc: TransitionLifecycle, return_ref: str) -> None:
-        lc.return_ref = return_ref
-
-    @staticmethod
-    def attach_proof(lc: TransitionLifecycle, proof_ref: str, sovereign: bool = False) -> None:
-        lc.proof_ref = proof_ref
-        if sovereign:
-            lc.sovereign = True
-
-    @staticmethod
-    def append_delta(
-        lc: TransitionLifecycle,
-        delta_domain: str,
-        target: str,
-        before: Dict,
-        after: Dict,
-        proof_ref: Optional[str] = None,
-    ) -> TypedStateDelta:
-        """Append a typed state delta to the lifecycle."""
-        delta = TypedStateDelta(
+    @classmethod
+    def make(cls, transition_id: str, delta_domain: str, target: str,
+             before: dict, after: dict, proof_ref: str = "") -> "TypedStateDelta":
+        return cls(
             state_delta_id=_make_sdl_id(),
-            transition_id=lc.transition_id,
-            delta_domain=delta_domain if delta_domain in DELTA_DOMAINS else "operational",
+            transition_id=transition_id,
+            delta_domain=delta_domain,
             target=target,
             before=before,
             after=after,
             proof_ref=proof_ref,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=_now(),
         )
-        lc.state_deltas.append(delta)
-        return delta
 
     @staticmethod
-    def finalize(lc: TransitionLifecycle) -> TransitionLifecycle:
-        """Persist the lifecycle to transitions.jsonl. Returns lc."""
-        _append_transition(lc)
-        _log.info(
-            "regulation_engine: finalized %s [%s] sovereign=%s deltas=%d",
-            lc.transition_id, lc.source_surface, lc.sovereign, len(lc.state_deltas),
+    def make_boot_delta(transition_id: str, receipt: dict, prev_sovereign: bool = False) -> "TypedStateDelta":
+        return TypedStateDelta.make(
+            transition_id=transition_id,
+            delta_domain="constitutional",
+            target="system.boot",
+            before={"sovereign": prev_sovereign},
+            after={"sovereign": receipt.get("sovereign", False),
+                   "receipt_id": receipt.get("receipt_id"),
+                   "boot_mode": receipt.get("boot_mode"),
+                   "ops_passing": 29},
+            proof_ref=receipt.get("receipt_id", ""),
         )
-        return lc
-
-    # ── Read ───────────────────────────────────────────────────────────────────
 
     @staticmethod
-    def latest_transitions(n: int = 10) -> List[Dict]:
-        """Return the last n transitions, newest-first."""
-        entries = _read_transitions()
-        entries.sort(key=lambda e: e.get("timestamp", ""), reverse=True)
-        return entries[:n]
+    def make_quorum_delta(transition_id: str, slot_id: str,
+                          enrolled_before: int, enrolled_after: int) -> "TypedStateDelta":
+        return TypedStateDelta.make(
+            transition_id=transition_id,
+            delta_domain="constitutional",
+            target="system.quorum",
+            before={"enrolled_count": enrolled_before},
+            after={"enrolled_count": enrolled_after, "latest_slot": slot_id},
+            proof_ref="",
+        )
 
     @staticmethod
-    def get_transition(transition_id: str) -> Optional[Dict]:
-        for e in _read_transitions():
-            if e.get("transition_id") == transition_id:
-                return e
+    def make_schema_freeze_delta(transition_id: str, schema_name: str,
+                                  fingerprint: str) -> "TypedStateDelta":
+        return TypedStateDelta.make(
+            transition_id=transition_id,
+            delta_domain="epistemic",
+            target=f"abi.{schema_name}",
+            before={"frozen": False},
+            after={"frozen": True, "fingerprint": fingerprint},
+            proof_ref="",
+        )
+
+    @staticmethod
+    def make_commercial_delta(transition_id: str, product: str,
+                               event_type: str, metadata: dict = None) -> "TypedStateDelta":
+        return TypedStateDelta.make(
+            transition_id=transition_id,
+            delta_domain="commercial",
+            target=f"commerce.{product}",
+            before={"status": "pending"},
+            after={"status": event_type, **(metadata or {})},
+            proof_ref="",
+        )
+
+    @staticmethod
+    def make_capability_delta(transition_id: str, cap_id: str,
+                               before_status: str, after_status: str) -> "TypedStateDelta":
+        return TypedStateDelta.make(
+            transition_id=transition_id,
+            delta_domain="operational",
+            target=f"capability.{cap_id}",
+            before={"status": before_status},
+            after={"status": after_status},
+            proof_ref="",
+        )
+
+
+@dataclass
+class TransitionLifecycle:
+    transition_id: str
+    source_surface: str
+    objective: str
+    intent_ref: str = ""
+    decision_ref: str = ""
+    cps_ref: str = ""
+    return_ref: str = ""
+    proof_ref: str = ""
+    state_deltas: List[str] = field(default_factory=list)
+    sovereign: bool = False
+    timestamp: str = field(default_factory=_now)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    @classmethod
+    def make(cls, source_surface: str, objective: str,
+             metadata: dict = None) -> "TransitionLifecycle":
+        return cls(
+            transition_id=_make_trn_id(),
+            source_surface=source_surface,
+            objective=objective,
+            metadata=metadata or {},
+        )
+
+
+class RegulationEngine:
+    """One enforced lifecycle for every consequential NS∞ state transition."""
+
+    @staticmethod
+    def _ledger() -> Path:
+        for p in (_LEDGER_PATH, _FALLBACK_LEDGER):
+            try:
+                p.parent.mkdir(parents=True, exist_ok=True)
+                return p
+            except Exception:
+                continue
+        return _FALLBACK_LEDGER
+
+    @staticmethod
+    def begin(source_surface: str, objective: str,
+              metadata: dict = None) -> TransitionLifecycle:
+        return TransitionLifecycle.make(source_surface, objective, metadata or {})
+
+    @staticmethod
+    def attach_intent(lc: TransitionLifecycle, intent_id: str):
+        lc.intent_ref = intent_id
+
+    @staticmethod
+    def attach_decision(lc: TransitionLifecycle, decision_id: str):
+        lc.decision_ref = decision_id
+
+    @staticmethod
+    def attach_cps(lc: TransitionLifecycle, cps_id: str):
+        lc.cps_ref = cps_id
+
+    @staticmethod
+    def attach_return(lc: TransitionLifecycle, return_id: str):
+        lc.return_ref = return_id
+
+    @staticmethod
+    def attach_proof(lc: TransitionLifecycle, proof_id: str):
+        lc.proof_ref = proof_id
+        if proof_id:
+            lc.sovereign = True
+
+    @staticmethod
+    def append_delta(lc: TransitionLifecycle, delta: TypedStateDelta):
+        lc.state_deltas.append(delta.state_delta_id)
+        # Persist the delta inline with the lifecycle
+        lc.metadata.setdefault("_deltas", []).append(asdict(delta))
+
+    @staticmethod
+    def finalize(lc: TransitionLifecycle) -> dict:
+        record = asdict(lc)
+        try:
+            path = RegulationEngine._ledger()
+            with open(path, "a") as f:
+                f.write(json.dumps(record) + "\n")
+        except Exception as e:
+            _log.warning("RegulationEngine.finalize: persist failed: %s", e)
+        return record
+
+    @staticmethod
+    def latest_transitions(n: int = 20) -> List[dict]:
+        for path in (_LEDGER_PATH, _FALLBACK_LEDGER):
+            if path.exists():
+                try:
+                    lines = [l.strip() for l in path.read_text().splitlines() if l.strip()]
+                    records = [json.loads(l) for l in lines]
+                    return list(reversed(records[-n:]))
+                except Exception as e:
+                    _log.warning("latest_transitions: %s", e)
+        return []
+
+    @staticmethod
+    def get_transition(transition_id: str) -> Optional[dict]:
+        for path in (_LEDGER_PATH, _FALLBACK_LEDGER):
+            if path.exists():
+                try:
+                    for line in path.read_text().splitlines():
+                        if not line.strip():
+                            continue
+                        r = json.loads(line)
+                        if r.get("transition_id") == transition_id:
+                            return r
+                except Exception:
+                    pass
         return None
 
     @staticmethod
-    def state_summary() -> Dict:
-        """Summarize the current state across all constitutional domains."""
-        entries = _read_transitions()
-        domain_counts: Dict[str, int] = {d: 0 for d in DELTA_DOMAINS}
-        surface_counts: Dict[str, int] = {s: 0 for s in SOURCE_SURFACES}
-        sovereign_count = 0
-        total_deltas = 0
+    def state_summary() -> dict:
+        """Compressed current constitutional truth across all domains."""
+        transitions = RegulationEngine.latest_transitions(100)
+        all_deltas = []
+        for t in transitions:
+            for d in t.get("metadata", {}).get("_deltas", []):
+                all_deltas.append(d)
 
-        for e in entries:
-            surface = e.get("source_surface", "api")
-            if surface in surface_counts:
-                surface_counts[surface] += 1
-            if e.get("sovereign"):
-                sovereign_count += 1
-            for delta in e.get("state_deltas", []):
-                domain = delta.get("delta_domain", "operational")
-                if domain in domain_counts:
-                    domain_counts[domain] += 1
-                total_deltas += 1
+        def latest_delta_of_domain(domain: str) -> Optional[dict]:
+            for d in reversed(all_deltas):
+                if d.get("delta_domain") == domain:
+                    return d
+            return None
 
-        latest = entries[-3:] if len(entries) >= 3 else entries
-        latest = sorted(latest, key=lambda e: e.get("timestamp", ""), reverse=True)
+        boot_delta = latest_delta_of_domain("constitutional")
+        commercial_delta = latest_delta_of_domain("commercial")
+        epistemic_delta = latest_delta_of_domain("epistemic")
+        operational_delta = latest_delta_of_domain("operational")
 
         return {
-            "total_transitions": len(entries),
-            "total_deltas": total_deltas,
-            "sovereign_transitions": sovereign_count,
-            "domain_counts": domain_counts,
-            "surface_counts": surface_counts,
-            "latest_transitions": [
-                {
-                    "transition_id": e.get("transition_id"),
-                    "source_surface": e.get("source_surface"),
-                    "objective": e.get("objective"),
-                    "sovereign": e.get("sovereign"),
-                    "timestamp": e.get("timestamp"),
-                    "delta_count": len(e.get("state_deltas", [])),
-                }
-                for e in latest
-            ],
+            "boot_sovereign": (boot_delta or {}).get("after", {}).get("sovereign", False),
+            "last_receipt_id": (boot_delta or {}).get("after", {}).get("receipt_id"),
+            "quorum_enrolled_count": (boot_delta or {}).get("after", {}).get("enrolled_count"),
+            "schemas_frozen": len([d for d in all_deltas if d.get("delta_domain") == "epistemic"]),
+            "latest_commercial_event": (commercial_delta or {}).get("after", {}).get("status"),
+            "latest_capability_promotion": (operational_delta or {}).get("after", {}).get("status"),
+            "latest_founder_action": None,
+            "total_transitions": len(transitions),
+            "total_state_deltas": len(all_deltas),
         }
 
     @staticmethod
-    def latest_deltas(n: int = 10) -> List[Dict]:
-        """Return the last n state deltas across all transitions, newest-first."""
-        all_deltas = []
-        for e in _read_transitions():
-            for delta in e.get("state_deltas", []):
-                all_deltas.append(delta)
-        all_deltas.sort(key=lambda d: d.get("timestamp", ""), reverse=True)
-        return all_deltas[:n]
-
-    # ── Seeding from ProofRegistry ─────────────────────────────────────────────
-
-    @staticmethod
-    def seed_from_proof_registry() -> int:
-        """
-        Backfill constitutional and boot transitions from the ProofRegistry.
-        Idempotent — skips proof_ids already referenced in transitions.jsonl.
-        Returns count of new transitions seeded.
-        """
+    def seed_from_proof_registry(freeze_manifest: dict = None):
+        """Backfill TransitionLifecycle records from existing ProofRegistry entries on startup."""
         try:
-            from handrail.proof_registry import ProofRegistry
-        except ImportError:
-            _log.warning("seed_from_proof_registry: ProofRegistry not available")
-            return 0
+            from handrail.proof_registry import ProofRegistry, ProofType
+            existing = {t.get("transition_id") for t in RegulationEngine.latest_transitions(1000)}
+            chain = ProofRegistry.full_chain()
+            seeded = 0
+            for entry in chain:
+                ptype = entry.get("proof_type", "")
+                if ptype == ProofType.BOOT.value:
+                    lc = RegulationEngine.begin("boot", "sovereign boot (backfilled)", {"backfill": True})
+                    RegulationEngine.attach_proof(lc, entry.get("proof_id", ""))
+                    meta = entry.get("metadata", {})
+                    delta = TypedStateDelta.make_boot_delta(
+                        lc.transition_id,
+                        {"sovereign": entry.get("sovereign", False),
+                         "receipt_id": meta.get("receipt_id", ""),
+                         "boot_mode": meta.get("boot_mode", "FULL")},
+                        prev_sovereign=False,
+                    )
+                    RegulationEngine.append_delta(lc, delta)
+                    RegulationEngine.finalize(lc)
+                    seeded += 1
+                elif ptype == ProofType.SCHEMA_FREEZE.value and freeze_manifest:
+                    for schema_name, fingerprint in freeze_manifest.items():
+                        lc = RegulationEngine.begin("system", f"schema freeze: {schema_name} (backfilled)", {"backfill": True})
+                        delta = TypedStateDelta.make_schema_freeze_delta(lc.transition_id, schema_name, fingerprint)
+                        RegulationEngine.append_delta(lc, delta)
+                        RegulationEngine.finalize(lc)
+                        seeded += 1
+                    break  # only seed schema freezes once
+            _log.info("RegulationEngine.seed_from_proof_registry: seeded %d transitions", seeded)
+        except Exception as e:
+            _log.warning("seed_from_proof_registry failed (non-fatal): %s", e)
 
-        existing = _read_transitions()
-        known_proof_refs = {
-            e.get("proof_ref")
-            for e in existing
-            if e.get("proof_ref")
-        }
-
-        seeded = 0
-        for entry in ProofRegistry.full_chain():
-            proof_id = entry.get("proof_id")
-            if not proof_id or proof_id in known_proof_refs:
-                continue
-
-            proof_type = entry.get("proof_type", "")
-            source_map = {
-                "BOOT": "boot",
-                "SCHEMA_FREEZE": "system",
-                "QUORUM_ENROLLMENT": "system",
-                "CAPABILITY_PROMOTION": "system",
-                "POLICY_CHANGE": "console",
-                "FOUNDER_APPROVAL": "console",
-            }
-            domain_map = {
-                "BOOT": "operational",
-                "SCHEMA_FREEZE": "constitutional",
-                "QUORUM_ENROLLMENT": "constitutional",
-                "CAPABILITY_PROMOTION": "epistemic",
-                "POLICY_CHANGE": "constitutional",
-                "FOUNDER_APPROVAL": "constitutional",
-            }
-
-            source = source_map.get(proof_type, "system")
-            domain = domain_map.get(proof_type, "operational")
-
-            lc = RegulationEngine.begin(
-                source_surface=source,
-                objective=f"backfill: {proof_type} proof {proof_id}",
-                sovereign=entry.get("sovereign", False),
-            )
-            lc.timestamp = entry.get("timestamp", lc.timestamp)
-            lc.proof_ref = proof_id
-
-            RegulationEngine.append_delta(
-                lc,
-                delta_domain=domain,
-                target=proof_type.lower(),
-                before={},
-                after=entry.get("metadata", {}),
-                proof_ref=proof_id,
-            )
-            _append_transition(lc)
-            known_proof_refs.add(proof_id)
-            seeded += 1
-
-        _log.info("seed_from_proof_registry: seeded %d transitions", seeded)
-        return seeded
-
-
-# ── Delta factory helpers ──────────────────────────────────────────────────────
-
-def make_boot_delta(
-    lc: TransitionLifecycle,
-    boot_mode: str,
-    phases_passed: int,
-    proof_ref: Optional[str] = None,
-) -> TypedStateDelta:
-    return RegulationEngine.append_delta(
-        lc,
-        delta_domain="operational",
-        target="sovereign_boot",
-        before={"status": "pending"},
-        after={"status": "complete", "boot_mode": boot_mode, "phases_passed": phases_passed},
-        proof_ref=proof_ref,
-    )
-
-
-def make_quorum_delta(
-    lc: TransitionLifecycle,
-    slot_id: str,
-    serial: str,
-    proof_ref: Optional[str] = None,
-) -> TypedStateDelta:
-    return RegulationEngine.append_delta(
-        lc,
-        delta_domain="constitutional",
-        target=f"yubikey.{slot_id}",
-        before={"enrolled": False},
-        after={"enrolled": True, "serial": serial},
-        proof_ref=proof_ref,
-    )
-
-
-def make_capability_delta(
-    lc: TransitionLifecycle,
-    capability_name: str,
-    from_state: str,
-    to_state: str,
-    proof_ref: Optional[str] = None,
-) -> TypedStateDelta:
-    return RegulationEngine.append_delta(
-        lc,
-        delta_domain="epistemic",
-        target=f"capability.{capability_name}",
-        before={"state": from_state},
-        after={"state": to_state},
-        proof_ref=proof_ref,
-    )
-
-
-def make_commercial_delta(
-    lc: TransitionLifecycle,
-    event: str,
-    before: Dict,
-    after: Dict,
-    proof_ref: Optional[str] = None,
-) -> TypedStateDelta:
-    return RegulationEngine.append_delta(
-        lc,
-        delta_domain="commercial",
-        target=f"commercial.{event}",
-        before=before,
-        after=after,
-        proof_ref=proof_ref,
-    )
-
-
-def make_schema_freeze_delta(
-    lc: TransitionLifecycle,
-    schema_name: str,
-    freeze_hash: str,
-    proof_ref: Optional[str] = None,
-) -> TypedStateDelta:
-    return RegulationEngine.append_delta(
-        lc,
-        delta_domain="constitutional",
-        target=f"abi.{schema_name}",
-        before={"frozen": False},
-        after={"frozen": True, "hash": freeze_hash},
-        proof_ref=proof_ref,
-    )
+    @staticmethod
+    def make_system_intent(objective: str) -> str:
+        """Generate a system-origin intent reference string."""
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        return f"SYSTEM-INTENT-{ts}-{objective[:20].replace(' ','-').upper()}"

@@ -188,22 +188,21 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="sec-body" id="dignity-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
     <!-- State Regulation -->
-    <div class="section">
-      <div class="ph">STATE REGULATION <span id="regulation-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
-      <div class="sec-body" id="regulation-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    <div class="section" style="background:rgba(0,232,122,0.03);border-top:1px solid rgba(0,232,122,0.15)">
+      <div class="ph" style="color:var(--g);letter-spacing:2px">STATE REGULATION <span id="reg-ts" style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px"></span></div>
+      <div class="sec-body" id="reg-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
     <!-- Gnoseogenic Lexicon -->
-    <div class="section">
-      <div class="ph">LEXICON <span id="lexicon-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
-      <div class="sec-body" id="lexicon-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
-      <div style="padding:4px 10px 8px">
-        <input id="lexicon-input" type="text" placeholder="analyze text…"
-          style="background:#0d1a12;border:1px solid var(--mu);border-radius:3px;color:var(--fg);font-family:inherit;font-size:10px;padding:4px 8px;width:calc(100% - 56px);outline:none"
-          onkeydown="if(event.key==='Enter')lexiconAnalyze()">
-        <button onclick="lexiconAnalyze()"
-          style="background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.3);border-radius:3px;color:var(--g);font-family:inherit;font-size:10px;padding:4px 6px;cursor:pointer;margin-left:4px">
-          Analyze</button>
-        <div id="lexicon-analyze-result" style="margin-top:6px;font-size:10px;color:var(--mu)"></div>
+    <div class="section" style="background:rgba(240,160,48,0.03);border-top:1px solid rgba(240,160,48,0.12)">
+      <div class="ph" style="color:var(--a);letter-spacing:2px">GNOSEOGENIC LEXICON <span id="lex-ts" style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px"></span></div>
+      <div class="sec-body" id="lex-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+      <div style="padding:6px 10px 8px">
+        <input id="lex-input" type="text" placeholder="analyze text for constitutional vocabulary…"
+          style="width:calc(100% - 70px);background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:10px;padding:4px 8px;border-radius:3px;margin-right:4px"
+          onkeydown="if(event.key==='Enter') lexAnalyze()"/>
+        <button onclick="lexAnalyze()"
+          style="background:rgba(240,160,48,0.2);border:1px solid rgba(240,160,48,0.4);border-radius:3px;color:var(--a);font-size:10px;font-weight:700;padding:4px 8px;cursor:pointer">ANALYZE</button>
+        <div id="lex-analysis" style="margin-top:6px;font-size:10px;min-height:20px"></div>
       </div>
     </div>
     <!-- Founder Actions -->
@@ -691,82 +690,76 @@ async function refreshDignityConfig() {
 }
 
 // ── State Regulation ──
-async function refreshStateRegulation() {
+async function refreshRegulation() {
   try {
-    const [sum, trns] = await Promise.all([
+    const [sum, tr] = await Promise.all([
       fetch('http://localhost:8011/state/summary').then(x=>x.json()),
       fetch('http://localhost:8011/transitions/latest').then(x=>x.json()),
     ]);
-    const dc = sum.domain_counts || {};
-    const sc = sum.surface_counts || {};
-    const domainBadges = Object.entries(dc).map(([d,n])=>
-      `<span style="font-size:9px;color:var(--bl);margin-right:6px">${d}:<b style="color:var(--t)">${n}</b></span>`
-    ).join('');
-    const latest3 = (trns.transitions||[]).slice(0,3);
-    const trnRows = latest3.map(t=>{
-      const sov = t.sovereign ? '<span class="badge ok" style="font-size:8px">SOV</span>' : '';
-      return `<div class="hrow">
-        <div class="hk" style="font-size:9px;color:var(--bl)">${esc(t.source_surface||'')}</div>
-        <div class="hv" style="font-size:9px">${sov} <span style="color:var(--mu)">${esc((t.objective||'').slice(0,40))}</span></div>
-      </div>`;
-    }).join('');
-    document.getElementById('regulation-body').innerHTML = [
-      ['Transitions', `<span style="color:var(--ok);font-weight:700">${sum.total_transitions ?? 0}</span>`],
-      ['Deltas',      `<span style="color:var(--s)">${sum.total_deltas ?? 0}</span>`],
-      ['Sovereign',   `<span style="color:var(--ok)">${sum.sovereign_transitions ?? 0}</span>`],
-    ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('') +
-    `<div class="hrow"><div class="hk">Domains</div><div class="hv" style="flex-wrap:wrap">${domainBadges||'—'}</div></div>` +
-    (trnRows ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid rgba(17,34,64,.4);font-size:9px;color:var(--mu);letter-spacing:1px">RECENT</div>${trnRows}` : '');
-    document.getElementById('regulation-ts').textContent = fts(new Date().toISOString());
+    const sovereign = sum.boot_sovereign;
+    const recent = (tr.transitions || []).slice(0,3);
+    const surfaceBadge = s => `<span style="background:rgba(68,136,255,0.15);border:1px solid rgba(68,136,255,0.3);border-radius:2px;padding:1px 4px;font-size:8px;color:var(--bl)">${esc(s)}</span>`;
+    const rows = [
+      ['Boot',      `<span class="badge ${sovereign?'ok':'err'}">${sovereign?'SOVEREIGN':'NOT SOV'}</span> <span style="color:var(--mu);font-size:9px">${esc(sum.last_receipt_id||'—')}</span>`],
+      ['Schemas',   `<span style="color:var(--ok)">${sum.schemas_frozen??0} frozen</span>`],
+      ['Quorum',    `<span style="color:var(--s)">${sum.quorum_enrolled_count??0} enrolled</span>`],
+      ['Transitions', `<span style="color:var(--t)">${sum.total_transitions??0} total · ${sum.total_state_deltas??0} deltas</span>`],
+      ['Commerce',  `<span style="color:var(--mu);font-size:9px">${esc(sum.latest_commercial_event||'pending')}</span>`],
+    ];
+    let html = rows.map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
+    if (recent.length) {
+      html += `<div style="margin-top:6px;border-top:1px solid var(--b);padding-top:4px;font-size:9px;color:var(--mu);letter-spacing:1px">RECENT TRANSITIONS</div>`;
+      html += recent.map(t=>`
+        <div class="hrow" style="font-size:9px">
+          <div class="hk">${surfaceBadge(t.source_surface||'?')}</div>
+          <div class="hv" style="color:var(--t)">${esc((t.objective||'').slice(0,40))} <span class="badge ${t.sovereign?'ok':'dim'}" style="font-size:7px">${t.sovereign?'SOV':'—'}</span></div>
+        </div>`).join('');
+    }
+    document.getElementById('reg-body').innerHTML = html;
+    document.getElementById('reg-ts').textContent = fts(new Date().toISOString());
   } catch(e) {
-    document.getElementById('regulation-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/state/summary</div>';
+    document.getElementById('reg-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/state/summary</div>';
   }
 }
 
 // ── Gnoseogenic Lexicon ──
+const TIER_COLORS = {1:'#7090a8',2:'#6888c8',3:'#50a8d8',4:'#00e87a',5:'var(--a)'};
 async function refreshLexicon() {
   try {
-    const r = await fetch('/lexicon/status').then(x=>x.json());
-    const byTier = r.by_tier || {};
-    const byComp = r.by_engine_component || {};
-    const rows = [
-      ['Entries', `<span style="color:var(--ok);font-weight:700">${r.entry_count ?? 0}</span>`],
-      ['Loaded',  r.loaded ? '<span class="badge ok">YES</span>' : '<span class="badge err">NO</span>'],
-    ];
-    const tierRows = Object.entries(byTier).map(([t,n])=>
-      `<div class="hrow"><div class="hk" style="color:var(--bl)">Tier ${t}</div><div class="hv">${n} words</div></div>`
-    ).join('');
-    const compRows = Object.entries(byComp).map(([c,n])=>
-      `<div class="hrow"><div class="hk" style="font-size:9px;color:var(--mu)">${esc(c)}</div><div class="hv">${n}</div></div>`
-    ).join('');
-    document.getElementById('lexicon-body').innerHTML =
-      rows.map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('') +
-      tierRows + compRows;
-    document.getElementById('lexicon-ts').textContent = fts(new Date().toISOString());
+    const r = await fetch(NS+'/lexicon/status').then(x=>x.json());
+    const dist = r.tier_distribution || {};
+    const bars = [1,2,3,4,5].map(t => {
+      const count = dist[t] || 0;
+      const color = TIER_COLORS[t] || 'var(--mu)';
+      return `<div class="hrow"><div class="hk" style="color:${color}">T${t}</div><div class="hv"><span style="color:${color}">${count}</span> <span style="color:var(--mu);font-size:9px">words</span></div></div>`;
+    }).join('');
+    document.getElementById('lex-body').innerHTML = `
+      <div class="hrow"><div class="hk">Entries</div><div class="hv"><span style="color:var(--ok)">${r.entry_count||0}</span> loaded · <span style="color:var(--a)">${r.priority_p1_count||0}</span> P1</div></div>
+      ${bars}`;
+    document.getElementById('lex-ts').textContent = fts(new Date().toISOString());
   } catch(e) {
-    document.getElementById('lexicon-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /lexicon/status</div>';
+    document.getElementById('lex-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /lexicon/status</div>';
   }
 }
-
-async function lexiconAnalyze() {
-  const text = document.getElementById('lexicon-input').value.trim();
+async function lexAnalyze() {
+  const text = document.getElementById('lex-input').value.trim();
   if (!text) return;
-  const el = document.getElementById('lexicon-analyze-result');
-  el.textContent = 'Analyzing…';
+  document.getElementById('lex-analysis').innerHTML = '<span style="color:var(--mu)">analyzing…</span>';
   try {
-    const r = await fetch('/lexicon/analyze?text=' + encodeURIComponent(text)).then(x=>x.json());
-    if (r.error) { el.textContent = r.error; return; }
-    const wf = (r.words_found || []);
-    const dom = r.dominant_engine_component || '—';
-    const tiers = (r.tiers_present || []).join(', ') || '—';
-    const fm = (r.failure_modes_detected || []);
-    el.innerHTML = wf.length === 0
-      ? '<span style="color:var(--mu)">No lexicon words detected</span>'
-      : `<div><span style="color:var(--g)">Words:</span> ${wf.map(w=>`<b>${esc(w)}</b>`).join(' · ')}</div>
-         <div><span style="color:var(--bl)">Tiers:</span> ${esc(tiers)} &nbsp; <span style="color:var(--bl)">Component:</span> ${esc(dom)}</div>` +
-        (fm.length ? `<div style="color:#f59e0b;margin-top:2px">⚠ ${esc(fm[0])}</div>` : '');
+    const r = await fetch(NS+'/lexicon/analyze?text='+encodeURIComponent(text)).then(x=>x.json());
+    const wf = r.words_found || [];
+    const badges = wf.map(w => {
+      const color = TIER_COLORS[w.tier] || 'var(--mu)';
+      return `<span style="background:rgba(0,0,0,.3);border:1px solid ${color};border-radius:2px;padding:1px 5px;margin:1px;font-size:8px;color:${color}">${esc(w.word)} T${w.tier}</span>`;
+    }).join('');
+    const constitutional = r.is_constitutional_intent
+      ? '<span class="badge ok" style="font-size:8px">CONSTITUTIONAL</span>'
+      : '<span class="badge dim" style="font-size:8px">OPERATIONAL</span>';
+    document.getElementById('lex-analysis').innerHTML = `
+      <div style="margin-bottom:3px">${constitutional} <span style="color:var(--mu);font-size:9px">component: ${esc(r.dominant_engine_component||'—')} · failure: ${esc(r.dominant_failure_mode||'—')}</span></div>
+      <div style="flex-wrap:wrap;display:flex">${badges||'<span style="color:var(--mu);font-size:9px">no lexicon words detected</span>'}</div>`;
   } catch(e) {
-    el.textContent = 'Error reaching /lexicon/analyze';
+    document.getElementById('lex-analysis').innerHTML = '<span style="color:var(--err)">error: '+esc(e.message)+'</span>';
   }
 }
 
@@ -896,7 +889,7 @@ refreshBootProof();
 refreshYubiKey();
 refreshABI();
 refreshDignityConfig();
-refreshStateRegulation();
+refreshRegulation();
 refreshLexicon();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
@@ -906,8 +899,8 @@ setInterval(refreshBootProof, 60000);
 setInterval(refreshYubiKey, 30000);
 setInterval(refreshABI, 60000);
 setInterval(refreshDignityConfig, 60000);
-setInterval(refreshStateRegulation, 30000);
-setInterval(refreshLexicon, 60000);
+setInterval(refreshRegulation, 30000);
+setInterval(refreshLexicon, 120000);
 </script>
 </body>
 </html>"""

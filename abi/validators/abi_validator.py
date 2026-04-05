@@ -22,6 +22,7 @@ SCHEMAS = {
     "BootProofReceipt.v1":      _load("BootProofReceipt.v1"),
     "StateDelta.v1":            _load("StateDelta.v1"),
     "TransitionLifecycle.v1":   _load("TransitionLifecycle.v1"),
+    "LexiconEntry.v1":          _load("LexiconEntry.v1"),
 }
 
 def validate(schema_name: str, data: dict) -> dict:
@@ -56,11 +57,18 @@ def make_boot_id() -> str:
 def make_bpr_id() -> str:
     return "BPR-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
-def make_state_delta_id() -> str:
+def make_sdl_id() -> str:
     return "SDL-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
-def make_transition_id() -> str:
+def make_trn_id() -> str:
     return "TRN-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
+
+def make_lex_id() -> str:
+    return "LEX-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
+
+# Aliases for backward compat
+make_state_delta_id = make_sdl_id
+make_transition_id  = make_trn_id
 
 def freeze_hash(schema_name: str) -> str:
     """SHA256 of schema file — canonical freeze fingerprint"""
