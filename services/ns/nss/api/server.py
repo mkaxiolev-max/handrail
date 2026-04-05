@@ -51,6 +51,14 @@ from nss.interfaces.voice_lane import (
     NORTHSTAR_WEBHOOK_BASE, TWILIO_PHONE_NUMBER,
     TIER_F, TIER_E,
 )
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parents[4] / "services" / "handrail"))
+    from handrail.regulation_engine import RegulationEngine as _RegulationEngine
+    _REGULATION_ENGINE_AVAILABLE = True
+except Exception:
+    _REGULATION_ENGINE_AVAILABLE = False
+
 from nss.interfaces.twilio_voice import (
     twiml_answer as _twiml_answer,
     twiml_respond as _twiml_respond,
@@ -1784,6 +1792,18 @@ def create_app() -> FastAPI:
                 call_sid, caller, os.environ.get("TWILIO_PHONE_NUMBER", "")
             )
 
+        # Open regulation lifecycle for this voice turn
+        _voice_lc = None
+        if _REGULATION_ENGINE_AVAILABLE and transcript:
+            try:
+                _voice_lc = _RegulationEngine.begin(
+                    source_surface="voice",
+                    objective=f"voice turn: {transcript[:80]}",
+                    metadata={"call_sid": call_sid, "caller": caller},
+                )
+            except Exception:
+                _voice_lc = None
+
         # No speech — re-prompt and loop
         if not transcript:
             twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -1876,6 +1896,20 @@ def create_app() -> FastAPI:
                             {"kind": "voice", "ref": call_sid},
                             {"transcript": transcript[:100]},
                             {"response_len": len(filtered), "safespeak": _blocked})
+
+        # Finalize regulation lifecycle for this voice turn
+        if _voice_lc is not None:
+            try:
+                _RegulationEngine.append_delta(
+                    _voice_lc,
+                    delta_domain="operational",
+                    target="voice.turn",
+                    before={"status": "pending"},
+                    after={"status": "complete", "response_len": len(filtered), "safespeak": _blocked},
+                )
+                _RegulationEngine.finalize(_voice_lc)
+            except Exception:
+                pass
 
         # Barge-in enabled: Say inside Gather so caller can interrupt NS mid-sentence
         twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -3560,6 +3594,23 @@ setInterval(refresh, 5000);
         """Founder MVP Console v2 — full Jarvis two-panel UI."""
         from nss.ui.founder import FOUNDER_HTML
         return HTMLResponse(content=FOUNDER_HTML)
+
+    # ── Gnoseogenic Lexicon ───────────────────────────────────────────────
+
+    @app.get("/lexicon/status")
+    async def gnoseogenic_lexicon_status():
+        """Return loaded Gnoseogenic Lexicon summary — entry count, tiers, components."""
+        from nss.lexicon_substrate import status_summary
+        return status_summary()
+
+    @app.get("/lexicon/analyze")
+    async def gnoseogenic_lexicon_analyze(text: str = ""):
+        """Analyze text against the Gnoseogenic Lexicon. Returns matched words,
+        tiers present, dominant engine component, and detected failure modes."""
+        if not text:
+            return {"error": "text parameter required"}
+        from nss.lexicon_substrate import analyze_intent
+        return analyze_intent(text)
 
     return app
 

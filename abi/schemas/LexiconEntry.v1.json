@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "LexiconEntry.v1",
+  "title": "LexiconEntry",
+  "version": "v1",
+  "description": "Gnoseogenic Lexicon entry — maps semantic primitives to NS∞ engine components",
+  "type": "object",
+  "required": ["entry_id", "word", "tier", "pie_root", "cognitive_act", "engine_component", "priority", "ns_mapping", "timestamp"],
+  "properties": {
+    "entry_id": {
+      "type": "string",
+      "pattern": "^LEX-[A-Z0-9]{8}$",
+      "description": "Unique lexicon entry ID"
+    },
+    "word": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "tier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Semantic abstraction tier: 1=gradient_source, 2=intake, 3=conversion, 4=output, 5=meta_constraint"
+    },
+    "pie_root": {
+      "type": "string",
+      "description": "Proto-Indo-European root morpheme"
+    },
+    "semitic": {
+      "type": ["string", "null"],
+      "description": "Semitic cognate or parallel root (optional)"
+    },
+    "cognitive_act": {
+      "type": "string",
+      "description": "Primary cognitive operation this word activates"
+    },
+    "engine_component": {
+      "type": "string",
+      "enum": [
+        "gradient_source",
+        "intake",
+        "conversion",
+        "output",
+        "feedback",
+        "waste",
+        "meta_constraint"
+      ],
+      "description": "NS∞ engine component this word maps to"
+    },
+    "failure_mode": {
+      "type": ["string", "null"],
+      "description": "What breaks when this word's concept degrades"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P1", "P2", "P3", "P4", "P5"],
+      "description": "Seeding priority — P1 first"
+    },
+    "ns_mapping": {
+      "type": "object",
+      "description": "Explicit NS∞ system mapping",
+      "properties": {
+        "service": { "type": "string" },
+        "module": { "type": "string" },
+        "cps_op": { "type": ["string", "null"] }
+      },
+      "required": ["service", "module"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 seed timestamp"
+    }
+  },
+  "additionalProperties": false,
+  "x-abi-fingerprint": "lexicon-entry-v1-frozen",
+  "x-frozen": false
+}

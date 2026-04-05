@@ -187,6 +187,25 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph">DIGNITY CONFIG <span id="dignity-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="dignity-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
+    <!-- State Regulation -->
+    <div class="section">
+      <div class="ph">STATE REGULATION <span id="regulation-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="regulation-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- Gnoseogenic Lexicon -->
+    <div class="section">
+      <div class="ph">LEXICON <span id="lexicon-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="sec-body" id="lexicon-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+      <div style="padding:4px 10px 8px">
+        <input id="lexicon-input" type="text" placeholder="analyze text…"
+          style="background:#0d1a12;border:1px solid var(--mu);border-radius:3px;color:var(--fg);font-family:inherit;font-size:10px;padding:4px 8px;width:calc(100% - 56px);outline:none"
+          onkeydown="if(event.key==='Enter')lexiconAnalyze()">
+        <button onclick="lexiconAnalyze()"
+          style="background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.3);border-radius:3px;color:var(--g);font-family:inherit;font-size:10px;padding:4px 6px;cursor:pointer;margin-left:4px">
+          Analyze</button>
+        <div id="lexicon-analyze-result" style="margin-top:6px;font-size:10px;color:var(--mu)"></div>
+      </div>
+    </div>
     <!-- Founder Actions -->
     <div class="section" style="background:rgba(240,160,48,0.04);border-top:1px solid rgba(240,160,48,0.2)">
       <div class="ph" style="color:var(--a);letter-spacing:3px">FOUNDER ACTIONS <span style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px">authority verbs</span></div>
@@ -671,6 +690,53 @@ async function refreshDignityConfig() {
   }
 }
 
+// ── Gnoseogenic Lexicon ──
+async function refreshLexicon() {
+  try {
+    const r = await fetch('/lexicon/status').then(x=>x.json());
+    const byTier = r.by_tier || {};
+    const byComp = r.by_engine_component || {};
+    const rows = [
+      ['Entries', `<span style="color:var(--ok);font-weight:700">${r.entry_count ?? 0}</span>`],
+      ['Loaded',  r.loaded ? '<span class="badge ok">YES</span>' : '<span class="badge err">NO</span>'],
+    ];
+    const tierRows = Object.entries(byTier).map(([t,n])=>
+      `<div class="hrow"><div class="hk" style="color:var(--bl)">Tier ${t}</div><div class="hv">${n} words</div></div>`
+    ).join('');
+    const compRows = Object.entries(byComp).map(([c,n])=>
+      `<div class="hrow"><div class="hk" style="font-size:9px;color:var(--mu)">${esc(c)}</div><div class="hv">${n}</div></div>`
+    ).join('');
+    document.getElementById('lexicon-body').innerHTML =
+      rows.map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('') +
+      tierRows + compRows;
+    document.getElementById('lexicon-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('lexicon-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /lexicon/status</div>';
+  }
+}
+
+async function lexiconAnalyze() {
+  const text = document.getElementById('lexicon-input').value.trim();
+  if (!text) return;
+  const el = document.getElementById('lexicon-analyze-result');
+  el.textContent = 'Analyzing…';
+  try {
+    const r = await fetch('/lexicon/analyze?text=' + encodeURIComponent(text)).then(x=>x.json());
+    if (r.error) { el.textContent = r.error; return; }
+    const wf = (r.words_found || []);
+    const dom = r.dominant_engine_component || '—';
+    const tiers = (r.tiers_present || []).join(', ') || '—';
+    const fm = (r.failure_modes_detected || []);
+    el.innerHTML = wf.length === 0
+      ? '<span style="color:var(--mu)">No lexicon words detected</span>'
+      : `<div><span style="color:var(--g)">Words:</span> ${wf.map(w=>`<b>${esc(w)}</b>`).join(' · ')}</div>
+         <div><span style="color:var(--bl)">Tiers:</span> ${esc(tiers)} &nbsp; <span style="color:var(--bl)">Component:</span> ${esc(dom)}</div>` +
+        (fm.length ? `<div style="color:#f59e0b;margin-top:2px">⚠ ${esc(fm[0])}</div>` : '');
+  } catch(e) {
+    el.textContent = 'Error reaching /lexicon/analyze';
+  }
+}
+
 // ── Founder Authority Actions ──
 const HRAIL = 'http://localhost:8011';
 function actionOut(html) {
@@ -797,6 +863,7 @@ refreshBootProof();
 refreshYubiKey();
 refreshABI();
 refreshDignityConfig();
+refreshLexicon();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
 setInterval(refreshIntel, 30000);
@@ -805,6 +872,7 @@ setInterval(refreshBootProof, 60000);
 setInterval(refreshYubiKey, 30000);
 setInterval(refreshABI, 60000);
 setInterval(refreshDignityConfig, 60000);
+setInterval(refreshLexicon, 60000);
 </script>
 </body>
 </html>"""

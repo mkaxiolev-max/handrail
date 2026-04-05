@@ -31,6 +31,10 @@ from handrail.yubikey_quorum import (                      # noqa: E402
 from handrail.proof_registry import (                      # noqa: E402
     ProofRegistry, ProofType, VALID_PROOF_TYPES, startup_seed,
 )
+from handrail.regulation_engine import (                   # noqa: E402
+    RegulationEngine,
+    make_boot_delta, make_quorum_delta, make_schema_freeze_delta,
+)
 
 _log = logging.getLogger("handrail")
 
@@ -39,6 +43,12 @@ try:
     startup_seed(_abi.freeze_manifest())
 except Exception as _seed_err:
     _log.warning("startup_seed failed (non-fatal): %s", _seed_err)
+
+# ── Startup: seed regulation engine from proof registry ───────────────────────
+try:
+    RegulationEngine.seed_from_proof_registry()
+except Exception as _re_err:
+    _log.warning("regulation_engine seed failed (non-fatal): %s", _re_err)
 
 
 def now_id() -> str:
@@ -152,10 +162,31 @@ async def boot_proof(req: BootProofRequest):
         _log.warning("boot_proof: failed to persist receipt: %s", e)
 
     # Append BOOT entry to universal proof registry
+    proof_entry = None
     try:
-        ProofRegistry.append(ProofRegistry.make_boot_entry(receipt))
+        proof_entry = ProofRegistry.append(ProofRegistry.make_boot_entry(receipt))
     except Exception as e:
         _log.warning("boot_proof: proof registry append failed: %s", e)
+
+    # Emit TransitionLifecycle for this boot
+    try:
+        lc = RegulationEngine.begin(
+            source_surface="boot",
+            objective=f"sovereign boot {graph['boot_id']}",
+            sovereign=sovereign,
+            metadata={"boot_id": graph["boot_id"], "boot_mode": graph["boot_mode"]},
+        )
+        make_boot_delta(
+            lc,
+            boot_mode=graph["boot_mode"],
+            phases_passed=sum(1 for p in graph["phases"] if p["status"] == "pass"),
+            proof_ref=proof_entry.proof_id if proof_entry else None,
+        )
+        if proof_entry:
+            RegulationEngine.attach_proof(lc, proof_entry.proof_id, sovereign=sovereign)
+        RegulationEngine.finalize(lc)
+    except Exception as e:
+        _log.warning("boot_proof: regulation_engine lifecycle failed: %s", e)
 
     return JSONResponse({"ok": True, "receipt": receipt, "sovereign": sovereign})
 
@@ -200,6 +231,44 @@ def boot_status():
             except Exception as e:
                 return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
     return JSONResponse({"sovereign": False, "reason": "no receipts"})
+
+
+@app.post("/stripe/webhook")
+async def stripe_webhook(request: Request):
+    """
+    Stripe webhook receiver. Verifies signature, dispatches event handlers,
+    and emits TypedStateDelta receipts to Continuum.
+    """
+    import sys
+    sys.path.insert(0, str(Path(__file__).parents[3]))
+    try:
+        from stripe_integration import verify_webhook, handle_checkout_complete, handle_subscription_cancelled
+    except ImportError:
+        return JSONResponse({"error": "stripe_integration not available"}, status_code=500)
+
+    payload = await request.body()
+    sig = request.headers.get("stripe-signature", "")
+    event = verify_webhook(payload, sig)
+    if event is None:
+        return JSONResponse({"error": "webhook signature invalid"}, status_code=400)
+
+    event_type = event.get("type", "")
+    delta = None
+
+    if event_type == "checkout.session.completed":
+        delta = handle_checkout_complete(event)
+    elif event_type in ("customer.subscription.deleted", "customer.subscription.updated"):
+        delta = handle_subscription_cancelled(event)
+
+    if delta:
+        try:
+            import requests as _req
+            continuum_url = os.environ.get("CONTINUUM_URL", "http://continuum:8788")
+            _req.post(f"{continuum_url}/receipts", json=delta, timeout=3)
+        except Exception as exc:
+            _log.warning("stripe_webhook: continuum emit failed: %s", exc)
+
+    return JSONResponse({"received": True, "event_type": event_type})
 
 
 @app.get("/dignity/config")
@@ -264,6 +333,44 @@ def proof_latest(proof_type: str):
     return JSONResponse({"ok": True, "proof_type": ptype, "entry": entry})
 
 
+# ── Regulation engine endpoints ───────────────────────────────────────────────
+
+@app.get("/transitions/latest")
+def transitions_latest():
+    """Return the 10 most recent TransitionLifecycle records, newest-first."""
+    return JSONResponse({
+        "ok":         True,
+        "transitions": RegulationEngine.latest_transitions(10),
+    })
+
+
+@app.get("/transitions/{transition_id}")
+def transition_get(transition_id: str):
+    """Return a single TransitionLifecycle by its TRN-XXXXXXXX id."""
+    entry = RegulationEngine.get_transition(transition_id)
+    if entry is None:
+        return JSONResponse(
+            {"ok": False, "error": f"Transition '{transition_id}' not found"},
+            status_code=404,
+        )
+    return JSONResponse({"ok": True, "transition": entry})
+
+
+@app.get("/state/summary")
+def state_summary():
+    """Return a high-level summary of constitutional state across all domains."""
+    return JSONResponse(RegulationEngine.state_summary())
+
+
+@app.get("/state/deltas/latest")
+def state_deltas_latest():
+    """Return the 10 most recent TypedStateDeltas across all transitions."""
+    return JSONResponse({
+        "ok":     True,
+        "deltas": RegulationEngine.latest_deltas(10),
+    })
+
+
 # ── YubiKey quorum endpoints ───────────────────────────────────────────────────
 
 @app.get("/yubikey/status")
@@ -290,12 +397,33 @@ async def yubikey_enroll(req: EnrollRequest, http_request: Request):
     slot = QuorumStore.enroll_slot(req.slot_id, req.serial, pkh)
 
     # Append QUORUM_ENROLLMENT entry to universal proof registry
+    proof_entry = None
     try:
-        ProofRegistry.append(
+        proof_entry = ProofRegistry.append(
             ProofRegistry.make_quorum_enrollment_entry(slot.slot_id, slot.serial, slot.public_key_hash)
         )
     except Exception as e:
         _log.warning("yubikey_enroll: proof registry append failed: %s", e)
+
+    # Emit TransitionLifecycle for this quorum enrollment
+    try:
+        lc = RegulationEngine.begin(
+            source_surface="console",
+            objective=f"yubikey enrollment {slot.slot_id} serial={slot.serial}",
+            sovereign=True,
+            metadata={"slot_id": slot.slot_id, "serial": slot.serial},
+        )
+        make_quorum_delta(
+            lc,
+            slot_id=slot.slot_id,
+            serial=slot.serial,
+            proof_ref=proof_entry.proof_id if proof_entry else None,
+        )
+        if proof_entry:
+            RegulationEngine.attach_proof(lc, proof_entry.proof_id, sovereign=True)
+        RegulationEngine.finalize(lc)
+    except Exception as e:
+        _log.warning("yubikey_enroll: regulation_engine lifecycle failed: %s", e)
 
     return JSONResponse({
         "ok":             True,
@@ -402,6 +530,16 @@ async def ops_cps(req: CPSRequest, http_request: Request):
     run_id = now_id()
     run_dir = RUNS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
+
+    # Open regulation lifecycle for this CPS execution
+    _re_lc = RegulationEngine.begin(
+        source_surface="api",
+        objective=req.objective,
+        sovereign=(req.policy_profile == "boot.runtime"),
+        metadata={"cps_id": req.cps_id, "policy_profile": req.policy_profile, "run_id": run_id},
+    )
+    RegulationEngine.attach_cps(_re_lc, req.cps_id)
+
     cps_dict = {
         "cps_id":           req.cps_id,
         "ops":              req.ops,
@@ -463,5 +601,19 @@ async def ops_cps(req: CPSRequest, http_request: Request):
     _rb_check = _abi.validate("ReturnBlock.v2", _ret_block)
     if not _rb_check["ok"]:
         _log.warning("ReturnBlock.v2 validation warning — run %s: %s", run_id, _rb_check["errors"])
+
+    # Finalize regulation lifecycle
+    try:
+        RegulationEngine.append_delta(
+            _re_lc,
+            delta_domain="operational",
+            target=f"cps.{req.cps_id}",
+            before={"status": "pending"},
+            after={"status": "complete" if result.get("ok") else "failed", "run_id": run_id},
+        )
+        RegulationEngine.attach_return(_re_lc, _ret_block.get("return_id", ""))
+        RegulationEngine.finalize(_re_lc)
+    except Exception as e:
+        _log.warning("ops_cps: regulation_engine lifecycle failed: %s", e)
 
     return JSONResponse(result)
