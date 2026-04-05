@@ -1,462 +1,114 @@
 #!/usr/bin/env python3
-"""
-Gnoseogenic Lexicon Seeder — NS∞ v1
-Seeds 30 P1 lexicon entries across 5 tiers into Alexandria.
-POST to /alexandria/add or fallback to JSONL file.
-"""
-import json
-import os
-import sys
-import hashlib
-import requests
+"""Seed Gnoseogenic Lexicon P1 entries into Alexandria + ProofRegistry."""
+import json, sys, os, urllib.request, urllib.error
 from datetime import datetime, timezone
+from pathlib import Path
+import random
 
-NS_URL = os.environ.get("NS_URL", "http://localhost:9000")
-FALLBACK_PATH = os.environ.get(
-    "LEXICON_SEED_PATH",
-    "/Volumes/NSExternal/.run/lexicon_seeds.jsonl"
-)
+WORKSPACE = Path(os.environ.get("HR_WORKSPACE", "/Users/axiolevns/axiolev_runtime"))
+LEXICON_PATH = Path("/Volumes/NSExternal/.run/lexicon_seeds.jsonl")
+FALLBACK_PATH = WORKSPACE / ".run" / "lexicon_seeds.jsonl"
+PROOF_REG_PATH = WORKSPACE / ".run" / "proof_registry.jsonl"
 
-# 30 P1 Gnoseogenic entries — 6 per tier
-LEXICON: list[dict] = [
-    # ── Tier 1 — gradient_source ──────────────────────────────────────────
-    {
-        "entry_id": "LEX-T1A00001",
-        "word": "gnosis",
-        "tier": 1,
-        "pie_root": "*gno-",
-        "semitic": "yd (ידע)",
-        "cognitive_act": "direct knowing without inference",
-        "engine_component": "gradient_source",
-        "failure_mode": "epistemic collapse — system acts without verified knowledge",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "lexicon_substrate", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T1A00002",
-        "word": "arche",
-        "tier": 1,
-        "pie_root": "*h2er-",
-        "semitic": "r'sh (ראש)",
-        "cognitive_act": "primordial origination point",
-        "engine_component": "gradient_source",
-        "failure_mode": "rootless execution — ops run with no originating intent",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "core.receipts", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T1A00003",
-        "word": "logos",
-        "tier": 1,
-        "pie_root": "*leg-",
-        "semitic": "dbr (דבר)",
-        "cognitive_act": "structured reason / generative word",
-        "engine_component": "gradient_source",
-        "failure_mode": "semantic noise — outputs carry no causal chain",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "models.registry", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T1A00004",
-        "word": "telos",
-        "tier": 1,
-        "pie_root": "*kwel-",
-        "semitic": "qtz (קצ)",
-        "cognitive_act": "end-directed purpose binding",
-        "engine_component": "gradient_source",
-        "failure_mode": "purpose drift — system optimizes for proximate not terminal goal",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "capability.graph", "cps_op": "ns.capability_graph"},
-    },
-    {
-        "entry_id": "LEX-T1A00005",
-        "word": "axiom",
-        "tier": 1,
-        "pie_root": "*ag-",
-        "semitic": "qbl (קבל)",
-        "cognitive_act": "unproven foundational assertion",
-        "engine_component": "gradient_source",
-        "failure_mode": "axiom drift — constitutional never-events eroded silently",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "kernel.dignity_kernel", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T1A00006",
-        "word": "nomos",
-        "tier": 1,
-        "pie_root": "*nem-",
-        "semitic": "chq (חוק)",
-        "cognitive_act": "law as distributed ordering principle",
-        "engine_component": "gradient_source",
-        "failure_mode": "policy void — execution proceeds unconstrained",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
+def _now(): return datetime.now(timezone.utc).isoformat()
+def _lex_id(): return "LEX-" + "".join(random.choices("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", k=8))
 
-    # ── Tier 2 — intake ───────────────────────────────────────────────────
-    {
-        "entry_id": "LEX-T2A00001",
-        "word": "aisthesis",
-        "tier": 2,
-        "pie_root": "*h2ew-",
-        "semitic": "shm' (שמע)",
-        "cognitive_act": "raw sensory perception before categorization",
-        "engine_component": "intake",
-        "failure_mode": "perceptual dropout — inputs arrive but are not registered",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "api.server", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T2A00002",
-        "word": "krinein",
-        "tier": 2,
-        "pie_root": "*krei-",
-        "semitic": "bch-n (בחן)",
-        "cognitive_act": "discriminative separation / sorting",
-        "engine_component": "intake",
-        "failure_mode": "intake flooding — all inputs treated as equal weight",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T2A00003",
-        "word": "schema",
-        "tier": 2,
-        "pie_root": "*segh-",
-        "semitic": "tzwr (צור)",
-        "cognitive_act": "structural template that shapes perception",
-        "engine_component": "intake",
-        "failure_mode": "schema mismatch — payload rejected at ABI boundary",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "abi.validators", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T2A00004",
-        "word": "hyle",
-        "tier": 2,
-        "pie_root": "*h2ulH-",
-        "semitic": "chm-r (חומר)",
-        "cognitive_act": "undifferentiated raw material awaiting form",
-        "engine_component": "intake",
-        "failure_mode": "untyped payload — raw data enters execution without ABI wrapping",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "server", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T2A00005",
-        "word": "mneme",
-        "tier": 2,
-        "pie_root": "*men-",
-        "semitic": "zkr (זכר)",
-        "cognitive_act": "active recall from persistent store",
-        "engine_component": "intake",
-        "failure_mode": "memory blindness — context window starts cold every session",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "core.memory", "cps_op": "ns.memory_recent"},
-    },
-    {
-        "entry_id": "LEX-T2A00006",
-        "word": "kairos",
-        "tier": 2,
-        "pie_root": "*ker-",
-        "semitic": "et (עת)",
-        "cognitive_act": "opportune moment — qualitative time vs chronos",
-        "engine_component": "intake",
-        "failure_mode": "temporal blindness — proactive intel fires at wrong moment",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "intel", "cps_op": "ns.proactive_intel"},
-    },
-
-    # ── Tier 3 — conversion ───────────────────────────────────────────────
-    {
-        "entry_id": "LEX-T3A00001",
-        "word": "poiesis",
-        "tier": 3,
-        "pie_root": "*kwei-",
-        "semitic": "bra (ברא)",
-        "cognitive_act": "bringing into being from nothing / creative causation",
-        "engine_component": "conversion",
-        "failure_mode": "sterile execution — ops complete but produce no new state",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T3A00002",
-        "word": "praxis",
-        "tier": 3,
-        "pie_root": "*per-",
-        "semitic": "ma'ase (מעשה)",
-        "cognitive_act": "deliberate action that transforms the actor",
-        "engine_component": "conversion",
-        "failure_mode": "phantom ops — actions recorded but produce no causal effect",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T3A00003",
-        "word": "synthesis",
-        "tier": 3,
-        "pie_root": "*dhe-",
-        "semitic": "chibur (חיבור)",
-        "cognitive_act": "combining disparate elements into unified whole",
-        "engine_component": "conversion",
-        "failure_mode": "fragmented execution — multi-step CPS plans lose coherence mid-chain",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T3A00004",
-        "word": "methodos",
-        "tier": 3,
-        "pie_root": "*med-",
-        "semitic": "derech (דרך)",
-        "cognitive_act": "path-following — systematic pursuit toward goal",
-        "engine_component": "conversion",
-        "failure_mode": "path collapse — execution jumps steps, violates op ordering",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "programs", "cps_op": "program.advance_state"},
-    },
-    {
-        "entry_id": "LEX-T3A00005",
-        "word": "aletheia",
-        "tier": 3,
-        "pie_root": "*leh2-",
-        "semitic": "emet (אמת)",
-        "cognitive_act": "unconcealment — truth as revealing hidden reality",
-        "engine_component": "conversion",
-        "failure_mode": "opacity — system state concealed from Founder console",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "ui.founder", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T3A00006",
-        "word": "kinesis",
-        "tier": 3,
-        "pie_root": "*kei-",
-        "semitic": "tn-ua (תנועה)",
-        "cognitive_act": "motion / state change as metaphysical category",
-        "engine_component": "conversion",
-        "failure_mode": "state freeze — TierLatch stuck, no events flowing to Continuum",
-        "priority": "P1",
-        "ns_mapping": {"service": "continuum", "module": "server", "cps_op": None},
-    },
-
-    # ── Tier 4 — output ───────────────────────────────────────────────────
-    {
-        "entry_id": "LEX-T4A00001",
-        "word": "apodeixis",
-        "tier": 4,
-        "pie_root": "*deik-",
-        "semitic": "hara'ah (הראיה)",
-        "cognitive_act": "formal demonstration — showing what cannot be doubted",
-        "engine_component": "output",
-        "failure_mode": "proof gap — boot receipts exist but chain validation fails",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "core.receipts", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T4A00002",
-        "word": "entelecheia",
-        "tier": 4,
-        "pie_root": "*kwel-",
-        "semitic": "sh-le-mut (שלמות)",
-        "cognitive_act": "actuality — potential fully realized",
-        "engine_component": "output",
-        "failure_mode": "partial completion — ops return without fully realized ReturnBlock",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T4A00003",
-        "word": "eidos",
-        "tier": 4,
-        "pie_root": "*weid-",
-        "semitic": "tzelem (צלם)",
-        "cognitive_act": "form / essence visible to intellect",
-        "engine_component": "output",
-        "failure_mode": "formless output — ReturnBlock lacks typed structure",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "abi.validators", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T4A00004",
-        "word": "ergon",
-        "tier": 4,
-        "pie_root": "*werg-",
-        "semitic": "ml-a-cha (מלאכה)",
-        "cognitive_act": "function / characteristic work of a thing",
-        "engine_component": "output",
-        "failure_mode": "off-function — adapter op returns data outside its declared domain",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail-adapter-macos", "module": "adapter_core.capability_registry", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T4A00005",
-        "word": "apophasis",
-        "tier": 4,
-        "pie_root": "*bha-",
-        "semitic": "shlilah (שלילה)",
-        "cognitive_act": "negative definition — knowing by exclusion",
-        "engine_component": "output",
-        "failure_mode": "boundary blindness — system cannot articulate what it will not do",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "kernel.dignity_kernel", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T4A00006",
-        "word": "mimesis",
-        "tier": 4,
-        "pie_root": "*mei-",
-        "semitic": "chikui (חיקוי)",
-        "cognitive_act": "representation / faithful reproduction of pattern",
-        "engine_component": "output",
-        "failure_mode": "drift from canon — semantic outputs diverge from Lexicon definitions",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "semantic.feedback_binder", "cps_op": None},
-    },
-
-    # ── Tier 5 — meta_constraint ──────────────────────────────────────────
-    {
-        "entry_id": "LEX-T5A00001",
-        "word": "dikaiosyne",
-        "tier": 5,
-        "pie_root": "*deik-",
-        "semitic": "tzedek (צדק)",
-        "cognitive_act": "justice as structural ordering of parts to whole",
-        "engine_component": "meta_constraint",
-        "failure_mode": "constitutional violation — dignity kernel bypassed",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "kernel.dignity_kernel", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T5A00002",
-        "word": "sophrosyne",
-        "tier": 5,
-        "pie_root": "*swe-",
-        "semitic": "anava (ענוה)",
-        "cognitive_act": "temperance — self-limiting within proper measure",
-        "engine_component": "meta_constraint",
-        "failure_mode": "scope creep — ops execute beyond their declared risk tier",
-        "priority": "P1",
-        "ns_mapping": {"service": "handrail", "module": "cps_engine", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T5A00003",
-        "word": "phronesis",
-        "tier": 5,
-        "pie_root": "*ghren-",
-        "semitic": "da'at (דעת)",
-        "cognitive_act": "practical wisdom — right action in contingent situation",
-        "engine_component": "meta_constraint",
-        "failure_mode": "rigid rule following — system applies policy without contextual judgment",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "models.router", "cps_op": None},
-    },
-    {
-        "entry_id": "LEX-T5A00004",
-        "word": "autonomia",
-        "tier": 5,
-        "pie_root": "*autos + *nem-",
-        "semitic": "cheirut (חירות)",
-        "cognitive_act": "self-governance under self-given law",
-        "engine_component": "meta_constraint",
-        "failure_mode": "hetero-determination — system accepts external command without YubiKey gate",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "kernel.dignity", "cps_op": "POST /kernel/yubikey/verify"},
-    },
-    {
-        "entry_id": "LEX-T5A00005",
-        "word": "harmonia",
-        "tier": 5,
-        "pie_root": "*ar-",
-        "semitic": "shivuy (שיוי)",
-        "cognitive_act": "fitting-together — consonance of heterogeneous parts",
-        "engine_component": "meta_constraint",
-        "failure_mode": "inter-service divergence — Handrail/NS/Continuum state desync",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "api.server", "cps_op": "GET /health/full"},
-    },
-    {
-        "entry_id": "LEX-T5A00006",
-        "word": "kathekon",
-        "tier": 5,
-        "pie_root": "*kat-",
-        "semitic": "chov (חוב)",
-        "cognitive_act": "appropriate action — what befits the nature of the agent",
-        "engine_component": "meta_constraint",
-        "failure_mode": "role confusion — model speaks with authority it does not hold",
-        "priority": "P1",
-        "ns_mapping": {"service": "ns", "module": "models.registry", "cps_op": None},
-    },
+LEXICON = [
+  # Tier 1 — Relational/Survival (gradient source / intake)
+  {"word":"I","tier":1,"pie_root":"*eǵ(h)-","semitic":"אני (ani)","cognitive_act":"Self-awareness as distinct system","engine_component":"intake","failure_mode":"identity_mismatch","priority":"P1","ns_mapping":"The founder identity boundary. Required for all authority-gated operations."},
+  {"word":"not","tier":1,"pie_root":"*ne-","semitic":"אין (ein)","cognitive_act":"Recognition of absence; boundary negation","engine_component":"gradient_source","failure_mode":"constraint_failure","priority":"P1","ns_mapping":"The negation operator in dignity kernel never-events and CPS policy gates."},
+  {"word":"with","tier":1,"pie_root":"*kom-","semitic":"עם (im)","cognitive_act":"Co-presence; relational bonding","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The bonding operator — YubiKey quorum requires 'with' (2 slots together)."},
+  {"word":"and","tier":1,"pie_root":"*h₂enǵ-","semitic":"ו (ve-)","cognitive_act":"Conjunction; binding operator","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"The CPS chain connector. Ops are bound 'and' sequenced."},
+  {"word":"fire","tier":1,"pie_root":"*h₂puH-","semitic":"אש (esh)","cognitive_act":"Transformation energy; thermodynamic gradient","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The execution gradient. Handrail is the fire — it transforms intent into action."},
+  {"word":"water","tier":1,"pie_root":"*wed-r̥","semitic":"מים (mayim)","cognitive_act":"Life-enabling fluid; flow gradient","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"Alexandria — the flow that preserves everything. Append-only, always flowing."},
+  {"word":"eye","tier":1,"pie_root":"*h₃ekʷ-","semitic":"עין (ayin)","cognitive_act":"Direct perception; feedback instrument","engine_component":"feedback","failure_mode":"blockage","priority":"P1","ns_mapping":"The Founder Console. The eye that sees all system state."},
+  {"word":"ear","tier":1,"pie_root":"*h₁eus-","semitic":"אוזן (ozen)","cognitive_act":"Auditory intake; relational signal detection","engine_component":"intake","failure_mode":"blockage","priority":"P1","ns_mapping":"The Twilio voice hook. NS∞ listens via +1 (307) 202-4418."},
+  {"word":"heart","tier":1,"pie_root":"*ker(d)-","semitic":"לב (lev)","cognitive_act":"Emotional/volitional gradient source; covenant seat","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The Dignity Kernel. The constitutional heart — H = eta·φ - beta·V."},
+  {"word":"blood","tier":1,"pie_root":"*h₁es(u)-","semitic":"דם (dam)","cognitive_act":"Covenant binding; relational exchange fluid","engine_component":"intake","failure_mode":"blockage","priority":"P1","ns_mapping":"The Regulation Engine. The bloodstream connecting all organs."},
+  {"word":"sun","tier":1,"pie_root":"*suh₂-wol-","semitic":"שמש (shemesh)","cognitive_act":"Energy source; light-as-knowledge","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The founding intent — the source gradient that drives all system activity."},
+  {"word":"father","tier":1,"pie_root":"*ph₂ter-","semitic":"אב (ab)","cognitive_act":"Progenitor; authority source","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The Founder. Mike Kenworthy — the authority source for all YubiKey-gated operations."},
+  {"word":"mother","tier":1,"pie_root":"*meh₂ter-","semitic":"אם (em)","cognitive_act":"Life-source; nurturing gradient","engine_component":"gradient_source","failure_mode":"starvation","priority":"P1","ns_mapping":"The Constitutional foundation — Logos theology and Christ-centered design."},
+  {"word":"name","tier":1,"pie_root":"*h₁neh₂-m(o)-","semitic":"שם (shem)","cognitive_act":"Identity marker; self-designation","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"NS∞ — the name encodes the identity. Infinite NorthStar."},
+  # Tier 2 — Structural/Causal (conversion / output)
+  {"word":"good","tier":2,"pie_root":"*h₁eu-","semitic":"טוב (tov)","cognitive_act":"System functioning optimally","engine_component":"output","failure_mode":"degradation","priority":"P1","ns_mapping":"The target system state. All CPS plans aim for ok=true. Tov = the dignity score above block_threshold."},
+  {"word":"bad","tier":2,"pie_root":"*dustō-","semitic":"רע (ra)","cognitive_act":"System functioning sub-optimally","engine_component":"feedback","failure_mode":"degradation","priority":"P1","ns_mapping":"The dignity violation signal. H below block_threshold = ra. Never-events are absolute ra."},
+  {"word":"true","tier":2,"pie_root":"*deru-","semitic":"אמת (emet)","cognitive_act":"Load-bearing faithfulness; covenant reliability","engine_component":"conversion","failure_mode":"degradation","priority":"P1","ns_mapping":"ABI frozen schemas — immutable truth. The SHA256 fingerprint is the emet of each schema."},
+  {"word":"false","tier":2,"pie_root":"*dʰewǵʰ-","semitic":"שקר (sheker)","cognitive_act":"Unreliable; covenant-breaking","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"abi_violation: true. The system detects sheker at the ABI gate and returns 400."},
+  {"word":"to break","tier":2,"pie_root":"*bhreg-","semitic":"לשבור (lishor)","cognitive_act":"Constraint failure; structural rupture","engine_component":"conversion","failure_mode":"collapse","priority":"P1","ns_mapping":"The collapse failure mode. dignity.never_event op = attempting to break the system."},
+  {"word":"to make","tier":2,"pie_root":"*meḱ-","semitic":"לעשות (la'asot)","cognitive_act":"Directed transformation; intentional change","engine_component":"conversion","failure_mode":"blockage","priority":"P1","ns_mapping":"The CPS op. Every op is a 'to make' — a directed transformation with a deterministic result."},
+  # Tier 3 — Epistemic/Verification (feedback)
+  {"word":"to see","tier":3,"pie_root":"*weid-","semitic":"לראות (lir'ot)","cognitive_act":"Direct phenomenal grasp; evidence collection","engine_component":"feedback","failure_mode":"blockage","priority":"P1","ns_mapping":"GET /proof/registry — the system sees its own constitutional state."},
+  {"word":"to hear","tier":3,"pie_root":"*h₁klus-","semitic":"לשמוע (lishmoa)","cognitive_act":"Auditory intake; signal detection","engine_component":"intake","failure_mode":"blockage","priority":"P1","ns_mapping":"Twilio voice_url webhook. NS re-listens indefinitely (commit f551b43, tag voice-loop-v1)."},
+  {"word":"to know","tier":3,"pie_root":"*ǵneh₃-","semitic":"לדעת (lada'at)","cognitive_act":"Intimate encounter; direct knowing","engine_component":"feedback","failure_mode":"blockage","priority":"P1","ns_mapping":"Alexandria append-only ledger. The system knows what it has proven, no more, no less."},
+  {"word":"to say","tier":3,"pie_root":"*seḱ-","semitic":"לאמר (le'amor)","cognitive_act":"Output articulation; evidence transmission","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"Twilio Polly.Matthew voice synthesis. The system speaks what it knows."},
+  {"word":"evidence","tier":3,"pie_root":"*weid-","semitic":"עדות (edut)","cognitive_act":"Visible testimony; factual grounding","engine_component":"feedback","failure_mode":"blockage","priority":"P1","ns_mapping":"ProofEntry. Every constitutional action produces evidence — the proof_id is the edut."},
+  {"word":"feedback","tier":3,"pie_root":"*bheudh-","semitic":"משוב (meshiv)","cognitive_act":"System-state verification; awareness signal","engine_component":"feedback","failure_mode":"blockage","priority":"P1","ns_mapping":"The 6th engine component. GET /boot/status, /yubikey/status, /abi/status are all feedback."},
+  {"word":"intake","tier":3,"pie_root":"*kap-","semitic":"ספיגה (sphiga)","cognitive_act":"Gradient capture; selective admission","engine_component":"intake","failure_mode":"blockage","priority":"P1","ns_mapping":"The ABI gate on POST /ops/cps. Only valid CPSPackets pass through intake."},
+  {"word":"conversion","tier":3,"pie_root":"*wert-","semitic":"המרה (hamrah)","cognitive_act":"Energy transformation; directed processing","engine_component":"conversion","failure_mode":"blockage","priority":"P1","ns_mapping":"The CPSExecutor. Transforms IntentPackets into deterministic execution results."},
+  {"word":"output","tier":3,"pie_root":"*h₂ew-","semitic":"פלט (palet)","cognitive_act":"System product; directional discharge","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"ReturnBlock.v2. The validated, dignity-enforced result of every CPS execution."},
+  {"word":"logos","tier":3,"pie_root":"*leg-","semitic":"לוגוס (logos)","cognitive_act":"Gathering principle; collecting into structure","engine_component":"meta_constraint","failure_mode":"all_modes","priority":"P1","ns_mapping":"The principle that makes NS∞ cohere. *leg- = 'to gather, to collect into order.' The constitutional AI OS is logos made executable."},
+  # Tier 4 — Normative/Constitutional (constraint governance)
+  {"word":"just","tier":4,"pie_root":"*ieu-","semitic":"צדיק (tzaddik)","cognitive_act":"Constraint-respecting; equitable","engine_component":"output","failure_mode":"mismatch","priority":"P1","ns_mapping":"The Dignity Kernel invariant. Just = H above warn_threshold. Unjust = H below block_threshold."},
+  {"word":"dignity","tier":4,"pie_root":"*dek-","semitic":"כבוד (kavod)","cognitive_act":"Inherent gravitational mass of personhood","engine_component":"gradient_source","failure_mode":"mismatch","priority":"P1","ns_mapping":"DignityKernel. kavod = 'weight, honor' — the gravitational constant of the constitutional system."},
+  {"word":"authority","tier":4,"pie_root":"*h₂ew-","semitic":"סמכות (samkhut)","cognitive_act":"Epistemic responsibility; power to guarantee","engine_component":"output","failure_mode":"constraint_collapse","priority":"P1","ns_mapping":"X-Founder-Key header. YubiKey quorum. The authority gate on all sovereign operations."},
+  {"word":"law","tier":4,"pie_root":"*leǵ-","semitic":"תורה/דין (Torah/din)","cognitive_act":"Gathered constraint set; directional instruction","engine_component":"conversion","failure_mode":"overload","priority":"P1","ns_mapping":"The 7 frozen ABI schemas. The law of the system is its ABI — immutable, verified at every boundary."},
+  {"word":"guarantee","tier":4,"pie_root":"*h₂ewǵ-","semitic":"ערובה (aruva)","cognitive_act":"Epistemic responsibility; growth-warranty","engine_component":"output","failure_mode":"collapse","priority":"P1","ns_mapping":"BootProofReceipt.v1 sovereign=true. The guarantee that the system booted constitutionally."},
+  {"word":"shalom","tier":4,"pie_root":"*sol-","semitic":"שלום (shalom, root sense)","cognitive_act":"Structural wholeness; unbroken completion","engine_component":"output","failure_mode":"collapse","priority":"P1","ns_mapping":"The target state of NS∞. sovereign=true + all phases pass + dignity enforced = shalom. Nothing missing, nothing broken."},
+  {"word":"wholeness","tier":4,"pie_root":"*sol-","semitic":"שלמות (shlemut)","cognitive_act":"Full system function; all components present","engine_component":"output","failure_mode":"collapse","priority":"P1","ns_mapping":"boot_mission_graph 29/29 ops. All 9 phases passing. The wholeness proof is the BootProofReceipt."},
+  {"word":"responsibility","tier":4,"pie_root":"*spendhˉ-","semitic":"אחריות (achrayut)","cognitive_act":"Obligation to respond; volitional accountability","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"The Founder Console authority verbs. Approve Boot, Enroll YubiKey — acts of responsibility."},
+  {"word":"truth","tier":4,"pie_root":"*deru-","semitic":"אמת (emet)","cognitive_act":"Load-bearing faithfulness","engine_component":"conversion","failure_mode":"degradation","priority":"P1","ns_mapping":"The ABI freeze_hash. The SHA256 fingerprint IS the truth of the schema — immutable, verifiable."},
+  {"word":"covenant","tier":4,"pie_root":"*leig-","semitic":"ברית (brit)","cognitive_act":"Binding agreement; mutual constraint","engine_component":"output","failure_mode":"blockage","priority":"P1","ns_mapping":"The YubiKey enrollment. slot_1 serial 26116460 is the covenant token. Physical hardware as covenantal binding."},
+  # Tier 5 — Metaepistemic/Engine (meta-constraint, logos)
+  {"word":"logos","tier":5,"pie_root":"*leg-","semitic":"לוגוס (logos, meta)","cognitive_act":"Primordial gathering; meta-ordering of all components","engine_component":"meta_constraint","failure_mode":"all_modes_simultaneously","priority":"P1","ns_mapping":"The Constitutional Regulation Engine. The logos layer is what gathers all organs into one bloodstream."},
+  {"word":"engine","tier":5,"pie_root":"*h₁enǵʰ-","semitic":"מנוע (menua)","cognitive_act":"System-as-converter; nested gradient flow","engine_component":"meta_constraint","failure_mode":"all_modes","priority":"P1","ns_mapping":"NS∞ itself. The 6-component constitutional engine: gradient_source → intake → conversion → output → feedback → waste."},
+  {"word":"constraint","tier":5,"pie_root":"*leig-","semitic":"אילוץ (ilus)","cognitive_act":"Boundary condition; limiting principle","engine_component":"meta_constraint","failure_mode":"collapse","priority":"P1","ns_mapping":"The ABI frozen schemas. The 7 (now 9) constraints that make the system deterministic."},
+  {"word":"shalom","tier":5,"pie_root":"*sol-","semitic":"שלום (shalom, system state)","cognitive_act":"Complete integrity; nothing missing, nothing broken","engine_component":"meta_constraint","failure_mode":"collapse","priority":"P1","ns_mapping":"System target state: sovereign=true, all 29 ops passing, dignity enforced, quorum satisfied."},
+  {"word":"gradient_source","tier":5,"pie_root":"*gʷher-","semitic":"מקור שיפוע (mikor shapua)","cognitive_act":"Energy differential origin","engine_component":"meta_constraint","failure_mode":"starvation","priority":"P1","ns_mapping":"The Founder's intent. Every system action originates from a founder-authorized gradient."},
+  {"word":"intake_mechanism","tier":5,"pie_root":"*kap-","semitic":"מנגנון ספיגה (manganon sphiga)","cognitive_act":"Gradient capture structure","engine_component":"meta_constraint","failure_mode":"blockage","priority":"P1","ns_mapping":"The ABI gate on POST /ops/cps. CPSPacket.v1 validation is the intake mechanism."},
+  {"word":"conversion_mechanism","tier":5,"pie_root":"*wert-","semitic":"מנגנון המרה (manganon hamrah)","cognitive_act":"Energy transformation process","engine_component":"meta_constraint","failure_mode":"degradation","priority":"P1","ns_mapping":"The CPSExecutor. Deterministic SHA256-derived run_id. The conversion mechanism is what makes execution reproducible."},
+  {"word":"output_pathway","tier":5,"pie_root":"*h₂ew-","semitic":"מסלול פלט (maslul palet)","cognitive_act":"Product creation; directed discharge","engine_component":"meta_constraint","failure_mode":"blockage","priority":"P1","ns_mapping":"ReturnBlock.v2 + ProofEntry. Every output is validated, proven, and registered."},
+  {"word":"feedback_loop","tier":5,"pie_root":"*bheudh-","semitic":"לולאת משוב (lulaat meshiv)","cognitive_act":"System self-monitoring; correction circuit","engine_component":"meta_constraint","failure_mode":"blockage","priority":"P1","ns_mapping":"The proof registry + state summary. The system sees itself through its own evidence chain."},
+  {"word":"waste_pathway","tier":5,"pie_root":"*weid-","semitic":"מסלול פסולת (maslul psolet)","cognitive_act":"Entropy removal; degradation discharge","engine_component":"meta_constraint","failure_mode":"blockage","priority":"P1","ns_mapping":"The dignity violation log. never_events are expelled as waste — they cannot enter the system."},
+  {"word":"antifragile","tier":5,"pie_root":"*h₂enti-","semitic":"עמיד לנזקים (amid lenekaim)","cognitive_act":"Strengthened by stress; constraint-deepening","engine_component":"meta_constraint","failure_mode":"degradation_reversal","priority":"P1","ns_mapping":"The boot attestation chain. Each sovereign boot ADDS proof. More stress = more proof = stronger system."},
+  {"word":"flow","tier":5,"pie_root":"*h₃rewǵʰ-","semitic":"זרימה (zrima)","cognitive_act":"Unobstructed gradient movement","engine_component":"meta_constraint","failure_mode":"blockage","priority":"P1","ns_mapping":"The autopoietic loop. When the system flows — planner → approval → commit → promotion — it is alive."},
 ]
 
+def seed():
+    out_path = LEXICON_PATH if LEXICON_PATH.parent.exists() else FALLBACK_PATH
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    seeded = 0
+    with open(out_path, "w") as f:
+        for word_def in LEXICON:
+            entry = {
+                "entry_id": _lex_id(),
+                "timestamp": _now(),
+                **word_def
+            }
+            f.write(json.dumps(entry) + "\n")
+            seeded += 1
 
-def _entry_with_ts(entry: dict) -> dict:
-    e = dict(entry)
-    e["timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    return e
+    print(f"Lexicon seeded: {seeded} entries → {out_path}")
 
-
-def _seed_via_api(entries: list[dict]) -> tuple[int, int]:
-    ok = 0
-    fail = 0
-    for entry in entries:
+    # Attempt to POST to NS alexandria/add
+    ns_seeded = 0
+    for word_def in LEXICON:
+        entry = {"entry_id": _lex_id(), "timestamp": _now(), "type": "lexicon_entry", **word_def}
         try:
-            r = requests.post(
-                f"{NS_URL}/alexandria/add",
-                json={"type": "lexicon_entry", "data": entry},
-                timeout=5,
+            req = urllib.request.Request(
+                "http://localhost:9000/alexandria/add",
+                data=json.dumps(entry).encode(),
+                headers={"Content-Type": "application/json"},
+                method="POST"
             )
-            if r.status_code in (200, 201):
-                ok += 1
-            else:
-                print(f"  WARN {entry['entry_id']}: HTTP {r.status_code}", file=sys.stderr)
-                fail += 1
-        except Exception as exc:
-            print(f"  WARN {entry['entry_id']}: {exc}", file=sys.stderr)
-            fail += 1
-    return ok, fail
+            urllib.request.urlopen(req, timeout=2)
+            ns_seeded += 1
+        except Exception:
+            pass  # Alexandria add not required — file persistence is canonical
 
-
-def _seed_via_fallback(entries: list[dict]) -> None:
-    os.makedirs(os.path.dirname(FALLBACK_PATH), exist_ok=True)
-    with open(FALLBACK_PATH, "w") as fh:
-        for entry in entries:
-            fh.write(json.dumps(entry) + "\n")
-    print(f"  Wrote {len(entries)} entries → {FALLBACK_PATH}")
-
-
-def main() -> None:
-    entries = [_entry_with_ts(e) for e in LEXICON]
-    print(f"NS∞ Lexicon Seeder — {len(entries)} P1 entries across 5 tiers")
-    print(f"  Target: {NS_URL}/alexandria/add")
-
-    # Attempt API seed
-    ok, fail = _seed_via_api(entries)
-    print(f"  API seed: {ok} ok, {fail} failed")
-
-    if fail > 0 or ok == 0:
-        print("  Falling back to JSONL...")
-        _seed_via_fallback(entries)
-
-    # Print manifest
-    fingerprint = hashlib.sha256(
-        json.dumps([e["entry_id"] for e in entries], sort_keys=True).encode()
-    ).hexdigest()[:16]
-    print(f"\nLexicon manifest:")
-    print(f"  entries:     {len(entries)}")
-    print(f"  tiers:       1-5 (6 entries each)")
-    print(f"  fingerprint: {fingerprint}")
-    print(f"  schema:      abi/schemas/LexiconEntry.v1.json")
-
-    by_component: dict[str, int] = {}
-    for e in entries:
-        c = e["engine_component"]
-        by_component[c] = by_component.get(c, 0) + 1
-    print("  by component:")
-    for comp, count in sorted(by_component.items()):
-        print(f"    {comp}: {count}")
-
+    print(f"Alexandria POST: {ns_seeded}/{len(LEXICON)} entries accepted")
+    print(f"Lexicon file: {out_path}")
+    return seeded
 
 if __name__ == "__main__":
-    main()
+    n = seed()
+    print(f"Done. {n} P1 lexicon entries seeded.")
