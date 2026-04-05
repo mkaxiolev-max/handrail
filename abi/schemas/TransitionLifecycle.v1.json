@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "TransitionLifecycle.v1",
+  "title": "TransitionLifecycle",
+  "description": "Full governance chain record for a constitutional state transition",
+  "type": "object",
+  "required": ["transition_id", "source_surface", "objective", "sovereign", "timestamp"],
+  "additionalProperties": false,
+  "properties": {
+    "transition_id": {
+      "type": "string",
+      "pattern": "^TRN-[A-Z0-9]{8}$",
+      "description": "Unique identifier for this transition lifecycle"
+    },
+    "source_surface": {
+      "type": "string",
+      "enum": ["voice", "text", "console", "api", "system", "boot"],
+      "description": "The surface through which this transition was initiated"
+    },
+    "objective": {
+      "type": "string",
+      "description": "Human-readable description of the transition's intent"
+    },
+    "intent_ref": {
+      "type": "string",
+      "description": "Optional reference to an IntentPacket intent_id"
+    },
+    "decision_ref": {
+      "type": "string",
+      "description": "Optional reference to a KernelDecisionReceipt"
+    },
+    "cps_ref": {
+      "type": "string",
+      "description": "Optional reference to a CPSPacket cps_id"
+    },
+    "return_ref": {
+      "type": "string",
+      "description": "Optional reference to a ReturnBlock"
+    },
+    "proof_ref": {
+      "type": "string",
+      "description": "Optional reference to a ProofEntry proof_id (PRF-XXXXXXXX)"
+    },
+    "state_deltas": {
+      "type": "array",
+      "items": {
+        "$ref": "StateDelta.v1"
+      },
+      "description": "Ordered list of typed state deltas produced by this transition"
+    },
+    "sovereign": {
+      "type": "boolean",
+      "description": "True if this transition required and satisfied sovereign quorum"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp when the transition began"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Arbitrary key-value surface metadata (call_sid, caller, etc.)"
+    }
+  }
+}

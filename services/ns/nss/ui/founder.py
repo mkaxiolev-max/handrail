@@ -1,12 +1,12 @@
 # Copyright © 2026 Axiolev. All rights reserved.
-"""Founder Console v8 — full Jarvis two-panel sovereign interface + Boot Proof + YubiKey + ABI panels."""
+"""Founder Console v9 — full Jarvis two-panel sovereign interface + Boot Proof + YubiKey + ABI + STATE REGULATION panels."""
 
 FOUNDER_HTML = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NS∞ Founder Console v8</title>
+<title>NS∞ Founder Console v9</title>
 <style>
 :root{
   --bg:#050d1a;--p:#080f1e;--p2:#0c1628;--b:#112240;--b2:#1a3a5e;
@@ -690,6 +690,39 @@ async function refreshDignityConfig() {
   }
 }
 
+// ── State Regulation ──
+async function refreshStateRegulation() {
+  try {
+    const [sum, trns] = await Promise.all([
+      fetch('http://localhost:8011/state/summary').then(x=>x.json()),
+      fetch('http://localhost:8011/transitions/latest').then(x=>x.json()),
+    ]);
+    const dc = sum.domain_counts || {};
+    const sc = sum.surface_counts || {};
+    const domainBadges = Object.entries(dc).map(([d,n])=>
+      `<span style="font-size:9px;color:var(--bl);margin-right:6px">${d}:<b style="color:var(--t)">${n}</b></span>`
+    ).join('');
+    const latest3 = (trns.transitions||[]).slice(0,3);
+    const trnRows = latest3.map(t=>{
+      const sov = t.sovereign ? '<span class="badge ok" style="font-size:8px">SOV</span>' : '';
+      return `<div class="hrow">
+        <div class="hk" style="font-size:9px;color:var(--bl)">${esc(t.source_surface||'')}</div>
+        <div class="hv" style="font-size:9px">${sov} <span style="color:var(--mu)">${esc((t.objective||'').slice(0,40))}</span></div>
+      </div>`;
+    }).join('');
+    document.getElementById('regulation-body').innerHTML = [
+      ['Transitions', `<span style="color:var(--ok);font-weight:700">${sum.total_transitions ?? 0}</span>`],
+      ['Deltas',      `<span style="color:var(--s)">${sum.total_deltas ?? 0}</span>`],
+      ['Sovereign',   `<span style="color:var(--ok)">${sum.sovereign_transitions ?? 0}</span>`],
+    ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('') +
+    `<div class="hrow"><div class="hk">Domains</div><div class="hv" style="flex-wrap:wrap">${domainBadges||'—'}</div></div>` +
+    (trnRows ? `<div style="margin-top:4px;padding-top:4px;border-top:1px solid rgba(17,34,64,.4);font-size:9px;color:var(--mu);letter-spacing:1px">RECENT</div>${trnRows}` : '');
+    document.getElementById('regulation-ts').textContent = fts(new Date().toISOString());
+  } catch(e) {
+    document.getElementById('regulation-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/state/summary</div>';
+  }
+}
+
 // ── Gnoseogenic Lexicon ──
 async function refreshLexicon() {
   try {
@@ -863,6 +896,7 @@ refreshBootProof();
 refreshYubiKey();
 refreshABI();
 refreshDignityConfig();
+refreshStateRegulation();
 refreshLexicon();
 setInterval(refreshAll, 5000);
 setInterval(refreshMemory, 10000);
@@ -872,6 +906,7 @@ setInterval(refreshBootProof, 60000);
 setInterval(refreshYubiKey, 30000);
 setInterval(refreshABI, 60000);
 setInterval(refreshDignityConfig, 60000);
+setInterval(refreshStateRegulation, 30000);
 setInterval(refreshLexicon, 60000);
 </script>
 </body>
