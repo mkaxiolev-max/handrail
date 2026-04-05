@@ -210,6 +210,14 @@
         "expect_status": 200
       },
       "description": "program library endpoint live \u2014 10 programs registered"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://handrail:8011/intent/execute?text=health",
+        "expect_status": 200
+      },
+      "description": "intent command loop live \u2014 NS\u221e v5 binding layer"
     }
   ],
   "expect": {
@@ -228,5 +236,5 @@
     "results[28].data.healthy": true,
     "results[29].data.healthy": true
   },
-  "ops_count": 32
+  "ops_count": 33
 }

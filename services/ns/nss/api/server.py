@@ -3698,3 +3698,46 @@ async def ops_ingest_bootstrap(request: Request, x_ns_ops_key: str | None = Head
     recursive = body.get("recursive", True)
     results = ingest.bootstrap_directory(Path(directory).expanduser(), recursive=recursive)
     return {"ok": True, "results": results}
+
+
+# ── Intent execute — NS proxy to Handrail command loop ─────────────────────
+
+@app.post("/intent/execute")
+async def ns_intent_execute(request: Request):
+    """NS-side intent execute: classify text → forward to Handrail /intent/execute → return receipt."""
+    import urllib.request as _ur
+    import urllib.error as _ue
+    body = await request.json()
+    text = body.get("text", "").strip()
+    if not text:
+        return JSONResponse({"ok": False, "error": "text required"}, status_code=400)
+    payload = json.dumps({"text": text}).encode()
+    req = _ur.Request(
+        "http://handrail:8011/intent/execute",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with _ur.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+        return JSONResponse(result)
+    except _ue.HTTPError as e:
+        body_err = e.read().decode(errors="replace")
+        return JSONResponse({"ok": False, "error": f"handrail {e.code}: {body_err}"}, status_code=502)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
+
+
+@app.get("/intent/execute")
+async def ns_intent_execute_get(text: str = "status"):
+    """GET convenience form — NS proxy to Handrail."""
+    import urllib.request as _ur
+    import urllib.parse as _up
+    url = f"http://handrail:8011/intent/execute?text={_up.quote(text)}"
+    try:
+        with _ur.urlopen(url, timeout=15) as resp:
+            result = json.loads(resp.read())
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=502)

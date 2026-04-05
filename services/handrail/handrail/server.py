@@ -932,3 +932,84 @@ def _sync_json(request: Request) -> dict:
     except Exception:
         return {}
 
+
+# ── Intent execute — keyword → CPS → receipt ──────────────────────────────────
+
+_INTENT_OPS_MAP = {
+    "repo":     [{"op": "git.status", "args": {}}, {"op": "fs.list", "args": {"path": "."}}],
+    "git":      [{"op": "git.status", "args": {}}, {"op": "git.log", "args": {"n": 5}}],
+    "files":    [{"op": "fs.list", "args": {"path": "."}}],
+    "status":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/healthz", "expect_status": 200}}],
+    "health":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/healthz", "expect_status": 200}}],
+    "shalom":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/system/status", "expect_status": 200}}],
+    "program":  [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
+    "programs": [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
+    "proof":    [{"op": "http.health_check", "args": {"url": "http://handrail:8011/proof/registry", "expect_status": 200}}],
+    "boot":     [{"op": "http.health_check", "args": {"url": "http://handrail:8011/boot/status", "expect_status": 200}}],
+}
+
+
+def _classify_intent(text: str):
+    """Keyword classifier — first match wins."""
+    for keyword, ops in _INTENT_OPS_MAP.items():
+        if keyword in text:
+            return keyword, ops
+    return "status", _INTENT_OPS_MAP["status"]
+
+
+@app.post("/intent/execute")
+async def handrail_intent_execute(request: Request):
+    body = await request.json()
+    text = body.get("text", "").strip().lower()
+    keyword, matched_ops = _classify_intent(text)
+    run_id = f"intent_{now_id()}"
+    cps = {
+        "cps_id": run_id,
+        "objective": f"intent:{keyword}",
+        "ops": matched_ops,
+        "policy_profile": "readonly.local",
+    }
+    from handrail.cps_engine import CPSExecutor
+    receipt = CPSExecutor.execute(cps, WORKSPACE)
+    results = receipt.get("results", [])
+    ops_passed = sum(1 for r in results if r.get("ok", False))
+    return JSONResponse({
+        "ok": True,
+        "intent": f"intent:{keyword}",
+        "keyword": keyword,
+        "ops_executed": len(matched_ops),
+        "ops_passed": ops_passed,
+        "run_id": run_id,
+        "receipt_ref": receipt.get("receipt_id", run_id),
+        "results": results,
+        "next": "observe" if ops_passed == len(matched_ops) else "retry",
+    })
+
+
+@app.get("/intent/execute")
+async def handrail_intent_execute_get(text: str = "status"):
+    text_lower = text.strip().lower()
+    keyword, matched_ops = _classify_intent(text_lower)
+    run_id = f"intent_{now_id()}"
+    cps = {
+        "cps_id": run_id,
+        "objective": f"intent:{keyword}",
+        "ops": matched_ops,
+        "policy_profile": "readonly.local",
+    }
+    from handrail.cps_engine import CPSExecutor
+    receipt = CPSExecutor.execute(cps, WORKSPACE)
+    results = receipt.get("results", [])
+    ops_passed = sum(1 for r in results if r.get("ok", False))
+    return JSONResponse({
+        "ok": True,
+        "intent": f"intent:{keyword}",
+        "keyword": keyword,
+        "ops_executed": len(matched_ops),
+        "ops_passed": ops_passed,
+        "run_id": run_id,
+        "receipt_ref": receipt.get("receipt_id", run_id),
+        "results": results,
+        "next": "observe" if ops_passed == len(matched_ops) else "retry",
+    })
+
