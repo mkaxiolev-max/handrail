@@ -37,6 +37,23 @@ services:
       retries: 30
       start_period: 10s
 
+  atomlex:
+    build:
+      context: .
+      dockerfile: services/atomlex/Dockerfile
+    environment:
+      HR_WORKSPACE: ${HR_WORKSPACE}
+    ports:
+      - "8080:8080"
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   continuum:
     build: ./services/continuum
     ports:

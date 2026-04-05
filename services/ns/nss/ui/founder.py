@@ -731,11 +731,12 @@ async function refreshRegulation() {
 async function refreshAtomlex() {
   try {
     const r = await fetch(NS+'/atomlex/status').then(x=>x.json());
-    const canonical = (r.canonical_roots||[]).map(w=>`<span style="background:rgba(68,136,255,0.15);border:1px solid rgba(68,136,255,0.3);border-radius:2px;padding:1px 4px;font-size:8px;color:var(--bl);margin:1px">${esc(w)}</span>`).join('');
+    const rootWords = r.root_words || r.canonical_roots || [];
+    const canonical = (Array.isArray(rootWords) ? rootWords : []).map(w=>`<span style="background:rgba(68,136,255,0.15);border:1px solid rgba(68,136,255,0.3);border-radius:2px;padding:1px 4px;font-size:8px;color:var(--bl);margin:1px">${esc(w)}</span>`).join('');
     document.getElementById('atomlex-body').innerHTML = [
       ['Nodes',     `<span style="color:var(--ok)">${r.node_count||0}</span> · <span style="color:var(--mu);font-size:9px">${r.edge_count||0} edges</span>`],
       ['Canonical', canonical || '<span style="color:var(--mu);font-size:9px">loading…</span>'],
-      ['P1 roots',  `<span style="color:var(--a)">${r.priority_p1||0}</span>`],
+      ['Tiers',     Object.entries(r.tiers||{}).map(([t,c])=>`<span style="font-size:8px;color:var(--mu)">T${t}:<span style="color:var(--bl)">${c}</span></span>`).join(' · ') || '<span style="color:var(--mu);font-size:9px">—</span>'],
     ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
     document.getElementById('atomlex-ts').textContent = fts(new Date().toISOString());
   } catch(e) {
@@ -767,18 +768,20 @@ async function lexAnalyze() {
   if (!text) return;
   document.getElementById('lex-analysis').innerHTML = '<span style="color:var(--mu)">analyzing…</span>';
   try {
-    const r = await fetch(NS+'/lexicon/analyze?text='+encodeURIComponent(text)).then(x=>x.json());
+    const r = await fetch(NS+'/atomlex/analyze?text='+encodeURIComponent(text)).then(x=>x.json());
     const wf = r.words_found || [];
     const badges = wf.map(w => {
       const color = TIER_COLORS[w.tier] || 'var(--mu)';
-      return `<span style="background:rgba(0,0,0,.3);border:1px solid ${color};border-radius:2px;padding:1px 5px;margin:1px;font-size:8px;color:${color}">${esc(w.word)} T${w.tier}</span>`;
+      const drift = w.acpt_drift != null ? ` d:${w.acpt_drift}` : '';
+      return `<span style="background:rgba(0,0,0,.3);border:1px solid ${color};border-radius:2px;padding:1px 5px;margin:1px;font-size:8px;color:${color}">${esc(w.word)} T${w.tier}${drift}</span>`;
     }).join('');
     const constitutional = r.is_constitutional_intent
       ? '<span class="badge ok" style="font-size:8px">CONSTITUTIONAL</span>'
       : '<span class="badge dim" style="font-size:8px">OPERATIONAL</span>';
+    const driftNote = r.avg_acpt_drift != null ? ` · avg drift: ${r.avg_acpt_drift}` : '';
     document.getElementById('lex-analysis').innerHTML = `
-      <div style="margin-bottom:3px">${constitutional} <span style="color:var(--mu);font-size:9px">component: ${esc(r.dominant_engine_component||'—')} · failure: ${esc(r.dominant_failure_mode||'—')}</span></div>
-      <div style="flex-wrap:wrap;display:flex">${badges||'<span style="color:var(--mu);font-size:9px">no lexicon words detected</span>'}</div>`;
+      <div style="margin-bottom:3px">${constitutional} <span style="color:var(--mu);font-size:9px">component: ${esc(r.dominant_component||r.dominant_engine_component||'—')}${driftNote}</span></div>
+      <div style="flex-wrap:wrap;display:flex">${badges||'<span style="color:var(--mu);font-size:9px">no constitutional words detected</span>'}</div>`;
   } catch(e) {
     document.getElementById('lex-analysis').innerHTML = '<span style="color:var(--err)">error: '+esc(e.message)+'</span>';
   }

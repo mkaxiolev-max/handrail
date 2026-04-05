@@ -186,6 +186,14 @@
         "expect_status": 200
       },
       "description": "yubikey quorum registry live — enrolled_count >= 1"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://atomlex:8080/healthz",
+        "expect_status": 200
+      },
+      "description": "atomlex constraint semantic graph engine live"
     }
   ],
   "expect": {
@@ -201,7 +209,8 @@
     "results[14].data.healthy": true,
     "results[15].data.healthy": true,
     "results[16].data.data.status": "FROZEN",
-    "results[28].data.healthy": true
+    "results[28].data.healthy": true,
+    "results[29].data.healthy": true
   },
-  "ops_count": 29
+  "ops_count": 30
 }
