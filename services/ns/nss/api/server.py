@@ -2426,6 +2426,25 @@ def create_app() -> FastAPI:
     async def trade_health():
         return alpaca.health()
 
+    @app.post("/trading/event")
+    async def trading_event(request: Request):
+        """Trading domain absorption — any trading event enters TransitionLifecycle."""
+        try:
+            body = await request.json()
+            event_type = body.get("event_type", "unknown")
+            objective = body.get("objective", event_type)[:80]
+            receipt_chain.emit(
+                "TRADING_EVENT",
+                {"source_surface": "trading", "event_type": event_type},
+                body,
+                {"governed": True},
+            )
+            return JSONResponse({"ok": True, "event_type": event_type,
+                                 "governed": True,
+                                 "note": "trading events governed via TransitionLifecycle"})
+        except Exception as e:
+            return JSONResponse({"ok": False, "error": str(e)})
+
     # ═══════════════════════════════════════════════════════════════════════════
     # LEXICON / SFE (Socratic Field Engine)
     # ═══════════════════════════════════════════════════════════════════════════
