@@ -167,9 +167,9 @@ main{display:flex;flex:1;overflow:hidden}
       <div class="ph">MODEL COUNCIL <span id="council-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="council-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
-    <!-- Boot Proof -->
+    <!-- Proof Registry — unified constitutional truth surface -->
     <div class="section">
-      <div class="ph">BOOT PROOF <span id="proof-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
+      <div class="ph">PROOF REGISTRY <span id="proof-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="proof-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
     </div>
     <!-- YubiKey -->
@@ -186,6 +186,47 @@ main{display:flex;flex:1;overflow:hidden}
     <div class="section">
       <div class="ph">DIGNITY CONFIG <span id="dignity-ts" style="color:var(--mu);font-size:9px;margin-left:6px"></span></div>
       <div class="sec-body" id="dignity-body"><div class="dim" style="font-size:10px;padding:4px">Loading…</div></div>
+    </div>
+    <!-- Founder Actions -->
+    <div class="section" style="background:rgba(240,160,48,0.04);border-top:1px solid rgba(240,160,48,0.2)">
+      <div class="ph" style="color:var(--a);letter-spacing:3px">FOUNDER ACTIONS <span style="color:var(--mu);font-size:9px;margin-left:6px;letter-spacing:1px">authority verbs</span></div>
+      <div class="sec-body" style="padding:8px 10px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+          <button onclick="founderApproveBootProof()"
+            style="background:rgba(0,232,122,0.12);border:1px solid rgba(0,232,122,0.3);border-radius:3px;color:var(--g);font-family:inherit;font-size:10px;font-weight:700;padding:6px 8px;cursor:pointer;text-align:left;letter-spacing:1px">
+            ✓ Approve Boot
+          </button>
+          <button onclick="founderEnrollYubiKey()"
+            style="background:rgba(68,136,255,0.1);border:1px solid rgba(68,136,255,0.3);border-radius:3px;color:var(--bl);font-family:inherit;font-size:10px;font-weight:700;padding:6px 8px;cursor:pointer;text-align:left;letter-spacing:1px">
+            ⬡ Enroll YubiKey
+          </button>
+          <button onclick="founderViewProofChain()"
+            style="background:rgba(240,160,48,0.1);border:1px solid rgba(240,160,48,0.3);border-radius:3px;color:var(--a);font-family:inherit;font-size:10px;font-weight:700;padding:6px 8px;cursor:pointer;text-align:left;letter-spacing:1px">
+            ⛓ View Proof Chain
+          </button>
+          <button onclick="founderSystemStatus()"
+            style="background:rgba(112,144,168,0.12);border:1px solid rgba(112,144,168,0.25);border-radius:3px;color:var(--s);font-family:inherit;font-size:10px;font-weight:700;padding:6px 8px;cursor:pointer;text-align:left;letter-spacing:1px">
+            ◈ System Status
+          </button>
+        </div>
+        <!-- YubiKey enroll form (hidden until needed) -->
+        <div id="yubi-enroll-form" style="display:none;margin-bottom:6px;padding:6px;background:rgba(17,34,64,.4);border-radius:3px">
+          <div style="font-size:9px;color:var(--mu);margin-bottom:4px;letter-spacing:1px">ENROLL YUBIKEY SLOT</div>
+          <select id="yubi-slot-sel" style="background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:10px;padding:3px 6px;border-radius:3px;margin-right:4px">
+            <option value="slot_2">slot_2 (backup)</option>
+            <option value="slot_3">slot_3 (emergency)</option>
+          </select>
+          <input id="yubi-serial-in" type="text" placeholder="serial e.g. 12345678"
+            style="width:120px;background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:10px;padding:3px 6px;border-radius:3px;margin-right:4px"/>
+          <input id="yubi-fkey-in" type="password" placeholder="X-Founder-Key"
+            style="width:110px;background:var(--p2);border:1px solid var(--b);color:var(--t);font-family:inherit;font-size:10px;padding:3px 6px;border-radius:3px;margin-right:4px"/>
+          <button onclick="submitYubiEnroll()"
+            style="background:var(--bl);border:none;border-radius:3px;color:#fff;font-size:10px;padding:3px 8px;cursor:pointer;font-weight:700">ENROLL</button>
+          <button onclick="document.getElementById('yubi-enroll-form').style.display='none'"
+            style="background:none;border:1px solid var(--mu);border-radius:3px;color:var(--mu);font-size:10px;padding:3px 6px;cursor:pointer;margin-left:2px">✕</button>
+        </div>
+        <div id="action-out" style="font-size:10px;color:var(--t);min-height:28px;max-height:120px;overflow-y:auto;padding:4px 0;border-top:1px solid rgba(17,34,64,.3);margin-top:2px"></div>
+      </div>
     </div>
   </div>
 </main>
@@ -525,24 +566,31 @@ async function refreshCouncil() {
   }
 }
 
-// ── Boot Proof ──
+// ── Proof Registry ──
 async function refreshBootProof() {
   try {
-    const r = await fetch(NS+'/alexandria/proof').then(x=>x.json());
-    const valid = r.proof_valid;
-    const hash  = (r.root_hash||'').slice(0,20)+'…';
-    const len   = r.chain_length ?? r.total_entries ?? '?';
+    const r = await fetch('http://localhost:8011/proof/registry').then(x=>x.json());
+    const lb = r.latest_sovereign_boot || {};
+    const lq = r.latest_quorum_enrollment || {};
+    const lsf = r.latest_schema_freeze || '—';
+    const types = (r.types_present || []).map(t =>
+      `<span class="badge ok" style="font-size:8px;margin-right:2px">${esc(t)}</span>`
+    ).join('');
     document.getElementById('proof-body').innerHTML = [
-      ['Proof Valid',    valid
-        ? '<span class="badge ok">VALID</span>'
-        : '<span class="badge err">INVALID</span>'],
-      ['Chain Length',   `<span class="ok">${len} entries</span>`],
-      ['Root Hash',      `<span style="color:var(--s);font-size:10px">${esc(hash)}</span>`],
-      ['Source',         `<span style="color:var(--mu);font-size:9px">Alexandria SSD</span>`],
+      ['Entries',      `<span class="ok">${r.entry_count ?? 0}</span>`],
+      ['Types',        types || '<span style="color:var(--mu);font-size:9px">none</span>'],
+      ['Latest Boot',  lb.receipt_id
+        ? `<span style="color:var(--s);font-size:9px">${esc(lb.receipt_id)}</span> ${lb.sovereign ? '<span class="badge ok">SOVEREIGN</span>' : '<span class="badge err">NOT SOV</span>'}`
+        : '<span style="color:var(--mu);font-size:9px">none</span>'],
+      ['Boot ts',      `<span style="color:var(--mu);font-size:9px">${esc(lb.timestamp||'—')}</span>`],
+      ['Quorum slot',  lq.slot_id
+        ? `<span style="color:var(--ok)">${esc(lq.slot_id)}</span> <span style="color:var(--mu);font-size:9px">${esc(lq.timestamp||'')}</span>`
+        : '<span style="color:var(--mu);font-size:9px">none</span>'],
+      ['Schema freeze',`<span style="color:var(--mu);font-size:9px">${esc(lsf)}</span>`],
     ].map(([k,v])=>`<div class="hrow"><div class="hk">${k}</div><div class="hv">${v}</div></div>`).join('');
     document.getElementById('proof-ts').textContent = fts(new Date().toISOString());
   } catch(e) {
-    document.getElementById('proof-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach /alexandria/proof</div>';
+    document.getElementById('proof-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/proof/registry</div>';
   }
 }
 
@@ -620,6 +668,118 @@ async function refreshDignityConfig() {
     document.getElementById('dignity-ts').textContent = fts(new Date().toISOString());
   } catch(e) {
     document.getElementById('dignity-body').innerHTML = '<div class="err" style="font-size:10px;padding:4px">Cannot reach :8011/dignity/config</div>';
+  }
+}
+
+// ── Founder Authority Actions ──
+const HRAIL = 'http://localhost:8011';
+function actionOut(html) {
+  const el = document.getElementById('action-out');
+  el.innerHTML = html;
+  el.scrollTop = el.scrollHeight;
+}
+
+async function founderApproveBootProof() {
+  actionOut('<span style="color:var(--mu)">requesting boot approval…</span>');
+  try {
+    const [bs, ap] = await Promise.all([
+      fetch(HRAIL+'/boot/status').then(x=>x.json()).catch(()=>null),
+      fetch(NS+'/alexandria/proof').then(x=>x.json()).catch(()=>null),
+    ]);
+    const sovereign  = bs?.sovereign ?? false;
+    const receipt    = esc(bs?.last_receipt_id ?? '—');
+    const ops        = bs?.ops_passing ?? '?';
+    const proofValid = ap?.proof_valid ?? false;
+    const chain      = ap?.chain_length ?? '?';
+    actionOut(`
+      <div style="margin-bottom:3px">
+        <span class="badge ${sovereign?'ok':'err'}">${sovereign?'SOVEREIGN':'NOT SOVEREIGN'}</span>
+        <span style="color:var(--mu);margin-left:6px">receipt: ${receipt}</span>
+        <span style="color:var(--s);margin-left:6px">${ops} ops passing</span>
+      </div>
+      <div>
+        <span class="badge ${proofValid?'ok':'err'}">proof ${proofValid?'VALID':'INVALID'}</span>
+        <span style="color:var(--mu);margin-left:6px">chain ${chain} entries</span>
+      </div>`);
+  } catch(e) {
+    actionOut('<span style="color:var(--err)">error: '+esc(e.message)+'</span>');
+  }
+}
+
+async function founderEnrollYubiKey() {
+  const form = document.getElementById('yubi-enroll-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  actionOut('<span style="color:var(--mu)">fill enroll form above</span>');
+}
+
+async function submitYubiEnroll() {
+  const slot   = document.getElementById('yubi-slot-sel').value;
+  const serial = document.getElementById('yubi-serial-in').value.trim();
+  const fkey   = document.getElementById('yubi-fkey-in').value.trim();
+  if (!serial) { actionOut('<span style="color:var(--err)">serial required</span>'); return; }
+  actionOut('<span style="color:var(--mu)">enrolling…</span>');
+  try {
+    const r = await fetch(HRAIL+'/yubikey/enroll', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json', ...(fkey?{'X-Founder-Key':fkey}:{})},
+      body: JSON.stringify({slot_id: slot, serial}),
+    }).then(x=>x.json());
+    if (r.ok || r.enrolled) {
+      actionOut(`<span class="badge ok">ENROLLED</span> <span style="color:var(--s)">${esc(slot)} serial=${esc(serial)}</span>`);
+      document.getElementById('yubi-enroll-form').style.display = 'none';
+      setTimeout(refreshYubiKey, 800);
+    } else {
+      actionOut(`<span class="badge err">FAILED</span> <span style="color:var(--mu)">${esc(r.error||r.detail||JSON.stringify(r).slice(0,80))}</span>`);
+    }
+  } catch(e) {
+    actionOut('<span style="color:var(--err)">error: '+esc(e.message)+'</span>');
+  }
+}
+
+async function founderViewProofChain() {
+  actionOut('<span style="color:var(--mu)">loading proof chain…</span>');
+  try {
+    const [ap, bs] = await Promise.all([
+      fetch(NS+'/alexandria/proof').then(x=>x.json()),
+      fetch(HRAIL+'/boot/status').then(x=>x.json()).catch(()=>null),
+    ]);
+    const hash  = esc((ap.root_hash||'').slice(0,32)+'…');
+    const chain = ap.chain_length ?? ap.total_entries ?? '?';
+    const valid = ap.proof_valid;
+    const ts    = esc(bs?.last_boot_timestamp?.slice(0,19)?.replace('T',' ') ?? '—');
+    const rid   = esc(bs?.last_receipt_id ?? '—');
+    actionOut(`
+      <div><span class="badge ${valid?'ok':'err'}">${valid?'MERKLE VALID':'INVALID'}</span>
+        <span style="color:var(--mu);margin-left:6px">${chain} entries</span></div>
+      <div style="color:var(--s);font-size:9px;margin-top:2px">root: ${hash}</div>
+      <div style="color:var(--mu);font-size:9px">last boot: ${ts} · receipt: ${rid}</div>`);
+  } catch(e) {
+    actionOut('<span style="color:var(--err)">error: '+esc(e.message)+'</span>');
+  }
+}
+
+async function founderSystemStatus() {
+  actionOut('<span style="color:var(--mu)">polling all systems…</span>');
+  try {
+    const [bs, ys, as_] = await Promise.all([
+      fetch(HRAIL+'/boot/status').then(x=>x.json()).catch(()=>null),
+      fetch(HRAIL+'/yubikey/status').then(x=>x.json()).catch(()=>null),
+      fetch(HRAIL+'/abi/status').then(x=>x.json()).catch(()=>null),
+    ]);
+    const sovereign = bs?.sovereign ?? false;
+    const ops       = bs?.ops_passing ?? '?';
+    const quorum    = ys?.quorum_ready ?? false;
+    const enrolled  = ys?.enrolled_count ?? 0;
+    const schemas   = Object.keys(as_?.schemas ?? {}).length;
+    actionOut(`
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge ${sovereign?'ok':'err'}">${sovereign?'SOVEREIGN':'NOT SOVEREIGN'}</span>
+        <span class="badge ${quorum?'ok':'warn'}">QUORUM ${quorum?'READY':'PENDING'} (${enrolled}/3)</span>
+        <span class="badge ok">${schemas} ABI FROZEN</span>
+        <span style="color:var(--s);font-size:9px;align-self:center">${ops} ops passing</span>
+      </div>`);
+  } catch(e) {
+    actionOut('<span style="color:var(--err)">error: '+esc(e.message)+'</span>');
   }
 }
 

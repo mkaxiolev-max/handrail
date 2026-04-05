@@ -197,7 +197,7 @@ See [NS_CLOSURE_LAYER.md](NS_CLOSURE_LAYER.md) for the 4 explicit V2 closure lay
 - **Autopoietic Loop Phase 2:** CapabilityPlanner (spec → plan), CommitEvent governance
 - **Fix:** router.py `route` import error resolved (stale export removed)
 - **Alexandria specs:** founder_memory_panel_v1.json + autopoietic_loop_v1.json seeded
-- **sovereign_boot:** 28/28 ops passing
+- **sovereign_boot:** 29/29 ops passing
 - **capability_graph:** 10 implemented, 7 provisional, 6 desired
 - **Tags:** 229
 - **Last commit:** 03e4624 feat: SAN sovereign state layer + Model Council panel v5

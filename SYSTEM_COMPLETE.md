@@ -7,7 +7,7 @@
 
 | Check | Result |
 |-------|--------|
-| sovereign_boot | **28/28 ops passing · all expect assertions passed** |
+| sovereign_boot | **29/29 ops passing · all expect assertions passed** |
 | Boot proof | `proof_valid: true` · chain_length=34 · R1/R2/R3 all healthy |
 | Vercel × 3 | **200 · 200 · 200** |
 | ngrok LaunchAgent | **PID 1075** · KeepAlive · `monica-problockade-caylee.ngrok-free.dev` |
@@ -164,7 +164,7 @@
 **ABI law:** CPSPacket is the ONLY artifact crossing the intelligence→execution boundary.
 **Extension rule:** Additive-only. No field removal/rename without version bump.
 
-### Sovereign Boot — 28 ops, 10 expect assertions
+### Sovereign Boot — 29 ops, 11 expect assertions
 
 Verifies on every boot: Handrail health, NS health, Continuum health, Alexandria Merkle proof, YubiKey status, Model registry, Founder console, Capability graph, Semantic binder, Invention flywheel, USDL gates, ABI freeze status (FROZEN), SMS health, Proactive intel, Mac adapter health, SAN summary, Autopoietic loop.
 

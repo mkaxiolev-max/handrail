@@ -28,8 +28,17 @@ from handrail.yubikey_quorum import (                      # noqa: E402
     generate_session_token, verify_quorum, get_quorum_status,
     compute_public_key_hash,
 )
+from handrail.proof_registry import (                      # noqa: E402
+    ProofRegistry, ProofType, VALID_PROOF_TYPES, startup_seed,
+)
 
 _log = logging.getLogger("handrail")
+
+# ── Startup: seed proof registry from existing receipts + schema freezes ───────
+try:
+    startup_seed(_abi.freeze_manifest())
+except Exception as _seed_err:
+    _log.warning("startup_seed failed (non-fatal): %s", _seed_err)
 
 
 def now_id() -> str:
@@ -142,6 +151,12 @@ async def boot_proof(req: BootProofRequest):
     except Exception as e:
         _log.warning("boot_proof: failed to persist receipt: %s", e)
 
+    # Append BOOT entry to universal proof registry
+    try:
+        ProofRegistry.append(ProofRegistry.make_boot_entry(receipt))
+    except Exception as e:
+        _log.warning("boot_proof: proof registry append failed: %s", e)
+
     return JSONResponse({"ok": True, "receipt": receipt, "sovereign": sovereign})
 
 
@@ -198,6 +213,57 @@ def dignity_config():
     return JSONResponse(snap)
 
 
+# ── Proof registry endpoints ──────────────────────────────────────────────────
+
+@app.get("/proof/registry")
+def proof_registry_endpoint():
+    """
+    Return the full universal proof registry chain, newest-first.
+    Includes entry_count, types_present, and latest_sovereign_boot summary.
+    """
+    chain = ProofRegistry.full_chain()
+    types  = ProofRegistry.types_present()
+    latest_boot = ProofRegistry.latest(ProofType.BOOT.value)
+    return JSONResponse({
+        "entry_count":          len(chain),
+        "types_present":        types,
+        "latest_sovereign_boot": {
+            "receipt_id": (latest_boot or {}).get("metadata", {}).get("receipt_id"),
+            "sovereign":  (latest_boot or {}).get("sovereign"),
+            "timestamp":  (latest_boot or {}).get("timestamp", "")[:19],
+        } if latest_boot else None,
+        "latest_quorum_enrollment": {
+            "slot_id":   (ProofRegistry.latest(ProofType.QUORUM_ENROLLMENT.value) or {}).get("metadata", {}).get("slot_id"),
+            "timestamp": (ProofRegistry.latest(ProofType.QUORUM_ENROLLMENT.value) or {}).get("timestamp", "")[:19],
+        } if ProofRegistry.latest(ProofType.QUORUM_ENROLLMENT.value) else None,
+        "latest_schema_freeze": (ProofRegistry.latest(ProofType.SCHEMA_FREEZE.value) or {}).get("timestamp", "")[:19] or None,
+        "chain": chain,
+    })
+
+
+@app.get("/proof/latest/{proof_type}")
+def proof_latest(proof_type: str):
+    """
+    Return the most recent ProofEntry for the given proof_type.
+    Valid types: BOOT, SCHEMA_FREEZE, QUORUM_ENROLLMENT,
+                 CAPABILITY_PROMOTION, POLICY_CHANGE, FOUNDER_APPROVAL
+    """
+    ptype = proof_type.upper()
+    if ptype not in VALID_PROOF_TYPES:
+        return JSONResponse(
+            {"ok": False, "error": f"Unknown proof_type '{ptype}'",
+             "valid_types": sorted(VALID_PROOF_TYPES)},
+            status_code=400,
+        )
+    entry = ProofRegistry.latest(ptype)
+    if entry is None:
+        return JSONResponse(
+            {"ok": False, "error": f"No entries of type {ptype}"},
+            status_code=404,
+        )
+    return JSONResponse({"ok": True, "proof_type": ptype, "entry": entry})
+
+
 # ── YubiKey quorum endpoints ───────────────────────────────────────────────────
 
 @app.get("/yubikey/status")
@@ -222,6 +288,14 @@ async def yubikey_enroll(req: EnrollRequest, http_request: Request):
 
     pkh = req.public_key_hash or compute_public_key_hash(req.serial, req.slot_id)
     slot = QuorumStore.enroll_slot(req.slot_id, req.serial, pkh)
+
+    # Append QUORUM_ENROLLMENT entry to universal proof registry
+    try:
+        ProofRegistry.append(
+            ProofRegistry.make_quorum_enrollment_entry(slot.slot_id, slot.serial, slot.public_key_hash)
+        )
+    except Exception as e:
+        _log.warning("yubikey_enroll: proof registry append failed: %s", e)
 
     return JSONResponse({
         "ok":             True,
