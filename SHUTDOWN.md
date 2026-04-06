@@ -1,129 +1,177 @@
-# NS∞ v5 — SHUTDOWN DOCUMENTATION
-**Date:** 2026-04-05 | **Final tag:** `ns-infinity-v5` (fb9249d) | **Status:** SOFTWARE COMPLETE
+# NS∞ SHUTDOWN STATE — April 6, 2026
+## Tag: ns-infinity-v6 | Session: april-6-2026-violet-isr
 
 ---
 
-## Final system state
+## Current Commit
 
-| Check | Result |
-|-------|--------|
-| **Shalom** | ✅ **True — 8/8** |
-| Handrail :8011 | ✅ ok |
-| NS :9000 | ✅ ok v2.0.0 |
-| Atomlex :8080 | ✅ 12 nodes |
-| Continuum :8788 | ✅ healthy |
-| sovereign_boot | ✅ **33/33 ops** |
-| Boot mission graph | ✅ **12/12 FULL (YubiKey 26116460)** |
-| /intent/execute | ✅ **command loop live — NS is the actor** |
-| /program/* | ✅ 5 endpoints, 10 programs |
-| Founder Console | ✅ v11 — Program Runtime + Shalom panels |
-| Dignity Kernel | ✅ _DK_ACTIVE=True, Hamiltonian gate |
-| ABI schemas | ✅ 12 frozen |
-| Alexandria | ✅ append-only, hash chain valid |
-| Policy hierarchy | ✅ 6 layers, POLICY_HIERARCHY.md |
-| Voice loop | ✅ f551b43, +1(307)202-4418, Polly.Matthew |
-| Program→Voice pipeline | ✅ elaine→heidi→stewart verified |
-| Violet spec | ✅ VIOLET.md — formal spec complete |
-| ROOT Vercel | ✅ root-jade-kappa.vercel.app 200 |
-| Handrail Vercel | ✅ axiolevruntime.vercel.app 200 |
-| zeroguess.dev | ✅ 200 |
-
----
-
-## Tag chain
-
-| Tag | Commit | Milestone |
-|-----|--------|-----------|
-| `ns-infinity-v5` | fb9249d | **Intent command loop — /intent/execute, NS is the actor** |
-| `ns-infinity-v4` | 37da6b3 | /program/* live, 12/12 FULL boot, Console v11 |
-| `ns-infinity-v3` | a9591ba | /system/status shalom, policy hierarchy |
-| `ns-infinity-v2` | 4c968da | Atomlex + semantic graph |
-| `lexicon-substrate-v1` | ac69a49 | Gnoseogenic Lexicon |
-| `regulation-engine-v1` | aa34e82 | Constitutional Regulation Engine |
-| `voice-loop-v1` | f551b43 | Voice loop proven |
-| `closure-proof-final` | 25036b7 | Handrail 1000/1000 determinism |
-
-Root: `root-prelaunch-v2` (5a989f8)
-
----
-
-## How to boot next session
-
-```bash
-cd /Users/axiolevns/axiolev_runtime
-
-# 1. Boot (YubiKey plugged in for FULL sovereign)
-DOCKER_HOST="unix:///Users/axiolevns/.docker/run/docker.sock" docker compose up -d
-sleep 15
-python3 boot_mission_graph.py
-
-# 2. Verify shalom
-curl http://localhost:8011/system/status | python3 -c \
-  "import sys,json; d=json.load(sys.stdin); print('shalom:', d['shalom'], d['shalom_score'])"
-
-# 3. Talk to Violet (command loop)
-curl -X POST http://localhost:8011/intent/execute \
-     -H 'Content-Type: application/json' \
-     -d '{"text": "check repo status"}'
-
-# 4. Full interactive whisper panel
-python3 whisper_panel.py commercial_cps_program_v1
-
-# 5. Founder Console
-open http://localhost:9000/founder
+```
+Branch: main
+Tag: ns-infinity-v6 (this commit)
+Previous: violet-isr-v1 (366e642)
 ```
 
 ---
 
-## /intent/execute — the command loop
+## Services
 
-The binding layer. NS is now the actor.
+| Service | Port | Status | Notes |
+|---------|------|--------|-------|
+| Handrail | 8011 | ✅ RUNNING | CPS engine, 130+ ops, Violet ISR wired |
+| NS-Core | 9000 | ✅ RUNNING | Constitutional AI OS, /violet/* endpoints live |
+| Atomlex | 8080 | ✅ RUNNING | Semantic layer |
+| Continuum | 8788 | ✅ RUNNING | Append-only event store |
+| Mac-Adapter | 8765 | ✅ RUNNING | 81 methods, runs on Mac host (not Docker) |
+| Port 9001 | — | ⛔ NOT DEPLOYED | Planned |
+| Port 9002 | — | ⛔ NOT DEPLOYED | Planned |
+| Port 9003 | — | ⛔ NOT DEPLOYED | Planned |
+| Port 9004 | — | ⛔ NOT DEPLOYED | Planned |
 
-```bash
-# POST
-curl -X POST http://localhost:8011/intent/execute \
-     -H 'Content-Type: application/json' \
-     -d '{"text": "check git status"}'
+---
 
-# GET (convenience)
-curl "http://localhost:8011/intent/execute?text=shalom"
-curl "http://localhost:9000/intent/execute?text=programs"
+## Violet ISR Status
+
+- **4 ops live**: `violet.render_status`, `violet.render_last_intent`, `violet.render_memory_summary`, `violet.isr_full`
+- **ISR injected** on every `/intent/execute` call as `isr_context` field
+- **Violet identity endpoint**: `GET http://localhost:9000/violet/identity`
+- **Violet ISR endpoint**: `GET http://localhost:9000/violet/isr`
+- **System prompt injection**: Anthropic Haiku call with ISR prefix on every NS intent turn
+- **Violet responses live**: `violet_response` field in all intent/execute replies
+- **Note**: NS self-check from Handrail has 5s timeout — if still timing out, check Docker network bridge for ns:9000
+
+---
+
+## Corpus Ingest Status
+
+- **Source**: `/Volumes/NSExternal/alexandria/raw_ingest/mike_corpus_v1/`
+- **Atoms**: `/Volumes/NSExternal/alexandria/atoms/` — 2 atoms written
+- **Receipts**: `/Volumes/NSExternal/receipts/` — 2 receipts issued
+- **Ops**: `corpus.ingest_all`, `corpus.watch`
+- **corpus.watch**: watches raw_ingest/ for new files → auto-ingests
+- **Files ingested**: `axiolev_vision.md`, `ns_principles.txt`
+
+---
+
+## Status Healthcheck Fix
+
+`sys.health` op replaces HTTP self-call deadlock for `status`/`health`/`shalom` intents.
+Checks: `ANTHROPIC_API_KEY`, `TWILIO_ACCOUNT_SID`, `NSExternal` mount, `ns_memory.json`, `receipts/`, `atoms/`.
+No HTTP round-trips. Zero latency. No deadlock.
+
+---
+
+## Ring 5 Gate Checklist
+
+| Gate | Status | Action Required |
+|------|--------|----------------|
+| ☐ Stripe live keys (LLC verified) | BLOCKED | Complete legal entity formation, upgrade Stripe to live mode |
+| ☐ Production domain + DNS CNAME → axiolev.com | BLOCKED | Purchase domain, set CNAME for ROOT |
+| ☐ ROOT price IDs (live Stripe) | BLOCKED | After live keys: create products + prices in Stripe dashboard |
+| ☐ YubiKey slot 2 provisioned | PENDING | Physical YubiKey 2 → provision → expand quorum to 2-of-3 |
+| ☐ LAUNCH_SEQUENCE.md executed | PENDING | After all 4 above: run launch sequence, flip `launch_ready: true` |
+
+---
+
+## NSExternal State
+
+```
+/Volumes/NSExternal/
+  ALEXANDRIA/
+    ledger/           — ns_receipt_chain.jsonl, model_decisions.jsonl, failure_events.jsonl
+    snapshots/        — boot proof snapshots
+    san/              — SAN terrain state
+    programs/         — Program Library state
+    lexicon/          — semantic reality
+  .run/
+    ns_memory.json    — last intent + session state
+    boot/             — boot receipts
+  alexandria/
+    raw_ingest/mike_corpus_v1/   — 2 source files
+    atoms/                        — 2 ingested atoms
+  receipts/                       — 2 ingest receipts
 ```
 
-Recognized intents: `repo`, `git`, `files`, `status`, `health`, `shalom`, `program`, `programs`, `proof`, `boot`
+---
 
-Returns: `{ok, keyword, ops_executed, ops_passed, run_id, receipt_ref, results, next}`
+## Resume Commands — Next Session
 
-Note: `files` returns `ops_passed: 0` — correct. `fs.list "."` is blocked by `readonly.local` policy. Dignity Kernel working as designed.
+```bash
+# 1. Boot Docker stack
+cd ~/axiolev_runtime
+DOCKER_HOST=unix:///Users/axiolevns/.docker/run/docker.sock docker compose up -d
+sleep 10
+
+# 2. Verify all 5 services
+curl -s http://localhost:8011/healthz
+curl -s http://localhost:9000/healthz
+curl -s http://localhost:8080/healthz
+curl -s http://localhost:8788/healthz
+curl -s http://localhost:8765/healthz
+
+# 3. Mac adapter (if not running)
+cd ~/axiolev_runtime/services/handrail-adapter-macos
+nohup python3 server.py > /tmp/adapter.log 2>&1 &
+
+# 4. Talk to Violet
+curl -s -X POST http://localhost:9000/intent/execute \
+  -H "Content-Type: application/json" \
+  -d '{"text": "hello Violet"}' | python3 -m json.tool
+
+# 5. Check Violet identity
+curl -s http://localhost:9000/violet/identity | python3 -m json.tool
+
+# 6. Check ISR
+curl -s http://localhost:9000/violet/isr | python3 -m json.tool
+
+# 7. Check corpus watch
+curl -s -X POST http://localhost:9000/intent/execute \
+  -H "Content-Type: application/json" \
+  -d '{"text": "watch corpus"}' | python3 -m json.tool
+```
 
 ---
 
-## Violet — what's next
+## Next Sprint: Ring 5 Completion → LAUNCH_SEQUENCE.md
 
-Violet spec is written in `VIOLET.md`. Next sprint builds:
+### Five Manual Steps to `launch_ready: true`
 
-1. `runtime/violet_isr.py` — Interaction State Register (bounded session continuity)
-2. `runtime/violet_renderer.py` — rendering policy (deterministic style selection from state)
-3. Wire into `/intent/execute` — every response rendered through Violet
-4. Voice mode — Polly profile distinct from raw NS voice
+1. **Legal** — Form AXIOLEV Holdings LLC (Delaware or WY). Get EIN.
+2. **Stripe** — Upgrade account with LLC/EIN → live mode → copy `sk_live_*` → update `.env`
+3. **Domain** — axiolev.com purchase → DNS CNAME root → Vercel (axiolevruntime.vercel.app)
+4. **YubiKey** — Provision slot 2 → POST `/kernel/yubikey/provision` → quorum expands to 2-of-3
+5. **LAUNCH_SEQUENCE.md** — Execute sequence: smoke test live Stripe → send first invoice → flip ring 5 gate
 
-After Violet sprint: NS speaks, listens, and feels like one continuous presence.
-
----
-
-## RING 5 — 5 manual steps to revenue launch
-
-| # | Step | URL |
-|---|------|-----|
-| 1 | Stripe LLC verification | https://dashboard.stripe.com |
-| 2 | Stripe live keys | https://dashboard.stripe.com/apikeys |
-| 3 | ROOT price IDs in Vercel env | https://dashboard.stripe.com/products |
-| 4 | YubiKey slot_2 | https://yubico.com (~$50) |
-| 5 | DNS root.axiolev.com CNAME | Registrar DNS panel |
-
-Gate: `curl https://root-jade-kappa.vercel.app/api/system-status` → `launch_ready: true`
+### Sprint Artifacts to Build
+- `LAUNCH_SEQUENCE.md` — step-by-step launch runbook with checkboxes
+- `/ring5/status` endpoint in NS server showing gate checklist live
+- `.cps/ring5_verification.json` — CPS plan verifying all 5 Ring 5 gates
+- "ring 5" intent → live gate check response
 
 ---
 
-## SOFTWARE PHASE: COMPLETE
-Next session: boot → talk to Violet → Ring 5 activation → LAUNCH_SEQUENCE.md Day 1
+## Canonical State
+
+```json
+{
+  "timestamp": "2026-04-06",
+  "tag": "ns-infinity-v6",
+  "sovereign_boot": "33/33",
+  "shalom": "8/8",
+  "full_boot": "12/12",
+  "violet_isr": "live",
+  "violet_identity": "live",
+  "sys_health_fix": "live",
+  "corpus_ingest": "2 atoms",
+  "corpus_watch": "live",
+  "yubikey_serial": "26116460",
+  "ngrok_domain": "monica-problockade-caylee.ngrok-free.dev",
+  "twilio_number": "+13072024418",
+  "ring_5_gates": {
+    "stripe_live": false,
+    "domain_dns": false,
+    "price_ids": false,
+    "yubikey_slot2": false,
+    "launch_sequence": false
+  }
+}
+```

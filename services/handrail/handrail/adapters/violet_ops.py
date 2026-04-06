@@ -51,7 +51,7 @@ def _op_violet_render_status(args: dict, _policy) -> dict:
             services[name] = {"ok": True, "status_code": 200, "note": "self"}
             continue
         try:
-            r = httpx.get(url, timeout=3.0)
+            r = httpx.get(url, timeout=5.0)
             ok = r.status_code == 200
             services[name] = {"ok": ok, "status_code": r.status_code}
         except Exception as exc:
