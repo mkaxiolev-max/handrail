@@ -2,7 +2,7 @@
 import json
 import logging
 from fastapi import APIRouter, Request, Response, WebSocket, WebSocketDisconnect
-from telephony_bridge.app.config import NGROK_DOMAIN
+from app.config import NGROK_DOMAIN
 
 router = APIRouter(prefix="/api/v1/telephony", tags=["telephony"])
 logger = logging.getLogger("telephony_bridge.voice")
@@ -82,9 +82,17 @@ async def media_stream(websocket: WebSocket, call_sid: str):
                 # Collect base64 mulaw audio payload
                 payload = msg.get("media", {}).get("payload", "")
                 call["audio_chunks"] = call.get("audio_chunks", 0) + 1
-                # ASR pipeline deferred — logging accumulation
-                if call["audio_chunks"] % 50 == 0:
-                    logger.debug(f"[media_stream] {call_sid}: {call['audio_chunks']} chunks accumulated")
+                chunks = call["audio_chunks"]
+
+                # Honest ASR staging contract
+                if chunks == 100:
+                    logger.info(
+                        f"[media_stream] ASR: staged — 100 audio chunks received, "
+                        f"ASR pipeline deferred to Phase 2. call={call_sid}"
+                    )
+                    call["asr_status"] = "staged_phase2"
+                elif chunks % 50 == 0:
+                    logger.debug(f"[media_stream] {call_sid}: {chunks} chunks accumulated")
 
             elif event == "stop":
                 logger.info(f"[media_stream] Stream stopped: {call_sid} — {call.get('audio_chunks', 0)} chunks received")

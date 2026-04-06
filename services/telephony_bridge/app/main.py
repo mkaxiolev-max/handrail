@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from telephony_bridge.app.routers import twilio_voice, twilio_status
+from app.routers import twilio_voice, twilio_status
 
 app = FastAPI(title="Telephony Bridge", version="1.0.0")
 
@@ -21,7 +21,7 @@ app.include_router(twilio_status.router)
 
 @app.get("/health")
 async def health():
-    from telephony_bridge.app.routers.twilio_voice import _calls
+    from app.routers.twilio_voice import _calls
     return {
         "status": "ok",
         "service": "telephony_bridge",

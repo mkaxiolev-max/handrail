@@ -25,6 +25,8 @@ services:
       - "9000:9000"
     env_file:
       - .env
+    environment:
+      HANDRAIL_BASE_URL: "http://handrail:8011"
     volumes:
       - ./.runs:/app/.runs
       - /Volumes/NSExternal:/Volumes/NSExternal
