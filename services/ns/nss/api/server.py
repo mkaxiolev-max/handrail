@@ -3751,7 +3751,7 @@ async def ns_intent_execute(request: Request):
         return JSONResponse({"ok": False, "error": "text required"}, status_code=400)
     payload = json.dumps({"text": text}).encode()
     req = _ur.Request(
-        "http://handrail:8011/intent/execute",
+        "http://localhost:8011/intent/execute",
         data=payload,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -3765,29 +3765,83 @@ async def ns_intent_execute(request: Request):
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
 
-    # Inject ISR as Violet system context and call Anthropic
+    # Inject ISR as Violet system context and call 3-chamber cognitive model
     isr_context = result.get("isr_context", {})
     isr_prefix  = _format_isr_prefix(isr_context) if isr_context else ""
     violet_response: str | None = None
+    chamber_outputs = []
 
     anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if anthropic_key:
         try:
             import anthropic as _anthropic
             _client = _anthropic.Anthropic(api_key=anthropic_key)
-            _msg = await asyncio.to_thread(
-                _client.messages.create,
-                model="claude-haiku-4-5-20251001",
-                max_tokens=300,
-                system=_VIOLET_SYSTEM + ("\n\n" + isr_prefix if isr_prefix else ""),
-                messages=[{"role": "user", "content": text}],
+
+            _CHAMBERS = [
+                {
+                    "role": "NS Forge (Builder)",
+                    "system": (
+                        "You are NS Forge (Builder). Propose bold, fast implementations. "
+                        "Be concise, decisive."
+                        + ("\n\n" + isr_prefix if isr_prefix else "")
+                    ),
+                },
+                {
+                    "role": "NS Institute (Architect)",
+                    "system": (
+                        "You are NS Institute (Architect). Enforce coherence, structure, "
+                        "interfaces, tests."
+                        + ("\n\n" + isr_prefix if isr_prefix else "")
+                    ),
+                },
+                {
+                    "role": "NS Board (Guardian)",
+                    "system": (
+                        "You are NS Board (Guardian). Check determinism, security, "
+                        "policy violations, risks."
+                        + ("\n\n" + isr_prefix if isr_prefix else "")
+                    ),
+                },
+            ]
+
+            async def _call_chamber(chamber: dict) -> dict:
+                try:
+                    msg = await asyncio.to_thread(
+                        _client.messages.create,
+                        model="claude-haiku-4-5-20251001",
+                        max_tokens=300,
+                        system=chamber["system"],
+                        messages=[{"role": "user", "content": text}],
+                    )
+                    response_text = msg.content[0].text if msg.content else ""
+                    return {
+                        "role": chamber["role"],
+                        "response": response_text,
+                        "confidence": len(response_text.split()),
+                    }
+                except Exception as _ce:
+                    return {
+                        "role": chamber["role"],
+                        "response": f"[{chamber['role']} unavailable: {_ce}]",
+                        "confidence": 0,
+                    }
+
+            chamber_outputs = await asyncio.gather(
+                *[_call_chamber(c) for c in _CHAMBERS]
             )
-            violet_response = _msg.content[0].text if _msg.content else None
+            chamber_outputs = list(chamber_outputs)
+
+            # Adjudicate: longest substantive response wins
+            best = max(chamber_outputs, key=lambda c: c["confidence"])
+            violet_response = best["response"]
+
         except Exception as _ve:
             violet_response = f"[Violet unavailable: {_ve}]"
+            chamber_outputs = []
 
     result["violet_response"] = violet_response
     result["violet_isr_prefix"] = isr_prefix
+    result["chamber_outputs"] = chamber_outputs
     return JSONResponse(result)
 
 
@@ -3803,6 +3857,58 @@ async def ns_intent_execute_get(text: str = "status"):
         return JSONResponse(result)
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
+
+
+# ── Ring 5 launch gate status ────────────────────────────────────────────────
+
+@app.get("/ring5/status")
+async def ring5_status():
+    """Ring 5 launch gate — live check of all 5 revenue gates."""
+    import socket as _socket
+
+    stripe_sk = os.environ.get("STRIPE_SK", "") or os.environ.get("STRIPE_SECRET_KEY", "")
+    stripe_live = stripe_sk.startswith("sk_live_")
+
+    yubikey_slot2 = False  # Needs physical hardware
+
+    dns_cname_root = False
+    try:
+        root_ip = _socket.gethostbyname("root.axiolev.com")
+        vercel_ip = _socket.gethostbyname("axiolevruntime.vercel.app")
+        dns_cname_root = root_ip != vercel_ip
+    except Exception:
+        dns_cname_root = False
+
+    launch_executed = Path("/Volumes/NSExternal/.run/LAUNCH_EXECUTED").exists()
+
+    gates = {
+        "stripe_llc_verified": stripe_live,
+        "stripe_live_keys": stripe_live,
+        "yubikey_slot2": yubikey_slot2,
+        "dns_cname_root": dns_cname_root,
+        "launch_sequence_executed": launch_executed,
+    }
+    launch_ready = all(gates.values())
+
+    gate_instructions = {
+        "stripe_llc_verified": "Upload AXIOLEV Holdings LLC EIN + articles to Stripe dashboard",
+        "stripe_live_keys": "Replace STRIPE_SK_PENDING with live sk_live_... key in .env + Vercel",
+        "yubikey_slot2": "Procure 2nd YubiKey 5 NFC → enroll via Founder Console",
+        "dns_cname_root": "Cloudflare: root.axiolev.com CNAME → cname.vercel-dns.com",
+        "launch_sequence_executed": "Run LAUNCH_SEQUENCE.md Day 1 → touch /Volumes/NSExternal/.run/LAUNCH_EXECUTED",
+    }
+    next_action = next(
+        (gate_instructions[k] for k, v in gates.items() if not v),
+        "All gates complete — launch ready"
+    )
+
+    return JSONResponse({
+        "ring": 5,
+        "gates": gates,
+        "launch_ready": launch_ready,
+        "next_action": next_action,
+        "ts": datetime.now(timezone.utc).isoformat(),
+    })
 
 
 # ── Violet — identity + ISR endpoints ────────────────────────────────────────

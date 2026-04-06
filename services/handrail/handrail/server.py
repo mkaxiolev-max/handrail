@@ -943,6 +943,7 @@ _INTENT_OPS_MAP = {
     "status":   [{"op": "sys.health", "args": {}}, {"op": "violet.isr_full", "args": {}}],
     "health":   [{"op": "sys.health", "args": {}}],
     "shalom":   [{"op": "sys.health", "args": {}}, {"op": "violet.isr_full", "args": {}}],
+    "ring5":    [{"op": "sys.health", "args": {}}, {"op": "http.get", "args": {"url": "http://localhost:9000/ring5/status"}}],
     "program":  [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
     "programs": [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
     "proof":    [{"op": "http.health_check", "args": {"url": "http://handrail:8011/proof/registry", "expect_status": 200}}],
