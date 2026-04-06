@@ -12,14 +12,100 @@ const STATE_LABELS: Record<VoiceState,string> = {
   processing:'Thinking...', responding:"Here's what I found...", muted:'Voice is off'
 }
 
+// Default voice completeness data shown when endpoint not available
+const VOICE_DEFAULT = {
+  what_works: [
+    'Intent routing via /intent/execute',
+    'Violet ISR context injection',
+    'Anthropic Haiku response generation',
+    'Corpus ingest + receipt chain',
+  ],
+  what_is_staged: [
+    'Twilio inbound voice (Phase 2)',
+    'Real-time WebSocket transcript stream',
+    'Voice session persistence',
+    'Wake-word detection',
+  ],
+  twilio_number: '+13072024418',
+}
+
+function VoiceCompleteness() {
+  const [data, setData] = useState<any>(null)
+
+  useEffect(() => {
+    const fetch_ = async () => {
+      try {
+        const r = await fetch('http://localhost:9003/api/v1/telephony/voice-status')
+        if (r.ok) setData(await r.json())
+      } catch { /* use default */ }
+    }
+    fetch_()
+  }, [])
+
+  const d = data ?? VOICE_DEFAULT
+  const works  = d.what_works   ?? []
+  const staged = d.what_is_staged ?? []
+  const number = d.twilio_number ?? ''
+
+  return (
+    <div style={{
+      marginTop: 12,
+      borderTop: `1px solid ${tokens.colors.border}`,
+      paddingTop: 12,
+    }}>
+      <div style={{ color: tokens.colors.voice, fontSize: 11, fontWeight: 'bold', marginBottom: 8 }}>
+        VOICE COMPLETENESS
+        {!data && <span style={{ color: tokens.colors.textSecondary, fontWeight: 'normal', fontSize: 9, marginLeft: 6 }}>(default)</span>}
+      </div>
+
+      {works.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          {works.map((item: string, i: number) => (
+            <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 3, alignItems: 'flex-start' }}>
+              <span style={{ color: tokens.colors.healthy, fontSize: 10, marginTop: 1 }}>●</span>
+              <span style={{ fontSize: 9, color: tokens.colors.textSecondary }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {staged.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 9, color: tokens.colors.warning, marginBottom: 4 }}>
+            Phase 2 — staged:
+          </div>
+          {staged.map((item: string, i: number) => (
+            <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 3, alignItems: 'flex-start' }}>
+              <span style={{ color: tokens.colors.warning, fontSize: 10, marginTop: 1 }}>●</span>
+              <span style={{ fontSize: 9, color: tokens.colors.textSecondary }}>{item}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {number && (
+        <div style={{
+          background: '#0A1540',
+          borderRadius: 4,
+          padding: '4px 8px',
+          fontSize: 9,
+          color: tokens.colors.textSecondary,
+        }}>
+          Twilio: <span style={{ color: tokens.colors.voice, fontFamily: 'monospace' }}>{number}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function VoiceOverlay() {
-  const [state, setState] = useState<VoiceState>('ready')
-  const [expanded, setExpanded] = useState(false)
-  const [inputLevel, setInputLevel] = useState(0)
+  const [state, setState]             = useState<VoiceState>('ready')
+  const [expanded, setExpanded]       = useState(false)
+  const [inputLevel, setInputLevel]   = useState(0)
   const [listeningMode, setListeningMode] = useState('continuous')
-  const [privacyMode, setPrivacyMode] = useState('local-first')
-  const [transcript, setTranscript] = useState('')
-  const [response, setResponse] = useState('')
+  const [privacyMode, setPrivacyMode]     = useState('local-first')
+  const [transcript, setTranscript]   = useState('')
+  const [response, setResponse]       = useState('')
 
   const sendToViolet = async (text: string) => {
     if (!text.trim()) return
@@ -57,7 +143,9 @@ export function VoiceOverlay() {
         <div style={{
           marginTop:8, background:'#0D1533', border:`1px solid ${tokens.colors.border}`,
           borderRadius:12, padding:16, width:320,
-          boxShadow:`0 8px 32px #00000088`
+          boxShadow:`0 8px 32px #00000088`,
+          maxHeight: '80vh',
+          overflowY: 'auto' as const,
         }}>
           <div style={{display:'flex',justifyContent:'space-between',marginBottom:12}}>
             <span style={{color:tokens.colors.voice,fontWeight:'bold'}}>VOICE SETTINGS</span>
@@ -97,7 +185,8 @@ export function VoiceOverlay() {
               placeholder="Type intent for Violet..."
               onKeyDown={e => {if(e.key==='Enter') { sendToViolet((e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value=''; }}}
               style={{width:'100%',background:'#0A0E27',border:`1px solid ${tokens.colors.border}`,
-                color:tokens.colors.textPrimary,borderRadius:6,padding:'6px 10px',fontSize:12}}
+                color:tokens.colors.textPrimary,borderRadius:6,padding:'6px 10px',fontSize:12,
+                boxSizing: 'border-box' as const}}
             />
           </div>
 
@@ -108,6 +197,8 @@ export function VoiceOverlay() {
               {response.slice(0,300)}{response.length>300?'...':''}
             </div>
           )}
+
+          <VoiceCompleteness />
         </div>
       )}
     </div>

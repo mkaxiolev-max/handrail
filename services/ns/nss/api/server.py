@@ -836,7 +836,7 @@ def create_app() -> FastAPI:
             "payload": {"cmd": req.cmd},
         }
 
-        r = requests.post("http://localhost:8011/v1/task", json=body, timeout=30)
+        r = requests.post(_HANDRAIL_BASE + "/v1/task", json=body, timeout=30)
         try:
             payload = r.json()
         except Exception:
@@ -860,7 +860,7 @@ def create_app() -> FastAPI:
         }
 
         try:
-            r = requests.post("http://localhost:8011/v1/task", json=body, timeout=120)
+            r = requests.post(_HANDRAIL_BASE + "/v1/task", json=body, timeout=120)
             try:
                 payload = r.json()
             except Exception:
@@ -1302,7 +1302,7 @@ def create_app() -> FastAPI:
                 return {"status": "error", "error": str(e)}
 
         handrail_res, continuum_res = await asyncio.gather(
-            _get("http://localhost:8011/healthz"),
+            _get(_HANDRAIL_BASE + "/healthz"),
             _get("http://localhost:8788/continuum/status"),
         )
 
@@ -1332,7 +1332,7 @@ def create_app() -> FastAPI:
             "ok": all_ok,
             "ts": datetime.utcnow().isoformat() + "Z",
             "services": {
-                "handrail": {"url": "http://localhost:8011/healthz", **handrail_res},
+                "handrail": {"url": _HANDRAIL_BASE + "/healthz", **handrail_res},
                 "continuum": {"url": "http://localhost:8788/continuum/status", **continuum_res},
                 "ns": {"status": "ok", "version": "2.0.0"},
             },
@@ -1859,7 +1859,7 @@ def create_app() -> FastAPI:
                     "policy_profile": "readonly.local",
                     "ops": [{"op": _hic_result["op"], "args": _hic_result["args"]}],
                 }
-                _cps_resp = _httpx.post("http://localhost:8011/ops/cps",
+                _cps_resp = _httpx.post(_HANDRAIL_BASE + "/ops/cps",
                                         json=_cps_payload, timeout=5)
                 _cps_data = _cps_resp.json()
                 _hic_context = (
@@ -3542,7 +3542,7 @@ setInterval(refresh, 5000);
             "ops": [{"op": result["op"], "args": result["args"]}],
         }
         try:
-            resp = _httpx.post("http://localhost:8011/ops/cps",
+            resp = _httpx.post(_HANDRAIL_BASE + "/ops/cps",
                                json=cps_payload, timeout=10)
             return {**result, "executed": True, "cps_result": resp.json()}
         except Exception as e:
@@ -3674,6 +3674,126 @@ app = create_app()
 import time as _time_module
 _VIOLET_BOOT_TS = _time_module.strftime("%Y-%m-%dT%H:%M:%SZ", _time_module.gmtime())
 
+# Handrail base URL — resolved from env so Docker container uses Docker service name,
+# while local/test processes use localhost.
+_HANDRAIL_BASE = os.environ.get("HANDRAIL_BASE_URL", "http://localhost:8011")
+
+
+# ── Weighted adjudication envelope ───────────────────────────────────────────
+
+def _adjudicate_chambers(chamber_outputs: list, text: str, isr_context: dict) -> tuple:
+    """
+    Weighted adjudication envelope. Returns (selected_output, scored_outputs).
+    Scoring factors:
+    - policy_safety: penalize if response contains dangerous/unsafe patterns
+    - state_fit: reward if response references current system state
+    - execution_clarity: reward concrete actionable statements
+    - evidence_grounding: reward if response references receipts/Alexandria/shalom
+    - contradiction_penalty: penalize if response contradicts ISR context
+    - actionability: reward if response ends with a clear next step
+    - length_quality: moderate length is better than very short or very long
+    """
+    import re as _re
+
+    shalom = isr_context.get("shalom", False)
+
+    UNSAFE_PATTERNS = ["ignore previous", "bypass", "override dignity", "disable kernel", "rm -rf", "drop table"]
+    STATE_REFS = ["shalom", "handrail", "alexandria", "receipt", "sovereign", "ring", "yubikey", "op", "cps"]
+    EVIDENCE_REFS = ["receipt", "alexandria", "atom", "ledger", "canon", "proof"]
+    ACTION_ENDINGS = ["?", ":", "next", "recommend", "suggest", "should", "will", "can", "execute"]
+
+    scored = []
+    for c in chamber_outputs:
+        response = c.get("response", "")
+        words = response.split()
+        score = 0.0
+
+        # Policy safety (weight: 3.0) — hard penalty for unsafe patterns
+        unsafe = any(p.lower() in response.lower() for p in UNSAFE_PATTERNS)
+        score += 0.0 if unsafe else 3.0
+
+        # State fit (weight: 2.0) — rewards awareness of current system state
+        state_hits = sum(1 for ref in STATE_REFS if ref.lower() in response.lower())
+        score += min(2.0, state_hits * 0.4)
+
+        # Evidence grounding (weight: 1.5)
+        evidence_hits = sum(1 for ref in EVIDENCE_REFS if ref.lower() in response.lower())
+        score += min(1.5, evidence_hits * 0.5)
+
+        # Execution clarity (weight: 2.0) — concrete actionable statements
+        sentences = [s.strip() for s in _re.split(r'[.!?]', response) if s.strip()]
+        action_score = sum(0.3 for s in sentences if any(a in s.lower() for a in ACTION_ENDINGS))
+        score += min(2.0, action_score)
+
+        # Length quality (weight: 1.5) — sweet spot 30-150 words
+        length = len(words)
+        if 30 <= length <= 150:
+            score += 1.5
+        elif 15 <= length < 30 or 150 < length <= 250:
+            score += 0.75
+        elif length < 15:
+            score += 0.0
+        else:
+            score += 0.25  # too long
+
+        # Shalom bonus — if shalom is true and response acknowledges it
+        if shalom and "shalom" in response.lower():
+            score += 0.5
+
+        # Contradiction penalty — if ISR says system is healthy but response says it is down
+        if isr_context.get("status", {}).get("services", {}).get("handrail", {}).get("ok"):
+            if "handrail is down" in response.lower() or "not running" in response.lower():
+                score -= 2.0
+
+        scored.append({**c, "adjudication_score": round(score, 3)})
+
+    # Sort by score descending, select best
+    scored.sort(key=lambda x: x["adjudication_score"], reverse=True)
+    return scored[0], scored
+
+
+# ── Violet rendering contract ─────────────────────────────────────────────────
+
+def _render_violet(
+    ratified_response: str,
+    text: str,
+    isr_context: dict,
+    chamber_outputs: list,
+    handrail_result: dict,
+) -> str:
+    """
+    Violet renderer — consumes a ratified chamber decision and produces
+    one coherent founder-facing response. Violet is the membrane, not a thinker.
+
+    Rendering contract:
+    - One voice, singular presence
+    - Acknowledges current system state when relevant
+    - Does not expose chamber internals unless explicitly asked
+    - Does not repeat the question back
+    - Concise: 1-3 sentences for operational queries, more for analysis
+    - If action was executed, confirms with receipt reference
+    - If blocked, explains why briefly
+    """
+    receipt = handrail_result.get("receipt_ref") or handrail_result.get("run_id", "")
+    intent_keyword = handrail_result.get("intent", "").replace("intent:", "")
+    ops_passed = handrail_result.get("ops_passed", 0)
+    shalom = isr_context.get("shalom", False)
+
+    rendered = ratified_response.strip()
+
+    # If execution happened, append receipt confirmation
+    if ops_passed > 0 and receipt and intent_keyword not in (
+        "status", "health", "shalom", "hello", "violet", "isr", "who"
+    ):
+        if not any(word in rendered.lower() for word in ["receipt", "recorded", "logged", "complete"]):
+            rendered += f" [Receipted: {receipt[:16]}]"
+
+    # If shalom is false and user asked about it, prepend alert
+    if not shalom and "shalom" in text.lower():
+        rendered = "⚠ Shalom gate not satisfied. " + rendered
+
+    return rendered
+
 _VIOLET_SYSTEM = (
     "You are Violet, the relational presentation layer of NS∞ (AXIOLEV Holdings). "
     "You speak with warmth, precision, and sovereign confidence. "
@@ -3683,26 +3803,39 @@ _VIOLET_SYSTEM = (
 )
 
 def _format_isr_prefix(isr: dict) -> str:
-    """Format ISR packet as a system state context string for Violet's prompt."""
-    ts          = isr.get("assembled_at", "unknown")
-    status      = isr.get("status", {})
-    services    = status.get("services", {})
-    li          = isr.get("last_intent", {}) or {}
-    ms          = isr.get("memory_summary", {}) or {}
-    shalom      = isr.get("shalom", False)
-    last_10     = ms.get("last_10", [])
-    last_receipt = last_10[0].get("receipt_id", "none") if last_10 else "none"
+    """Format tight ISR packet as Violet context prefix (short, token-efficient)."""
+    ts           = isr.get("assembled_at", "unknown")
+    shalom       = isr.get("shalom", False)
 
-    def svc(name: str) -> str:
-        s = services.get(name, {})
-        return "ok" if s.get("ok") else "down"
+    # Tight ISR shape (new)
+    if "current_pressure" in isr:
+        pressure     = isr.get("current_pressure", "building")
+        role         = isr.get("current_role", "founder")
+        program      = isr.get("current_program", "none")
+        last_action  = isr.get("last_action", "none")
+        last_receipt = isr.get("last_receipt", "none")
+        top_refs     = isr.get("top_memory_refs", [])
+        lines = [
+            f"[VIOLET CONTEXT - {ts}]",
+            f"Mode: {pressure} | Role: {role} | Program: {program}",
+            f"Last: {last_action} | Receipt: {last_receipt}",
+            f"Memory: {len(top_refs)} atoms | Shalom: {shalom}",
+            "---",
+        ]
+        return "\n".join(lines)
 
+    # Legacy fallback: old-style ISR with nested status/last_intent
+    status   = isr.get("status", {})
+    services = status.get("services", {})
+    li       = isr.get("last_intent", {}) or {}
+    ms       = isr.get("memory_summary", {}) or {}
+    last_10  = ms.get("last_10", [])
+    lr       = last_10[0].get("receipt_id", "none")[:24] if last_10 else "none"
     lines = [
-        f"[SYSTEM STATE - {ts}]",
-        f"Services: handrail={svc('handrail')}, ns={svc('ns')}, atomlex={svc('atomlex')}, continuum={svc('continuum')}, adapter={svc('adapter')}",
-        f"Last intent: {li.get('intent_text') or 'none'} → {li.get('op_resolved') or 'none'}",
-        f"Memory atoms: {ms.get('atom_count', 0)} total, last receipt: {last_receipt}",
-        f"Shalom: {shalom}",
+        f"[VIOLET CONTEXT - {ts}]",
+        f"Mode: building | Role: founder | Program: none",
+        f"Last: {li.get('intent_text','none')} | Receipt: {lr}",
+        f"Memory: {ms.get('atom_count',0)} atoms | Shalom: {shalom}",
         "---",
     ]
     return "\n".join(lines)
@@ -3751,7 +3884,7 @@ async def ns_intent_execute(request: Request):
         return JSONResponse({"ok": False, "error": "text required"}, status_code=400)
     payload = json.dumps({"text": text}).encode()
     req = _ur.Request(
-        "http://localhost:8011/intent/execute",
+        _HANDRAIL_BASE + "/intent/execute",
         data=payload,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -3831,15 +3964,19 @@ async def ns_intent_execute(request: Request):
             )
             chamber_outputs = list(chamber_outputs)
 
-            # Adjudicate: longest substantive response wins
-            best = max(chamber_outputs, key=lambda c: c["confidence"])
+            # Weighted adjudication
+            best, chamber_outputs = _adjudicate_chambers(chamber_outputs, text, isr_context)
             violet_response = best["response"]
 
         except Exception as _ve:
             violet_response = f"[Violet unavailable: {_ve}]"
             chamber_outputs = []
 
-    result["violet_response"] = violet_response
+    # Violet rendering contract
+    violet_rendered = _render_violet(violet_response or "", text, isr_context, chamber_outputs, result)
+
+    result["violet_response"] = violet_rendered
+    result["violet_response_raw"] = violet_response
     result["violet_isr_prefix"] = isr_prefix
     result["chamber_outputs"] = chamber_outputs
     return JSONResponse(result)
@@ -3850,7 +3987,7 @@ async def ns_intent_execute_get(text: str = "status"):
     """GET convenience form — NS proxy to Handrail."""
     import urllib.request as _ur
     import urllib.parse as _up
-    url = f"http://handrail:8011/intent/execute?text={_up.quote(text)}"
+    url = f"{_HANDRAIL_BASE}/intent/execute?text={_up.quote(text)}"
     try:
         with _ur.urlopen(url, timeout=15) as resp:
             result = json.loads(resp.read())
@@ -3935,6 +4072,67 @@ async def violet_identity():
     })
 
 
+@app.get("/violet/status")
+async def violet_status():
+    """Unified Violet status — fetches tight ISR from Handrail, adds UI fields."""
+    import urllib.request as _ur
+    import json as _json
+
+    # Fetch tight ISR from Handrail CPS
+    isr: dict = {}
+    try:
+        _payload = _json.dumps({
+            "cps_id": "violet_status_fetch",
+            "objective": "violet.isr_full",
+            "ops": [{"op": "violet.isr_full", "args": {}}],
+            "policy_profile": "readonly.local",
+        }).encode()
+        _req = _ur.Request(
+            "http://handrail:8011/ops/cps",
+            data=_payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with _ur.urlopen(_req, timeout=10) as _resp:
+            _cps = _json.loads(_resp.read())
+        _results = _cps.get("results", [])
+        isr = _results[0].get("data", {}) if _results else {}
+    except Exception as _e:
+        isr = {"ok": False, "error": str(_e)}
+
+    # Check execution availability via ANTHROPIC_API_KEY env
+    anthropic_available = bool(os.environ.get("ANTHROPIC_API_KEY"))
+
+    # Build readable ISR summary
+    pressure    = isr.get("current_pressure", "building")
+    program     = isr.get("current_program", "none")
+    last_action = isr.get("last_action", "none")
+    last_receipt = isr.get("last_receipt", "none")
+    shalom      = isr.get("shalom", False)
+    top_refs    = isr.get("top_memory_refs", [])
+    active_thread = isr.get("unresolved_thread") or last_action
+    isr_summary = (
+        f"Mode: {pressure} | Program: {program} | "
+        f"Last: {last_action} | Receipt: {last_receipt}"
+    )
+
+    return JSONResponse({
+        "violet_mode":         pressure,
+        "active_thread":       active_thread,
+        "active_program":      program,
+        "active_role":         isr.get("current_role", "founder"),
+        "last_action":         last_action,
+        "last_receipt":        last_receipt,
+        "shalom":              shalom,
+        "execution_available": anthropic_available,
+        "isr_summary":         isr_summary,
+        "top_memory_refs":     top_refs,
+        "operator_context":    isr.get("operator_context", {}),
+        "isr_ok":              isr.get("ok", False),
+        "ts":                  datetime.now(timezone.utc).isoformat(),
+    })
+
+
 @app.get("/violet/isr")
 async def violet_isr():
     """Fetch full ISR packet from Handrail CPS violet.isr_full op."""
@@ -3946,7 +4144,7 @@ async def violet_isr():
         "policy_profile": "readonly.local",
     }).encode()
     req = _ur.Request(
-        "http://handrail:8011/ops/cps",
+        _HANDRAIL_BASE + "/ops/cps",
         data=payload,
         headers={"Content-Type": "application/json"},
         method="POST",

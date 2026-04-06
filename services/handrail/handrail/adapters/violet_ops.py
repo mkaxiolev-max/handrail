@@ -20,7 +20,7 @@ import httpx
 _NS_MEMORY_FILE = Path("/Volumes/NSExternal/.run/ns_memory.json")
 _RECEIPTS_DIR   = Path("/Volumes/NSExternal/receipts")
 
-# Inside Docker: use localhost for self (handrail), container names for peers.
+# Inside Docker: use 127.0.0.1 for self (handrail), container names for peers.
 # Adapter runs on Mac host → host.docker.internal.
 _SERVICES = {
     "handrail":  "http://127.0.0.1:8011/healthz",
@@ -28,6 +28,25 @@ _SERVICES = {
     "atomlex":   "http://atomlex:8080/healthz",
     "continuum": "http://continuum:8788/healthz",
     "adapter":   "http://host.docker.internal:8765/healthz",
+}
+
+# Intent → program name mapping
+_INTENT_TO_PROGRAM: dict[str, str] = {
+    "fundraising": "fundraising",
+    "hiring": "hiring",
+    "partner": "partner",
+    "ma": "m&a",
+    "advisor": "advisor",
+    "cs": "customer_success",
+    "feedback": "feedback",
+    "gov": "governance",
+    "knowledge": "knowledge",
+    "dev_check": "none",
+    "ingest": "corpus_ingest",
+    "violet": "none",
+    "status": "none",
+    "health": "none",
+    "shalom": "none",
 }
 
 
@@ -47,7 +66,6 @@ def _op_violet_render_status(args: dict, _policy) -> dict:
     all_ok = True
     for name, url in _SERVICES.items():
         if name == "handrail":
-            # Self — if this code is running, handrail is up
             services[name] = {"ok": True, "status_code": 200, "note": "self"}
             continue
         try:
@@ -79,6 +97,7 @@ def _op_violet_render_last_intent(args: dict, _policy) -> dict:
             "result":       data.get("result") or {"last_ok": data.get("last_ok")},
             "timestamp":    data.get("timestamp") or data.get("ts"),
             "receipt_id":   data.get("receipt_id") or data.get("last_digest"),
+            "last_ok":      data.get("last_ok", True),
         }
     except Exception as exc:
         return {"ok": False, "error": str(exc), "last_intent": None}
@@ -116,21 +135,64 @@ def _op_violet_render_memory_summary(args: dict, _policy) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Op: violet.isr_full
+# Op: violet.isr_full  — tighter bounded ISR object
 # ---------------------------------------------------------------------------
 
 def _op_violet_isr_full(args: dict, policy) -> dict:
-    """Assemble full ISR: status + last_intent + memory_summary."""
+    """Assemble tight ISR: bounded object for Violet context injection."""
     status         = _op_violet_render_status({}, policy)
     last_intent    = _op_violet_render_last_intent({}, policy)
     memory_summary = _op_violet_render_memory_summary({}, policy)
+
+    # Derive fields
+    services      = status.get("services", {})
+    containers_ok = all(v.get("ok") for v in services.values())
+    shalom        = containers_ok  # shalom = all services healthy
+
+    li            = last_intent or {}
+    intent_text   = li.get("intent_text") or "none"
+    last_ok       = li.get("last_ok", True)
+
+    # current_program: map intent to program name
+    current_program = "none"
+    for kw, prog in _INTENT_TO_PROGRAM.items():
+        if kw in (intent_text or "").lower():
+            current_program = prog
+            break
+
+    # unresolved_thread: last intent if it didn't fully resolve
+    unresolved_thread = intent_text if (not last_ok and intent_text != "none") else None
+
+    # last_action and last_receipt from memory
+    ms      = memory_summary or {}
+    last_10 = ms.get("last_10", [])
+    last_receipt_full = last_10[0].get("receipt_id", "") if last_10 else ""
+    last_receipt      = last_receipt_full[:24] if last_receipt_full else "none"
+    last_action       = last_10[0].get("event_type", "none") if last_10 else "none"
+    top_memory_refs   = [r.get("receipt_id", "")[:32] for r in last_10[:3]]
+
+    # current_pressure
+    if not shalom or not containers_ok:
+        current_pressure = "building"
+    elif True:  # ring5 never complete in this state
+        current_pressure = "ring5_pending"
+
     return {
-        "ok":             True,
-        "status":         status,
-        "last_intent":    last_intent,
-        "memory_summary": memory_summary,
-        "shalom":         True,
-        "assembled_at":   _ts(),
+        "ok":               True,
+        "current_program":  current_program,
+        "current_role":     "founder",
+        "unresolved_thread": unresolved_thread,
+        "last_action":      last_action,
+        "last_receipt":     last_receipt,
+        "current_pressure": current_pressure,
+        "operator_context": {
+            "shalom":   shalom,
+            "yubikey":  "26116460",
+            "boot":     "12/12",
+        },
+        "top_memory_refs":  top_memory_refs,
+        "assembled_at":     _ts(),
+        "shalom":           shalom,
     }
 
 
