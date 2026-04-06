@@ -10,33 +10,33 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/healthz",
+        "url": "http://localhost:9000/healthz",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://continuum:8788/state",
+        "url": "http://localhost:8788/state",
         "expect_status": 200
       }
     },
     {
       "op": "http.get",
       "args": {
-        "url": "http://ns:9000/alexandria/proof"
+        "url": "http://localhost:9000/alexandria/proof"
       }
     },
     {
       "op": "http.get",
       "args": {
-        "url": "http://ns:9000/auth/yubikey/test"
+        "url": "http://localhost:9000/auth/yubikey/test"
       }
     },
     {
       "op": "http.get",
       "args": {
-        "url": "http://ns:9000/health/full"
+        "url": "http://localhost:9000/health/full"
       }
     },
     {
@@ -48,62 +48,62 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/models/registry",
+        "url": "http://localhost:9000/models/registry",
         "expect_status": 200
       }
     },
     {
       "op": "http.get",
       "args": {
-        "url": "http://ns:9000/memory/recent?n=3"
+        "url": "http://localhost:9000/memory/recent?n=3"
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/founder",
+        "url": "http://localhost:9000/founder",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/kernel/yubikey/status",
+        "url": "http://localhost:9000/kernel/yubikey/status",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://continuum:8788/healthz",
+        "url": "http://localhost:8788/healthz",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/capability/graph",
+        "url": "http://localhost:9000/capability/graph",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/semantic/candidates",
+        "url": "http://localhost:9000/semantic/candidates",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/invention/flywheel",
+        "url": "http://localhost:9000/invention/flywheel",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/usdl/gates",
+        "url": "http://localhost:9000/usdl/gates",
         "expect_status": 200
       }
     },
@@ -116,14 +116,14 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/sms/health",
+        "url": "http://localhost:9000/sms/health",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/intel/proactive",
+        "url": "http://localhost:9000/intel/proactive",
         "expect_status": 200
       }
     },
@@ -153,28 +153,28 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/models/registry",
+        "url": "http://localhost:9000/models/registry",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/models/status",
+        "url": "http://localhost:9000/models/status",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/san/summary",
+        "url": "http://localhost:9000/san/summary",
         "expect_status": 200
       }
     },
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://ns:9000/autopoietic/specs",
+        "url": "http://localhost:9000/autopoietic/specs",
         "expect_status": 200
       },
       "description": "autopoietic loop live"
@@ -182,7 +182,7 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://handrail:8011/yubikey/status",
+        "url": "http://localhost:8011/yubikey/status",
         "expect_status": 200
       },
       "description": "yubikey quorum registry live \u2014 enrolled_count >= 1"
@@ -190,7 +190,7 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://atomlex:8080/healthz",
+        "url": "http://localhost:8080/healthz",
         "expect_status": 200
       },
       "description": "atomlex constraint semantic graph engine live"
@@ -198,7 +198,7 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://handrail:8011/system/status",
+        "url": "http://localhost:8011/system/status",
         "expect_status": 200
       },
       "description": "canonical system status endpoint live \u2014 shalom score readable"
@@ -206,7 +206,7 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://handrail:8011/program/library",
+        "url": "http://localhost:8011/program/library",
         "expect_status": 200
       },
       "description": "program library endpoint live \u2014 10 programs registered"
@@ -214,7 +214,7 @@
     {
       "op": "http.health_check",
       "args": {
-        "url": "http://handrail:8011/intent/execute?text=health",
+        "url": "http://localhost:8011/intent/execute?text=health",
         "expect_status": 200
       },
       "description": "intent command loop live \u2014 NS\u221e v5 binding layer"

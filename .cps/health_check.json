@@ -3,9 +3,9 @@
   "objective": "verify system services health",
   "ops": [
     {"op": "http.get", "args": {"url": "http://127.0.0.1:8011/healthz"}},
-    {"op": "http.get", "args": {"url": "http://ns:9000/healthz"}},
-    {"op": "http.get", "args": {"url": "http://continuum:8788/state"}},
-    {"op": "http.get", "args": {"url": "http://continuum:8788/continuum/status"}}
+    {"op": "http.get", "args": {"url": "http://localhost:9000/healthz"}},
+    {"op": "http.get", "args": {"url": "http://localhost:8788/state"}},
+    {"op": "http.get", "args": {"url": "http://localhost:8788/continuum/status"}}
   ],
   "expect": {}
 }

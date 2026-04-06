@@ -11,6 +11,7 @@ services:
       - ${HR_WORKSPACE}:${HR_WORKSPACE}
       - /var/run/docker.sock:/var/run/docker.sock
       - .:${HR_WORKSPACE}
+      - /Volumes/NSExternal:/Volumes/NSExternal
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8011/healthz')\""]
       interval: 2s

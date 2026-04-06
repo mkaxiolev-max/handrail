@@ -695,7 +695,7 @@ def system_status():
     # --- Lexicon (proxy call to NS) ---
     import urllib.request as _ur, json as _j
     try:
-        lex = _j.loads(_ur.urlopen("http://ns:9000/lexicon/status", timeout=2).read())
+        lex = _j.loads(_ur.urlopen("http://localhost:9000/lexicon/status", timeout=2).read())
         lexicon_loaded = lex.get("loaded", False)
         lexicon_count = lex.get("entry_count", 0)
     except Exception:
@@ -703,7 +703,7 @@ def system_status():
 
     # --- Atomlex (proxy call) ---
     try:
-        atx = _j.loads(_ur.urlopen("http://atomlex:8080/graph/status", timeout=2).read())
+        atx = _j.loads(_ur.urlopen("http://localhost:8080/graph/status", timeout=2).read())
         atomlex_nodes = atx.get("node_count", 0)
         atomlex_edges = atx.get("edge_count", 0)
     except Exception:
@@ -939,13 +939,20 @@ _INTENT_OPS_MAP = {
     "repo":     [{"op": "git.status", "args": {}}, {"op": "fs.list", "args": {"path": "."}}],
     "git":      [{"op": "git.status", "args": {}}, {"op": "git.log", "args": {"n": 5}}],
     "files":    [{"op": "fs.list", "args": {"path": "."}}],
-    "status":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/healthz", "expect_status": 200}}],
-    "health":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/healthz", "expect_status": 200}}],
-    "shalom":   [{"op": "http.health_check", "args": {"url": "http://handrail:8011/system/status", "expect_status": 200}}],
-    "program":  [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
-    "programs": [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
-    "proof":    [{"op": "http.health_check", "args": {"url": "http://handrail:8011/proof/registry", "expect_status": 200}}],
-    "boot":     [{"op": "http.health_check", "args": {"url": "http://handrail:8011/boot/status", "expect_status": 200}}],
+    "status":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/healthz", "expect_status": 200}}],
+    "health":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/healthz", "expect_status": 200}}],
+    "shalom":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/system/status", "expect_status": 200}}],
+    "program":  [{"op": "http.health_check", "args": {"url": "http://localhost:8011/program/library", "expect_status": 200}}],
+    "programs": [{"op": "http.health_check", "args": {"url": "http://localhost:8011/program/library", "expect_status": 200}}],
+    "proof":    [{"op": "http.health_check", "args": {"url": "http://localhost:8011/proof/registry", "expect_status": 200}}],
+    "boot":     [{"op": "http.health_check", "args": {"url": "http://localhost:8011/boot/status", "expect_status": 200}}],
+    # Violet ISR
+    "violet":   [{"op": "violet.isr_full", "args": {}}],
+    "hello":    [{"op": "violet.isr_full", "args": {}}],
+    "isr":      [{"op": "violet.isr_full", "args": {}}],
+    # Corpus ingest
+    "ingest":   [{"op": "corpus.ingest_all", "args": {}}],
+    "corpus":   [{"op": "corpus.ingest_all", "args": {}}],
 }
 
 
@@ -963,13 +970,21 @@ async def handrail_intent_execute(request: Request):
     text = body.get("text", "").strip().lower()
     keyword, matched_ops = _classify_intent(text)
     run_id = f"intent_{now_id()}"
+
+    # Assemble Violet ISR context prefix before routing intent
+    from handrail.cps_engine import CPSExecutor
+    from handrail.adapters.violet_ops import _op_violet_isr_full
+    try:
+        isr_context = _op_violet_isr_full({}, None)
+    except Exception as _isr_err:
+        isr_context = {"ok": False, "error": str(_isr_err)}
+
     cps = {
         "cps_id": run_id,
         "objective": f"intent:{keyword}",
         "ops": matched_ops,
         "policy_profile": "readonly.local",
     }
-    from handrail.cps_engine import CPSExecutor
     receipt = CPSExecutor.execute(cps, WORKSPACE)
     results = receipt.get("results", [])
     ops_passed = sum(1 for r in results if r.get("ok", False))
@@ -982,6 +997,7 @@ async def handrail_intent_execute(request: Request):
         "run_id": run_id,
         "receipt_ref": receipt.get("receipt_id", run_id),
         "results": results,
+        "isr_context": isr_context,
         "next": "observe" if ops_passed == len(matched_ops) else "retry",
     })
 

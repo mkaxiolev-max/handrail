@@ -108,7 +108,7 @@ if __name__ == "__main__":
         "cps_id": "CPS-BOOT0001",
         "intent_id": "INT-ABC12345",
         "objective": "sovereign boot",
-        "ops": [{"op": "http.health_check", "args": {"url": "http://ns:9000/healthz"}}],
+        "ops": [{"op": "http.health_check", "args": {"url": "http://localhost:9000/healthz"}}],
         "risk_tier": "R0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }

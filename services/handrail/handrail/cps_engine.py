@@ -558,7 +558,7 @@ def _get_ns_url() -> str:
     import os
     global _NS_URL
     if _NS_URL is None:
-        _NS_URL = os.environ.get("NS_URL", "http://ns:9000")
+        _NS_URL = os.environ.get("NS_URL", "http://localhost:9000")
     return _NS_URL
 
 
@@ -1176,6 +1176,8 @@ def _op_program_archive(args: dict, policy: PolicyEngine) -> dict:
     return _prog_op(ns, "archive", {**args, "next_state": "archived"}, policy)
 
 from handrail.adapters.san_adapter import SAN_OPS as _SAN_OPS  # noqa: E402
+from handrail.adapters.violet_ops import VIOLET_OPS as _VIOLET_OPS  # noqa: E402
+from handrail.adapters.ingest_ops import INGEST_OPS as _INGEST_OPS  # noqa: E402
 
 _META_OPS: dict[str, Any] = {
     "program.advance_state":    _op_program_advance_state,
@@ -1466,6 +1468,10 @@ OP_DISPATCH: dict[str, Any] = {
     **_META_OPS,
     # SAN — Sovereign Authority Namespace (legal/territorial reality layer)
     **_SAN_OPS,
+    # Violet ISR renderer (4 ops)
+    **_VIOLET_OPS,
+    # Corpus ingest CPS lane
+    **_INGEST_OPS,
     # Autopoietic mutation ops — Tier 2
     "fs.apply_patch": _op_fs_apply_patch,
     "fs.run_tests":   _op_fs_run_tests,

@@ -836,7 +836,7 @@ def create_app() -> FastAPI:
             "payload": {"cmd": req.cmd},
         }
 
-        r = requests.post("http://handrail:8011/v1/task", json=body, timeout=30)
+        r = requests.post("http://localhost:8011/v1/task", json=body, timeout=30)
         try:
             payload = r.json()
         except Exception:
@@ -860,7 +860,7 @@ def create_app() -> FastAPI:
         }
 
         try:
-            r = requests.post("http://handrail:8011/v1/task", json=body, timeout=120)
+            r = requests.post("http://localhost:8011/v1/task", json=body, timeout=120)
             try:
                 payload = r.json()
             except Exception:
@@ -1302,8 +1302,8 @@ def create_app() -> FastAPI:
                 return {"status": "error", "error": str(e)}
 
         handrail_res, continuum_res = await asyncio.gather(
-            _get("http://handrail:8011/healthz"),
-            _get("http://continuum:8788/continuum/status"),
+            _get("http://localhost:8011/healthz"),
+            _get("http://localhost:8788/continuum/status"),
         )
 
         snap_dir = Path("/tmp/alexandria_snapshots")
@@ -1332,8 +1332,8 @@ def create_app() -> FastAPI:
             "ok": all_ok,
             "ts": datetime.utcnow().isoformat() + "Z",
             "services": {
-                "handrail": {"url": "http://handrail:8011/healthz", **handrail_res},
-                "continuum": {"url": "http://continuum:8788/continuum/status", **continuum_res},
+                "handrail": {"url": "http://localhost:8011/healthz", **handrail_res},
+                "continuum": {"url": "http://localhost:8788/continuum/status", **continuum_res},
                 "ns": {"status": "ok", "version": "2.0.0"},
             },
             "alexandria": alexandria,
@@ -1859,7 +1859,7 @@ def create_app() -> FastAPI:
                     "policy_profile": "readonly.local",
                     "ops": [{"op": _hic_result["op"], "args": _hic_result["args"]}],
                 }
-                _cps_resp = _httpx.post("http://handrail:8011/ops/cps",
+                _cps_resp = _httpx.post("http://localhost:8011/ops/cps",
                                         json=_cps_payload, timeout=5)
                 _cps_data = _cps_resp.json()
                 _hic_context = (
@@ -3542,7 +3542,7 @@ setInterval(refresh, 5000);
             "ops": [{"op": result["op"], "args": result["args"]}],
         }
         try:
-            resp = _httpx.post("http://handrail:8011/ops/cps",
+            resp = _httpx.post("http://localhost:8011/ops/cps",
                                json=cps_payload, timeout=10)
             return {**result, "executed": True, "cps_result": resp.json()}
         except Exception as e:
@@ -3639,7 +3639,7 @@ setInterval(refresh, 5000);
         """Proxy to Atomlex graph status — node/edge count."""
         try:
             import urllib.request as _ur, json as _j
-            r = _ur.urlopen("http://atomlex:8080/graph/status", timeout=3)
+            r = _ur.urlopen("http://localhost:8080/graph/status", timeout=3)
             return _j.loads(r.read())
         except Exception as e:
             return {"ok": False, "error": str(e), "service": "atomlex", "nodes": 0, "node_count": 0}
@@ -3649,7 +3649,7 @@ setInterval(refresh, 5000);
         """Proxy to Atomlex word query — full constraint propagation."""
         try:
             import urllib.request as _ur, json as _j
-            r = _ur.urlopen(f"http://atomlex:8080/word/{word}", timeout=3)
+            r = _ur.urlopen(f"http://localhost:8080/word/{word}", timeout=3)
             return _j.loads(r.read())
         except Exception as e:
             return {"ok": False, "error": str(e)}
@@ -3659,7 +3659,7 @@ setInterval(refresh, 5000);
         """Proxy to Atomlex analyze — constitutional vocabulary analysis."""
         try:
             import urllib.request as _ur, json as _j, urllib.parse as _up
-            r = _ur.urlopen(f"http://atomlex:8080/analyze?text={_up.quote(text)}", timeout=3)
+            r = _ur.urlopen(f"http://localhost:8080/analyze?text={_up.quote(text)}", timeout=3)
             return _j.loads(r.read())
         except Exception as e:
             return {"ok": False, "error": str(e)}
@@ -3713,7 +3713,7 @@ async def ns_intent_execute(request: Request):
         return JSONResponse({"ok": False, "error": "text required"}, status_code=400)
     payload = json.dumps({"text": text}).encode()
     req = _ur.Request(
-        "http://handrail:8011/intent/execute",
+        "http://localhost:8011/intent/execute",
         data=payload,
         headers={"Content-Type": "application/json"},
         method="POST",
@@ -3734,7 +3734,7 @@ async def ns_intent_execute_get(text: str = "status"):
     """GET convenience form — NS proxy to Handrail."""
     import urllib.request as _ur
     import urllib.parse as _up
-    url = f"http://handrail:8011/intent/execute?text={_up.quote(text)}"
+    url = f"http://localhost:8011/intent/execute?text={_up.quote(text)}"
     try:
         with _ur.urlopen(url, timeout=15) as resp:
             result = json.loads(resp.read())

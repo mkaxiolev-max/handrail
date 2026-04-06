@@ -98,7 +98,7 @@ def build_plan(spec_id: str) -> dict:
         elif "rebuild" in a or "docker" in a:
             cps_ops.append({
                 "op": "http.health_check",
-                "args": {"url": "http://ns:9000/healthz", "expect_status": 200},
+                "args": {"url": "http://localhost:9000/healthz", "expect_status": 200},
                 "description": f"verify after: {action}",
             })
 

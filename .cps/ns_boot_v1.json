@@ -5,7 +5,7 @@
   "ops": [
     {"op": "docker.compose_ps", "args": {"project_dir": "/Users/axiolevns/axiolev_runtime"}},
     {"op": "http.get", "args": {"url": "http://127.0.0.1:8011/healthz"}},
-    {"op": "http.get", "args": {"url": "http://ns:9000/healthz"}}
+    {"op": "http.get", "args": {"url": "http://localhost:9000/healthz"}}
   ],
   "expect": {}
 }

@@ -9,19 +9,19 @@
     },
     {
       "op": "http.health_check",
-      "args": { "url": "http://ns:9000/healthz", "expect_status": 200 }
+      "args": { "url": "http://localhost:9000/healthz", "expect_status": 200 }
     },
     {
       "op": "http.health_check",
-      "args": { "url": "http://continuum:8788/state", "expect_status": 200 }
+      "args": { "url": "http://localhost:8788/state", "expect_status": 200 }
     },
     {
       "op": "http.get",
-      "args": { "url": "http://ns:9000/alexandria/proof" }
+      "args": { "url": "http://localhost:9000/alexandria/proof" }
     },
     {
       "op": "http.get",
-      "args": { "url": "http://ns:9000/auth/yubikey/test" }
+      "args": { "url": "http://localhost:9000/auth/yubikey/test" }
     },
     {
       "op": "sys.disk_usage",
