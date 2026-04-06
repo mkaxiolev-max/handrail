@@ -14,10 +14,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# HTTP + WS routes both on twilio_voice router
 app.include_router(twilio_voice.router)
 app.include_router(twilio_status.router)
 
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": "telephony_bridge", "port": 9003, "version": "1.0.0"}
+    from telephony_bridge.app.routers.twilio_voice import _calls
+    return {
+        "status": "ok",
+        "service": "telephony_bridge",
+        "port": 9003,
+        "version": "1.0.0",
+        "active_calls": len([c for c in _calls.values() if c.get("status") == "streaming"]),
+        "total_calls": len(_calls),
+    }

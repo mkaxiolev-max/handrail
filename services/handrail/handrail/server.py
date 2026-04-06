@@ -939,20 +939,23 @@ _INTENT_OPS_MAP = {
     "repo":     [{"op": "git.status", "args": {}}, {"op": "fs.list", "args": {"path": "."}}],
     "git":      [{"op": "git.status", "args": {}}, {"op": "git.log", "args": {"n": 5}}],
     "files":    [{"op": "fs.list", "args": {"path": "."}}],
-    "status":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/healthz", "expect_status": 200}}],
-    "health":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/healthz", "expect_status": 200}}],
-    "shalom":   [{"op": "http.health_check", "args": {"url": "http://localhost:8011/system/status", "expect_status": 200}}],
-    "program":  [{"op": "http.health_check", "args": {"url": "http://localhost:8011/program/library", "expect_status": 200}}],
-    "programs": [{"op": "http.health_check", "args": {"url": "http://localhost:8011/program/library", "expect_status": 200}}],
-    "proof":    [{"op": "http.health_check", "args": {"url": "http://localhost:8011/proof/registry", "expect_status": 200}}],
-    "boot":     [{"op": "http.health_check", "args": {"url": "http://localhost:8011/boot/status", "expect_status": 200}}],
+    # sys.health: direct env/path check — no HTTP self-calls, no deadlock
+    "status":   [{"op": "sys.health", "args": {}}, {"op": "violet.isr_full", "args": {}}],
+    "health":   [{"op": "sys.health", "args": {}}],
+    "shalom":   [{"op": "sys.health", "args": {}}, {"op": "violet.isr_full", "args": {}}],
+    "program":  [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
+    "programs": [{"op": "http.health_check", "args": {"url": "http://handrail:8011/program/library", "expect_status": 200}}],
+    "proof":    [{"op": "http.health_check", "args": {"url": "http://handrail:8011/proof/registry", "expect_status": 200}}],
+    "boot":     [{"op": "http.health_check", "args": {"url": "http://handrail:8011/boot/status", "expect_status": 200}}],
     # Violet ISR
     "violet":   [{"op": "violet.isr_full", "args": {}}],
     "hello":    [{"op": "violet.isr_full", "args": {}}],
     "isr":      [{"op": "violet.isr_full", "args": {}}],
+    "who":      [{"op": "violet.isr_full", "args": {}}, {"op": "sys.health", "args": {}}],
     # Corpus ingest
     "ingest":   [{"op": "corpus.ingest_all", "args": {}}],
     "corpus":   [{"op": "corpus.ingest_all", "args": {}}],
+    "watch":    [{"op": "corpus.watch", "args": {}}],
 }
 
 

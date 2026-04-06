@@ -170,10 +170,74 @@ def _op_corpus_ingest_all(args: dict, _policy) -> dict:
     }
 
 
+def _ingested_source_files() -> set[str]:
+    """Return set of source_file values already in atoms dir."""
+    if not _ATOMS_DIR.exists():
+        return set()
+    seen: set[str] = set()
+    for f in _ATOMS_DIR.glob("*.json"):
+        try:
+            d = json.loads(f.read_text())
+            src = d.get("source_file")
+            if src:
+                seen.add(src)
+        except Exception:
+            pass
+    return seen
+
+
+def _op_corpus_watch(args: dict, policy) -> dict:
+    """
+    Check raw_ingest/ for files not yet atomised.
+    If new files found → run corpus.ingest_all automatically.
+    Returns {ok, new_files_detected, ingested_count, already_current}.
+    """
+    raw_root = Path("/Volumes/NSExternal/alexandria/raw_ingest")
+    if not raw_root.exists():
+        return {"ok": True, "new_files_detected": 0, "ingested_count": 0, "already_current": True,
+                "note": "raw_ingest dir not found"}
+
+    supported = _TEXT_SUFFIXES | {_PDF_SUFFIX}
+    all_source = [
+        str(f.relative_to(_SOURCE_DIR))
+        for f in sorted(raw_root.rglob("*"))
+        if f.is_file() and f.suffix.lower() in supported and _SOURCE_DIR in f.parents or f.parent == _SOURCE_DIR
+    ]
+
+    # More robust: walk all subdirs under raw_ingest
+    all_raw: list[Path] = [
+        f for f in sorted(raw_root.rglob("*"))
+        if f.is_file() and f.suffix.lower() in supported
+    ]
+
+    already_ingested = _ingested_source_files()
+    new_files: list[str] = []
+    for f in all_raw:
+        # use filename as key (cross-subdir safe)
+        rel = f.name
+        if rel not in already_ingested and str(f) not in already_ingested:
+            new_files.append(str(f.name))
+
+    if not new_files:
+        return {"ok": True, "new_files_detected": 0, "ingested_count": 0, "already_current": True}
+
+    # New files found — run ingest_all
+    ingest_result = _op_corpus_ingest_all({}, policy)
+    return {
+        "ok":                True,
+        "new_files_detected": len(new_files),
+        "new_files":         new_files,
+        "ingested_count":    ingest_result.get("atoms_written", 0),
+        "already_current":   False,
+        "ingest_detail":     ingest_result,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Registry export
 # ---------------------------------------------------------------------------
 
 INGEST_OPS: dict[str, Any] = {
     "corpus.ingest_all": _op_corpus_ingest_all,
+    "corpus.watch":      _op_corpus_watch,
 }

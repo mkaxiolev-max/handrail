@@ -1,9 +1,11 @@
 """System state router — /api/v1/system/*"""
+import json
 import httpx
+from pathlib import Path
 from fastapi import APIRouter
 from shared.models.system import SystemState, TimelineEvent, FocusState, FailureOverlay, ServiceHealth
 from shared.models.enums import SystemTier, RiskTier
-from ns_api.app.config import HANDRAIL_URL, NS_URL, CONTINUUM_URL, ATOMLEX_URL
+from ns_api.app.config import HANDRAIL_URL, NS_URL, CONTINUUM_URL, ATOMLEX_URL, ALEXANDRIA_PATH
 
 router = APIRouter(prefix="/api/v1/system", tags=["system"])
 
@@ -37,16 +39,69 @@ async def get_state():
     )
 
 
-@router.get("/timeline", response_model=list[TimelineEvent])
+@router.get("/timeline", response_model=list[dict])
 async def get_timeline():
-    return [
-        TimelineEvent(
-            event_id="evt_boot_001",
-            event_type="boot",
-            summary="NS∞ sovereign boot complete — 12/12",
-            risk_tier=RiskTier.R0,
-        )
-    ]
+    receipts_dir = ALEXANDRIA_PATH / "receipts"
+    events = []
+
+    # Collect all .json receipt files (exclude receipt_chain.jsonl)
+    files = sorted(
+        [f for f in receipts_dir.glob("*.json") if f.is_file()],
+        key=lambda f: f.stat().st_mtime,
+        reverse=True,
+    )[:50] if receipts_dir.exists() else []
+
+    for f in files:
+        try:
+            d = json.loads(f.read_text())
+            events.append({
+                "event_type": d.get("receipt_type", "receipt"),
+                "timestamp": d.get("timestamp"),
+                "receipt_id": d.get("receipt_id", f.stem),
+                "op": d.get("op"),
+                "summary": (
+                    f"{d.get('receipt_type','op')} — {d.get('op','unknown')}"
+                    if d.get("op")
+                    else d.get("receipt_type", "receipt")
+                ),
+            })
+        except Exception:
+            continue
+
+    # Fallback: scan receipt_chain.jsonl
+    if not events:
+        chain = receipts_dir / "receipt_chain.jsonl"
+        if not chain.exists():
+            chain = ALEXANDRIA_PATH / "ALEXANDRIA" / "ledger" / "ns_receipt_chain.jsonl"
+        if chain.exists():
+            lines = chain.read_text().strip().splitlines()
+            for line in reversed(lines[-50:]):
+                try:
+                    d = json.loads(line)
+                    events.append({
+                        "event_type": d.get("receipt_type", "receipt"),
+                        "timestamp": d.get("timestamp"),
+                        "receipt_id": d.get("receipt_id", ""),
+                        "op": d.get("op"),
+                        "summary": (
+                            f"{d.get('receipt_type','op')} — {d.get('op','unknown')}"
+                            if d.get("op")
+                            else d.get("receipt_type", "receipt")
+                        ),
+                    })
+                except Exception:
+                    continue
+
+    if not events:
+        events.append({
+            "event_type": "boot",
+            "timestamp": None,
+            "receipt_id": "evt_boot_000",
+            "op": None,
+            "summary": "NS∞ sovereign boot complete — 12/12",
+        })
+
+    return events
 
 
 @router.get("/focus", response_model=FocusState)

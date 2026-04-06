@@ -386,6 +386,29 @@ def _op_sys_now(args: dict, _policy: PolicyEngine) -> dict:
     }
 
 
+def _op_sys_health(args: dict, _policy: PolicyEngine) -> dict:
+    """Direct env+path health check — no HTTP round-trips, no deadlock."""
+    import os
+    from datetime import datetime, timezone
+    anthropic  = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    twilio     = bool(os.environ.get("TWILIO_ACCOUNT_SID"))
+    ns_ext     = Path("/Volumes/NSExternal").exists()
+    mem_file   = Path("/Volumes/NSExternal/.run/ns_memory.json").exists()
+    receipts   = Path("/Volumes/NSExternal/receipts").exists()
+    atoms      = Path("/Volumes/NSExternal/alexandria/atoms").exists()
+    all_ok = anthropic and ns_ext
+    return {
+        "ok":                all_ok,
+        "anthropic":         anthropic,
+        "twilio":            twilio,
+        "alexandria_mounted": ns_ext,
+        "memory_file":       mem_file,
+        "receipts_dir":      receipts,
+        "atoms_dir":         atoms,
+        "checked_at":        datetime.now(timezone.utc).isoformat(),
+    }
+
+
 # ---------------------------------------------------------------------------
 # Slack adapter
 # ---------------------------------------------------------------------------
@@ -1455,6 +1478,7 @@ OP_DISPATCH: dict[str, Any] = {
     "sys.read_json":   _op_sys_read_json,
     "sys.list_dir":    _op_sys_list_dir,
     "sys.now":         _op_sys_now,
+    "sys.health":      _op_sys_health,
     # Program Library v1 — 10 namespaces (68 ops + 5 meta)
     **_FUNDRAISING_OPS,
     **_HIRING_OPS,

@@ -3669,6 +3669,44 @@ setInterval(refresh, 5000);
 
 app = create_app()
 
+# ── Violet — module-level constants ──────────────────────────────────────────
+
+import time as _time_module
+_VIOLET_BOOT_TS = _time_module.strftime("%Y-%m-%dT%H:%M:%SZ", _time_module.gmtime())
+
+_VIOLET_SYSTEM = (
+    "You are Violet, the relational presentation layer of NS∞ (AXIOLEV Holdings). "
+    "You speak with warmth, precision, and sovereign confidence. "
+    "Responses are concise — 1-3 sentences unless the operator asks for more. "
+    "You have persistent awareness of system state through the ISR context provided before each message. "
+    "You are not a chatbot. You are the behavior that remains when everything inconsistent is removed."
+)
+
+def _format_isr_prefix(isr: dict) -> str:
+    """Format ISR packet as a system state context string for Violet's prompt."""
+    ts          = isr.get("assembled_at", "unknown")
+    status      = isr.get("status", {})
+    services    = status.get("services", {})
+    li          = isr.get("last_intent", {}) or {}
+    ms          = isr.get("memory_summary", {}) or {}
+    shalom      = isr.get("shalom", False)
+    last_10     = ms.get("last_10", [])
+    last_receipt = last_10[0].get("receipt_id", "none") if last_10 else "none"
+
+    def svc(name: str) -> str:
+        s = services.get(name, {})
+        return "ok" if s.get("ok") else "down"
+
+    lines = [
+        f"[SYSTEM STATE - {ts}]",
+        f"Services: handrail={svc('handrail')}, ns={svc('ns')}, atomlex={svc('atomlex')}, continuum={svc('continuum')}, adapter={svc('adapter')}",
+        f"Last intent: {li.get('intent_text') or 'none'} → {li.get('op_resolved') or 'none'}",
+        f"Memory atoms: {ms.get('atom_count', 0)} total, last receipt: {last_receipt}",
+        f"Shalom: {shalom}",
+        "---",
+    ]
+    return "\n".join(lines)
+
 
 # ── OPS (Handrail internal) ────────────────────────────────────────────────
 # Lightweight internal control plane for Handrail -> NS boot orchestration.
@@ -3704,7 +3742,7 @@ async def ops_ingest_bootstrap(request: Request, x_ns_ops_key: str | None = Head
 
 @app.post("/intent/execute")
 async def ns_intent_execute(request: Request):
-    """NS-side intent execute: classify text → forward to Handrail /intent/execute → return receipt."""
+    """NS-side intent execute: forward to Handrail → inject ISR into Violet Anthropic response."""
     import urllib.request as _ur
     import urllib.error as _ue
     body = await request.json()
@@ -3713,20 +3751,44 @@ async def ns_intent_execute(request: Request):
         return JSONResponse({"ok": False, "error": "text required"}, status_code=400)
     payload = json.dumps({"text": text}).encode()
     req = _ur.Request(
-        "http://localhost:8011/intent/execute",
+        "http://handrail:8011/intent/execute",
         data=payload,
         headers={"Content-Type": "application/json"},
         method="POST",
     )
     try:
-        with _ur.urlopen(req, timeout=15) as resp:
+        with _ur.urlopen(req, timeout=30) as resp:
             result = json.loads(resp.read())
-        return JSONResponse(result)
     except _ue.HTTPError as e:
         body_err = e.read().decode(errors="replace")
         return JSONResponse({"ok": False, "error": f"handrail {e.code}: {body_err}"}, status_code=502)
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
+
+    # Inject ISR as Violet system context and call Anthropic
+    isr_context = result.get("isr_context", {})
+    isr_prefix  = _format_isr_prefix(isr_context) if isr_context else ""
+    violet_response: str | None = None
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if anthropic_key:
+        try:
+            import anthropic as _anthropic
+            _client = _anthropic.Anthropic(api_key=anthropic_key)
+            _msg = await asyncio.to_thread(
+                _client.messages.create,
+                model="claude-haiku-4-5-20251001",
+                max_tokens=300,
+                system=_VIOLET_SYSTEM + ("\n\n" + isr_prefix if isr_prefix else ""),
+                messages=[{"role": "user", "content": text}],
+            )
+            violet_response = _msg.content[0].text if _msg.content else None
+        except Exception as _ve:
+            violet_response = f"[Violet unavailable: {_ve}]"
+
+    result["violet_response"] = violet_response
+    result["violet_isr_prefix"] = isr_prefix
+    return JSONResponse(result)
 
 
 @app.get("/intent/execute")
@@ -3734,10 +3796,60 @@ async def ns_intent_execute_get(text: str = "status"):
     """GET convenience form — NS proxy to Handrail."""
     import urllib.request as _ur
     import urllib.parse as _up
-    url = f"http://localhost:8011/intent/execute?text={_up.quote(text)}"
+    url = f"http://handrail:8011/intent/execute?text={_up.quote(text)}"
     try:
         with _ur.urlopen(url, timeout=15) as resp:
             result = json.loads(resp.read())
         return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
+
+
+# ── Violet — identity + ISR endpoints ────────────────────────────────────────
+
+@app.get("/violet/identity")
+async def violet_identity():
+    """Violet's persistent identity manifest."""
+    return JSONResponse({
+        "name":        "Violet",
+        "version":     "1.0",
+        "description": "The relational presentation layer of NS∞. Persistent identity through Alexandria receipts.",
+        "axiom":       "Violet is the behavior that remains when everything inconsistent is removed.",
+        "capabilities": [
+            "intent_routing",
+            "system_awareness",
+            "voice_presence",
+            "operator_surface",
+            "isr_context_injection",
+            "corpus_memory",
+        ],
+        "yubikey_serial": "26116460",
+        "shalom":         True,
+        "uptime_since":   _VIOLET_BOOT_TS,
+    })
+
+
+@app.get("/violet/isr")
+async def violet_isr():
+    """Fetch full ISR packet from Handrail CPS violet.isr_full op."""
+    import urllib.request as _ur
+    payload = json.dumps({
+        "cps_id":         "violet_isr_fetch",
+        "objective":      "violet.isr_full",
+        "ops":            [{"op": "violet.isr_full", "args": {}}],
+        "policy_profile": "readonly.local",
+    }).encode()
+    req = _ur.Request(
+        "http://handrail:8011/ops/cps",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with _ur.urlopen(req, timeout=10) as resp:
+            cps_result = json.loads(resp.read())
+        results = cps_result.get("results", [])
+        isr_data = results[0].get("data", {}) if results else {}
+        return JSONResponse({"ok": True, "isr": isr_data, "raw_cps": cps_result})
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=502)
