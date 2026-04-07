@@ -17,6 +17,7 @@ boot_state = {
 @router.get("/status")
 async def boot_status():
     return {
+        "status": "ok",
         "boot_ready": boot_state["boot_ready"],
         "required_bindings": ["mac_folder", "google_drive_folder"],
         "present_bindings": list(boot_state["bindings"].keys()),

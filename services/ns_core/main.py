@@ -13,6 +13,16 @@ app.include_router(packets_router)
 async def health():
     return {"status": "ok", "service": "ns_core"}
 
+@app.get("/violet/status")
+async def violet_status():
+    return {
+        "status": "ok",
+        "mode": "founder_ready",
+        "interface": "violet",
+        "voice_inbound": True,
+        "chat_inbound": True,
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9000)
