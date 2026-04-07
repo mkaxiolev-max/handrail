@@ -1,0 +1,12 @@
+{
+  "binding": {
+    "type": "object",
+    "properties": {
+      "id": {"type": "string", "format": "uuid"},
+      "kind": {"type": "string", "enum": ["mac_folder", "google_drive"]},
+      "path": {"type": "string"},
+      "status": {"type": "string", "default": "active"}
+    },
+    "required": ["kind", "path"]
+  }
+}
