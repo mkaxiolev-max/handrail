@@ -15,3 +15,16 @@
  axiolev_runtime-ns_core  Built
  axiolev_runtime-integrity  Built
 [0;32m[14:34:44][0m Starting services...
+ Container axiolev_runtime-redis-1  Started
+ Container axiolev_runtime-redis-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-integrity-1  Starting
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-integrity-1  Started
+ Container axiolev_runtime-redis-1  Healthy
+ Container axiolev_runtime-ns_core-1  Starting
+ Container axiolev_runtime-ns_core-1  Started
+[0;32m[✓][0m T1-TOP: ns_core healthy
+[0;32m[✓][0m T1-TOP: integrity healthy
+[0;32m[✓][0m T1-TOP: Complete
