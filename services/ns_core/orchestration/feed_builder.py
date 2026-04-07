@@ -169,6 +169,7 @@ def build_feed() -> dict:
     return {
         "status": "ok",
         "cards_inserted": len(inserted),
+        "feed_count": len(inserted),
         "cards": inserted,
         "receipt_hash": receipt_hash,
         "state": {

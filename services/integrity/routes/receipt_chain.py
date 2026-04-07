@@ -153,12 +153,14 @@ async def append_receipt(req: ReceiptRequest):
 
 
 @router.get("/verify")
+@router.post("/verify")
 async def verify_endpoint():
     """Validate entire receipt chain — recomputes every hash."""
     try:
         result = verify_chain()
         if result["status"] == "broken":
             raise HTTPException(status_code=409, detail=result)
+        result["chain_valid"] = True
         return result
     except HTTPException:
         raise
