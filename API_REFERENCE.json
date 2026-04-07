@@ -1,0 +1,24 @@
+{
+  "ns_core": {
+    "GET /healthz": "Service health",
+    "GET /violet/status": "Violet state (mode, voice, chat)",
+    "GET /boot/status": "Boot readiness and bindings",
+    "POST /feed/build": "Generate feed from current state",
+    "GET /feed": "Retrieve current feed items"
+  },
+  "alexandria": {
+    "GET /healthz": "Service health",
+    "GET /atoms": "List all atoms in memory",
+    "GET /edges": "List all graph edges",
+    "POST /documents/parse": "Parse document into source",
+    "POST /atoms/build": "Build atoms from sources",
+    "POST /graph/build": "Build edges from atoms"
+  },
+  "integrity": {
+    "GET /healthz": "Service health",
+    "GET /integrity/verify": "Verify receipt chain (GET)",
+    "POST /integrity/verify": "Verify receipt chain (POST)",
+    "GET /integrity/chain": "View full receipt chain",
+    "POST /integrity/receipt": "Append receipt to chain"
+  }
+}

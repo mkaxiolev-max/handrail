@@ -1,8 +1,9 @@
 {
-  "parse": "28ms",
-  "atoms_build": "21ms",
+  "parse": "18ms",
+  "atoms_build": "17ms",
   "graph_build": "48ms",
-  "feed_build": "25ms",
-  "integrity_verify": "19ms",
-  "violet_status": "14ms"
+  "feed_build": "24ms",
+  "integrity_verify": "16ms",
+  "violet_status": "12ms",
+  "boot_status": "11ms"
 }

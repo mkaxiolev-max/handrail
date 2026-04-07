@@ -1,7 +1,6 @@
 {
-  "timestamp": 1775605490.9914382,
+  "timestamp": 1775605624.92106,
   "containers": {
-    "<no": "unknown",
     "axiolev_runtime-alexandria-1": "healthy",
     "axiolev_runtime-canon-1": "healthy",
     "axiolev_runtime-integrity-1": "healthy",
@@ -13,15 +12,20 @@
   },
   "endpoints": {
     ":9000": "13ms",
-    ":9001": "12ms",
+    ":9001": "11ms",
     ":9002": "11ms",
     ":9003": "11ms",
-    ":9004": "10ms",
-    ":9005": "10ms"
+    ":9004": "11ms",
+    ":9005": "11ms"
   },
-  "database": {},
+  "database": {
+    "atoms": 51,
+    "edges": 425,
+    "feed_items": 50,
+    "receipts": 13
+  },
   "git": {
-    "commit": "9a2ae42",
+    "commit": "e70f6cf",
     "branch": "boot-operational-closure",
     "clean": true
   }
