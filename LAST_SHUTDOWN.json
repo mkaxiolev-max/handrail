@@ -1,26 +1,17 @@
 {
-  "shutdown_at": "2026-04-06T21:59:49Z",
-  "commit": "063f85fb743b643fcb42b21569d19b3eac822430",
-  "tag": "ns-infinity-founder-grade-1-g063f85f",
-  "milestones_complete": [
-    "tight_isr_object",
-    "violet_identity_endpoint",
-    "violet_status_endpoint",
-    "corpus_watch",
-    "sys_health_no_deadlock",
-    "ui_governance_violet_card",
-    "ui_engine_room_live_chambers",
-    "ui_voice_completeness_card",
-    "anthropic_haiku_per_turn",
-    "10_proofs_passing",
-    "telephony_bridge_9003"
-  ],
-  "ring5_gates": {
-    "stripe_live": false,
-    "domain_dns": false,
-    "price_ids": false,
-    "yubikey_slot2": false,
-    "launch_sequence": false
+  "timestamp": "2026-04-07T21:23:32Z",
+  "status": "operational_closure_complete",
+  "tag": "ns-first-operational-closure",
+  "branch": "boot-operational-closure",
+  "commit": "103b192 feat: atom factory + graph builder with founder arcs",
+  "validation": {
+    "containers": "7/7",
+    "services_healthy": ["9000","9001","9002","9004","9005"],
+    "postgres": true,
+    "ollama_models": 3,
+    "feed_cards": 15,
+    "receipt_chain_length": 6,
+    "chain_verified": true
   },
-  "next_session": "bash ~/axiolev_runtime/resume_ns.sh"
+  "note": "NS First Operational Closure — feed generation + immutable receipt chain complete"
 }
