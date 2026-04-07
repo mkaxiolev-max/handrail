@@ -7,9 +7,10 @@ services:
       POSTGRES_USER: ns
       POSTGRES_PASSWORD: ns_secure_pwd
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./shared/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "ns"]
       interval: 10s
