@@ -1,0 +1,28 @@
+{
+  "timestamp": 1775605490.9914382,
+  "containers": {
+    "<no": "unknown",
+    "axiolev_runtime-alexandria-1": "healthy",
+    "axiolev_runtime-canon-1": "healthy",
+    "axiolev_runtime-integrity-1": "healthy",
+    "axiolev_runtime-model_router-1": "healthy",
+    "axiolev_runtime-ns_core-1": "healthy",
+    "axiolev_runtime-postgres-1": "healthy",
+    "axiolev_runtime-redis-1": "healthy",
+    "axiolev_runtime-violet-1": "healthy"
+  },
+  "endpoints": {
+    ":9000": "13ms",
+    ":9001": "12ms",
+    ":9002": "11ms",
+    ":9003": "11ms",
+    ":9004": "10ms",
+    ":9005": "10ms"
+  },
+  "database": {},
+  "git": {
+    "commit": "9a2ae42",
+    "branch": "boot-operational-closure",
+    "clean": true
+  }
+}

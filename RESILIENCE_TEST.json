@@ -1,0 +1,7 @@
+{
+  "feed_build": "ok",
+  "integrity_verify": "ok",
+  "violet_status": "missing_key",
+  "boot_status": "missing_key",
+  "unreachable_port_fails_gracefully": "ok"
+}

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-04-07T23:44:51.630775+00:00",
+  "commit": "9a2ae42",
+  "containers_healthy": "8/9",
+  "endpoints_live": 6,
+  "performance": {
+    "parse": "28ms",
+    "atoms_build": "21ms",
+    "graph_build": "48ms",
+    "feed_build": "25ms",
+    "integrity_verify": "19ms",
+    "violet_status": "14ms"
+  },
+  "resilience": {
+    "feed_build": "ok",
+    "integrity_verify": "ok",
+    "violet_status": "missing_key",
+    "boot_status": "missing_key",
+    "unreachable_port_fails_gracefully": "ok"
+  },
+  "database": {},
+  "status": "FULLY_OPTIMIZED_FOUNDER_READY"
+}
