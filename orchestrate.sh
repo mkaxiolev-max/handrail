@@ -75,7 +75,11 @@ t4_finalize() {
     { task "T4-RED: Running final validation..."
       cd "$RUNTIME_DIR"
       sleep 4
-      [ -f "scripts/final_validation.sh" ] && bash scripts/final_validation.sh 2>&1 | tail -30 || warn "final_validation.sh not found — skipping"
+      if [ -f "scripts/final_validation.sh" ]; then
+        bash scripts/final_validation.sh 2>&1 | tail -30 || true
+      else
+        warn "final_validation.sh not found — skipping"
+      fi
       log "Creating LAST_SHUTDOWN.json..."
       GIT_HASH=$(git rev-parse --short HEAD)
       cat > LAST_SHUTDOWN.json << SHUTDOWN_EOF

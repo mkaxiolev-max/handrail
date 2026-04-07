@@ -1,0 +1,17 @@
+[0;34m[TASK][0m T1-TOP: Starting service rebuild...
+[0;32m[14:34:43][0m Building ns_core and integrity...
+#1 DONE 0.0s
+#2 DONE 0.0s
+#3 DONE 0.0s
+#4 DONE 0.4s
+#5 DONE 0.0s
+#6 DONE 0.0s
+#7 DONE 0.0s
+#8 DONE 0.0s
+#14 DONE 0.1s
+#15 DONE 0.1s
+#16 DONE 0.0s
+#17 DONE 0.0s
+ axiolev_runtime-ns_core  Built
+ axiolev_runtime-integrity  Built
+[0;32m[14:34:44][0m Starting services...

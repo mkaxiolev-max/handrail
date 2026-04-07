@@ -1,7 +1,7 @@
 [0;34m[TASK][0m T4-RED: Running final validation...
 
 [ CONTAINERS ]
-  ✗ Containers: only 5/7 running
+  ✗ Containers: only 6/7 running
 
 [ SERVICE HEALTH ]
   ✗ :9000 /healthz → no-response
@@ -23,18 +23,12 @@
   ✓ Receipt chain verified: 6 receipts, unbroken
 
 [ GIT ]
-  ✓ Git: 5152d40 feat: feed generation + immutable receipt chain complete
+  ✓ Git: d51a150 feat: NS∞ first operational closure complete — all 5 layers live
 
 [ SUMMARY ]
   Passed: 8 / 11
 
   ⚠ 3 check(s) failed — review above before tagging
-[1;33m[⚠][0m final_validation.sh not found — skipping
-[0;32m[14:33:57][0m Creating LAST_SHUTDOWN.json...
+[0;32m[14:34:48][0m Creating LAST_SHUTDOWN.json...
 [0;32m[✓][0m LAST_SHUTDOWN.json created
-[0;32m[14:33:57][0m Git operations...
- create mode 100644 services/alexandria/ingest/file_ingest.py
- create mode 100644 services/alexandria/ingest/source_scanner.py
- create mode 100644 services/alexandria/routes/ingest.py
-Updated tag 'ns-first-operational-closure' (was 5152d40)
-[0;32m[✓][0m T4-RED: Complete
+[0;32m[14:34:48][0m Git operations...
