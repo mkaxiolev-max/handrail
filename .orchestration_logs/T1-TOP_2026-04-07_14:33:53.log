@@ -1,0 +1,27 @@
+[0;34m[TASK][0m T1-TOP: Starting service rebuild...
+[0;32m[14:33:53][0m Building ns_core and integrity...
+#1 DONE 0.0s
+#2 DONE 0.0s
+#3 DONE 0.0s
+#4 DONE 0.7s
+#5 DONE 0.0s
+#6 DONE 0.0s
+#7 DONE 0.0s
+#8 DONE 0.0s
+#14 DONE 0.1s
+#15 DONE 0.1s
+#16 DONE 0.0s
+#17 DONE 0.0s
+ axiolev_runtime-integrity  Built
+ axiolev_runtime-ns_core  Built
+[0;32m[14:33:54][0m Starting services...
+ Container axiolev_runtime-redis-1  Recreated
+ Container axiolev_runtime-ns_core-1  Recreate
+ Container axiolev_runtime-integrity-1  Recreated
+ Container axiolev_runtime-ns_core-1  Recreated
+ Container axiolev_runtime-redis-1  Starting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-integrity-1  Starting
+ Container axiolev_runtime-integrity-1  Started
+Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint axiolev_runtime-redis-1 (317896de2dc5e83e640c9c7c9c76c898f3eb49e2b1647c925015696df54d513a): Bind for 0.0.0.0:6379 failed: port is already allocated

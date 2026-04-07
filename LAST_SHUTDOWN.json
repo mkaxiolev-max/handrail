@@ -1,17 +1,9 @@
 {
-  "timestamp": "2026-04-07T21:23:32Z",
-  "status": "operational_closure_complete",
+  "timestamp": "2026-04-07T21:33:57Z",
   "tag": "ns-first-operational-closure",
-  "branch": "boot-operational-closure",
-  "commit": "103b192 feat: atom factory + graph builder with founder arcs",
-  "validation": {
-    "containers": "7/7",
-    "services_healthy": ["9000","9001","9002","9004","9005"],
-    "postgres": true,
-    "ollama_models": 3,
-    "feed_cards": 15,
-    "receipt_chain_length": 6,
-    "chain_verified": true
-  },
-  "note": "NS First Operational Closure — feed generation + immutable receipt chain complete"
+  "status": "operational_closure_complete",
+  "systems": {"boot":"complete","parsing":"complete","memory":"complete","routing":"complete","output":"complete"},
+  "containers": 7,
+  "git_hash": "5152d40",
+  "branch": "boot-operational-closure"
 }
