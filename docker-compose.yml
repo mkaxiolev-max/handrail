@@ -1,72 +1,121 @@
+version: '3.9'
 services:
-  handrail:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ns
+      POSTGRES_USER: ns
+      POSTGRES_PASSWORD: ns_secure_pwd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "ns"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ns_core:
     build:
       context: .
-      dockerfile: services/handrail/Dockerfile
-    environment:
-      HR_WORKSPACE: ${HR_WORKSPACE}
-    ports:
-      - "8011:8011"
-    volumes:
-      - ${HR_WORKSPACE}:${HR_WORKSPACE}
-      - /var/run/docker.sock:/var/run/docker.sock
-      - .:${HR_WORKSPACE}
-      - /Volumes/NSExternal:/Volumes/NSExternal
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8011/healthz')\""]
-      interval: 2s
-      timeout: 3s
-      retries: 30
-      start_period: 5s
-
-  ns:
-    build: ./services/ns
+      dockerfile: services/ns_core/Dockerfile
     ports:
       - "9000:9000"
-    env_file:
-      - .env
     environment:
-      HANDRAIL_BASE_URL: "http://handrail:8011"
-    volumes:
-      - ./.runs:/app/.runs
-      - /Volumes/NSExternal:/Volumes/NSExternal
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      REDIS_URL: redis://redis:6379
     depends_on:
-      handrail:
+      postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:9000/healthz')\""]
-      interval: 2s
-      timeout: 3s
-      retries: 30
-      start_period: 10s
-
-  atomlex:
-    build:
-      context: .
-      dockerfile: services/atomlex/Dockerfile
-    environment:
-      HR_WORKSPACE: ${HR_WORKSPACE}
-    ports:
-      - "8080:8080"
-    volumes:
-      - /Volumes/NSExternal:/Volumes/NSExternal:ro
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
-      interval: 30s
+      test: ["CMD", "curl", "-f", "http://localhost:9000/healthz"]
+      interval: 10s
       timeout: 5s
       retries: 3
 
-  continuum:
-    build: ./services/continuum
+  alexandria:
+    build:
+      context: .
+      dockerfile: services/alexandria/Dockerfile
     ports:
-      - "8788:8788"
+      - "9001:9001"
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      ALEXANDRIA_SSD: /Volumes/NSExternal
     depends_on:
-      ns:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  model_router:
+    build:
+      context: .
+      dockerfile: services/model_router/Dockerfile
+    ports:
+      - "9002:9002"
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+    depends_on:
+      postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8788/healthz')\""]
-      interval: 2s
-      timeout: 3s
-      retries: 30
-      start_period: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:9002/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  canon:
+    build:
+      context: .
+      dockerfile: services/canon/Dockerfile
+    ports:
+      - "9004:9004"
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9004/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  integrity:
+    build:
+      context: .
+      dockerfile: services/integrity/Dockerfile
+    ports:
+      - "9005:9005"
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9005/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata:
