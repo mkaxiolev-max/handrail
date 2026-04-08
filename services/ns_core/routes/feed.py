@@ -62,16 +62,28 @@ async def push_event(event: FeedEvent):
 
 
 @router.get("/")
+@router.get("")
 async def get_feed(limit: int = 50):
+    """Return feed_items (generated cards) for the UI timeline."""
     try:
         with _conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id, kind, payload, source, ts FROM feed_events ORDER BY ts DESC LIMIT %s",
+                    "SELECT id, type, payload, created_at FROM feed_items ORDER BY created_at DESC LIMIT %s",
                     (limit,)
                 )
                 rows = cur.fetchall()
-        return {"events": [{"id": r[0], "kind": r[1], "payload": r[2], "source": r[3], "ts": str(r[4])} for r in rows]}
+        items = [
+            {
+                "id": str(r[0]),
+                "type": r[1],
+                "label": (r[2] or {}).get("label", r[1]) if isinstance(r[2], dict) else r[1],
+                "payload": r[2],
+                "ts": str(r[3]),
+            }
+            for r in rows
+        ]
+        return {"events": items, "items": items}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

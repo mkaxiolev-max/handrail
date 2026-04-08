@@ -31,16 +31,27 @@ async def create_atom(atom: Atom):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/")
+@router.get("")
 async def list_atoms(limit: int = 50):
     try:
         with _conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id, type, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s",
+                    "SELECT id, type, content, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s",
                     (limit,)
                 )
                 rows = cur.fetchall()
-        return {"atoms": [{"id": str(r[0]), "type": r[1], "source_id": str(r[2]) if r[2] else None, "created_at": str(r[3])} for r in rows]}
+        return {"atoms": [
+            {
+                "id": str(r[0]),
+                "type": r[1],
+                "label": (r[2][:80] if r[2] else None) or r[1],
+                "content": r[2],
+                "source_id": str(r[3]) if r[3] else None,
+                "created_at": str(r[4]),
+            }
+            for r in rows
+        ]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
