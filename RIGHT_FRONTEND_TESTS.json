@@ -1,0 +1,8 @@
+{
+  "system_now": true,
+  "violet_status": true,
+  "boot_status": true,
+  "intent_execute": true,
+  "feed_items": true,
+  "atoms": true
+}

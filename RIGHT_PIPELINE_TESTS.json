@@ -1,0 +1,7 @@
+{
+  "parse": true,
+  "atoms_build": true,
+  "edges_build": true,
+  "feed_build": true,
+  "chain_verify": true
+}
