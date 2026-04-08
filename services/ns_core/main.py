@@ -120,3 +120,67 @@ async def intent_execute(body: dict):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9000)
+
+from isr_v2 import create_default_isr, FounderMode
+from violet_renderer import VioletRenderer
+from voice_state_machine import VoiceSession, VoiceState, VOICE_STATE_UI
+import uuid as _uuid
+
+_renderer = VioletRenderer()
+_voice_sessions: dict = {}
+
+@app.post("/violet/render")
+async def violet_render(body: dict):
+    try:
+        decision = body.get("decision", {})
+        mode_str = body.get("mode", "founder_strategic")
+        isr = create_default_isr(mode=FounderMode(mode_str))
+        return _renderer.render(decision, isr)
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+@app.get("/violet/isr")
+async def violet_isr_endpoint():
+    isr = create_default_isr()
+    return isr.to_dict()
+
+@app.post("/voice/session/create")
+async def voice_session_create(body: dict = {}):
+    session_id = str(_uuid.uuid4())
+    session = VoiceSession(session_id=session_id, state=VoiceState.READY)
+    _voice_sessions[session_id] = session
+    return {"status": "ok", "session_id": session_id, "state": session.state.value}
+
+@app.get("/voice/session/{session_id}")
+async def voice_session_get(session_id: str):
+    session = _voice_sessions.get(session_id)
+    if not session:
+        return {"status": "error", "detail": "Session not found"}
+    return {
+        "status": "ok",
+        "session_id": session_id,
+        "state": session.state.value,
+        "transcript_partial": session.transcript_partial,
+        "transcript_final": session.transcript_final,
+        "latency_ms": session.latency_ms,
+        "ui": VOICE_STATE_UI.get(session.state, {})
+    }
+
+@app.post("/voice/session/{session_id}/transition")
+async def voice_session_transition(session_id: str, body: dict):
+    session = _voice_sessions.get(session_id)
+    if not session:
+        return {"status": "error", "detail": "Session not found"}
+    new_state = VoiceState(body.get("state", "ready"))
+    if session.transition(new_state):
+        return {"status": "ok", "state": session.state.value}
+    return {"status": "error", "detail": f"Invalid transition {session.state} -> {new_state}"}
+
+@app.post("/voice/session/{session_id}/interrupt")
+async def voice_session_interrupt(session_id: str):
+    session = _voice_sessions.get(session_id)
+    if session and session.interruptible:
+        session.transition(VoiceState.INTERRUPTED)
+        return {"status": "ok", "state": "interrupted"}
+    return {"status": "error", "detail": "Cannot interrupt"}
+

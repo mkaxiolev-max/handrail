@@ -30,5 +30,4 @@ function App() {
     </SystemProvider>
   )
 }
-
 export default App
