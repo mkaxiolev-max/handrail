@@ -117,10 +117,6 @@ async def intent_execute(body: dict):
         return {"status": "ok", "summary": f"Intent logged: {intent[:80]}", "mode": mode}
 
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=9000)
-
 from isr_v2 import create_default_isr, FounderMode
 from violet_renderer import VioletRenderer
 from voice_state_machine import VoiceSession, VoiceState, VOICE_STATE_UI
@@ -184,3 +180,7 @@ async def voice_session_interrupt(session_id: str):
         return {"status": "ok", "state": "interrupted"}
     return {"status": "error", "detail": "Cannot interrupt"}
 
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=9000)

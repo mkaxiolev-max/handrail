@@ -47,7 +47,7 @@ class InteractionStateV2:
         if self.current_mode == FounderMode.COMMAND:
             return ResponseShape.COMMAND_ACK if self.desired_directness == "high" else ResponseShape.DIRECT_THEN_DETAIL
         elif self.current_mode == FounderMode.STRATEGIC:
-            return ResponseShape.STRATEGIC if self.current_pressure == "low" else ResponseShape.DIRECT_THEN_DETAIL
+            return ResponseShape.DIRECT_THEN_DETAIL if self.current_pressure == "high" else ResponseShape.STRATEGIC
         elif self.current_mode == FounderMode.REFLECTIVE:
             return ResponseShape.REFLECTIVE
         elif self.current_mode == FounderMode.SIDECAR:
