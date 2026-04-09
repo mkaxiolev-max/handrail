@@ -6,7 +6,7 @@ PROJECTION_CONTRACTS: dict[str, list[str]] = {
     "handrail:exec":         ["execution", "policy", "sensitivity", "exposure", "temporal"],
     "alexandria:ingest":     ["memory", "sensitivity", "temporal"],
     "alexandria:retrieve":   ["memory", "epistemic", "temporal", "sensitivity"],
-    "storytime:user":        ["narrative", "temporal", "exposure"],
+    "storytime:user":        ["narrative", "temporal"],
     "storytime:audit":       ["*"],
     "storytime:developer":   ["*"],
     "adapter:task":          ["execution"],
