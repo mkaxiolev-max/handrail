@@ -32,13 +32,13 @@ async def create_atom(atom: Atom):
 
 @router.get("/")
 @router.get("")
-async def list_atoms(limit: int = 50):
+async def list_atoms(limit: int = 100, offset: int = 0):
     try:
         with _conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "SELECT id, type, content, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s",
-                    (limit,)
+                    "SELECT id, type, content, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s OFFSET %s",
+                    (limit, offset)
                 )
                 rows = cur.fetchall()
         return {"atoms": [
@@ -130,13 +130,13 @@ async def ingest_text(payload: IngestTextIn):
 
 
 @router.get("/list")
-async def list_atoms_full(limit: int = 50):
+async def list_atoms_full(limit: int = 100, offset: int = 0):
     try:
         conn = _conn()
         cur = conn.cursor()
         cur.execute(
-            "SELECT id, type, content, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s",
-            (limit,)
+            "SELECT id, type, content, source_id, created_at FROM atoms ORDER BY created_at DESC LIMIT %s OFFSET %s",
+            (limit, offset)
         )
         rows = cur.fetchall()
         cur.close()
