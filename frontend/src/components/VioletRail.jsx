@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
+import TrustStrip from './trust/TrustStrip'
 
 const VioletRail = ({ systemState }) => {
   const [input, setInput] = useState('')
@@ -22,11 +23,24 @@ const VioletRail = ({ systemState }) => {
         intent: text,
         mode: systemState?.violet?.mode || 'founder_strategic'
       })
+      const d = res.data
       setTranscript(prev => [...prev, {
         role: 'violet',
-        text: res.data?.response || res.data?.summary || 'Executed.',
+        text: d?.result?.summary || d?.response || d?.summary || 'Executed.',
         ts: new Date().toLocaleTimeString(),
-        receipt: res.data?.receipt_hash
+        envelope: {
+          receiptHash: d?.receipt_hash || '',
+          chainVerified: d?.chain_verified ?? false,
+          mode: d?.mode || 'unknown',
+          pressure: d?.pressure,
+          canonVersion: d?.canon_version,
+          canonHash: d?.canon_hash,
+          memoryAtomsWritten: d?.memory_atoms_written || 0,
+          memoryAtomsQueried: d?.memory_atoms_queried || 0,
+          feedItemsAdded: d?.feed_items_added || 0,
+          responseShape: d?.response_shape,
+          voiceSessionId: d?.voice_session_id,
+        }
       }])
     } catch (err) {
       setTranscript(prev => [...prev, { role: 'error', text: err.message, ts: new Date().toLocaleTimeString() }])
@@ -40,11 +54,13 @@ const VioletRail = ({ systemState }) => {
       <div className="h-36 overflow-y-auto mb-3 space-y-1.5 text-sm bg-gray-900 rounded p-3">
         {transcript.length === 0 && <div className="text-gray-500 italic text-xs">Talk to Violet...</div>}
         {transcript.map((msg, i) => (
-          <div key={i} className={`flex gap-2 text-xs ${msg.role === 'violet' ? 'text-violet-300' : msg.role === 'error' ? 'text-red-400' : 'text-gray-300'}`}>
-            <span className="text-gray-600 shrink-0 w-16">{msg.ts}</span>
-            <span className="text-gray-500 shrink-0 w-12">{msg.role}:</span>
-            <span className="break-words min-w-0">{msg.text}</span>
-            {msg.receipt && <span className="text-gray-600 shrink-0">[{msg.receipt.slice(0,8)}]</span>}
+          <div key={i} className={`text-xs ${msg.role === 'violet' ? 'text-violet-300' : msg.role === 'error' ? 'text-red-400' : 'text-gray-300'}`}>
+            <div className="flex gap-2">
+              <span className="text-gray-600 shrink-0 w-16">{msg.ts}</span>
+              <span className="text-gray-500 shrink-0 w-12">{msg.role}:</span>
+              <span className="break-words min-w-0">{msg.text}</span>
+            </div>
+            {msg.envelope && <TrustStrip {...msg.envelope} />}
           </div>
         ))}
         <div ref={bottomRef} />

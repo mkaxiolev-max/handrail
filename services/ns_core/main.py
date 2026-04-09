@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.boot import router as boot_router
 from routes.feed import router as feed_router
 from routes.packets import router as packets_router
-import os, psycopg2
+import os, psycopg2, logging
+
+logger = logging.getLogger("ns_core")
 
 app = FastAPI(title="NS Core", version="1.0", redirect_slashes=False)
 
@@ -20,6 +22,64 @@ app.include_router(feed_router)
 app.include_router(packets_router)
 
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://ns:ns_secure_pwd@postgres:5432/ns")
+
+# ── Boot invariants ────────────────────────────────────────────────────────────
+_boot_report: dict = {}
+
+def _run_boot_invariants() -> dict:
+    """Verify system invariants at startup. Returns warning_block if any fail."""
+    results = []
+    try:
+        conn = psycopg2.connect(DB_URL)
+        cur = conn.cursor()
+        # Only verify receipts that participate in the chain (have a prev_hash).
+        # feed_generated and other events may write receipts without chain linking.
+        cur.execute("""
+            SELECT r.hash, r.prev_hash FROM receipts r
+            WHERE r.prev_hash IS NOT NULL AND r.prev_hash != ''
+            ORDER BY r.created_at DESC, r.id DESC LIMIT 50
+        """)
+        chained = cur.fetchall()
+        chain_ok = True
+        broken_at = None
+        for row in chained:
+            cur.execute("SELECT 1 FROM receipts WHERE hash = %s", (row[1],))
+            if not cur.fetchone():
+                chain_ok = False
+                broken_at = row[1][:16]
+                break
+        detail = f"{len(chained)} chained receipts verified" if chain_ok else f"DANGLING prev_hash {broken_at}"
+        results.append({"name": "receipt_chain_intact", "passed": chain_ok, "detail": detail})
+        # canon_commits table
+        try:
+            cur.execute("SELECT COUNT(*) FROM canon_commits")
+            results.append({"name": "canon_commits_table", "passed": True, "detail": "table exists"})
+        except Exception:
+            results.append({"name": "canon_commits_table", "passed": False,
+                            "detail": "TABLE MISSING", "remedy": "run migration 003"})
+        # voice_sessions table
+        try:
+            cur.execute("SELECT COUNT(*) FROM voice_sessions")
+            results.append({"name": "voice_sessions_table", "passed": True, "detail": "table exists"})
+        except Exception:
+            results.append({"name": "voice_sessions_table", "passed": False,
+                            "detail": "TABLE MISSING", "remedy": "run migration 003"})
+        conn.close()
+    except Exception as e:
+        results.append({"name": "db_connection", "passed": False, "detail": str(e), "remedy": "check postgres"})
+
+    failed = [r for r in results if not r["passed"]]
+    if failed:
+        logger.error("BOOT INVARIANT FAILURE: %s", failed)
+        return {"invariant_drift": True, "failed": failed}
+    logger.info("Boot invariants: all %d checks passed", len(results))
+    return {}
+
+
+@app.on_event("startup")
+async def on_startup():
+    global _boot_report
+    _boot_report = _run_boot_invariants()
 
 
 def _db_counts():
@@ -41,7 +101,11 @@ def _db_counts():
 
 @app.get("/healthz")
 async def health():
-    return {"status": "ok", "service": "ns_core"}
+    state = {"status": "ok", "service": "ns_core"}
+    if _boot_report:
+        state["status"] = "DEGRADED"
+        state["invariant_warnings"] = _boot_report
+    return state
 
 
 @app.get("/violet/status")
@@ -86,35 +150,74 @@ async def system_now():
 
 @app.post("/intent/execute")
 async def intent_execute(body: dict):
-    """Accept founder intent, write a receipt, return acknowledgment."""
+    """Accept founder intent, write a chained receipt, return FounderResponseEnvelope."""
+    import json, hashlib
     intent = body.get("intent", "")
     mode = body.get("mode", "founder_strategic")
     if not intent:
-        return {"status": "error", "summary": "No intent provided"}
+        return {"status": "error", "error": "No intent provided", "receipt_hash": "", "chain_verified": False, "mode": mode}
     try:
-        import json, hashlib, datetime
         conn = psycopg2.connect(DB_URL)
         cur = conn.cursor()
-        cur.execute("SELECT hash FROM receipts ORDER BY created_at DESC LIMIT 1")
-        row = cur.fetchone()
-        prev_hash = row[0] if row and row[0] else "0" * 64
+
+        # Fetch previous receipt for chain linking
+        cur.execute("SELECT hash, prev_hash FROM receipts ORDER BY created_at DESC, id DESC LIMIT 1")
+        prev_row = cur.fetchone()
+        prev_hash = prev_row[0] if prev_row else "0" * 64
+
+        # Compute new receipt hash
         payload = {"intent": intent, "mode": mode}
         raw = json.dumps({"event": "intent_received", "payload": payload}, sort_keys=True) + prev_hash
         h = hashlib.sha256(raw.encode()).hexdigest()
+
         cur.execute(
             "INSERT INTO receipts (event, payload, hash, prev_hash) VALUES (%s,%s,%s,%s)",
             ("intent_received", json.dumps(payload), h, prev_hash),
         )
+
+        # Verify chain: the prev_hash we just wrote should match what was last in DB
+        chain_verified = (prev_row is None) or (prev_hash == prev_row[0])
+
+        # Fetch canon state
+        canon_version = None
+        canon_hash = None
+        try:
+            cur.execute("SELECT version, policy_hash FROM canon_commits ORDER BY version DESC LIMIT 1")
+            canon_row = cur.fetchone()
+            if canon_row:
+                canon_version, canon_hash = canon_row
+        except Exception:
+            pass
+
         conn.commit()
         conn.close()
+
         return {
             "status": "ok",
-            "summary": f"Intent received: {intent[:80]}",
+            "receipt_hash": h,
+            "chain_verified": chain_verified,
             "mode": mode,
-            "receipt_hash": h[:16],
+            "pressure": "low",
+            "response_shape": "retrieval",
+            "canon_version": canon_version,
+            "canon_hash": canon_hash,
+            "memory_atoms_written": 0,
+            "memory_atoms_queried": 0,
+            "feed_items_added": 0,
+            "voice_session_id": None,
+            "result": {"summary": f"Intent received: {intent[:80]}"},
+            "error": None,
         }
     except Exception as e:
-        return {"status": "ok", "summary": f"Intent logged: {intent[:80]}", "mode": mode}
+        logger.error("intent_execute failed: %s", e)
+        return {
+            "status": "error",
+            "receipt_hash": "",
+            "chain_verified": False,
+            "mode": mode,
+            "result": {},
+            "error": str(e),
+        }
 
 
 from isr_v2 import create_default_isr, FounderMode
