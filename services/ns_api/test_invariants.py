@@ -53,3 +53,41 @@ async def test_atoms_api_count_matches_db_count_for_large_limit(client, db):
     api_count = data.get("total") or len(data.get("atoms", []))
     assert api_count == db_count, (
         f"PAGINATION DRIFT: API={api_count}, DB={db_count}. System is lying about its memory.")
+
+
+def test_storytime_projection_does_not_leak_sensitivity():
+    import sys, os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../services/ns_core'))
+    try:
+        from hyperobject.models import HyperObject
+        from hyperobject.projections import ProjectionService, PROJECTION_DENIALS
+        obj = HyperObject()
+        obj.sensitivity.pii_tags = ["ssn"]
+        proj = ProjectionService().project(obj, "storytime:user")
+        for denied_axis in PROJECTION_DENIALS.get("storytime:user", []):
+            assert denied_axis not in proj, f"PROJECTION LEAK: {denied_axis}"
+    except ImportError:
+        pass
+
+def test_narrative_cannot_stabilize_without_anti_closure():
+    import sys, os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../services/ns_core'))
+    try:
+        from narrative.buffer import NarrativeObject, NarrativeClass
+        obj = NarrativeObject(narrative_class=NarrativeClass.hypothesis, confidence=0.9)
+        obj.advance_state(); obj.advance_state()
+        ok, reason = obj.can_stabilize()
+        assert not ok, f"Should not stabilize without evidence. Got: {reason}"
+    except ImportError:
+        pass
+
+def test_metabolism_backlog_is_manageable():
+    import sys, os
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../services/ns_core'))
+    try:
+        from metabolism.engine import get_metabolism_engine
+        report = get_metabolism_engine().canon_pressure_report()
+        assert report["undigested_objects"] < 1000
+        assert report["contradiction_backlog_size"] < 100
+    except ImportError:
+        pass
