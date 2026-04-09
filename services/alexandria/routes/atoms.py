@@ -1,8 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-import os, psycopg2
+import os, psycopg2, logging
 from graph.atom_factory import extract_atoms_from_text, detect_founder_arcs
+
+logger = logging.getLogger("alexandria.atoms")
+
+# Wire 3: EventSpine — emit atom events to the Alexandria event spine
+try:
+    from institution.events import get_event_spine as _get_spine
+    _SPINE_AVAILABLE = True
+except ImportError:
+    _SPINE_AVAILABLE = False
 
 router = APIRouter(prefix="/atoms", tags=["atoms"])
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://ns:ns_secure_pwd@postgres:5432/ns")
@@ -26,7 +35,20 @@ async def create_atom(atom: Atom):
                 )
                 row = cur.fetchone()
             conn.commit()
-        return {"status": "ok", "id": str(row[0])}
+        atom_id = str(row[0])
+
+        # Wire 3: Emit atom_ingested event to Alexandria EventSpine
+        if _SPINE_AVAILABLE:
+            try:
+                _get_spine().append(
+                    "atom_ingested",
+                    {"entity_id": atom_id, "type": atom.type, "content_length": len(atom.content)},
+                    agent_id="alexandria:atoms_route",
+                )
+            except Exception as e:
+                logger.warning("EventSpine emit failed: %s", e)
+
+        return {"status": "ok", "id": atom_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

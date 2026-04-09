@@ -7,6 +7,20 @@ import os, psycopg2, logging
 
 logger = logging.getLogger("ns_core")
 
+# ── Architecture modules ───────────────────────────────────────────────────────
+try:
+    from hyperobject.models import HyperObject, MemoryAxis, EpistemicAxis
+    from hyperobject.store import get_store as _get_ho_store
+    from narrative.buffer import NarrativeBuffer, NarrativeObject, NarrativeClass
+    from metabolism.engine import get_metabolism_engine as _get_metabolism
+    from device.router import get_device_router as _get_device_router
+    _ARCH_MODULES_LOADED = True
+except ImportError as _e:
+    logger.warning("Architecture modules not available: %s", _e)
+    _ARCH_MODULES_LOADED = False
+
+_narrative_buffer = NarrativeBuffer() if _ARCH_MODULES_LOADED else None
+
 app = FastAPI(title="NS Core", version="1.0", redirect_slashes=False)
 
 app.add_middleware(
@@ -80,6 +94,43 @@ def _run_boot_invariants() -> dict:
 async def on_startup():
     global _boot_report
     _boot_report = _run_boot_invariants()
+
+    if _ARCH_MODULES_LOADED:
+        # Wire 1: Sync HyperObjectStore from DB atoms
+        try:
+            store = _get_ho_store()
+            conn = psycopg2.connect(DB_URL)
+            cur = conn.cursor()
+            cur.execute("SELECT id, type, content, created_at FROM atoms ORDER BY created_at ASC LIMIT 500")
+            rows = cur.fetchall()
+            for row in rows:
+                ho = HyperObject()
+                ho.memory.index_refs = [str(row[0])]
+                ho.memory.promotion_state = "durable"
+                ho.execution.intent = row[1] or ""
+                ho.narrative.summary = (row[2] or "")[:120]
+                ho.temporal.created_at = row[3].isoformat() if row[3] else ho.temporal.created_at
+                store.create(ho)
+            conn.close()
+            logger.info("HyperObjectStore: synced %d atoms from DB", len(rows))
+        except Exception as e:
+            logger.warning("HyperObjectStore DB sync failed: %s", e)
+
+        # Wire 5: Device router boot publish
+        try:
+            router = _get_device_router()
+            router.boot_sequence_publish({"status": "ok", "endpoints": 6})
+            logger.info("DeviceRouter: boot_sequence_publish sent to all surfaces")
+        except Exception as e:
+            logger.warning("DeviceRouter boot publish failed: %s", e)
+
+        # Wire 2: Emit system_boot to MetabolismEngine (EventSpine gets receipt chain)
+        try:
+            engine = _get_metabolism()
+            obj = engine.intake("system_boot", "boot_event", {"db_url": "connected"})
+            logger.info("MetabolismEngine: system_boot event ingested (id=%s)", obj.object_id)
+        except Exception as e:
+            logger.warning("MetabolismEngine boot intake failed: %s", e)
 
 
 def _db_counts():
@@ -192,6 +243,34 @@ async def intent_execute(body: dict):
         conn.commit()
         conn.close()
 
+        # Wire 3: Intake intent into MetabolismEngine
+        metabolism_obj_id = None
+        if _ARCH_MODULES_LOADED:
+            try:
+                engine = _get_metabolism()
+                mobj = engine.intake(intent, "founder_intent", {"mode": mode})
+                metabolism_obj_id = mobj.object_id
+            except Exception:
+                pass
+
+        # Wire 4: NarrativeBuffer — wrap result in typed NarrativeObject
+        narrative_closure_risk = None
+        narrative_id = None
+        if _ARCH_MODULES_LOADED and _narrative_buffer is not None:
+            try:
+                nobj = NarrativeObject(
+                    narrative_class=NarrativeClass.observation,
+                    human_text=f"Intent received: {intent[:80]}",
+                    based_on=[h],           # receipt hash is evidence
+                    machine_packet={"receipt_hash": h, "mode": mode, "metabolism_id": metabolism_obj_id},
+                    confidence=0.8,
+                )
+                _narrative_buffer.add(nobj)
+                narrative_closure_risk = round(nobj.compute_closure_risk(), 3)
+                narrative_id = nobj.narrative_id
+            except Exception:
+                pass
+
         return {
             "status": "ok",
             "receipt_hash": h,
@@ -207,6 +286,11 @@ async def intent_execute(body: dict):
             "voice_session_id": None,
             "result": {"summary": f"Intent received: {intent[:80]}"},
             "error": None,
+            "narrative": {
+                "id": narrative_id,
+                "closure_risk": narrative_closure_risk,
+                "class": "observation",
+            } if narrative_id else None,
         }
     except Exception as e:
         logger.error("intent_execute failed: %s", e)
