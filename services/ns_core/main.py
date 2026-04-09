@@ -309,6 +309,31 @@ from violet_renderer import VioletRenderer
 from voice_state_machine import VoiceSession, VoiceState, VOICE_STATE_UI
 import uuid as _uuid
 
+# ── Track 2/3/7 modules ───────────────────────────────────────────────────────
+try:
+    from mac_adapter import get_mac_gate as _get_mac_gate
+    _MAC_GATE_AVAILABLE = True
+except ImportError:
+    _MAC_GATE_AVAILABLE = False
+
+try:
+    from ether import get_hic_engine as _get_hic_engine
+    _HIC_AVAILABLE = True
+except ImportError:
+    _HIC_AVAILABLE = False
+
+try:
+    from pdp import get_pdp as _get_pdp
+    _PDP_AVAILABLE = True
+except ImportError:
+    _PDP_AVAILABLE = False
+
+try:
+    from program_runtime import get_program_runtime as _get_program_runtime
+    _PROGRAM_RUNTIME_AVAILABLE = True
+except ImportError:
+    _PROGRAM_RUNTIME_AVAILABLE = False
+
 _renderer = VioletRenderer()
 _voice_sessions: dict = {}
 
@@ -366,6 +391,79 @@ async def voice_session_interrupt(session_id: str):
         session.transition(VoiceState.INTERRUPTED)
         return {"status": "ok", "state": "interrupted"}
     return {"status": "error", "detail": "Cannot interrupt"}
+
+
+@app.get("/hic/gates")
+async def hic_gates():
+    if not _HIC_AVAILABLE:
+        return {"status": "unavailable"}
+    engine = _get_hic_engine()
+    return {"status": "ok", "pattern_count": engine.pattern_count(), "gates": engine.gate_summary()}
+
+@app.post("/hic/evaluate")
+async def hic_evaluate(body: dict):
+    if not _HIC_AVAILABLE:
+        return {"status": "unavailable"}
+    text = body.get("text", "")
+    decision = _get_hic_engine().evaluate(text)
+    return {
+        "verdict": decision.verdict.value,
+        "gates_triggered": decision.gates_triggered,
+        "matched_count": len(decision.matched_patterns),
+        "rationale": decision.rationale,
+    }
+
+@app.post("/pdp/decide")
+async def pdp_decide(body: dict):
+    if not _PDP_AVAILABLE:
+        return {"status": "unavailable"}
+    from pdp import PDPRequest
+    req = PDPRequest(
+        subject=body.get("subject", "unknown"),
+        action=body.get("action", ""),
+        resource=body.get("resource", ""),
+        projection=body.get("projection"),
+        context=body.get("context", {}),
+    )
+    decision = _get_pdp().decide(req)
+    return {
+        "effect": decision.effect.value,
+        "reason": decision.reason,
+        "obligations": [{"type": o.obligation_type, "detail": o.detail} for o in decision.obligations],
+        "rules_matched": len(decision.matched_rules),
+    }
+
+@app.get("/programs")
+async def programs_list():
+    if not _PROGRAM_RUNTIME_AVAILABLE:
+        return {"status": "unavailable"}
+    runtime = _get_program_runtime()
+    return {"status": "ok", **runtime.summary(), "programs": [p.to_dict() for p in runtime.all()]}
+
+@app.post("/programs/route")
+async def programs_route(body: dict):
+    if not _PROGRAM_RUNTIME_AVAILABLE:
+        return {"status": "unavailable"}
+    intent = body.get("intent", "")
+    matches = _get_program_runtime().route_intent(intent)
+    return {
+        "status": "ok",
+        "intent": intent,
+        "matched": [{"program_id": p.program_id, "name": p.name, "namespace": p.namespace} for p in matches],
+    }
+
+@app.get("/mac_adapter/status")
+async def mac_adapter_status():
+    if not _MAC_GATE_AVAILABLE:
+        return {"status": "unavailable"}
+    gate = _get_mac_gate()
+    return {
+        "status": "ok",
+        "allowed_capabilities": list(__import__("mac_adapter.gate", fromlist=["MAC_ALLOWED_CAPABILITIES"]).MAC_ALLOWED_CAPABILITIES),
+        "escalation_required": list(__import__("mac_adapter.gate", fromlist=["MAC_ESCALATION_REQUIRED"]).MAC_ESCALATION_REQUIRED),
+        "receipts_issued": len(gate.receipts()),
+        "denied_count": gate.denied_count(),
+    }
 
 
 if __name__ == "__main__":
