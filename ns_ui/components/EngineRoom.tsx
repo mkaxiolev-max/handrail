@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { tokens } from '@/lib/design-tokens'
 
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9011'
+
 const CHAMBER_COLORS: Record<string, string> = {
   forge:     '#FF6B00',
   institute: '#6B00FF',
@@ -31,7 +33,7 @@ export function EngineRoom({
   useEffect(() => {
     const poll = async () => {
       try {
-        const r = await fetch('http://localhost:9001/api/v1/engine/live')
+        const r = await fetch(`${NS_API}/api/v1/engine/live`)
         const d = await r.json()
         setLiveData(d)
         const probe = d?.handrail_probe ?? {}

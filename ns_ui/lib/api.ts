@@ -1,4 +1,4 @@
-const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9001'
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9011'
 const HANDRAIL_URL = process.env.NEXT_PUBLIC_HANDRAIL_URL || 'http://localhost:8011'
 const NS_URL = process.env.NEXT_PUBLIC_NS_URL || 'http://localhost:9000'
 
@@ -44,5 +44,17 @@ export async function getVoiceState() {
 }
 export async function getMemoryReceipts() {
   const res = await fetch(`${NS_API}/api/v1/memory/receipts`)
+  return res.json()
+}
+export async function getOmegaHealth() {
+  const res = await fetch(`${NS_API}/api/v1/omega/healthz`)
+  return res.json()
+}
+export async function getOmegaRuns() {
+  const res = await fetch(`${NS_API}/api/v1/omega/runs`)
+  return res.json()
+}
+export async function getOmegaRun(runId: string) {
+  const res = await fetch(`${NS_API}/api/v1/omega/runs/${runId}`)
   return res.json()
 }

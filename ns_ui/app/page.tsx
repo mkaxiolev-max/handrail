@@ -7,8 +7,11 @@ import { EngineRoom } from '@/components/EngineRoom'
 import { ProgramsRuntime } from '@/components/ProgramsRuntime'
 import { GovernancePanel } from '@/components/GovernancePanel'
 import { Timeline } from '@/components/Timeline'
+import { OmegaPanel } from '@/components/OmegaPanel'
 
-type Mode = 'organism'|'engine'|'runtime'|'memory'|'governance'|'build'
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9011'
+
+type Mode = 'organism'|'engine'|'runtime'|'memory'|'governance'|'omega'|'build'
 
 const MODES: {id: Mode, label: string, color: string}[] = [
   {id:'organism', label:'Living Architecture', color: tokens.colors.violet},
@@ -16,6 +19,7 @@ const MODES: {id: Mode, label: string, color: string}[] = [
   {id:'runtime', label:'Programs Runtime', color: '#88FFAA'},
   {id:'memory', label:'Memory / Alexandria', color: tokens.colors.alexandria},
   {id:'governance', label:'Governance', color: tokens.colors.kernel},
+  {id:'omega', label:'Omega Simulation', color: tokens.colors.buildSpace},
   {id:'build', label:'Build Space', color: tokens.colors.buildSpace},
 ]
 
@@ -28,16 +32,19 @@ export default function Home() {
   const [timeline, setTimeline] = useState<any[]>([])
   const [selectedNode, setSelectedNode] = useState<string|null>(null)
   const [violetIdentity, setVioletIdentity] = useState<any>(null)
+  const [omegaRuns, setOmegaRuns] = useState<any>(null)
+  const [omegaLatest, setOmegaLatest] = useState<any>(null)
 
   const fetchAll = async () => {
     try {
-      const [sys, eng, progs, gov, tl, vi] = await Promise.allSettled([
-        fetch('http://localhost:9001/api/v1/system/state').then(r=>r.json()),
-        fetch('http://localhost:9001/api/v1/engine/live').then(r=>r.json()),
-        fetch('http://localhost:9001/api/v1/programs').then(r=>r.json()),
-        fetch('http://localhost:9001/api/v1/governance/state').then(r=>r.json()),
-        fetch('http://localhost:9001/api/v1/system/timeline').then(r=>r.json()),
+      const [sys, eng, progs, gov, tl, vi, omegaRunsResp] = await Promise.allSettled([
+        fetch(`${NS_API}/api/v1/system/state`).then(r=>r.json()),
+        fetch(`${NS_API}/api/v1/engine/live`).then(r=>r.json()),
+        fetch(`${NS_API}/api/v1/programs`).then(r=>r.json()),
+        fetch(`${NS_API}/api/v1/governance/state`).then(r=>r.json()),
+        fetch(`${NS_API}/api/v1/system/timeline`).then(r=>r.json()),
         fetch('http://localhost:9000/violet/identity').then(r=>r.json()),
+        fetch(`${NS_API}/api/v1/omega/runs`).then(r=>r.json()),
       ])
       if (sys.status==='fulfilled') setSystemState(sys.value)
       if (eng.status==='fulfilled') setEngineData(eng.value)
@@ -45,6 +52,19 @@ export default function Home() {
       if (gov.status==='fulfilled') setGovState(gov.value)
       if (tl.status==='fulfilled') setTimeline(Array.isArray(tl.value) ? tl.value : [])
       if (vi.status==='fulfilled') setVioletIdentity(vi.value)
+      if (omegaRunsResp.status==='fulfilled') {
+        setOmegaRuns(omegaRunsResp.value)
+        const firstRun = omegaRunsResp.value?.runs?.[0]
+        if (firstRun?.run_id) {
+          try {
+            const latest = await fetch(`${NS_API}/api/v1/omega/runs/${firstRun.run_id}`).then(r=>r.json())
+            const branchData = await fetch(`${NS_API}/api/v1/omega/runs/${firstRun.run_id}/branches`).then(r=>r.json())
+            setOmegaLatest({...latest, branches: branchData?.branches || []})
+          } catch(e) {}
+        } else {
+          setOmegaLatest(null)
+        }
+      }
     } catch(e) {}
   }
 
@@ -115,6 +135,7 @@ export default function Home() {
                mode==='runtime' ? '— 10 constitutional programs' :
                mode==='memory' ? '— Alexandria ledger + receipts' :
                mode==='governance' ? '— Never-events, rings, quorum' :
+               mode==='omega' ? '— Bounded, provisional branch simulation' :
                '— Design sandbox (outside canon)'}
             </span>
           </div>
@@ -147,6 +168,7 @@ export default function Home() {
             </div>
           )}
           {mode==='governance' && <GovernancePanel govState={govState} />}
+          {mode==='omega' && <OmegaPanel omegaRuns={omegaRuns} omegaLatest={omegaLatest} />}
           {mode==='build' && (
             <div style={{background:'#0A1020',border:`2px dashed ${tokens.colors.buildSpace}`,
               borderRadius:12,padding:32,textAlign:'center',color:tokens.colors.buildSpace}}>
