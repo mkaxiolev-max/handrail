@@ -13,3 +13,19 @@ scripts/
 .env
 .env
 .env.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pycache_check/
+
+# Session artifacts
+FINAL_LEFT_REPORT.txt
+FINAL_RIGHT_COMPLETE
+
+# Node / Vite cache
+frontend/node_modules/
+ns_ui/node_modules/
+frontend/.vite/
+ns_ui/.next/
