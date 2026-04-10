@@ -1,11 +1,11 @@
 """
-NS∞ Model Router v2 — multi-provider LLM adjudication.
+NS∞ Model Router v2.1 — multi-provider LLM adjudication.
 AXIOLEV Holdings LLC · Copyright © 2024-2026 · Wyoming, USA
 
-Supports: Anthropic Claude, OpenAI GPT, Google Gemini, xAI Grok, Groq.
+Supports: Anthropic Claude, OpenAI GPT, Google Gemini, xAI Grok, Groq, Ollama (local).
 Falls back gracefully when a provider key is absent.
-Primary engine: claude-haiku-4-5-20251001 (always active).
-Additional engines active when their API keys are present.
+Primary engine: claude-haiku-4-5-20251001 (always active when credits present).
+Ollama: always attempted — no key needed, reaches host.docker.internal:11434.
 """
 from __future__ import annotations
 import os
@@ -20,7 +20,7 @@ from pydantic import BaseModel
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("model_router")
 
-app = FastAPI(title="NS∞ Model Router", version="2.0.0")
+app = FastAPI(title="NS∞ Model Router", version="2.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,6 +34,10 @@ OPENAI_KEY    = os.environ.get("OPENAI_API_KEY", "")
 GEMINI_KEY    = os.environ.get("GOOGLE_API_KEY", "") or os.environ.get("GEMINI_API_KEY", "")
 GROK_KEY      = os.environ.get("XAI_API_KEY", "")
 GROQ_KEY      = os.environ.get("GROQ_API_KEY", "")
+OLLAMA_HOST   = os.environ.get("OLLAMA_HOST", "host.docker.internal")
+OLLAMA_PORT   = os.environ.get("OLLAMA_PORT", "11434")
+OLLAMA_MODEL  = os.environ.get("OLLAMA_DEFAULT_MODEL", "llama3:latest")
+OLLAMA_BASE_URL = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
 
 def key_live(k: str) -> bool:
     return bool(k) and k not in ("", "PENDING", "sk-pending", "YOUR_KEY_HERE") and len(k) > 10
@@ -44,36 +48,49 @@ PROVIDERS: dict[str, dict] = {
         "key_env": "ANTHROPIC_API_KEY",
         "primary_model": "claude-haiku-4-5-20251001",
         "always_active": True,
+        "local": False,
     },
     "openai": {
         "live": key_live(OPENAI_KEY),
         "key_env": "OPENAI_API_KEY",
         "primary_model": "gpt-4o-mini",
         "always_active": False,
+        "local": False,
     },
     "gemini": {
         "live": key_live(GEMINI_KEY),
         "key_env": "GOOGLE_API_KEY",
         "primary_model": "gemini-1.5-flash",
         "always_active": False,
+        "local": False,
     },
     "grok": {
         "live": key_live(GROK_KEY),
         "key_env": "XAI_API_KEY",
         "primary_model": "grok-beta",
         "always_active": False,
+        "local": False,
     },
     "groq": {
         "live": key_live(GROQ_KEY),
         "key_env": "GROQ_API_KEY",
         "primary_model": "llama-3.3-70b-versatile",
         "always_active": False,
+        "local": False,
+    },
+    "ollama": {
+        "live": True,  # availability checked at runtime — no key needed
+        "key_env": "OLLAMA_HOST",
+        "primary_model": OLLAMA_MODEL,
+        "always_active": True,
+        "local": True,
     },
 }
 
 for name, cfg in PROVIDERS.items():
     status = "LIVE" if cfg["live"] else ("ALWAYS_ON" if cfg["always_active"] else "DEFERRED")
-    logger.info(f"  {name:12s}: {status}  model={cfg['primary_model']}")
+    local_tag = " [LOCAL]" if cfg.get("local") else ""
+    logger.info(f"  {name:12s}: {status}  model={cfg['primary_model']}{local_tag}")
 
 # ── Anthropic ──────────────────────────────────────────────────────────────
 async def call_anthropic(prompt: str, model: str = "claude-haiku-4-5-20251001",
@@ -191,12 +208,57 @@ async def call_groq(prompt: str, model: str = "llama-3.3-70b-versatile",
     except Exception as e:
         return {"provider": "groq", "model": model, "ok": False, "error": str(e)}
 
+# ── Ollama (local) ─────────────────────────────────────────────────────────
+async def call_ollama(prompt: str, model: str = None,
+                       system: str = "", max_tokens: int = 1024) -> dict:
+    """
+    Calls local Ollama via its OpenAI-compatible API.
+    Ollama runs on the host Mac at host.docker.internal:11434.
+    No API key needed. Falls back gracefully if not reachable.
+    """
+    actual_model = model or OLLAMA_MODEL
+    try:
+        from openai import AsyncOpenAI
+        client = AsyncOpenAI(
+            api_key="ollama",  # required by openai lib, ignored by ollama
+            base_url=f"{OLLAMA_BASE_URL}/v1",
+        )
+        msgs = []
+        if system:
+            msgs.append({"role": "system", "content": system})
+        msgs.append({"role": "user", "content": prompt})
+        resp = await client.chat.completions.create(
+            model=actual_model,
+            messages=msgs,
+            max_tokens=max_tokens,
+        )
+        text = resp.choices[0].message.content or ""
+        return {
+            "provider": "ollama",
+            "model": actual_model,
+            "text": text,
+            "ok": True,
+            "local": True,
+            "input_tokens": getattr(resp.usage, "prompt_tokens", 0),
+            "output_tokens": getattr(resp.usage, "completion_tokens", 0),
+        }
+    except ImportError:
+        return {"provider": "ollama", "model": actual_model, "ok": False,
+                "error": "openai package not installed (needed for ollama compat)"}
+    except Exception as e:
+        err = str(e)
+        if "Connection" in err or "connect" in err.lower():
+            return {"provider": "ollama", "model": actual_model, "ok": False,
+                    "error": f"Ollama not reachable at {OLLAMA_BASE_URL} — is it running on the host?"}
+        return {"provider": "ollama", "model": actual_model, "ok": False, "error": err}
+
 PROVIDER_FN = {
     "anthropic": call_anthropic,
     "openai":    call_openai,
     "gemini":    call_gemini,
     "grok":      call_grok,
     "groq":      call_groq,
+    "ollama":    call_ollama,
 }
 
 # ── Request models ─────────────────────────────────────────────────────────
@@ -220,16 +282,18 @@ async def healthz():
     return {
         "status": "ok",
         "service": "model_router",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "active_providers": live,
         "primary": "anthropic",
         "primary_model": "claude-haiku-4-5-20251001",
+        "local_llm": OLLAMA_MODEL,
         "providers": {
             name: {
                 "live": cfg["live"],
                 "always_active": cfg["always_active"],
                 "model": cfg["primary_model"],
                 "key_present": key_live(os.environ.get(cfg["key_env"], "")),
+                "local": cfg.get("local", False),
             }
             for name, cfg in PROVIDERS.items()
         },
@@ -245,10 +309,40 @@ async def providers():
                 "primary_model": cfg["primary_model"],
                 "key_env": cfg["key_env"],
                 "key_present": key_live(os.environ.get(cfg["key_env"], "")),
+                "local": cfg.get("local", False),
             }
             for name, cfg in PROVIDERS.items()
         }
     }
+
+@app.get("/ollama/models")
+async def ollama_models():
+    """List models available in the local Ollama instance."""
+    try:
+        import httpx
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            data = resp.json()
+            models = data.get("models", [])
+            return {
+                "ollama_url": OLLAMA_BASE_URL,
+                "model_count": len(models),
+                "default_model": OLLAMA_MODEL,
+                "models": [
+                    {
+                        "name": m.get("name"),
+                        "size_gb": round(m.get("size", 0) / 1e9, 1),
+                        "modified": m.get("modified_at", "")[:10],
+                    }
+                    for m in models
+                ],
+            }
+    except Exception as e:
+        return {
+            "ollama_url": OLLAMA_BASE_URL,
+            "error": str(e),
+            "hint": "Ollama may not be running — start with: ollama serve",
+        }
 
 @app.post("/complete")
 async def complete(req: CompletionRequest):
@@ -305,6 +399,7 @@ async def probe_all():
             "latency_ms": r.get("latency_ms"),
             "text_preview": r.get("text", "")[:60],
             "error": r.get("error"),
+            "local": r.get("local", False),
         } for r in results}
     }
 
