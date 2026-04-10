@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from routes.boot import router as boot_router
 from routes.feed import router as feed_router
@@ -304,6 +304,7 @@ async def intent_execute(body: dict):
         }
 
 
+import httpx
 from isr_v2 import create_default_isr, FounderMode
 from violet_renderer import VioletRenderer
 from voice_state_machine import VoiceSession, VoiceState, VOICE_STATE_UI
@@ -391,6 +392,45 @@ async def voice_session_interrupt(session_id: str):
         session.transition(VoiceState.INTERRUPTED)
         return {"status": "ok", "state": "interrupted"}
     return {"status": "error", "detail": "Cannot interrupt"}
+
+
+_OMEGA_URL = os.environ.get("OMEGA_URL", "http://omega:9010")
+
+async def _omega_proxy(method: str, path: str, json_body=None):
+    url = f"{_OMEGA_URL}{path}"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.request(method, url, json=json_body)
+        response.raise_for_status()
+        return response.json()
+    except httpx.HTTPStatusError as exc:
+        raise HTTPException(status_code=exc.response.status_code, detail=exc.response.text) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Omega unavailable: {exc}") from exc
+
+@app.get("/api/v1/omega/healthz")
+async def omega_health():
+    return await _omega_proxy("GET", "/healthz")
+
+@app.post("/api/v1/omega/simulate")
+async def omega_simulate(payload: dict):
+    return await _omega_proxy("POST", "/omega/simulate", json_body=payload)
+
+@app.get("/api/v1/omega/runs")
+async def omega_runs():
+    return await _omega_proxy("GET", "/omega/runs")
+
+@app.get("/api/v1/omega/runs/{run_id}")
+async def omega_run(run_id: str):
+    return await _omega_proxy("GET", f"/omega/runs/{run_id}")
+
+@app.get("/api/v1/omega/runs/{run_id}/branches")
+async def omega_run_branches(run_id: str):
+    return await _omega_proxy("GET", f"/omega/runs/{run_id}/branches")
+
+@app.post("/api/v1/omega/runs/{run_id}/compare")
+async def omega_compare(run_id: str, payload: dict):
+    return await _omega_proxy("POST", f"/omega/runs/{run_id}/compare", json_body=payload)
 
 
 @app.get("/hic/gates")

@@ -1,0 +1,67 @@
+{
+  "certification_id": "OMEGA_CERTIFICATION_v1",
+  "certified_at": "2026-04-10T00:01:15Z",
+  "git_head": "149ea03",
+  "baseline_cert": "149ea03",
+  "scope": "Omega service \u2014 simulation, runs, branches, compare, policy rails",
+  "route_checks": {
+    "proxy_health": "PASS",
+    "direct_health": "PASS",
+    "simulate": "PASS",
+    "run_fetch": "PASS",
+    "branch_fetch": "PASS",
+    "compare": "PASS",
+    "runs_list": "PASS"
+  },
+  "migration_check": {
+    "table": "omega_runs + omega_branches",
+    "applied": true,
+    "verified_by": "run persisted and fetched via GET /runs/{id}"
+  },
+  "policy_rails": {
+    "guard_module_exists": true,
+    "hic_wired_in_simulate": true,
+    "pdp_wired_in_runs": true,
+    "policy_state_in_response": "advisory_only",
+    "promotion_allowed_in_response": false,
+    "veto_gate_fires": true,
+    "veto_verified": "POST /simulate with allow_promotion=true + HIC-triggering intent \u2192 403 VETO",
+    "explicit_enforcement": true,
+    "fail_closed": true
+  },
+  "omega_endpoints_verified": [
+    "GET /api/v1/omega/healthz \u2192 PASS",
+    "GET /healthz (direct :9010) \u2192 PASS",
+    "POST /api/v1/omega/simulate \u2192 PASS (policy_state=advisory_only)",
+    "GET /api/v1/omega/runs \u2192 PASS",
+    "GET /api/v1/omega/runs/{run_id} \u2192 PASS",
+    "GET /api/v1/omega/runs/{run_id}/branches \u2192 PASS (3 branches)",
+    "POST /api/v1/omega/runs/{run_id}/compare \u2192 PASS"
+  ],
+  "constitutional_constraints": {
+    "simulation_is_advisory": true,
+    "promotion_requires_founder_auth": true,
+    "execution_requires_canon": true,
+    "hic_guards_simulate": true,
+    "pdp_guards_compare": true,
+    "fail_closed_on_unavailable": true,
+    "veto_fires_on_promotion_attempt": true
+  },
+  "run_sample": {
+    "run_id": "omega_891426f11c34",
+    "divergence_score": 0.0,
+    "branch_count": {},
+    "receipt_hash": "873dc04ad2608357...",
+    "chain_verified": true
+  },
+  "verdict": "OMEGA_CERTIFIED",
+  "verdict_detail": "All 7 paths pass, explicit HIC/PDP rails wired, policy_state=advisory_only, migration applied.",
+  "notes": [
+    "Omega is a simulation-to-action bridge \u2014 highest-risk surface in NS\u221e.",
+    "policy_state='advisory_only' is the correct default for every simulate response.",
+    "promotion_allowed must always be False. execution_allowed must always be False.",
+    "HIC VETO confirmed: allow_promotion=true with dangerous intent \u2192 403 VETO.",
+    "PDP guard on compare-to-reality: fails closed if ns_core unreachable.",
+    "Both omega_runs and omega_branches tables verified via live run persistence."
+  ]
+}
