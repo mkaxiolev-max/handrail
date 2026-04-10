@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { useMemo, useState } from 'react'
 import { tokens } from '@/lib/design-tokens'
 
-const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9011'
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9000/api/v1'
 
 export function OmegaPanel({
   omegaRuns,

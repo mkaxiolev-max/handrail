@@ -8,8 +8,9 @@ import { ProgramsRuntime } from '@/components/ProgramsRuntime'
 import { GovernancePanel } from '@/components/GovernancePanel'
 import { Timeline } from '@/components/Timeline'
 import { OmegaPanel } from '@/components/OmegaPanel'
+import { VioletLogo, AxiolevWordmark } from '@/components/VioletMark'
 
-const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9011'
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9000'
 
 type Mode = 'organism'|'engine'|'runtime'|'memory'|'governance'|'omega'|'build'
 
@@ -80,8 +81,9 @@ export default function Home() {
       <div style={{background:'#080C1E',borderBottom:`1px solid ${tokens.colors.border}`,
         padding:'10px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:16}}>
-          <span style={{color:tokens.colors.violet,fontWeight:'bold',fontSize:16}}>NS∞</span>
-          <span style={{color:tokens.colors.textSecondary,fontSize:11}}>Living Architecture</span>
+          <VioletLogo size={28} />
+          <AxiolevWordmark style={{fontSize:11}} />
+          <span style={{color:tokens.colors.textSecondary,fontSize:11}}>NS∞ · Living Architecture</span>
           <span style={{color:tokens.colors.adjudication,fontSize:10}}>
             {systemState ? '● LIVE' : '○ CONNECTING'}
           </span>
