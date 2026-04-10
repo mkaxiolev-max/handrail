@@ -67,7 +67,7 @@ PROVIDERS: dict[str, dict] = {
     "grok": {
         "live": key_live(GROK_KEY),
         "key_env": "XAI_API_KEY",
-        "primary_model": "grok-beta",
+        "primary_model": "grok-4.20-reasoning",
         "always_active": False,
         "local": False,
     },
@@ -161,26 +161,73 @@ async def call_gemini(prompt: str, model: str = "gemini-1.5-flash",
         return {"provider": "gemini", "model": model, "ok": False, "error": str(e)}
 
 # ── xAI Grok ──────────────────────────────────────────────────────────────
-async def call_grok(prompt: str, model: str = "grok-beta",
+async def call_grok(prompt: str, model: str = "grok-4.20-reasoning",
                      system: str = "", max_tokens: int = 1024) -> dict:
+    """
+    Calls xAI Grok via /v1/responses (used by grok-4.20-reasoning and newer models).
+    Falls back to /v1/chat/completions for older grok-beta if model name contains 'beta'.
+    """
     if not key_live(GROK_KEY):
         return {"provider": "grok", "model": model, "ok": False, "error": "XAI_API_KEY not configured"}
     try:
-        from openai import AsyncOpenAI
-        client = AsyncOpenAI(api_key=GROK_KEY, base_url="https://api.x.ai/v1")
-        msgs = []
-        if system:
-            msgs.append({"role": "system", "content": system})
-        msgs.append({"role": "user", "content": prompt})
-        resp = await client.chat.completions.create(model=model, messages=msgs, max_tokens=max_tokens)
-        text = resp.choices[0].message.content or ""
-        return {
-            "provider": "grok", "model": model, "text": text, "ok": True,
-            "input_tokens": resp.usage.prompt_tokens,
-            "output_tokens": resp.usage.completion_tokens,
+        import httpx
+
+        # grok-4.20-reasoning uses /v1/responses (xAI's newer API)
+        # grok-beta uses /v1/chat/completions (OpenAI-compat)
+        use_responses_api = "beta" not in model.lower()
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {GROK_KEY}",
         }
-    except ImportError:
-        return {"provider": "grok", "model": model, "ok": False, "error": "openai package not installed"}
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            if use_responses_api:
+                # /v1/responses format
+                input_parts = []
+                if system:
+                    input_parts.append(system + "\n\n")
+                input_parts.append(prompt)
+                payload = {
+                    "model": model,
+                    "input": "".join(input_parts),
+                }
+                resp = await client.post("https://api.x.ai/v1/responses", json=payload, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
+                # Extract text from response — xAI responses format
+                text = ""
+                output = data.get("output", [])
+                for item in output:
+                    if item.get("type") == "message":
+                        for content in item.get("content", []):
+                            if content.get("type") == "output_text":
+                                text += content.get("text", "")
+                if not text:
+                    text = data.get("output_text", "") or str(data.get("output", ""))[:200]
+                usage = data.get("usage", {})
+                return {
+                    "provider": "grok", "model": model, "text": text, "ok": True,
+                    "input_tokens": usage.get("input_tokens", 0),
+                    "output_tokens": usage.get("output_tokens", 0),
+                }
+            else:
+                # /v1/chat/completions format (grok-beta)
+                msgs = []
+                if system:
+                    msgs.append({"role": "system", "content": system})
+                msgs.append({"role": "user", "content": prompt})
+                payload = {"model": model, "messages": msgs, "max_tokens": max_tokens}
+                resp = await client.post("https://api.x.ai/v1/chat/completions", json=payload, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
+                text = data["choices"][0]["message"]["content"] or ""
+                usage = data.get("usage", {})
+                return {
+                    "provider": "grok", "model": model, "text": text, "ok": True,
+                    "input_tokens": usage.get("prompt_tokens", 0),
+                    "output_tokens": usage.get("completion_tokens", 0),
+                }
     except Exception as e:
         return {"provider": "grok", "model": model, "ok": False, "error": str(e)}
 
