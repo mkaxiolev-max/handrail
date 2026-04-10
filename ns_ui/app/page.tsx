@@ -49,7 +49,10 @@ export default function Home() {
       ])
       if (sys.status==='fulfilled') setSystemState(sys.value)
       if (eng.status==='fulfilled') setEngineData(eng.value)
-      if (progs.status==='fulfilled') setPrograms(progs.value)
+      if (progs.status==='fulfilled') {
+        const p = progs.value
+        setPrograms(Array.isArray(p) ? p : (p?.programs || []))
+      }
       if (gov.status==='fulfilled') setGovState(gov.value)
       if (tl.status==='fulfilled') setTimeline(Array.isArray(tl.value) ? tl.value : [])
       if (vi.status==='fulfilled') setVioletIdentity(vi.value)

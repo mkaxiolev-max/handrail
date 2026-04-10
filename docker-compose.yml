@@ -36,6 +36,9 @@ services:
     environment:
       DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
       REDIS_URL: redis://redis:6379
+      NORTHSTAR_WEBHOOK_BASE: ${NORTHSTAR_WEBHOOK_BASE:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy

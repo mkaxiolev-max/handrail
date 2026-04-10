@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes.boot import router as boot_router
 from routes.feed import router as feed_router
@@ -491,6 +491,106 @@ async def programs_route(body: dict):
         "intent": intent,
         "matched": [{"program_id": p.program_id, "name": p.name, "namespace": p.namespace} for p in matches],
     }
+
+# ── Voice / Twilio ─────────────────────────────────────────────────────────────
+_WEBHOOK_BASE = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "").rstrip("/")
+_VOICE_SESSIONS: dict = {}
+
+def _twiml_gather(say_text: str) -> str:
+    action = f"{_WEBHOOK_BASE}/voice/transcription" if _WEBHOOK_BASE else "/voice/transcription"
+    safe = say_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Gather input="speech" action="{action}" method="POST"
+          speechTimeout="auto" language="en-US" timeout="8">
+    <Say voice="Polly.Matthew-Neural">{safe}</Say>
+  </Gather>
+  <Say voice="Polly.Matthew-Neural">I did not catch that. Please try again.</Say>
+  <Redirect method="POST">{action.rsplit("/voice/transcription", 1)[0]}/voice/inbound</Redirect>
+</Response>"""
+
+@app.post("/voice/inbound")
+async def voice_inbound(request: Request):
+    try:
+        form = dict(await request.form())
+        call_sid = form.get("CallSid", "unknown")
+        caller = form.get("From", "unknown")
+        _VOICE_SESSIONS[call_sid] = {"status": "gathering", "from": caller}
+    except Exception:
+        pass
+    from fastapi.responses import Response as _R
+    return _R(content=_twiml_gather("Northstar online. How can I serve you?"), media_type="text/xml")
+
+@app.post("/voice/transcription")
+async def voice_transcription(request: Request):
+    from fastapi.responses import Response as _R
+    try:
+        form = dict(await request.form())
+        call_sid = form.get("CallSid", "unknown")
+        speech = form.get("SpeechResult", "").strip()
+
+        if not speech:
+            return _R(content=_twiml_gather("I did not catch that. Please go ahead."), media_type="text/xml")
+
+        # Try LLM — priority: Grok (live key) → Anthropic → fallback
+        reply = None
+        system_prompt = (
+            "You are Violet, the voice of NS∞. "
+            "Be concise — 1 to 2 sentences maximum for voice delivery. "
+            "No markdown, no symbols, no lists."
+        )
+
+        # Try Grok (grok-4.20-reasoning is live)
+        try:
+            import httpx as _httpx
+            _xai_key = os.environ.get("XAI_API_KEY", "")
+            if _xai_key and len(_xai_key) > 10:
+                async with _httpx.AsyncClient(timeout=15.0) as _c:
+                    _r = await _c.post(
+                        "https://api.x.ai/v1/responses",
+                        headers={"Authorization": f"Bearer {_xai_key}", "Content-Type": "application/json"},
+                        json={"model": "grok-4.20-reasoning", "input": f"{system_prompt}\n\n{speech}"},
+                    )
+                    if _r.status_code == 200:
+                        _d = _r.json()
+                        for _item in _d.get("output", []):
+                            if _item.get("type") == "message":
+                                for _c2 in _item.get("content", []):
+                                    if _c2.get("type") == "output_text":
+                                        reply = _c2.get("text", "").strip()
+        except Exception:
+            pass
+
+        # Fallback: Anthropic
+        if not reply:
+            try:
+                import anthropic as _ant
+                _a = _ant.Anthropic()
+                _ar = _a.messages.create(
+                    model="claude-haiku-4-5-20251001", max_tokens=150,
+                    system=system_prompt,
+                    messages=[{"role": "user", "content": speech}]
+                )
+                reply = (_ar.content[0].text if _ar.content else "").strip()
+            except Exception as _e:
+                if any(w in str(_e).lower() for w in ("credit", "quota", "billing")):
+                    reply = "I am Violet. My primary model needs credits. I am standing by."
+
+        if not reply:
+            reply = "I am Violet. I am here and listening."
+
+        if call_sid in _VOICE_SESSIONS:
+            _VOICE_SESSIONS[call_sid]["last"] = reply[:100]
+
+        return _R(content=_twiml_gather(reply[:300]), media_type="text/xml")
+
+    except Exception:
+        from fastapi.responses import Response as _R2
+        return _R2(content=_twiml_gather("Violet is here. One moment please."), media_type="text/xml")
+
+@app.get("/voice/sessions")
+async def voice_sessions_list():
+    return {"sessions": list(_VOICE_SESSIONS.values()), "count": len(_VOICE_SESSIONS)}
 
 @app.get("/mac_adapter/status")
 async def mac_adapter_status():
