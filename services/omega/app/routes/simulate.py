@@ -32,8 +32,8 @@ def get_receipt_bridge() -> OmegaReceiptBridge:
 async def simulate(payload: OmegaStateInput):
     # ── HIC policy guard ──────────────────────────────────────────────────────
     # Advisory-only by default. Promotion/execution paths require HIC clearance.
-    _allow_promotion = payload.constraints.get("allow_promotion", False)
-    _allow_execution = payload.constraints.get("allow_execution", False)
+    _allow_promotion = payload.constraints.get("allow_promotion", False) or payload.metadata.get("canon_promote", False)
+    _allow_execution = payload.constraints.get("allow_execution", False) or payload.metadata.get("execute", False)
     _operator = str(payload.metadata.get("actor", "founder"))
     _intent_text = f"{payload.domain_type} {payload.bounded_context.get('description','')}"
     try:

@@ -141,5 +141,54 @@ services:
       retries: 5
       start_period: 30s
 
+  omega:
+    build:
+      context: .
+      dockerfile: services/omega/Dockerfile
+    ports:
+      - "9010:9010"
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      ALEXANDRIA_PATH: /Volumes/NSExternal
+      OMEGA_PORT: 9010
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9010/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  ns_api:
+    build:
+      context: .
+      dockerfile: services/ns_api/Dockerfile
+    ports:
+      - "9011:9011"
+    environment:
+      OMEGA_URL: http://omega:9010
+      NS_URL: http://ns_core:9000
+      HANDRAIL_URL: http://handrail:8011
+      CONTINUUM_URL: http://continuum:8788
+      ATOMLEX_URL: http://atomlex:8080
+      ALEXANDRIA_PATH: /Volumes/NSExternal
+    depends_on:
+      omega:
+        condition: service_healthy
+      ns_core:
+        condition: service_healthy
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9011/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 volumes:
   pgdata:

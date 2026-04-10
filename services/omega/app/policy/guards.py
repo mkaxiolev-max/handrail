@@ -62,7 +62,12 @@ def _pdp_decide(subject: str, action: str, resource: str) -> str:
     Fails closed: if unavailable, returns DENY.
     """
     try:
-        payload = json.dumps({"subject": subject, "action": action, "resource": resource}).encode()
+        payload = json.dumps({
+            "subject": subject,
+            "action": action,
+            "resource": resource,
+            "projection": "ns:internal",
+        }).encode()
         req = urllib.request.Request(
             f"{NS_CORE_URL}/pdp/decide",
             data=payload,
@@ -87,22 +92,18 @@ def omega_hic_guard(
     HIC guard for /omega/simulate.
 
     Returns policy_state string.
-    Raises OmegaPolicyError(VETOED) if promotion/execution requested and HIC says VETO.
+    Raises OmegaPolicyError(VETOED) on any promotion/execution attempt.
     Default path (advisory only) requires no HIC check.
     """
     if not allow_promotion and not allow_execution:
         return ADVISORY_ONLY
 
     verdict = _hic_evaluate(f"{intent} promote execute")
-    if verdict == "VETO":
-        raise OmegaPolicyError(
-            VETOED,
-            f"HIC vetoed promotion/execution request. Intent: '{intent[:60]}'. "
-            "Omega simulation is advisory-only until founder explicitly authorizes.",
-        )
-    if verdict in ("R0", "R1"):
-        return FOUNDER_AUTHORIZED
-    raise OmegaPolicyError(VETOED, f"HIC returned unknown verdict '{verdict}' — failing closed")
+    raise OmegaPolicyError(
+        VETOED,
+        "Omega is advisory-only on the certified baseline and cannot promote Canon or execute actions directly. "
+        f"HIC verdict={verdict}. Founder review must happen through existing NS mechanisms.",
+    )
 
 
 def omega_pdp_guard(
@@ -119,8 +120,15 @@ def omega_pdp_guard(
     if not can_alter_status:
         return ADVISORY_ONLY
 
+    if ":" in operator:
+        subject = operator
+    elif operator.lower() == "founder":
+        subject = "founder:default"
+    else:
+        subject = f"user:{operator}"
+
     effect = _pdp_decide(
-        subject=f"operator:{operator}",
+        subject=subject,
         action="omega_compare",
         resource="omega:run",
     )

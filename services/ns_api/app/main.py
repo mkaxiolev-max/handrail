@@ -2,12 +2,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from ns_api.app.routers import system, engine, programs, memory, governance, replay
+from ns_api.app.routers import system, engine, programs, memory, governance, replay, omega
 
 app = FastAPI(
     title="NS API",
     version="1.0.0",
-    description="NS∞ sovereign backend — system state, engine, programs, memory, governance, replay",
+    description="NS∞ sovereign backend — system state, engine, programs, memory, governance, replay, omega",
 )
 
 app.add_middleware(
@@ -24,6 +24,7 @@ app.include_router(programs.router)
 app.include_router(memory.router)
 app.include_router(governance.router)
 app.include_router(replay.router)
+app.include_router(omega.router)
 
 
 @app.get("/health")
