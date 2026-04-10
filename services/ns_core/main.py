@@ -521,6 +521,129 @@ async def voice_inbound(request: Request):
     from fastapi.responses import Response as _R
     return _R(content=_twiml_gather("Northstar online. How can I serve you?"), media_type="text/xml")
 
+async def _violet_llm(prompt: str, system: str = "") -> str:
+    """
+    Multi-provider LLM for Violet. Never raises — always returns a string.
+    Priority: Groq → Grok → Ollama → Anthropic → OpenAI → canned fallback.
+    """
+    VOICE_SYSTEM = system or (
+        "You are Violet, the voice interface of NS Infinity by AXIOLEV. "
+        "You are concise, clear, and sovereign. "
+        "Respond in 1-2 sentences maximum. No markdown, no symbols, no lists. "
+        "Speak naturally as if talking to the founder."
+    )
+
+    # 1. Groq (llama-3.3-70b — free tier, fast)
+    groq_key = os.environ.get("GROQ_API_KEY", "")
+    if groq_key and len(groq_key) > 10 and groq_key.startswith("gsk_"):
+        try:
+            from groq import AsyncGroq
+            client = AsyncGroq(api_key=groq_key)
+            resp = await client.chat.completions.create(
+                model="llama-3.3-70b-versatile",
+                messages=[{"role": "system", "content": VOICE_SYSTEM},
+                           {"role": "user", "content": prompt}],
+                max_tokens=150,
+            )
+            text = resp.choices[0].message.content or ""
+            if text.strip():
+                return text.strip()
+        except Exception:
+            pass
+
+    # 2. xAI Grok (grok-4.20-reasoning — live)
+    grok_key = os.environ.get("XAI_API_KEY", "")
+    if grok_key and len(grok_key) > 10:
+        try:
+            import httpx as _hx
+            async with _hx.AsyncClient(timeout=30.0) as _c:
+                _r = await _c.post(
+                    "https://api.x.ai/v1/responses",
+                    headers={"Authorization": f"Bearer {grok_key}", "Content-Type": "application/json"},
+                    json={"model": "grok-4.20-reasoning", "input": f"{VOICE_SYSTEM}\n\n{prompt}"},
+                )
+                if _r.status_code == 200:
+                    _d = _r.json()
+                    text = ""
+                    for _item in _d.get("output", []):
+                        if _item.get("type") == "message":
+                            for _cx in _item.get("content", []):
+                                if _cx.get("type") == "output_text":
+                                    text += _cx.get("text", "")
+                    if not text:
+                        text = _d.get("output_text", "")
+                    if text.strip():
+                        return text.strip()[:400]
+        except Exception:
+            pass
+
+    # 3. Ollama (local — no key, no credits needed)
+    try:
+        import httpx as _hx
+        ollama_host = os.environ.get("OLLAMA_HOST", "host.docker.internal")
+        ollama_port = os.environ.get("OLLAMA_PORT", "11434")
+        ollama_model = os.environ.get("OLLAMA_DEFAULT_MODEL", "llama3:latest")
+        async with _hx.AsyncClient(timeout=60.0) as _c:
+            _r = await _c.post(
+                f"http://{ollama_host}:{ollama_port}/v1/chat/completions",
+                json={"model": ollama_model,
+                      "messages": [{"role": "system", "content": VOICE_SYSTEM},
+                                    {"role": "user", "content": prompt}],
+                      "max_tokens": 150},
+                headers={"Authorization": "Bearer ollama"},
+            )
+            _r.raise_for_status()
+            text = _r.json()["choices"][0]["message"]["content"] or ""
+            if text.strip():
+                return text.strip()
+    except Exception:
+        pass
+
+    # 4. Anthropic
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if anthropic_key and len(anthropic_key) > 10:
+        try:
+            import anthropic as _ant
+            client = _ant.Anthropic(api_key=anthropic_key)
+            resp = client.messages.create(
+                model="claude-haiku-4-5-20251001", max_tokens=150,
+                system=VOICE_SYSTEM,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            text = (resp.content[0].text if resp.content else "").strip()
+            if text:
+                return text
+        except Exception:
+            pass
+
+    # 5. OpenAI
+    openai_key = os.environ.get("OPENAI_API_KEY", "")
+    if openai_key and len(openai_key) > 10:
+        try:
+            from openai import AsyncOpenAI
+            client = AsyncOpenAI(api_key=openai_key)
+            resp = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "system", "content": VOICE_SYSTEM},
+                           {"role": "user", "content": prompt}],
+                max_tokens=150,
+            )
+            text = (resp.choices[0].message.content or "").strip()
+            if text:
+                return text
+        except Exception:
+            pass
+
+    # 6. Canned fallback — always available
+    import hashlib
+    _fallbacks = [
+        "I am Violet. I am here and processing your request.",
+        "Acknowledged. I am standing by.",
+        "Violet online. Please continue.",
+    ]
+    return _fallbacks[int(hashlib.md5(prompt.encode()).hexdigest(), 16) % len(_fallbacks)]
+
+
 @app.post("/voice/transcription")
 async def voice_transcription(request: Request):
     from fastapi.responses import Response as _R
@@ -528,65 +651,29 @@ async def voice_transcription(request: Request):
         form = dict(await request.form())
         call_sid = form.get("CallSid", "unknown")
         speech = form.get("SpeechResult", "").strip()
-
         if not speech:
             return _R(content=_twiml_gather("I did not catch that. Please go ahead."), media_type="text/xml")
-
-        # Try LLM — priority: Grok (live key) → Anthropic → fallback
-        reply = None
-        system_prompt = (
-            "You are Violet, the voice of NS∞. "
-            "Be concise — 1 to 2 sentences maximum for voice delivery. "
-            "No markdown, no symbols, no lists."
-        )
-
-        # Try Grok (grok-4.20-reasoning is live)
-        try:
-            import httpx as _httpx
-            _xai_key = os.environ.get("XAI_API_KEY", "")
-            if _xai_key and len(_xai_key) > 10:
-                async with _httpx.AsyncClient(timeout=15.0) as _c:
-                    _r = await _c.post(
-                        "https://api.x.ai/v1/responses",
-                        headers={"Authorization": f"Bearer {_xai_key}", "Content-Type": "application/json"},
-                        json={"model": "grok-4.20-reasoning", "input": f"{system_prompt}\n\n{speech}"},
-                    )
-                    if _r.status_code == 200:
-                        _d = _r.json()
-                        for _item in _d.get("output", []):
-                            if _item.get("type") == "message":
-                                for _c2 in _item.get("content", []):
-                                    if _c2.get("type") == "output_text":
-                                        reply = _c2.get("text", "").strip()
-        except Exception:
-            pass
-
-        # Fallback: Anthropic
-        if not reply:
-            try:
-                import anthropic as _ant
-                _a = _ant.Anthropic()
-                _ar = _a.messages.create(
-                    model="claude-haiku-4-5-20251001", max_tokens=150,
-                    system=system_prompt,
-                    messages=[{"role": "user", "content": speech}]
-                )
-                reply = (_ar.content[0].text if _ar.content else "").strip()
-            except Exception as _e:
-                if any(w in str(_e).lower() for w in ("credit", "quota", "billing")):
-                    reply = "I am Violet. My primary model needs credits. I am standing by."
-
-        if not reply:
-            reply = "I am Violet. I am here and listening."
-
+        reply = await _violet_llm(speech)
         if call_sid in _VOICE_SESSIONS:
             _VOICE_SESSIONS[call_sid]["last"] = reply[:100]
-
         return _R(content=_twiml_gather(reply[:300]), media_type="text/xml")
-
     except Exception:
         from fastapi.responses import Response as _R2
         return _R2(content=_twiml_gather("Violet is here. One moment please."), media_type="text/xml")
+
+@app.post("/violet/chat")
+async def violet_chat(body: dict):
+    """Text chat endpoint for Violet. Uses multi-provider fallback chain."""
+    import time as _time
+    prompt = body.get("message", "").strip()
+    if not prompt:
+        return {"ok": False, "error": "empty message"}
+    try:
+        reply = await _violet_llm(prompt)
+        return {"ok": True, "text": reply,
+                "timestamp": _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())}
+    except Exception as e:
+        return {"ok": False, "error": str(e), "text": "Violet is processing. Please try again."}
 
 @app.get("/voice/sessions")
 async def voice_sessions_list():

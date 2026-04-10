@@ -10,6 +10,7 @@ import GovernancePage from './pages/GovernancePage'
 import CallsPage from './pages/CallsPage'
 import BuildPage from './pages/BuildPage'
 import OmegaPage from './pages/OmegaPage'
+import VioletPage from './pages/VioletPage'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/calls" element={<CallsPage />} />
             <Route path="/build" element={<BuildPage />} />
             <Route path="/omega" element={<OmegaPage />} />
+            <Route path="/violet" element={<VioletPage />} />
           </Routes>
         </FounderShell>
       </Router>

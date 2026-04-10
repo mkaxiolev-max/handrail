@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { VioletLogo, AxiolevWordmark } from './brand/VioletMark'
 
 const routes = [
+  { path: '/violet', label: '⬡ Violet' },
   { path: '/briefing', label: 'Briefing' },
   { path: '/engine', label: 'Engine' },
   { path: '/runtime', label: 'Runtime' },
