@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pydantic
+anthropic>=0.20.0
+openai>=1.0.0
+google-generativeai>=0.4.0
+groq>=0.4.0
+httpx

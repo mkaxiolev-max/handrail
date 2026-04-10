@@ -77,6 +77,12 @@ services:
       - "9002:9002"
     environment:
       DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy

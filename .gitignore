@@ -11,3 +11,5 @@ services/handrail/
 scripts/
 *.command
 .env
+.env
+.env.local
