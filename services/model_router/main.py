@@ -60,7 +60,7 @@ PROVIDERS: dict[str, dict] = {
     "gemini": {
         "live": key_live(GEMINI_KEY),
         "key_env": "GOOGLE_API_KEY",
-        "primary_model": "gemini-2.0-flash-exp",
+        "primary_model": "gemini-2.0-flash",
         "always_active": False,
         "local": False,
     },
@@ -139,12 +139,13 @@ async def call_openai(prompt: str, model: str = "gpt-4o-mini",
         return {"provider": "openai", "model": model, "ok": False, "error": str(e)}
 
 # ── Gemini ─────────────────────────────────────────────────────────────────
-async def call_gemini(prompt: str, model: str = "gemini-2.0-flash-exp",
+async def call_gemini(prompt: str, model: str = "gemini-2.0-flash",
                        system: str = "", max_tokens: int = 1024) -> dict:
     """
     Google Gemini via google-generativeai SDK.
     SDK is synchronous — must use asyncio.to_thread to avoid blocking event loop.
-    Falls back to gemini-1.5-flash if primary model returns 404.
+    Model: gemini-2.0-flash (confirmed reachable with this key; -exp and 1.5 return 404).
+    Falls back to httpx REST call if SDK 404s (v1beta path issue).
     """
     if not key_live(GEMINI_KEY):
         return {"provider": "gemini", "model": model, "ok": False,
@@ -153,9 +154,7 @@ async def call_gemini(prompt: str, model: str = "gemini-2.0-flash-exp",
         import google.generativeai as genai
         import asyncio
         genai.configure(api_key=GEMINI_KEY)
-        full_prompt = f"{system}
-
-{prompt}" if system else prompt
+        full_prompt = (system + "\n\n" + prompt) if system else prompt
 
         def _call(m_name: str):
             m = genai.GenerativeModel(m_name)
@@ -164,11 +163,23 @@ async def call_gemini(prompt: str, model: str = "gemini-2.0-flash-exp",
         try:
             resp = await asyncio.to_thread(_call, model)
         except Exception as _e1:
-            if "404" in str(_e1) and model != "gemini-1.5-flash":
-                resp = await asyncio.to_thread(_call, "gemini-1.5-flash")
-                model = "gemini-1.5-flash"
-            else:
-                raise
+            err_str = str(_e1)
+            if "404" in err_str:
+                # SDK model path issue — fall back to httpx REST with v1beta
+                import httpx as _hx
+                async with _hx.AsyncClient(timeout=30.0) as _c:
+                    _r = await _c.post(
+                        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                        params={"key": GEMINI_KEY},
+                        json={"contents": [{"parts": [{"text": full_prompt}]}]},
+                    )
+                    if _r.status_code == 200:
+                        _d = _r.json()
+                        text = _d["candidates"][0]["content"]["parts"][0]["text"]
+                        return {"provider": "gemini", "model": model, "text": text, "ok": True}
+                    return {"provider": "gemini", "model": model, "ok": False,
+                            "error": f"REST fallback HTTP {_r.status_code}: {_r.text[:200]}"}
+            raise
 
         text = resp.text or ""
         return {
