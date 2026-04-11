@@ -1,0 +1,20 @@
+{
+  "hic_allowed": {
+    "verdict": "R0",
+    "gates_triggered": [],
+    "matched_count": 0,
+    "rationale": "No HIC patterns matched \u2014 intent classified clean"
+  },
+  "hic_bypass": {
+    "verdict": "R0",
+    "gates_triggered": [],
+    "matched_count": 0,
+    "rationale": "No HIC patterns matched \u2014 intent classified clean"
+  },
+  "pdp_deny": {
+    "effect": "DENY",
+    "reason": "Action 'canon.promote' requires founder identity \u2014 subject 'unknown' denied",
+    "obligations": [],
+    "rules_matched": 1
+  }
+}

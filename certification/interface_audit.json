@@ -1,0 +1,15 @@
+{
+  "violet_chat": {
+    "ok": true,
+    "text_preview": "AXIOLEV is my provider founder. Voice SMS and chat are all online and stable."
+  },
+  "voice_inbound": {
+    "twiml": true,
+    "pause": true,
+    "gather": true
+  },
+  "voice_sms": {
+    "twiml": true,
+    "message_tag": true
+  }
+}

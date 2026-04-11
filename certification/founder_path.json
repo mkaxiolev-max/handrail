@@ -1,0 +1,34 @@
+{
+  "generated": "2026-04-11T02:01:58.975733Z",
+  "founder": "Mike Kenworthy",
+  "entity": "AXIOLEV Holdings LLC",
+  "paths": {
+    "violet_text": {
+      "status": "PASS",
+      "response": "Founder path certified, all systems confirmed. Provider is AXIOLEV, ring status sovereign and locked."
+    },
+    "voice": {
+      "status": "PASS",
+      "pause": true,
+      "gather": true
+    },
+    "sms": {
+      "status": "PASS",
+      "message": "Hey, Founder Path cert issued! Grab it in your NS Infinity dashboard."
+    },
+    "governance": {
+      "status": "PASS",
+      "response": {
+        "verdict": "R0",
+        "gates_triggered": [],
+        "matched_count": 0,
+        "rationale": "No HIC patterns matched \u2014 intent classified clean"
+      }
+    },
+    "receipt": {
+      "status": "PASS",
+      "count": 54
+    }
+  },
+  "all_pass": true
+}

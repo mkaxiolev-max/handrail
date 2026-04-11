@@ -1,0 +1,118 @@
+# NS∞ Repo Inventory — Fri Apr 10 19:01:34 PDT 2026
+
+## Root files
+total 904
+drwxr-xr-x  127 axiolevns  staff   4064 Apr 10 17:58 .
+drwxr-x---+  69 axiolevns  staff   2208 Apr 10 18:11 ..
+drwxr-xr-x    4 axiolevns  staff    128 Apr  3 14:45 .adapter_artifacts
+drwxr-xr-x    4 axiolevns  staff    128 Mar 14 20:10 .backup
+drwxr-xr-x    3 axiolevns  staff     96 Apr 10 19:01 .claude
+drwxr-xr-x   11 axiolevns  staff    352 Apr  6 13:27 .cps
+-rw-------    1 axiolevns  staff   1173 Apr 10 16:54 .env
+-rw-r--r--    1 axiolevns  staff    532 Apr  4 16:27 .env.example
+-rw-------    1 axiolevns  staff     29 Mar  2 16:11 .env.save
+drwxr-xr-x   15 axiolevns  staff    480 Apr 10 18:33 .git
+-rw-r--r--    1 axiolevns  staff    375 Apr  9 19:34 .gitignore
+drwxr-xr-x   12 axiolevns  staff    384 Apr  7 14:34 .orchestration_logs
+drwxr-xr-x@   4 axiolevns  staff    128 Apr  9 16:25 .pycache_check
+drwxr-xr-x    6 axiolevns  staff    192 Apr  3 14:49 .pytest_cache
+drwxr-xr-x    8 axiolevns  staff    256 Apr  4 18:15 .run
+drwxr-xr-x    3 axiolevns  staff     96 Mar  5 20:19 .runbook
+drwxr-xr-x  328 axiolevns  staff  10496 Apr  6 14:59 .runs
+-rw-r--r--    1 axiolevns  staff     41 Apr 10 17:58 .test_history
+drwxr-xr-x    4 axiolevns  staff    128 Mar 27 15:20 .vercel
+drwxr-xr-x    3 axiolevns  staff     96 Apr  4 17:04 .yubikey
+drwxr-xr-x    4 axiolevns  staff    128 Apr  4 16:05 abi
+-rw-r--r--    1 axiolevns  staff   2635 Apr  4 17:28 ACTIVATION_CHECKLIST.md
+-rw-r--r--    1 axiolevns  staff   2660 Apr  3 19:47 ADAPTER_COMPLETE.md
+drwxr-xr-x    3 axiolevns  staff     96 Mar 24 19:23 adapters
+-rw-r--r--    1 axiolevns  staff    887 Apr  7 16:47 API_REFERENCE.json
+-rw-r--r--    1 axiolevns  staff   3952 Apr  4 18:37 ATOMLEX_ARCHITECTURE.md
+-rwxr-xr-x    1 axiolevns  staff   8232 Apr  9 18:34 axiolev_push.sh
+-rw-r--r--    1 axiolevns  staff   7920 Apr  4 17:29 AXIOLEV_STATE.md
+drwxr-xr-x    5 axiolevns  staff    160 Mar 27 14:24 bin
+-rw-r--r--    1 axiolevns  staff   5731 Apr  4 16:30 BLACK_STATUS.md
+-rwxr-xr-x    1 axiolevns  staff    918 Mar  3 16:19 boot_cold.sh
+-rwxr-xr-x    1 axiolevns  staff     97 Feb 28 12:11 BOOT_EZ.command
+-rwxr-xr-x    1 axiolevns  staff  10737 Apr  5 15:44 boot_mission_graph.py
+-rwxr-xr-x    1 axiolevns  staff   5793 Apr  2 12:11 boot.sh
+drwxr-xr-x    6 axiolevns  staff    192 Apr 10 19:01 certification
+-rw-r--r--    1 axiolevns  staff   4784 Apr  9 18:33 CHANGELOG.md
+-rw-r--r--    1 axiolevns  staff  15811 Apr  3 19:24 CLAUDE.md
+-rw-r--r--    1 axiolevns  staff   1636 Apr  3 19:44 COMPLETION_RECEIPT.md
+drwxr-xr-x    3 axiolevns  staff     96 Apr  5 16:13 config
+
+## Services
+alexandria
+atomlex
+canon
+conference_orchestrator
+continuum
+handrail
+handrail_bridge
+handrail-adapter-macos
+integrity
+mobile
+model_router
+ns
+ns_api
+ns_bridge
+ns_continuum
+ns_core
+omega
+shared
+telephony_bridge
+test
+violet
+voice_gateway
+
+## Frontend dirs
+BriefingPage.jsx
+BuildPage.jsx
+CallsPage.jsx
+EnginePage.jsx
+GovernancePage.jsx
+MemoryPage.jsx
+OmegaPage.jsx
+RuntimePage.jsx
+VioletPage.jsx
+EngineRoom.tsx
+GovernancePanel.tsx
+OmegaPanel.tsx
+OrganismMap.tsx
+ProgramsRuntime.tsx
+Timeline.tsx
+VioletMark.tsx
+VoiceOverlay.tsx
+
+## docker-compose services
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ns
+      POSTGRES_USER: ns
+      POSTGRES_PASSWORD: ns_secure_pwd
+    ports:
+    volumes:
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "ns"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7
+    ports:
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  ns_core:
+    build:
+      context: .
+      dockerfile: services/ns_core/Dockerfile
+    ports:
+    environment:
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      REDIS_URL: redis://redis:6379
+      NORTHSTAR_WEBHOOK_BASE: ${NORTHSTAR_WEBHOOK_BASE:-}

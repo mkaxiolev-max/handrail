@@ -1,3 +1,4 @@
+import { VioletPanel } from "../../components/VioletPanel"
 'use client'
 import { useState, useEffect } from 'react'
 import { tokens } from '@/lib/design-tokens'

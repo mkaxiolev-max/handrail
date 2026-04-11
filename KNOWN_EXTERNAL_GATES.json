@@ -1,0 +1,98 @@
+{
+  "gates": [
+    {
+      "gate": "Stripe LLC verification",
+      "subsystem": "Handrail/ROOT revenue path",
+      "type": "external",
+      "owner": "Mike Kenworthy",
+      "action": "Complete LLC verification at dashboard.stripe.com",
+      "status": "PENDING",
+      "proof": null,
+      "blocks": "STRIPE_SK_PENDING key, price IDs, Ring 5 completion"
+    },
+    {
+      "gate": "Stripe live secret key",
+      "subsystem": "Revenue path",
+      "type": "config",
+      "owner": "Mike Kenworthy",
+      "action": "Replace STRIPE_SK_PENDING in .env after verification",
+      "status": "PENDING",
+      "proof": null,
+      "blocks": "Payment processing"
+    },
+    {
+      "gate": "ROOT price IDs",
+      "subsystem": "ROOT Pro $49/mo, ROOT Auto $99/mo",
+      "type": "external",
+      "owner": "Mike Kenworthy",
+      "action": "Create price IDs in Stripe dashboard",
+      "status": "PENDING",
+      "proof": null,
+      "blocks": "ROOT product launch"
+    },
+    {
+      "gate": "YubiKey slot_2",
+      "subsystem": "Sovereignty quorum (2-of-3)",
+      "type": "hardware",
+      "owner": "Mike Kenworthy",
+      "action": "Procure YubiKey 5 NFC, enroll via Founder Console",
+      "status": "PENDING",
+      "proof": "slot_1 enrolled (serial 26116460)",
+      "blocks": "Full sovereign boot quorum"
+    },
+    {
+      "gate": "DNS root.axiolev.com",
+      "subsystem": "ROOT deployment",
+      "type": "external",
+      "owner": "Mike Kenworthy",
+      "action": "GoDaddy: CNAME root.axiolev.com \u2192 Vercel deployment URL",
+      "status": "PENDING",
+      "proof": null,
+      "blocks": "ROOT production URL"
+    },
+    {
+      "gate": "Groq API key rotation",
+      "subsystem": "model_router Groq provider",
+      "type": "config",
+      "owner": "Mike Kenworthy",
+      "action": "console.groq.com/keys \u2192 new gsk_ key \u2192 nano .env \u2192 docker compose up -d model_router",
+      "status": "PENDING",
+      "proof": "Current key returns 401",
+      "blocks": "Groq llama-3.3-70b provider",
+      "time": "5 minutes"
+    },
+    {
+      "gate": "OpenAI credits",
+      "subsystem": "model_router OpenAI provider",
+      "type": "billing",
+      "owner": "Mike Kenworthy",
+      "action": "platform.openai.com/settings/billing",
+      "status": "PENDING",
+      "proof": "Current key returns 429 quota",
+      "blocks": "gpt-4o-mini provider"
+    },
+    {
+      "gate": "Gemini quota/plan",
+      "subsystem": "model_router Gemini provider",
+      "type": "billing",
+      "owner": "Mike Kenworthy",
+      "action": "aistudio.google.com \u2192 upgrade to paid plan OR wait for rate reset",
+      "status": "PENDING",
+      "proof": "gemini-2.0-flash returns 429 quota \u2014 model path correct",
+      "blocks": "Gemini provider"
+    },
+    {
+      "gate": "Twilio SMS webhook",
+      "subsystem": "voice/sms endpoint",
+      "type": "config",
+      "owner": "Mike Kenworthy",
+      "action": "Twilio Console \u2192 +1 (307) 202-4418 \u2192 Messaging \u2192 [ngrok]/voice/sms (POST)",
+      "status": "DONE",
+      "proof": "User confirmed webhook set",
+      "blocks": "Nothing \u2014 confirmed done"
+    }
+  ],
+  "total": 9,
+  "pending": 8,
+  "done": 1
+}

@@ -1,0 +1,284 @@
+{
+  "generated": "2026-04-11T02:01:35Z",
+  "subsystems": [
+    {
+      "name": "ns_core",
+      "role": "Primary API + governance proxy + voice + intent",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9000
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "postgres",
+        "redis",
+        "model_router",
+        "omega"
+      ],
+      "downstream": [
+        "violet",
+        "frontend",
+        "ns_ui",
+        "twilio"
+      ],
+      "persistence": [
+        "postgres",
+        "alexandria"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "alexandria",
+      "role": "Memory substrate \u2014 atoms, edges, receipts",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9001
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "postgres"
+      ],
+      "downstream": [
+        "ns_core"
+      ],
+      "persistence": [
+        "postgres",
+        "/Volumes/NSExternal/ALEXANDRIA"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "model_router",
+      "role": "Multi-provider LLM adjudication",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9002
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "anthropic_api",
+        "openai_api",
+        "xai_api",
+        "google_api",
+        "groq_api",
+        "ollama_local"
+      ],
+      "downstream": [
+        "ns_core"
+      ],
+      "persistence": [],
+      "proof": "/providers"
+    },
+    {
+      "name": "violet",
+      "role": "Relational presentation layer / ISR v2",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9003
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "ns_core",
+        "model_router"
+      ],
+      "downstream": [
+        "frontend",
+        "ns_ui"
+      ],
+      "persistence": [
+        "postgres"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "canon",
+      "role": "Governance authority \u2014 sole promotion path",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9004
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "postgres"
+      ],
+      "downstream": [
+        "ns_core"
+      ],
+      "persistence": [
+        "postgres"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "integrity",
+      "role": "Receipt chain verification + boot invariants",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9005
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "postgres",
+        "alexandria"
+      ],
+      "downstream": [
+        "ns_core"
+      ],
+      "persistence": [
+        "postgres"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "omega",
+      "role": "Bounded simulation \u2014 advisory_only, HIC/PDP guarded",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        9010
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "postgres",
+        "ns_core/hic",
+        "ns_core/pdp"
+      ],
+      "downstream": [
+        "ns_core/omega_proxy",
+        "frontend"
+      ],
+      "persistence": [
+        "postgres"
+      ],
+      "proof": "/healthz"
+    },
+    {
+      "name": "postgres",
+      "role": "Primary DB",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        5432,
+        5433
+      ],
+      "health_endpoint": null,
+      "upstream": [],
+      "downstream": [
+        "all_services"
+      ],
+      "persistence": [
+        "/var/lib/postgresql"
+      ],
+      "proof": "SELECT 1"
+    },
+    {
+      "name": "redis",
+      "role": "Cache/pub-sub",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "compose",
+      "ports": [
+        6379,
+        6380
+      ],
+      "health_endpoint": null,
+      "upstream": [],
+      "downstream": [
+        "ns_core"
+      ],
+      "persistence": [],
+      "proof": "PING"
+    },
+    {
+      "name": "frontend",
+      "role": "Vite+React founder UI: /violet /briefing /omega etc",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "host_node",
+      "ports": [
+        3000
+      ],
+      "health_endpoint": "/",
+      "upstream": [
+        "ns_core",
+        "model_router"
+      ],
+      "downstream": [
+        "founder"
+      ],
+      "persistence": [],
+      "proof": "HTTP 200"
+    },
+    {
+      "name": "ns_ui",
+      "role": "Next.js Living Architecture orbital view",
+      "required": true,
+      "runtime_status": "live",
+      "launch_mode": "host_node",
+      "ports": [
+        3002
+      ],
+      "health_endpoint": "/",
+      "upstream": [
+        "ns_core"
+      ],
+      "downstream": [
+        "founder"
+      ],
+      "persistence": [],
+      "proof": "HTTP 200"
+    },
+    {
+      "name": "handrail",
+      "role": "CPS execution control plane \u2014 parallel product track",
+      "required": false,
+      "runtime_status": "not_in_compose",
+      "launch_mode": "separate_product",
+      "ports": [
+        8011
+      ],
+      "health_endpoint": "/healthz",
+      "upstream": [
+        "ns_core"
+      ],
+      "downstream": [
+        "mac_adapter"
+      ],
+      "persistence": [],
+      "proof": "see HANDRAIL_ROLE_DECISION.md"
+    },
+    {
+      "name": "ollama",
+      "role": "Local LLM: llama3, mistral, gpt-oss",
+      "required": false,
+      "runtime_status": "live_host",
+      "launch_mode": "host_daemon",
+      "ports": [
+        11434
+      ],
+      "health_endpoint": "/",
+      "upstream": [],
+      "downstream": [
+        "model_router"
+      ],
+      "persistence": [
+        "/opt/homebrew/lib/ollama"
+      ],
+      "proof": "GET /api/tags"
+    }
+  ]
+}

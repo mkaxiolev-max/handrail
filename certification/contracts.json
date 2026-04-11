@@ -1,0 +1,61 @@
+{
+  "ns_core/healthz": [
+    "status",
+    "service"
+  ],
+  "ns_core/violet/status": [
+    "status",
+    "mode",
+    "interface",
+    "voice_inbound",
+    "chat_inbound"
+  ],
+  "ns_core/programs": [
+    "status",
+    "programs",
+    "by_state"
+  ],
+  "ns_core/hic/gates": [
+    "status",
+    "pattern_count",
+    "gates"
+  ],
+  "ns_core/hic/evaluate": [
+    "verdict",
+    "gates_triggered",
+    "matched_count",
+    "rationale"
+  ],
+  "ns_core/pdp/decide": [
+    "effect",
+    "reason",
+    "obligations",
+    "rules_matched"
+  ],
+  "ns_core/voice/sessions": [
+    "sessions",
+    "count"
+  ],
+  "ns_core/intent/execute": [
+    "status",
+    "receipt_hash",
+    "chain_verified",
+    "mode",
+    "pressure",
+    "response_shape",
+    "canon_version",
+    "canon_hash",
+    "memory_atoms_written",
+    "memory_atoms_queried",
+    "feed_items_added",
+    "voice_session_id",
+    "result",
+    "error",
+    "narrative"
+  ],
+  "omega_simulate_schema": {
+    "domain_type": "test",
+    "bounded_context": {},
+    "variables": {}
+  }
+}

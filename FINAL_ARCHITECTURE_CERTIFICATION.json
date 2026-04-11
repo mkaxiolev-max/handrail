@@ -1,0 +1,55 @@
+{
+  "generated": "2026-04-11T02:01:59.095975Z",
+  "entity": "AXIOLEV Holdings LLC",
+  "jurisdiction": "Wyoming, USA",
+  "author": "Mike Kenworthy",
+  "system": "NS\u221e (NorthStar Infinity)",
+  "branch": "boot-operational-closure",
+  "commit": "52a9359 fix(gemini): correct model path to gemini-2.0-flash + asyncio.to_thread",
+  "services": {
+    "ns_core": "ok",
+    "alexandria": "ok",
+    "model_router": "ok",
+    "violet": "ok",
+    "canon": "ok",
+    "integrity": "ok",
+    "omega": "ok"
+  },
+  "all_services_up": true,
+  "llm_providers_live": [
+    "anthropic",
+    "openai",
+    "gemini",
+    "grok",
+    "groq",
+    "ollama"
+  ],
+  "llm_providers_external": [],
+  "external_gates_pending": 8,
+  "external_gates_done": 1,
+  "pending_gates": [
+    "Stripe LLC verification",
+    "Stripe live secret key",
+    "ROOT price IDs",
+    "YubiKey slot_2",
+    "DNS root.axiolev.com",
+    "Groq API key rotation",
+    "OpenAI credits",
+    "Gemini quota/plan"
+  ],
+  "ring_status": {
+    "ring_1_foundations": "COMPLETE",
+    "ring_2_intelligence": "COMPLETE",
+    "ring_3_sovereign": "COMPLETE",
+    "ring_4_capability": "COMPLETE",
+    "ring_5_production": "BLOCKED_EXTERNAL_GATES"
+  },
+  "verdict": "SOFTWARE_COMPLETE_EXTERNAL_GATES_REMAIN",
+  "voice_loop_fixed": true,
+  "sms_route_live": true,
+  "violet_text_chat_live": true,
+  "living_architecture_violet_integrated": true,
+  "receipt_chain_present": true,
+  "constitutional_invariants_enforced": true,
+  "omega_advisory_only_enforced": true
+}
