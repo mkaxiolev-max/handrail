@@ -497,16 +497,26 @@ _WEBHOOK_BASE = os.environ.get("NORTHSTAR_WEBHOOK_BASE", "").rstrip("/")
 _VOICE_SESSIONS: dict = {}
 
 def _twiml_gather(say_text: str) -> str:
+    """
+    Build TwiML gather response.
+    Key: <Say> is OUTSIDE <Gather> with a <Pause length="1"/> between them.
+    If Say were inside Gather, Polly audio triggers Gather immediately on finish,
+    Twilio captures silence, returns empty SpeechResult → infinite loop.
+    speechTimeout="3" waits 3s of real silence after caller stops speaking.
+    actionOnEmptyResult="true" routes empty results here so we can count retries.
+    """
     action = f"{_WEBHOOK_BASE}/voice/transcription" if _WEBHOOK_BASE else "/voice/transcription"
     safe = say_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
+  <Say voice="Polly.Matthew-Neural">{safe}</Say>
+  <Pause length="1"/>
   <Gather input="speech" action="{action}" method="POST"
-          speechTimeout="auto" language="en-US" timeout="8">
-    <Say voice="Polly.Matthew-Neural">{safe}</Say>
+          speechTimeout="3" language="en-US" timeout="15"
+          actionOnEmptyResult="true">
   </Gather>
-  <Say voice="Polly.Matthew-Neural">I did not catch that. Please try again.</Say>
-  <Redirect method="POST">{action.rsplit("/voice/transcription", 1)[0]}/voice/inbound</Redirect>
+  <Say voice="Polly.Matthew-Neural">I did not hear you. Please call again.</Say>
+  <Hangup/>
 </Response>"""
 
 @app.post("/voice/inbound")
@@ -651,11 +661,29 @@ async def voice_transcription(request: Request):
         form = dict(await request.form())
         call_sid = form.get("CallSid", "unknown")
         speech = form.get("SpeechResult", "").strip()
+
         if not speech:
-            return _R(content=_twiml_gather("I did not catch that. Please go ahead."), media_type="text/xml")
+            # Empty speech: retry up to 2 times, then exit gracefully.
+            # Without this counter the old code would loop forever: empty→gather→empty→...
+            session = _VOICE_SESSIONS.get(call_sid, {})
+            retries = session.get("retries", 0)
+            if retries >= 2:
+                twiml = """<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Matthew-Neural">I could not hear you. Please call again and speak after my greeting. Goodbye.</Say>
+  <Hangup/>
+</Response>"""
+                return _R(content=twiml, media_type="text/xml")
+            _VOICE_SESSIONS[call_sid] = {**session, "retries": retries + 1}
+            prompts = ["I did not catch that. Please go ahead.", "Still here. Please speak."]
+            return _R(content=_twiml_gather(prompts[min(retries, 1)]), media_type="text/xml")
+
+        # Got real speech — reset retry counter, call LLM
+        session = _VOICE_SESSIONS.get(call_sid, {})
+        _VOICE_SESSIONS[call_sid] = {**session, "retries": 0, "last_input": speech[:200], "status": "processing"}
         reply = await _violet_llm(speech)
-        if call_sid in _VOICE_SESSIONS:
-            _VOICE_SESSIONS[call_sid]["last"] = reply[:100]
+        _VOICE_SESSIONS[call_sid]["last"] = reply[:100]
+        _VOICE_SESSIONS[call_sid]["status"] = "speaking"
         return _R(content=_twiml_gather(reply[:300]), media_type="text/xml")
     except Exception:
         from fastapi.responses import Response as _R2
@@ -691,6 +719,45 @@ async def mac_adapter_status():
         "receipts_issued": len(gate.receipts()),
         "denied_count": gate.denied_count(),
     }
+
+
+@app.post("/voice/sms")
+async def voice_sms(request: Request):
+    """
+    Twilio SMS webhook. Returns TwiML <Message> (NOT <Say> — that is voice-only).
+    Uses _violet_llm fallback chain with an SMS-specific system prompt.
+
+    SETUP REQUIRED IN TWILIO CONSOLE:
+    Phone Numbers → +1 (307) 202-4418 → Messaging →
+    'A Message Comes In' → Webhook → [ngrok URL]/voice/sms  (HTTP POST)
+    """
+    from fastapi.responses import Response as _R
+    import html as _ht
+    try:
+        form = dict(await request.form())
+        body = (form.get("Body") or "").strip()
+        if not body:
+            return _R(
+                content="""<?xml version="1.0" encoding="UTF-8"?><Response><Message>Violet here. Send me a message.</Message></Response>""",
+                media_type="text/xml",
+            )
+        sms_system = (
+            "You are Violet, the voice of NS Infinity by AXIOLEV. "
+            "You are responding via SMS text message. "
+            "Keep your response under 140 characters when possible. "
+            "Be direct and conversational. No markdown, no bullet points."
+        )
+        reply = await _violet_llm(body, system=sms_system)
+        safe = _ht.escape(reply[:1500])
+        return _R(
+            content=f"""<?xml version="1.0" encoding="UTF-8"?><Response><Message>{safe}</Message></Response>""",
+            media_type="text/xml",
+        )
+    except Exception:
+        return _R(
+            content="""<?xml version="1.0" encoding="UTF-8"?><Response><Message>Violet here. Please try again.</Message></Response>""",
+            media_type="text/xml",
+        )
 
 
 if __name__ == "__main__":
