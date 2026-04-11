@@ -1,131 +1,233 @@
 #!/usr/bin/env bash
-# NS∞ ONE-CLICK FOUNDER BOOT
-# Usage: ./NS_BOOT.sh
-set -euo pipefail
+# =============================================================================
+# NS∞ — FULL COLD BOOT
+# Single command. Full organism. Architecture-faithful.
+# AXIOLEV Holdings LLC · Wyoming, USA
+# =============================================================================
+set -uo pipefail
+cd ~/axiolev_runtime
 
-BOLD='\033[1m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-RESET='\033[0m'
-
-ok()   { echo -e "  ${GREEN}✓${RESET} $1"; }
-fail() { echo -e "  ${RED}✗${RESET} $1"; }
-info() { echo -e "  ${CYAN}→${RESET} $1"; }
-warn() { echo -e "  ${YELLOW}!${RESET} $1"; }
+PASS=0; FAIL=0
+ok()   { echo "  ✓ $*"; PASS=$((PASS+1)); }
+fail() { echo "  ✗ $*"; FAIL=$((FAIL+1)); }
+warn() { echo "  ~ $*"; }
 
 echo ""
-echo -e "${BOLD}╔══════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}║      NS∞ FOUNDER BOOT SEQUENCE       ║${RESET}"
-echo -e "${BOLD}╚══════════════════════════════════════╝${RESET}"
+echo "╔══════════════════════════════════════════════════════════════════════════╗"
+echo "║   NS∞ — FULL BOOT                                                        ║"
+echo "║   $(date '+%Y-%m-%d %H:%M:%S')  ·  AXIOLEV Holdings LLC                          ║"
+echo "╚══════════════════════════════════════════════════════════════════════════╝"
 echo ""
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
-
-# ── Step 1: Docker check ──────────────────────────────────────────────────────
-echo -e "${BOLD}[1/6] Docker check${RESET}"
-DOCKER_HOST="unix:///Users/${USER}/.docker/run/docker.sock"
-export DOCKER_HOST
-
-if docker info >/dev/null 2>&1; then
-    ok "Docker daemon running"
-else
-    fail "Docker daemon not running — start Docker Desktop and retry"
-    exit 1
-fi
-
-# ── Step 2: SSD mount check ───────────────────────────────────────────────────
-echo -e "${BOLD}[2/6] SSD mount check${RESET}"
-if [ -d "/Volumes/NSExternal/ALEXANDRIA" ]; then
-    ok "NSExternal SSD mounted at /Volumes/NSExternal"
-else
-    warn "NSExternal not mounted — using ~/ALEXANDRIA fallback"
-    mkdir -p ~/ALEXANDRIA
-fi
-
-# ── Step 3: Compose up ───────────────────────────────────────────────────────
-echo -e "${BOLD}[3/6] Starting containers${RESET}"
-info "Running docker compose up -d --build"
-if docker compose up -d --build 2>&1 | tail -5; then
-    ok "Compose up complete"
-else
-    fail "docker compose up failed — check logs"
-    exit 1
-fi
-
-# ── Step 4: Health wait ───────────────────────────────────────────────────────
-echo -e "${BOLD}[4/6] Waiting for services${RESET}"
-SERVICES=(
-    "ns_core:9000:/healthz"
-    "alexandria:9001:/atoms/healthz"
-    "handrail:8011:/healthz"
-)
-
-wait_healthy() {
-    local name="$1" port="$2" path="$3"
-    local tries=0 max=30
-    while [ $tries -lt $max ]; do
-        if curl -sf "http://127.0.0.1:${port}${path}" >/dev/null 2>&1; then
-            ok "$name (port $port) healthy"
-            return 0
-        fi
-        tries=$((tries + 1))
+# =============================================================================
+# 1. DOCKER
+# =============================================================================
+echo "1. Docker..."
+DOCKER_SOCK=""
+for c in "/var/run/docker.sock" "$HOME/.docker/run/docker.sock" "$HOME/.docker/desktop/docker.sock"; do
+    [ -S "$c" ] && DOCKER_SOCK="unix://$c" && break
+done
+if [ -z "$DOCKER_SOCK" ]; then
+    warn "Docker not running — launching Docker Desktop..."
+    open -a Docker 2>/dev/null || true
+    for i in $(seq 1 30); do
         sleep 2
+        for c in "/var/run/docker.sock" "$HOME/.docker/run/docker.sock"; do
+            [ -S "$c" ] && DOCKER_SOCK="unix://$c" && break 2
+        done
+        [ $((i % 5)) -eq 0 ] && echo "  waiting for Docker... (${i}s)"
     done
-    fail "$name (port $port) not healthy after ${max} retries"
-    return 1
-}
+fi
+[ -z "$DOCKER_SOCK" ] && fail "Docker socket not found" && exit 1
+export DOCKER_HOST="$DOCKER_SOCK"
+ok "Docker: $DOCKER_SOCK"
 
-ALL_HEALTHY=true
-for svc in "${SERVICES[@]}"; do
-    IFS=: read -r name port path <<< "$svc"
-    wait_healthy "$name" "$port" "$path" || ALL_HEALTHY=false
+# =============================================================================
+# 2. NSEXTERNAL SSD
+# =============================================================================
+echo ""
+echo "2. NSExternal SSD..."
+if [ -d "/Volumes/NSExternal" ]; then
+    ok "NSExternal mounted"
+    mkdir -p /Volumes/NSExternal/ALEXANDRIA/ledger
+else
+    warn "NSExternal not mounted — receipts will use local fallback"
+fi
+
+# =============================================================================
+# 3. ENV KEYS (presence only — no values printed)
+# =============================================================================
+echo ""
+echo "3. API keys..."
+for KEY in ANTHROPIC_API_KEY XAI_API_KEY OPENAI_API_KEY GOOGLE_API_KEY GROQ_API_KEY; do
+    VAL=$(grep "^${KEY}=" .env 2>/dev/null | cut -d= -f2- | tr -d '"' | tr -d "'")
+    if [ -n "$VAL" ] && [ "${#VAL}" -gt 10 ] && \
+       [ "$VAL" != "PENDING" ] && [ "$VAL" != "sk-pending" ] && \
+       [ "$VAL" != "YOUR_KEY_HERE" ]; then
+        ok "$KEY present (${#VAL} chars)"
+    else
+        warn "$KEY absent or placeholder"
+    fi
 done
 
-if [ "$ALL_HEALTHY" = false ]; then
-    fail "Some services not healthy — check: docker compose logs"
-    exit 1
+# =============================================================================
+# 4. FULL STACK BOOT
+# =============================================================================
+echo ""
+echo "4. Bringing up full stack..."
+docker compose up -d 2>&1 \
+    | grep -E "Started|Healthy|Running|Recreated|Created|Warning" \
+    | grep -v "version is obsolete" \
+    | sed 's/^/  /'
+
+echo ""
+echo "  Waiting for services to converge (25s)..."
+sleep 25
+
+# =============================================================================
+# 5. HEALTH CHECKS (with retry)
+# =============================================================================
+echo ""
+echo "5. Health checks..."
+ALL_HEALTHY=true
+for pair in "9000:ns_core" "9001:alexandria" "9002:model_router" "9003:violet" "9004:canon" "9005:integrity" "9010:omega"; do
+    port="${pair%%:*}"; svc="${pair##*:}"
+    HEALTHY=false
+    for attempt in 1 2 3; do
+        S=$(curl -sf --connect-timeout 5 "http://127.0.0.1:${port}/healthz" 2>/dev/null \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('status','?'))" 2>/dev/null \
+            || echo "unreachable")
+        if [ "$S" = "ok" ] || [ "$S" = "healthy" ]; then
+            ok ":$port $svc"
+            HEALTHY=true
+            break
+        fi
+        [ $attempt -lt 3 ] && sleep 5
+    done
+    $HEALTHY || { fail ":$port $svc — $(docker compose logs $svc --tail=3 2>/dev/null | tail -1)"; ALL_HEALTHY=false; }
+done
+
+# =============================================================================
+# 6. LLM PROVIDER STATUS
+# =============================================================================
+echo ""
+echo "6. LLM providers..."
+curl -sf --connect-timeout 5 http://127.0.0.1:9002/providers 2>/dev/null \
+    | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+for name, p in d.get('providers', {}).items():
+    live = p.get('live', False)
+    key  = p.get('key_present', False)
+    model = p.get('primary_model', '?')
+    local = ' [LOCAL]' if p.get('local') else ''
+    mark = '✓' if live else ('~' if key else '✗')
+    status = 'LIVE' if live else ('KEY_NEEDS_BILLING' if key else 'NO_KEY')
+    print(f'  {mark} {name:12s} | {status:18s} | {model}{local}')
+" 2>/dev/null || warn "model_router /providers unreachable"
+
+# =============================================================================
+# 7. VIOLET CHAT VERIFY
+# =============================================================================
+echo ""
+echo "7. Violet intelligence check..."
+VIOLET_RESP=$(curl -sf --connect-timeout 30 \
+    -X POST http://127.0.0.1:9000/violet/chat \
+    -H 'Content-Type: application/json' \
+    -d '{"message":"Boot check. Confirm online and name your active provider."}' \
+    2>/dev/null \
+    | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('text','')[:80])" \
+    2>/dev/null || echo "")
+[ -n "$VIOLET_RESP" ] && ok "Violet: $VIOLET_RESP" || fail "Violet not responding"
+
+# =============================================================================
+# 8. VOICE ROUTE VERIFY
+# =============================================================================
+echo ""
+echo "8. Voice route check..."
+VOICE=$(curl -sf --connect-timeout 8 \
+    -X POST http://127.0.0.1:9000/voice/inbound \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "CallSid=CAboot&From=%2B13072024418&CallStatus=ringing" 2>/dev/null)
+echo "$VOICE" | grep -q "<Response" && ok "voice/inbound → TwiML" || fail "voice/inbound not returning TwiML"
+echo "$VOICE" | grep -q "<Pause"   && ok "  <Pause> present (loop-fix confirmed)" || warn "  <Pause> not found"
+echo "$VOICE" | grep -q "<Gather"  && ok "  <Gather> present" || fail "  <Gather> missing"
+
+# =============================================================================
+# 9. FRONTENDS
+# =============================================================================
+echo ""
+echo "9. Frontends..."
+
+# Vite/React :3000
+if curl -sf --connect-timeout 3 http://localhost:3000 &>/dev/null; then
+    ok "Frontend :3000 already running"
+else
+    echo "  Starting React frontend..."
+    cd frontend
+    [ -d node_modules ] || npm install --silent 2>&1 | tail -2 | sed 's/^/  /'
+    npm run dev > /tmp/ns_frontend.log 2>&1 &
+    cd ~/axiolev_runtime
+    sleep 6
+    curl -sf --connect-timeout 4 http://localhost:3000 &>/dev/null \
+        && ok "Frontend :3000 started" \
+        || warn "Frontend :3000 still starting (check /tmp/ns_frontend.log)"
 fi
 
-# ── Step 5: Endpoint verify ───────────────────────────────────────────────────
-echo -e "${BOLD}[5/6] Endpoint verification${RESET}"
-check_endpoint() {
-    local label="$1" url="$2"
-    local result
-    result=$(curl -sf "$url" 2>/dev/null) || { fail "$label — no response"; return; }
-    local status
-    status=$(echo "$result" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status','?'))" 2>/dev/null || echo "?")
-    if [ "$status" = "ok" ] || [ "$status" = "DEGRADED" ]; then
-        ok "$label → status=$status"
-    else
-        warn "$label → status=$status"
-    fi
-}
+# Next.js ns_ui :3002
+if curl -sf --connect-timeout 3 http://localhost:3002 &>/dev/null; then
+    ok "ns_ui :3002 already running"
+else
+    echo "  Starting ns_ui..."
+    cd ns_ui
+    [ -d node_modules ] || npm install --silent 2>&1 | tail -2 | sed 's/^/  /'
+    npm run dev -- -p 3002 > /tmp/ns_ui.log 2>&1 &
+    cd ~/axiolev_runtime
+    sleep 8
+    curl -sf --connect-timeout 4 http://localhost:3002 &>/dev/null \
+        && ok "ns_ui :3002 started" \
+        || warn "ns_ui :3002 still starting (check /tmp/ns_ui.log)"
+fi
 
-check_endpoint "ns_core /healthz"      "http://127.0.0.1:9000/healthz"
-check_endpoint "ns_core /system/now"   "http://127.0.0.1:9000/system/now"
-check_endpoint "ns_core /violet/isr"   "http://127.0.0.1:9000/violet/isr"
-check_endpoint "alexandria /atoms/healthz" "http://127.0.0.1:9001/atoms/healthz"
-
-# ── Step 6: DB health ─────────────────────────────────────────────────────────
-echo -e "${BOLD}[6/6] DB health${RESET}"
-DB_COUNTS=$(curl -sf "http://127.0.0.1:9000/system/now" 2>/dev/null | \
-    python3 -c "import sys,json; d=json.load(sys.stdin); m=d.get('memory',{}); print(f\"atoms={m.get('atoms',0)} edges={m.get('edges',0)} receipts={m.get('receipts',0)}\")" 2>/dev/null || echo "unavailable")
-ok "DB counts: $DB_COUNTS"
-
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-GIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-ok "Git: branch=$GIT_BRANCH hash=$GIT_HASH"
-
+# =============================================================================
+# 10. OPEN BROWSER TABS
+# =============================================================================
 echo ""
-echo -e "${BOLD}${GREEN}╔══════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}${GREEN}║       NS∞ BOOT COMPLETE              ║${RESET}"
-echo -e "${BOLD}${GREEN}╚══════════════════════════════════════╝${RESET}"
+echo "10. Opening founder surfaces..."
+sleep 1
+open "http://localhost:3000/violet"   2>/dev/null || true
+sleep 0.5
+open "http://localhost:3002"          2>/dev/null || true
+sleep 0.5
+open "http://localhost:3000/briefing" 2>/dev/null || true
+ok "Opened: /violet · Living Architecture · /briefing"
+
+# =============================================================================
+# FINAL REPORT
+# =============================================================================
 echo ""
-echo -e "  Violet:     ${CYAN}http://127.0.0.1:3000${RESET}"
-echo -e "  NS Core:    ${CYAN}http://127.0.0.1:9000${RESET}"
-echo -e "  Alexandria: ${CYAN}http://127.0.0.1:9001${RESET}"
-echo -e "  Handrail:   ${CYAN}http://127.0.0.1:8011${RESET}"
+echo "╔══════════════════════════════════════════════════════════════════════════╗"
+echo "║   NS∞ BOOT COMPLETE                                                      ║"
+echo "╠══════════════════════════════════════════════════════════════════════════╣"
+echo "║                                                                          ║"
+echo "║  SERVICES     ns_core · alexandria · model_router · violet              ║"
+echo "║               canon · integrity · omega · postgres · redis              ║"
+echo "║                                                                          ║"
+echo "║  INTERFACES   :3000/violet    — Violet text chat                        ║"
+echo "║               :3000/briefing  — Founder briefing                        ║"
+echo "║               :3000/omega     — Omega simulation                        ║"
+echo "║               :3002           — Living Architecture                     ║"
+echo "║                                                                          ║"
+echo "║  VOICE        +1 (307) 202-4418                                         ║"
+echo "║  SMS          +1 (307) 202-4418 (webhook: ngrok/voice/sms)              ║"
+echo "║                                                                          ║"
+echo "║  RING STATUS  Rings 1-4: COMPLETE · Ring 5: EXTERNAL GATES              ║"
+echo "║                                                                          ║"
+echo "║  NEXT BOOT    bash ~/axiolev_runtime/NS_BOOT.sh                         ║"
+echo "║                                                                          ║"
+printf "║  Result: PASS=%-4s FAIL=%-4s                                           ║\n" "$PASS" "$FAIL"
+echo "╚══════════════════════════════════════════════════════════════════════════╝"
 echo ""
+
+[ $FAIL -gt 0 ] && echo "  ⚠ $FAIL failure(s) — check above for details" && exit 1
+exit 0

@@ -1,5 +1,4 @@
-import { VioletPanel } from "../../components/VioletPanel"
-'use client'
+"use client"
 import { useState, useEffect } from 'react'
 import { tokens } from '@/lib/design-tokens'
 import { VoiceOverlay } from '@/components/VoiceOverlay'
@@ -10,6 +9,7 @@ import { GovernancePanel } from '@/components/GovernancePanel'
 import { Timeline } from '@/components/Timeline'
 import { OmegaPanel } from '@/components/OmegaPanel'
 import { VioletLogo, AxiolevWordmark } from '@/components/VioletMark'
+import { VioletPanel } from "../components/VioletPanel"
 
 const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9000'
 
@@ -236,6 +236,10 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          <div style={{ marginTop: 16, height: 400, overflow: "hidden" }}>
+            <VioletPanel compact={true} />
+          </div>
         </div>
       </div>
 
