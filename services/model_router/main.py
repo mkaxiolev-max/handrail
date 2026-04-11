@@ -60,7 +60,7 @@ PROVIDERS: dict[str, dict] = {
     "gemini": {
         "live": key_live(GEMINI_KEY),
         "key_env": "GOOGLE_API_KEY",
-        "primary_model": "gemini-1.5-flash",
+        "primary_model": "gemini-2.0-flash-exp",
         "always_active": False,
         "local": False,
     },
@@ -139,16 +139,37 @@ async def call_openai(prompt: str, model: str = "gpt-4o-mini",
         return {"provider": "openai", "model": model, "ok": False, "error": str(e)}
 
 # ── Gemini ─────────────────────────────────────────────────────────────────
-async def call_gemini(prompt: str, model: str = "gemini-1.5-flash",
+async def call_gemini(prompt: str, model: str = "gemini-2.0-flash-exp",
                        system: str = "", max_tokens: int = 1024) -> dict:
+    """
+    Google Gemini via google-generativeai SDK.
+    SDK is synchronous — must use asyncio.to_thread to avoid blocking event loop.
+    Falls back to gemini-1.5-flash if primary model returns 404.
+    """
     if not key_live(GEMINI_KEY):
-        return {"provider": "gemini", "model": model, "ok": False, "error": "GOOGLE_API_KEY not configured"}
+        return {"provider": "gemini", "model": model, "ok": False,
+                "error": "GOOGLE_API_KEY not configured"}
     try:
         import google.generativeai as genai
+        import asyncio
         genai.configure(api_key=GEMINI_KEY)
-        full_prompt = f"{system}\n\n{prompt}" if system else prompt
-        m = genai.GenerativeModel(model)
-        resp = m.generate_content(full_prompt)
+        full_prompt = f"{system}
+
+{prompt}" if system else prompt
+
+        def _call(m_name: str):
+            m = genai.GenerativeModel(m_name)
+            return m.generate_content(full_prompt)
+
+        try:
+            resp = await asyncio.to_thread(_call, model)
+        except Exception as _e1:
+            if "404" in str(_e1) and model != "gemini-1.5-flash":
+                resp = await asyncio.to_thread(_call, "gemini-1.5-flash")
+                model = "gemini-1.5-flash"
+            else:
+                raise
+
         text = resp.text or ""
         return {
             "provider": "gemini", "model": model, "text": text, "ok": True,
@@ -156,11 +177,11 @@ async def call_gemini(prompt: str, model: str = "gemini-1.5-flash",
             "output_tokens": getattr(resp.usage_metadata, "candidates_token_count", 0),
         }
     except ImportError:
-        return {"provider": "gemini", "model": model, "ok": False, "error": "google-generativeai not installed"}
+        return {"provider": "gemini", "model": model, "ok": False,
+                "error": "google-generativeai not installed"}
     except Exception as e:
         return {"provider": "gemini", "model": model, "ok": False, "error": str(e)}
 
-# ── xAI Grok ──────────────────────────────────────────────────────────────
 async def call_grok(prompt: str, model: str = "grok-4.20-reasoning",
                      system: str = "", max_tokens: int = 1024) -> dict:
     """
