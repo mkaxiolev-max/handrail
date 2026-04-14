@@ -29,3 +29,13 @@ frontend/node_modules/
 ns_ui/node_modules/
 frontend/.vite/
 ns_ui/.next/
+run.log
+phase2.log
+verify.log
+state_api.log
+.test_history
+.ns_state
+.boot_complete
+.execution_enabled
+*.output
+certification/finalization_*/run.log
