@@ -175,6 +175,48 @@ services:
       retries: 5
       start_period: 30s
 
+  handrail:
+    build:
+      context: .
+      dockerfile: services/handrail/Dockerfile
+    ports:
+      - "8011:8011"
+    environment:
+      HR_WORKSPACE: /app
+      DATABASE_URL: postgresql://ns:ns_secure_pwd@postgres:5432/ns
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      YUBIKEY_CLIENT_ID: ${YUBIKEY_CLIENT_ID:-}
+      YUBIKEY_SECRET_KEY: ${YUBIKEY_SECRET_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8011/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  continuum:
+    build:
+      context: services/continuum
+      dockerfile: Dockerfile
+    ports:
+      - "8788:8788"
+    environment:
+      ALEXANDRIA_PATH: /Volumes/NSExternal
+    volumes:
+      - /Volumes/NSExternal:/Volumes/NSExternal
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8788/state')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   ns_api:
     build:
       context: .
@@ -192,6 +234,10 @@ services:
       omega:
         condition: service_healthy
       ns_core:
+        condition: service_healthy
+      handrail:
+        condition: service_healthy
+      continuum:
         condition: service_healthy
     volumes:
       - /Volumes/NSExternal:/Volumes/NSExternal
