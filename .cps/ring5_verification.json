@@ -1,0 +1,70 @@
+{
+  "cps_id": "ring5_verification",
+  "objective": "verify all 5 Ring 5 launch gates — Stripe live, DNS, YubiKey slot 2, launch sequence",
+  "policy_profile": "readonly.local",
+  "ops": [
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://localhost:9000/healthz",
+        "expect_status": 200
+      },
+      "description": "NS service live — prerequisite for ring5/status"
+    },
+    {
+      "op": "http.health_check",
+      "args": {
+        "url": "http://localhost:8011/healthz",
+        "expect_status": 200
+      },
+      "description": "Handrail service live"
+    },
+    {
+      "op": "sys.health",
+      "args": {},
+      "description": "system baseline: ANTHROPIC_API_KEY, NSExternal mount, ns_memory.json"
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://localhost:9000/ring5/status"
+      },
+      "description": "live Ring 5 gate check — 5 gates: stripe_llc_verified, stripe_live_keys, yubikey_slot2, dns_cname_root, launch_sequence_executed"
+    },
+    {
+      "op": "sys.disk_usage",
+      "args": {
+        "path": "/Volumes/NSExternal"
+      },
+      "description": "NSExternal SSD mount verified — required for receipt chain and LAUNCH_EXECUTED marker"
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://localhost:9000/kernel/yubikey/status"
+      },
+      "description": "YubiKey quorum status — slot_1 active, slot_2 pending"
+    },
+    {
+      "op": "http.get",
+      "args": {
+        "url": "http://localhost:8011/system/status"
+      },
+      "description": "shalom score — confirm system integrity before launch gate decisions"
+    }
+  ],
+  "expect": {
+    "results[0].data.healthy": true,
+    "results[1].data.healthy": true,
+    "results[3].data.body.launch_ready": false
+  },
+  "note": "launch_ready=false is expected until all 5 Ring 5 manual steps complete. Check results[3].data.body.gates for per-gate status.",
+  "ring5_gates": {
+    "stripe_llc_verified": "Upload AXIOLEV Holdings LLC EIN + articles to Stripe dashboard → live mode",
+    "stripe_live_keys": "Replace STRIPE_SK_PENDING with sk_live_... key in .env + Vercel env vars",
+    "yubikey_slot2": "Procure 2nd YubiKey 5 NFC → enroll via POST /kernel/yubikey/provision",
+    "dns_cname_root": "Cloudflare: root.axiolev.com CNAME → cname.vercel-dns.com",
+    "launch_sequence_executed": "Execute LAUNCH_SEQUENCE.md Day 1 → touch /Volumes/NSExternal/.run/LAUNCH_EXECUTED"
+  },
+  "ops_count": 7
+}
