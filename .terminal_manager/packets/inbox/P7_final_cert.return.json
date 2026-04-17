@@ -1,0 +1,24 @@
+{
+  "return_block_version": 2,
+  "phase": "7",
+  "acceptance": true,
+  "verdict": "GREEN",
+  "matrix": {
+    "base_organism": {"12_services_healthy": true, "pdp_deny_v2": true, "omega_403": true, "state_api_9090": true},
+    "abi": {"return_block_v2": true, "kdr_stub": true, "bridge_normalized": true},
+    "ring6": {"AC-1": true, "AC-2": true, "AC-3": true, "AC-4": true, "AC-5": true, "AC-6": true, "AC-7": true},
+    "doctrine": {"D-1_ner": true, "D-2_force_ground": true, "D-3_doctrine_md": true},
+    "clearing": {"CI-1": true, "CI-2": true, "CI-3": true, "CI-4": true, "CI-5": true, "abstention_live": true},
+    "ui": {"three_truth": true, "all_tiles": true, "projection_invariant": true, "organism_untouched": true},
+    "autopoiesis": {"compiler": true, "runtime": true, "initiatives": 5, "autonarration": true, "self_loop_gated": true},
+    "voice_loop": {"tag": true, "twilio_sid": true, "polly_matthew": true, "voice_respond": true},
+    "brokerage": {"signal_dropped": true, "merge": "pending_terminal2"}
+  },
+  "hardware_gates_open": ["YK_slot_2", "Ring_5_gate_1", "Ring_5_gate_2", "Ring_5_gate_3", "Ring_5_gate_4", "Ring_5_gate_5"],
+  "tests_total": 68,
+  "tests_passed": 68,
+  "final_tag": "ns-infinity-founder-ready-plus-v1.0.0",
+  "commit_sha": "941de0c71fffed8e3370e3884b3c901598e00db1",
+  "residual_gaps": [],
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

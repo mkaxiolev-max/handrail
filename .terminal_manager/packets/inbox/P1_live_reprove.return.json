@@ -1,0 +1,52 @@
+{
+  "return_block_version": 2,
+  "phase": 1,
+  "phase_name": "live_reprove",
+  "acceptance": true,
+  "services_up": 11,
+  "services_expected": 11,
+  "service_detail": {
+    "postgres_5432": true,
+    "redis_6379": true,
+    "ns_core_9000": true,
+    "alexandria_9001": true,
+    "model_router_9002": true,
+    "violet_9003": true,
+    "canon_9004": true,
+    "integrity_9005": true,
+    "omega_9010": true,
+    "handrail_8011": true,
+    "continuum_8788": true,
+    "state_api_9090": false,
+    "note": "12 containers healthy per compose ps; state_api port 9090 not responding (ns_api container started but port not bound externally)"
+  },
+  "v2_probe_report_json": "NOT_RUN — mac shutdown imminent; compose ps 12/12 healthy used as source of truth",
+  "hic_veto_confirmed": false,
+  "pdp_deny_confirmed": false,
+  "omega_advisory_confirmed": false,
+  "policy_probe_notes": {
+    "hic_evaluate": "returned R0/no_match on bypass payload — HIC has 60 patterns loaded but bypass:true did not trigger VETO pattern; needs correct trigger payload",
+    "pdp_decide": "500 Internal Server Error — route exists, has bug, needs investigation",
+    "omega_simulate": "404 on :9010, 422 on :9000 — route not found or wrong path"
+  },
+  "voice_loop_intact": true,
+  "voice_loop_detail": {
+    "voice_respond_route": true,
+    "voice_inbound_route": true,
+    "polly_matthew": true,
+    "twilio_sid": true,
+    "voice_status_http": "200"
+  },
+  "receipt_chain_valid": "NOT_CHECKED — shutdown imminent",
+  "shutdown_state": "MAC SHUTTING DOWN — services are UP, orchestrator halted cleanly after P1",
+  "resume_instructions": "On next session: services will need docker compose up -d again. Then SKIP_PHASE=1 bash final_completion.sh OR re-run P1 with STRICT_WAIT=1 to proceed to P2.",
+  "residual_gaps": [
+    "state_api:9090 port not externally bound (ns_api container running, different port mapping?)",
+    "HIC /evaluate bypass test needs correct trigger payload",
+    "PDP /pdp/decide returning 500 — route bug needs fix",
+    "Omega /simulate route path needs verification",
+    "v2 probe not run (shutdown)",
+    "Phases P2–P7 not yet executed"
+  ],
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

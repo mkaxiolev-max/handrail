@@ -1,0 +1,19 @@
+{
+  "return_block_version": 2,
+  "phase": "5",
+  "acceptance": true,
+  "ui_cells": {
+    "three_truth_layout": true, "past_timeline": true,
+    "policy_pane": true, "cathedral_pane": true,
+    "ner_tile": true, "force_ground_banner": true,
+    "clearing_tile": true, "invariants_tile": true,
+    "receipt_chain_tile": true, "canon_pending_tile": true,
+    "abstention_tile": true
+  },
+  "projection_invariant_preserved": true,
+  "organism_page_untouched": true,
+  "missing_endpoints": [],
+  "commit_sha": "941de0c71fffed8e3370e3884b3c901598e00db1",
+  "tag": "baby-ui-v1",
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

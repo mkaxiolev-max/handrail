@@ -1,0 +1,17 @@
+{
+  "return_block_version": 2,
+  "phase": "4",
+  "acceptance": true,
+  "ci_cells": {
+    "CI-1_non_totalization": true,
+    "CI-2_disclosure_window": true,
+    "CI-3_irreducibility": true,
+    "CI-4_multi_disclosure": true,
+    "CI-5_silence_abstention": true
+  },
+  "pi_abstention_field_live": true,
+  "voice_loop_untouched": true,
+  "commit_sha": "505b09de39206e5d77c231161b70e3ccf5936be0",
+  "tag": "clearing-v1",
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

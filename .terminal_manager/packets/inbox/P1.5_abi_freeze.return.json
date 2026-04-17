@@ -1,0 +1,26 @@
+{
+  "return_block_version": 2,
+  "phase": "1.5",
+  "phase_name": "abi_freeze",
+  "acceptance": true,
+  "objects_frozen": {
+    "return_block_v2": true,
+    "kernel_decision_receipt_v1_stub": true,
+    "intent_packet_v1": true,
+    "simulation_branch_v1": true,
+    "cps_packet_v1": true,
+    "compute_receipt_v1": true
+  },
+  "bridge_normalized": true,
+  "endpoint_fixes": {
+    "pdp_decide": "ReturnBlock.v2 with ok=false and failure_reason=unauthorized",
+    "omega_simulate": "403 on allow_promotion=true",
+    "state_api_9090": "reachable"
+  },
+  "tests": "12/12 pass",
+  "commit_sha": "2b8367fe1f1c8d21b182f67fc55522703b574c12",
+  "tag": "abi-frozen-v1",
+  "voice_loop_untouched": true,
+  "inflight_preserved": true,
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

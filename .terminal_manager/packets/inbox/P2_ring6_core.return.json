@@ -1,0 +1,17 @@
+{
+  "return_block_version": 2,
+  "phase": "2",
+  "acceptance": true,
+  "ac_cells": {
+    "AC-1_axioms": true, "AC-2_pi_check": true, "AC-3_canon_promote": true,
+    "AC-4_never_events": true, "AC-5_candidate_queue": true,
+    "AC-6_ns_resume": true, "AC-7_axiolev_push": true
+  },
+  "never_events_count": 10,
+  "tests_passed": "15/15",
+  "commit_sha": "50368a7403087ca456d5f05ebc5f81e7a9fcc5de",
+  "tag": "ring6-core-v1",
+  "voice_loop_untouched": true,
+  "inflight_preserved": true,
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

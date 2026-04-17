@@ -1,0 +1,13 @@
+{
+  "return_block_version": 2,
+  "phase": "3",
+  "acceptance": true,
+  "d_cells": {"D-1_ner": true, "D-2_force_ground": true, "D-3_doctrine_md": true},
+  "providers_wired": 6,
+  "determinism": {"ner": "1000/1000", "force_ground": "1000/1000"},
+  "voice_loop_regressed": false,
+  "doctrine_status": "DRAFT-FOR-G5",
+  "commit_sha": "f312a1f3f768df6576c47981492828be5f80a0b2",
+  "tag": "doctrine-v1-draft",
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

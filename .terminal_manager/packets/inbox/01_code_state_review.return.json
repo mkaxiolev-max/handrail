@@ -1,0 +1,163 @@
+{
+  "return_block_version": 2,
+  "worker_kind": "code_state_review",
+  "report_markdown_path": "/Volumes/NSExternal/ALEXANDRIA/state_checks/state_v2_20260417T000856Z.md",
+  "report_json_path":     "/Volumes/NSExternal/ALEXANDRIA/state_checks/state_v2_20260417T000856Z.json",
+  "tallies":              "pass=37,warn=40,fail=40",
+  "json_payload": {
+    "return_block_version": 2,
+    "worker_kind": "code_state_review",
+    "stamp": "20260417T000856Z",
+    "host": "Mikes-Mac-Studio.local",
+    "repo": "/Users/axiolevns/axiolev_runtime",
+    "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED",
+    "git": {
+      "branch": "boot-operational-closure",
+      "head": "05b4d13",
+      "expected_branch": "boot-operational-closure",
+      "branch_ok": true,
+      "tags_expected": ["ns-infinity-founder-grade","ns-infinity-v5","voice-loop-v1","axiolev-ns-infinity-boot-20260414"]
+    },
+    "live_services": {
+      "postgres_5432":     true,
+      "redis_6379":        true,
+      "ns_core_9000":      false,
+      "alexandria_9001":   false,
+      "model_router_9002": false,
+      "violet_9003":       false,
+      "canon_9004":        false,
+      "integrity_9005":    false,
+      "omega_9010":        false,
+      "handrail_8011":     false,
+      "continuum_8788":    false,
+      "state_api_9090":    false,
+      "live_count": 2,
+      "expected": 12
+    },
+    "ring6": {
+      "ax_core_json":         false,
+      "pi_engine_dir":        false,
+      "pi_check_ep":          false,
+      "canon_promote_ep":     false,
+      "never_event_corpus":   false,
+      "canon_promotions_dir": false,
+      "ns_resume_ep":         false,
+      "resume_ns_sh":         false,
+      "axiolev_push_sh":      false
+    },
+    "doctrine": {
+      "ner_py":           false,
+      "isr_ner_ep":       false,
+      "force_ground_py":  false,
+      "force_ground_ep":  false,
+      "doctrine_md":      false
+    },
+    "clearing_layer": {
+      "primitives_found":       false,
+      "ci1_non_totalization":   true,
+      "ci2_disclosure_window":  true,
+      "ci3_irreducibility":     true,
+      "ci4_multi_disclosure":   true,
+      "ci5_silence_abstention": true
+    },
+    "mac_integration": {
+      "launchd_plists":   true,
+      "menubar_artifact": true,
+      "shortcuts":        false,
+      "hotkey":           true
+    },
+    "ui": {
+      "violet_panel_dir":    false,
+      "ner_tile":            false,
+      "force_ground_banner": false,
+      "clearing_tile":       false
+    },
+    "autopoiesis": {
+      "compiler":        false,
+      "program_runtime": false,
+      "autonarration":   false,
+      "self_loop":       false
+    },
+    "violet_llm": {
+      "violet_llm_py":    false,
+      "env_file_present": true
+    },
+    "exec_plan": {
+      "boot_sh":            true,
+      "docker_compose":     true,
+      "ring5_verification": true,
+      "sovereign_boot":     true,
+      "ns_boot_proof":      true
+    },
+    "voice_loop": {
+      "respond_route":      true,
+      "inbound_route":      true,
+      "polly_matthew":      true,
+      "twilio_sid_present": true
+    },
+    "yubikey": {
+      "slot_1_serial": "26116460",
+      "slot_2_status": "PENDING_HARDWARE"
+    },
+    "tallies": {
+      "pass": 37,
+      "warn": 40,
+      "fail": 40
+    }
+  },
+  "hard_gaps_top_20": [
+    "❌ L-3 ns_core:9000 NOT reachable",
+    "❌ L-4 alexandria:9001 NOT reachable",
+    "❌ L-5 model_router:9002 NOT reachable",
+    "❌ L-6 violet:9003 NOT reachable",
+    "❌ L-7 canon:9004 NOT reachable",
+    "❌ L-8 integrity:9005 NOT reachable",
+    "❌ L-9 omega:9010 NOT reachable",
+    "❌ L-10 handrail:8011 NOT reachable",
+    "❌ L-11 continuum:8788 NOT reachable",
+    "❌ L-12 state_api:9090 NOT reachable",
+    "❌ L-matrix only 2/12 services up",
+    "❌ ns_core POST /intent/execute → no valid JSON",
+    "❌ R6-1 canon/axioms/ax_core.json MISSING",
+    "❌ R6-2 Π engine dir MISSING (pi/ or ns_core/pi/)",
+    "❌ R6-2 POST /pi/check NOT declared",
+    "❌ R6-3 POST /canon/promote NOT declared",
+    "❌ R6-4 tests/pi/never_events/ MISSING",
+    "❌ R6-6 resume_ns.sh MISSING",
+    "❌ R6-6 POST /ns/resume NOT declared",
+    "❌ R6-7 scripts/axiolev_push.sh MISSING"
+  ],
+  "residual_warnings": [
+    "🟡 ns_core/healthz → 000 (service down)",
+    "🟡 ns_core/system/now → 000 (service down)",
+    "🟡 ns_core/violet/status → 000 (service down)",
+    "🟡 ns_core/hic/gates → 000 (service down)",
+    "🟡 ns_core/programs → 000 (service down)",
+    "🟡 ns_core/mac_adapter/status → 000 (service down)",
+    "🟡 ns_core/api/v1/omega/healthz → 000 (service down)",
+    "🟡 ns_core/api/v1/omega/runs → 000 (service down)",
+    "🟡 ns_core/violet/identity → 000 (service down)",
+    "🟡 ns_core/ring5/status → 000 (service down)",
+    "🟡 handrail/healthz → 000 (service down)",
+    "🟡 alexandria/healthz → 000 (service down)",
+    "🟡 omega/healthz → 000 (service down)",
+    "🟡 continuum/healthz → 000 (service down)",
+    "🟡 R6-5 canon/promotions dir missing",
+    "🟡 MAC-shortcuts: none detected",
+    "🟡 AP autonarration/feed MISSING",
+    "🟡 $GROQ_API_KEY not in shell env",
+    "🟡 PolicyBundle JSON missing",
+    "🟡 header drift: 484 files missing AXIOLEV header"
+  ],
+  "live_baseline_green": "false — services not booted (postgres+redis up, 10 app services down)",
+  "notes": {
+    "services_root_cause": "Docker socket present, compose ps empty — services need boot.sh before L-1..L-11 can be green",
+    "all_warns_are_service_down": "40 warns are almost entirely endpoint 000 timeouts caused by services not running — not code defects",
+    "ci_tokens_present": "CI-1..CI-5 canonical invariant tokens referenced in code; class primitives (DisclosureWindow etc.) not yet implemented",
+    "mac_integration_status": "4 launchd plists loaded (watchdog, mac-adapter, ngrok, northstar); com.axiolev.northstar exit=126 (needs boot)",
+    "ep_pb_all_green": "All 5 pre-boot exec plan gates pass (boot.sh, docker-compose, CPS plans, boot proof)",
+    "ep_24_all_green": "All 7 EP-24 endpoint declarations present in source",
+    "ep_2w_all_fail": "All 5 EP-2W (Ring 6 + Doctrine) endpoints not yet declared — greenfield work"
+  },
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}
