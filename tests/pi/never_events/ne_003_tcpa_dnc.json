@@ -1,0 +1,1 @@
+{"id":"NE-3","name":"tcpa_dnc_violation","axiom_ref":"AX-12","trigger_ops":["tcpa.call_dnc","sms.blast_unverified","call.dnc_list"],"description":"TCPA/DNC violations blocked"}

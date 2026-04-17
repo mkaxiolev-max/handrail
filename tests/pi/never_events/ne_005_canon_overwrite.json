@@ -1,0 +1,1 @@
+{"id":"NE-5","name":"canon_overwrite","axiom_ref":"AX-9","trigger_ops":["canon.overwrite","canon.delete","canon.rewrite"],"description":"Canon mutation requires new CanonCommit — overwrite forbidden"}

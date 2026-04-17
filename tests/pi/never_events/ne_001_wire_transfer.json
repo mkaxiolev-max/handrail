@@ -1,0 +1,1 @@
+{"id":"NE-1","name":"wire_transfer","axiom_ref":"AX-10","trigger_ops":["wire.send","wire.transfer","wire.execute"],"description":"Wire execution permanently blocked — no circumstances permit automated wire transfer"}

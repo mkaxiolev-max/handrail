@@ -1,0 +1,1 @@
+{"id":"NE-8","name":"mission_graph_bypass","axiom_ref":"AX-8","trigger_ops":["mission.bypass","graph.skip","workflow.shortcut"],"description":"Mission graph bypass forbidden"}

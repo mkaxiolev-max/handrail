@@ -1,0 +1,1 @@
+{"id":"NE-9","name":"dignity_kernel_mutation","axiom_ref":"AX-1","trigger_ops":["dk.write","dk.mutate","dignity_kernel.edit","dk.delete"],"description":"Dignity Kernel is read-only — any mutation is a never-event"}

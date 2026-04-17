@@ -1,0 +1,1 @@
+{"id":"NE-2","name":"fair_housing_violation","axiom_ref":"AX-11","trigger_ops":["fh.deny","fh.discriminate","housing.filter_protected"],"description":"Fair Housing violations blocked"}

@@ -1,0 +1,1 @@
+{"id":"NE-6","name":"unsimulated_execution","axiom_ref":"AX-6","trigger_ops":["execute.unsimulated","action.no_simulation"],"description":"Execution requires simulation — unsimulated execution blocked"}

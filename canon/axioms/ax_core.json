@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "axioms": [
+    {"id": "AX-1",  "name": "Dignity Kernel is read-only",          "class": "structural"},
+    {"id": "AX-2",  "name": "Violet is projection, not truth",       "class": "structural"},
+    {"id": "AX-3",  "name": "Alexandria is append-only",             "class": "structural"},
+    {"id": "AX-4",  "name": "LLMs never define truth",               "class": "epistemic"},
+    {"id": "AX-5",  "name": "Ambiguity fails closed",                "class": "epistemic"},
+    {"id": "AX-6",  "name": "Execution requires simulation",         "class": "procedural"},
+    {"id": "AX-7",  "name": "Execution requires proof receipt",      "class": "procedural"},
+    {"id": "AX-8",  "name": "Mission graph bypass forbidden",        "class": "procedural"},
+    {"id": "AX-9",  "name": "Canon mutation requires new CanonCommit", "class": "procedural"},
+    {"id": "AX-10", "name": "Wire execution permanently blocked",    "class": "never_event"},
+    {"id": "AX-11", "name": "Fair Housing violations blocked",       "class": "never_event"},
+    {"id": "AX-12", "name": "TCPA/DNC violations blocked",          "class": "never_event"},
+    {"id": "AX-13", "name": "Raw command surface bypass forbidden",  "class": "never_event"},
+    {"id": "AX-14", "name": "Founder signature required for G5",    "class": "governance"}
+  ],
+  "ner_threshold": 3.0,
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

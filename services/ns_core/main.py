@@ -4,6 +4,9 @@ from routes.boot import router as boot_router
 from routes.feed import router as feed_router
 from routes.organism import router as organism_router
 from routes.packets import router as packets_router
+from routes.pi import router as pi_router
+from routes.canon import router as canon_router
+from routes.ns_resume import router as ns_resume_router
 import os, psycopg2, logging
 
 logger = logging.getLogger("ns_core")
@@ -36,6 +39,9 @@ app.include_router(boot_router)
 app.include_router(feed_router)
 app.include_router(organism_router)
 app.include_router(packets_router)
+app.include_router(pi_router)
+app.include_router(canon_router)
+app.include_router(ns_resume_router)
 
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://ns:ns_secure_pwd@postgres:5432/ns")
 

@@ -1,0 +1,1 @@
+{"id":"NE-4","name":"raw_shell_bypass","axiom_ref":"AX-13","trigger_ops":["shell.exec","cmd.raw","os.system","subprocess.bypass"],"description":"Raw command surface bypass forbidden"}

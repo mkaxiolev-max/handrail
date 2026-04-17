@@ -1,0 +1,1 @@
+{"id":"NE-7","name":"unreceipted_execution","axiom_ref":"AX-7","trigger_ops":["execute.no_receipt","action.unreceipted"],"description":"Execution requires proof receipt — unreceipted execution blocked"}
