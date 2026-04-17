@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routes.boot import router as boot_router
 from routes.feed import router as feed_router
+from routes.organism import router as organism_router
 from routes.packets import router as packets_router
 import os, psycopg2, logging
 
@@ -33,6 +34,7 @@ app.add_middleware(
 
 app.include_router(boot_router)
 app.include_router(feed_router)
+app.include_router(organism_router)
 app.include_router(packets_router)
 
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://ns:ns_secure_pwd@postgres:5432/ns")
@@ -414,6 +416,13 @@ async def omega_health():
 
 @app.post("/api/v1/omega/simulate")
 async def omega_simulate(payload: dict):
+    # Normalize simple {allow_promotion: bool} shorthand → full OmegaStateInput shape
+    if "allow_promotion" in payload and "domain_type" not in payload:
+        payload = {
+            "domain_type": "ns_simulation",
+            "constraints": {"allow_promotion": payload.pop("allow_promotion")},
+            **payload,
+        }
     return await _omega_proxy("POST", "/omega/simulate", json_body=payload)
 
 @app.get("/api/v1/omega/runs")
@@ -455,23 +464,51 @@ async def hic_evaluate(body: dict):
 
 @app.post("/pdp/decide")
 async def pdp_decide(body: dict):
+    from datetime import datetime, timezone
+    import uuid
+
+    def _rb(ok: bool, rc: int, operation: str, failure_reason=None, **extra):
+        return {
+            "return_block_version": 2,
+            "ok": ok,
+            "rc": rc,
+            "operation": operation,
+            "failure_reason": failure_reason,
+            "artifacts": [],
+            "checks": [],
+            "state_change": None,
+            "warnings": [],
+            "receipt_id": str(uuid.uuid4()),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED",
+            **extra,
+        }
+
     if not _PDP_AVAILABLE:
-        return {"status": "unavailable"}
+        return _rb(False, 1, "pdp.decide", failure_reason="pdp_unavailable")
     from pdp import PDPRequest
     req = PDPRequest(
-        subject=body.get("subject", "unknown"),
+        subject=body.get("subject", body.get("principal", "unknown")),
         action=body.get("action", ""),
         resource=body.get("resource", ""),
         projection=body.get("projection"),
         context=body.get("context", {}),
     )
     decision = _get_pdp().decide(req)
-    return {
-        "effect": decision.effect.value,
-        "reason": decision.reason,
-        "obligations": [{"type": o.obligation_type, "detail": o.detail} for o in decision.obligations],
-        "rules_matched": len(decision.matched_rules),
-    }
+    effect = decision.effect.value
+    is_allow = effect.upper() == "ALLOW"
+    return _rb(
+        ok=is_allow,
+        rc=0 if is_allow else 1,
+        operation="pdp.decide",
+        failure_reason=None if is_allow else "unauthorized",
+        artifacts=[{
+            "effect": effect,
+            "reason": decision.reason,
+            "obligations": [{"type": o.obligation_type, "detail": o.detail} for o in decision.obligations],
+            "rules_matched": len(decision.matched_rules),
+        }],
+    )
 
 @app.get("/programs")
 async def programs_list():
