@@ -9,6 +9,7 @@ from routes.canon import router as canon_router
 from routes.ns_resume import router as ns_resume_router
 from routes.isr import router as isr_router
 from routes.force_ground import router as force_ground_router
+from routes.clearing import router as clearing_router
 import os, psycopg2, logging
 
 logger = logging.getLogger("ns_core")
@@ -46,6 +47,7 @@ app.include_router(canon_router)
 app.include_router(ns_resume_router)
 app.include_router(isr_router)
 app.include_router(force_ground_router)
+app.include_router(clearing_router)
 
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://ns:ns_secure_pwd@postgres:5432/ns")
 

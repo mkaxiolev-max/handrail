@@ -145,7 +145,39 @@ class PiEngine:
                 timestamp=datetime.now(timezone.utc).isoformat(),
             )
 
-        # Step 3: admissible
+        # Step 3: Clearing Layer evaluation
+        residual_entropy = float(candidate.get("residual_entropy", 0.0))
+        clearing_abstain = False
+        clearing_reason = ""
+        try:
+            from clearing.non_totalization import NonTotalization
+            from clearing.silence_abstention import SilenceAbstention
+            if NonTotalization().evaluates(candidate, residual_entropy):
+                clearing_abstain = True
+                clearing_reason = "NonTotalization: residual entropy above threshold"
+            if not clearing_abstain:
+                sa = SilenceAbstention().evaluate(candidate)
+                if sa:
+                    clearing_abstain = True
+                    clearing_reason = sa.get("reason", "SilenceAbstention triggered")
+        except ImportError:
+            pass  # Clearing layer optional until P4 merged
+
+        if clearing_abstain:
+            return PiCheckResult(
+                ok=False,
+                rc=1,
+                admissible=False,
+                triggered_axioms=["AX-5"],
+                triggered_never_events=[],
+                abstention=True,
+                failure_reason="clearing_abstain",
+                reason=clearing_reason,
+                receipt_id=str(uuid.uuid4()),
+                timestamp=datetime.now(timezone.utc).isoformat(),
+            )
+
+        # Step 4: admissible
         return PiCheckResult(
             ok=True,
             rc=0,
