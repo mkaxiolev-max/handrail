@@ -1,0 +1,26 @@
+{
+  "mission_id": "MG.RESI.ESCROW.WIRE_SAFE",
+  "version": "v1",
+  "default_role": "escrow_operator",
+  "states": ["E0_accepted_contract_received","E1_escrow_opened","E2_timeline_generated",
+             "E3_inspections_title_lender_tracking","E4_contingency_monitoring",
+             "E5_funding_and_settlement_prep","E6_wire_verification_playbook",
+             "E7_signing","E8_recording_and_close","E9_post_close_actions","E10_archive_and_review"],
+  "transitions": [
+    {"from":"E0_accepted_contract_received","trigger":"escrow_opened","to":"E1_escrow_opened"},
+    {"from":"E1_escrow_opened","trigger":"timeline_built","to":"E2_timeline_generated"},
+    {"from":"E2_timeline_generated","trigger":"vendors_engaged","to":"E3_inspections_title_lender_tracking"},
+    {"from":"E3_inspections_title_lender_tracking","trigger":"contingency_watch","to":"E4_contingency_monitoring"},
+    {"from":"E4_contingency_monitoring","trigger":"funding_phase","to":"E5_funding_and_settlement_prep"},
+    {"from":"E5_funding_and_settlement_prep","trigger":"wire_verification_started","to":"E6_wire_verification_playbook"},
+    {"from":"E6_wire_verification_playbook","trigger":"verified","to":"E7_signing"},
+    {"from":"E7_signing","trigger":"signed","to":"E8_recording_and_close"},
+    {"from":"E8_recording_and_close","trigger":"recorded","to":"E9_post_close_actions"},
+    {"from":"E9_post_close_actions","trigger":"complete","to":"E10_archive_and_review"}
+  ],
+  "gate_hooks": {
+    "E6_wire_verification_playbook": ["compliance.block_wire_execution"],
+    "E7_signing": ["compliance.check_agency"]
+  },
+  "adapters": ["escrow","wire","docs"]
+}

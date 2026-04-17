@@ -1,0 +1,22 @@
+{
+  "program_id": "whisper_brokerage_residential_starter_v1",
+  "program_name": "Whisper Brokerage — Residential Starter",
+  "version": "v1",
+  "vertical": "brokerage_residential",
+  "interface_layer": "Violet",
+  "binding_layer": "Eloh_Handrail",
+  "default_output_mode": "whisper",
+  "allowed_output_modes": ["whisper","assisted_voice","direct_voice"],
+  "receipt_mode": "required",
+  "jurisdictions_supported": ["CA","WA"],
+  "missions": ["MG.RESI.HUNTER.PROSPECT","MG.RESI.LISTING.INTAKE","MG.RESI.BUYER.CONSULT",
+               "MG.RESI.OFFER.ESIGN","MG.RESI.ESCROW.WIRE_SAFE","MG.RESI.CLOSE.POSTCARE"],
+  "roles": ["violet_interface_operator","hunter_operator","listing_operator",
+            "buyer_operator","offer_operator","escrow_operator","compliance_operator"],
+  "adapters": ["mls","docs","offer","escrow","wire","comms"],
+  "compliance_ops": ["compliance.check_fair_housing","compliance.check_tcpa_dnc",
+                     "compliance.check_ca_recording_consent","compliance.check_wa_recording_announcement",
+                     "compliance.check_agency","compliance.block_wire_execution"],
+  "meta_states": ["R0_INIT","R1_INTAKE","R2_FRAME","R3_QUALIFY","R4_PLAN","R5_EXECUTE",
+                  "R6_VERIFY","R7_COMMIT","R8_MONITOR","R9_CLOSE","R10_ARCHIVE","R11_LEARN"]
+}

@@ -1,0 +1,8 @@
+{
+  "role_id":"listing_operator","voice_profile":"listing_voice_v1",
+  "missions":["MG.RESI.LISTING.INTAKE"],
+  "allowed_states":["L1","L2","L3","L4","L5","L6","L7","L8","L9"],
+  "functions":["capture_property_facts","surface_missing_disclosures","guide_pricing_frame","stage_marketing_assets","request_publish_approval"],
+  "memory_scope_spec":{"allowed_keys":["property.facts","property.disclosures","listing.marketing","seller.priorities"],
+                       "excluded_keys":["seller.financial_pressure_private","seller.divorce_context"]}
+}

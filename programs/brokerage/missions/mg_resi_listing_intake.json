@@ -1,0 +1,24 @@
+{
+  "mission_id": "MG.RESI.LISTING.INTAKE",
+  "version": "v1",
+  "default_role": "listing_operator",
+  "states": ["L0_seller_lead_created","L1_consult_live","L2_facts_capture","L3_pricing_prep",
+             "L4_disclosures_check","L5_media_marketing_stage","L6_mls_stage",
+             "L7_publish_approval","L8_listing_live","L9_seller_feedback_loop"],
+  "transitions": [
+    {"from":"L0_seller_lead_created","trigger":"consult_scheduled","to":"L1_consult_live"},
+    {"from":"L1_consult_live","trigger":"facts_captured","to":"L2_facts_capture"},
+    {"from":"L2_facts_capture","trigger":"comps_ready","to":"L3_pricing_prep"},
+    {"from":"L3_pricing_prep","trigger":"disclosures_started","to":"L4_disclosures_check"},
+    {"from":"L4_disclosures_check","trigger":"disclosures_complete","to":"L5_media_marketing_stage"},
+    {"from":"L5_media_marketing_stage","trigger":"marketing_approved","to":"L6_mls_stage"},
+    {"from":"L6_mls_stage","trigger":"publish_requested","to":"L7_publish_approval"},
+    {"from":"L7_publish_approval","trigger":"published","to":"L8_listing_live"},
+    {"from":"L8_listing_live","trigger":"feedback_received","to":"L9_seller_feedback_loop"}
+  ],
+  "gate_hooks": {
+    "L5_media_marketing_stage": ["compliance.check_fair_housing"],
+    "L7_publish_approval": ["compliance.check_fair_housing"]
+  },
+  "adapters": ["mls","docs"]
+}

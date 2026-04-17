@@ -1,0 +1,24 @@
+{
+  "mission_id": "MG.RESI.OFFER.ESIGN",
+  "version": "v1",
+  "default_role": "offer_operator",
+  "states": ["F0_context_created","F1_agency_verification","F2_terms_capture",
+             "F3_draft_offer_generated","F4_strategy_review","F5_compare_or_counter",
+             "F6_signatures_requested","F7_fully_executed","F8_distribution","F9_archive"],
+  "transitions": [
+    {"from":"F0_context_created","trigger":"agency_checked","to":"F1_agency_verification"},
+    {"from":"F1_agency_verification","trigger":"terms_received","to":"F2_terms_capture"},
+    {"from":"F2_terms_capture","trigger":"draft_ready","to":"F3_draft_offer_generated"},
+    {"from":"F3_draft_offer_generated","trigger":"review_done","to":"F4_strategy_review"},
+    {"from":"F4_strategy_review","trigger":"decision_made","to":"F5_compare_or_counter"},
+    {"from":"F5_compare_or_counter","trigger":"signatures_sent","to":"F6_signatures_requested"},
+    {"from":"F6_signatures_requested","trigger":"all_signed","to":"F7_fully_executed"},
+    {"from":"F7_fully_executed","trigger":"distributed","to":"F8_distribution"},
+    {"from":"F8_distribution","trigger":"archived","to":"F9_archive"}
+  ],
+  "gate_hooks": {
+    "F1_agency_verification": ["compliance.check_agency"],
+    "F6_signatures_requested": ["compliance.check_agency"]
+  },
+  "adapters": ["offer","docs"]
+}

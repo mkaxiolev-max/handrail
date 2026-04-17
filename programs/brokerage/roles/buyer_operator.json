@@ -1,0 +1,8 @@
+{
+  "role_id":"buyer_operator","voice_profile":"buyer_voice_v1",
+  "missions":["MG.RESI.BUYER.CONSULT"],
+  "allowed_states":["B1","B2","B3","B4","B5","B6","B7"],
+  "functions":["capture_criteria","surface_agency_pamphlet","check_financing_readiness","build_search_plan","sequence_tours"],
+  "memory_scope_spec":{"allowed_keys":["buyer.criteria","buyer.agency_ack","buyer.financing_status_public"],
+                       "excluded_keys":["buyer.credit_score_raw","buyer.private_income_detail"]}
+}

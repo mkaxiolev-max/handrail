@@ -1,0 +1,20 @@
+{
+  "mission_id": "MG.RESI.BUYER.CONSULT",
+  "version": "v1",
+  "default_role": "buyer_operator",
+  "states": ["B0_buyer_lead_created","B1_consult_live","B2_agency_pamphlet_surface",
+             "B3_criteria_capture","B4_financing_status_check","B5_search_plan",
+             "B6_tour_sequence","B7_followup_commit","B8_archive_learn"],
+  "transitions": [
+    {"from":"B0_buyer_lead_created","trigger":"consult_scheduled","to":"B1_consult_live"},
+    {"from":"B1_consult_live","trigger":"pamphlet_surfaced","to":"B2_agency_pamphlet_surface"},
+    {"from":"B2_agency_pamphlet_surface","trigger":"criteria_started","to":"B3_criteria_capture"},
+    {"from":"B3_criteria_capture","trigger":"financing_discussed","to":"B4_financing_status_check"},
+    {"from":"B4_financing_status_check","trigger":"plan_built","to":"B5_search_plan"},
+    {"from":"B5_search_plan","trigger":"tours_scheduled","to":"B6_tour_sequence"},
+    {"from":"B6_tour_sequence","trigger":"followup_committed","to":"B7_followup_commit"},
+    {"from":"B7_followup_commit","trigger":"cycle_complete","to":"B8_archive_learn"}
+  ],
+  "gate_hooks": {"B2_agency_pamphlet_surface": ["compliance.check_agency:if_wa_relaxed"]},
+  "adapters": ["docs","comms"]
+}

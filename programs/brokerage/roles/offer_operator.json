@@ -1,0 +1,8 @@
+{
+  "role_id":"offer_operator","voice_profile":"offer_voice_v1",
+  "missions":["MG.RESI.OFFER.ESIGN"],
+  "allowed_states":["F1","F2","F3","F4","F5","F6"],
+  "functions":["verify_agency","capture_terms","draft_offer","compare_offers","guide_counter"],
+  "memory_scope_spec":{"allowed_keys":["offer.terms","offer.comparison","offer.agency_status"],
+                       "excluded_keys":["offer.seller_motivation_private","offer.buyer_ceiling_private"]}
+}

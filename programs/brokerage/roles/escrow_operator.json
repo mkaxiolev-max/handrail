@@ -1,0 +1,8 @@
+{
+  "role_id":"escrow_operator","voice_profile":"escrow_voice_v1",
+  "missions":["MG.RESI.ESCROW.WIRE_SAFE"],
+  "allowed_states":["E1","E2","E3","E4","E5","E6","E7","E8","E9"],
+  "functions":["build_timeline","flag_deadlines","track_vendors","verify_wire_playbook","coordinate_close"],
+  "memory_scope_spec":{"allowed_keys":["escrow.timeline","escrow.vendors","escrow.contingencies","escrow.wire_verification_status"],
+                       "excluded_keys":["escrow.bank_account_numbers","escrow.wire_routing_raw"]}
+}

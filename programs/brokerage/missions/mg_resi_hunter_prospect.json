@@ -1,0 +1,20 @@
+{
+  "mission_id": "MG.RESI.HUNTER.PROSPECT",
+  "version": "v1",
+  "default_role": "hunter_operator",
+  "states": ["H0_candidate_identified","H1_consent_dnc_check","H2_opening_prepared",
+             "H3_first_contact","H4_disposition_logged","H5_followup_scheduled","H6_archive"],
+  "transitions": [
+    {"from":"H0_candidate_identified","trigger":"begin_outreach_prep","to":"H1_consent_dnc_check"},
+    {"from":"H1_consent_dnc_check","trigger":"consent_dnc_ok","to":"H2_opening_prepared"},
+    {"from":"H2_opening_prepared","trigger":"call_initiated","to":"H3_first_contact"},
+    {"from":"H3_first_contact","trigger":"call_ended","to":"H4_disposition_logged"},
+    {"from":"H4_disposition_logged","trigger":"followup_required","to":"H5_followup_scheduled"},
+    {"from":"H5_followup_scheduled","trigger":"cycle_complete","to":"H6_archive"}
+  ],
+  "gate_hooks": {
+    "H2_opening_prepared": ["compliance.check_tcpa_dnc","compliance.check_fair_housing"],
+    "H3_first_contact": ["compliance.check_ca_recording_consent:if_ca","compliance.check_wa_recording_announcement:if_wa"]
+  },
+  "adapters": ["comms"]
+}
