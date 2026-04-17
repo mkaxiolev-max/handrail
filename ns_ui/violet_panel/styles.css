@@ -1,0 +1,31 @@
+/* Baby V1 — three-truth dashboard */
+body { font-family: monospace; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 8px; }
+.violet-panel { max-width: 1400px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333; }
+.logo { font-weight: bold; color: #a78bfa; }
+.dignity { font-size: 0.8em; color: #666; }
+.three-truth { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 8px 0; }
+.pane { background: #111; border: 1px solid #222; padding: 12px; border-radius: 4px; min-height: 200px; }
+.pane h3 { margin: 0 0 8px; color: #7c3aed; font-size: 0.9em; }
+.pane h4 { margin: 8px 0 4px; color: #a78bfa; font-size: 0.8em; }
+.pane.error { border-color: #7f1d1d; background: #1a0a0a; }
+.tiles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.tile { background: #111; border: 1px solid #222; padding: 10px; border-radius: 4px; min-width: 180px; flex: 1; }
+.tile h4 { margin: 0 0 6px; font-size: 0.85em; color: #a78bfa; }
+.tile.ok { border-color: #166534; }
+.tile.warn { border-color: #92400e; }
+.tile.error { border-color: #7f1d1d; color: #fca5a5; }
+.tile.loading { color: #666; }
+.banner.force-ground { background: #78350f; color: #fef3c7; padding: 6px 12px; border-radius: 2px; margin: 4px 0; font-size: 0.85em; }
+.event { display: flex; gap: 8px; font-size: 0.75em; padding: 2px 0; border-bottom: 1px solid #1a1a1a; }
+.ts { color: #666; min-width: 120px; }
+.op { flex: 1; }
+.pass { color: #4ade80; }
+.fail { color: #f87171; }
+.small { font-size: 0.78em; margin: 2px 0; color: #999; }
+.mono { font-family: monospace; }
+.gate { display: flex; gap: 8px; font-size: 0.8em; padding: 3px 0; border-bottom: 1px solid #1a1a1a; }
+.gate-id { color: #7c3aed; min-width: 30px; }
+.gate.done .gate-status { color: #4ade80; }
+.gate.pending .gate-status { color: #f59e0b; }
+.error-light { color: #fbbf24; font-size: 0.8em; margin-bottom: 8px; }
