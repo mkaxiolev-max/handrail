@@ -7,11 +7,21 @@ export DOCKER_HOST="unix://$HOME/.docker/run/docker.sock"
 REPO=~/axiolev_runtime
 cd "$REPO"
 
-# ── Docker check ────────────────────────────────────────────────────────────
-if ! docker info >/dev/null 2>&1; then
-    echo "[ERROR] Docker not reachable. Start Docker Desktop first."
-    exit 1
-fi
+# ── Docker check — wait up to 90s (needed when launched via launchd at login) ─
+_wait_docker() {
+    local i=0
+    while ! docker info >/dev/null 2>&1; do
+        i=$((i+1))
+        if [ $i -ge 90 ]; then
+            echo "[ERROR] Docker not reachable after 90s. Start Docker Desktop first."
+            exit 1
+        fi
+        printf "\r  waiting for Docker (%d/90)..." "$i"
+        sleep 1
+    done
+    [ $i -gt 0 ] && echo ""
+}
+_wait_docker
 
 # ── Compose up ──────────────────────────────────────────────────────────────
 echo "[BOOT] docker compose up -d..."
