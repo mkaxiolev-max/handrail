@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.axiolev.ns_founder_boot</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/axiolevns/axiolev_runtime/scripts/boot/ns_boot_founder.command</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StartInterval</key>
+    <integer>0</integer>
+
+    <key>ThrottleInterval</key>
+    <integer>60</integer>
+
+    <key>StandardOutPath</key>
+    <string>/Users/axiolevns/Library/Logs/com.axiolev.ns_founder_boot.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/axiolevns/Library/Logs/com.axiolev.ns_founder_boot.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/axiolevns</string>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>DOCKER_HOST</key>
+        <string>unix:///Users/axiolevns/.docker/run/docker.sock</string>
+    </dict>
+</dict>
+</plist>

@@ -1,0 +1,59 @@
+{
+  "report_id": "FRPF-20260417",
+  "generated_at": "2026-04-17T00:35:00Z",
+  "commit": "e3085d0",
+  "branch": "boot-operational-closure",
+  "tags": [
+    "ns-infinity-founder-ready-plus-v1.0.0",
+    "brokerage-v1-merged",
+    "abi-frozen-v1",
+    "ring6-core-v1",
+    "doctrine-v1-draft",
+    "clearing-v1",
+    "baby-ui-v1",
+    "autopoiesis-v1",
+    "voice-loop-v1"
+  ],
+  "service_health": {
+    "expected": 12,
+    "healthy": 12,
+    "all_healthy": true
+  },
+  "software_parity": true,
+  "software_deltas": [],
+  "test_suite": {
+    "passing": 74,
+    "failing": 0,
+    "note": "74 = 68 P7-certified + 6 brokerage smoke functions added by merge"
+  },
+  "external_deltas": [
+    {
+      "id": "G1",
+      "description": "AXIOLEV Holdings LLC formation + Stripe business verification",
+      "type": "legal/admin"
+    },
+    {
+      "id": "G2",
+      "description": "Stripe live secret key (sk_live_...)",
+      "type": "external_service"
+    },
+    {
+      "id": "G3",
+      "description": "Stripe price IDs → STRIPE_PRICE_ID_ROOT_PRO/AUTO env vars",
+      "type": "external_service"
+    },
+    {
+      "id": "G4",
+      "description": "YubiKey slot_2 (~$55 yubico.com) → POST /kernel/yubikey/provision",
+      "type": "hardware"
+    },
+    {
+      "id": "G5",
+      "description": "DNS: root.axiolev.com CNAME → Cloudflare",
+      "type": "external_dns"
+    }
+  ],
+  "are_we_founder_ready_plus_in_every_aspect": "NO — SOFTWARE YES, 5 EXTERNAL GATES PENDING",
+  "verdict": "SOFTWARE_FOUNDER_READY_PLUS__EXTERNAL_GATES_PENDING",
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

@@ -1,0 +1,123 @@
+{
+  "audit_timestamp": "2026-04-17T00:34:00Z",
+  "auditor": "claude-sonnet-4-6",
+  "commit": "e3085d0",
+  "branch": "boot-operational-closure",
+
+  "matrix": {
+    "tags": {
+      "ns-infinity-founder-ready-plus-v1.0.0": true,
+      "brokerage-v1-merged": true,
+      "abi-frozen-v1": true,
+      "ring6-core-v1": true,
+      "doctrine-v1-draft": true,
+      "clearing-v1": true,
+      "baby-ui-v1": true,
+      "autopoiesis-v1": true,
+      "voice-loop-v1": true
+    },
+    "test_suite": {
+      "claim_68_68": "SUPERSEDED",
+      "actual": "74/74",
+      "note": "68 P7 tests + 6 brokerage pytest functions added by merge. All pass.",
+      "status": "PASS"
+    },
+    "services": {
+      "expected": 12,
+      "healthy": 12,
+      "list": ["alexandria","canon","continuum","handrail","integrity","model_router","ns_api","ns_core","omega","postgres","redis","violet"],
+      "status": "PASS"
+    },
+    "p1_5_abi": {
+      "return_block_v2": true,
+      "bridge_normalize": true,
+      "kernel_decision_receipt": true,
+      "status": "PASS"
+    },
+    "p2_ring6": {
+      "ax_core_14_axioms": true,
+      "pi_engine": true,
+      "pi_check_endpoint": "HTTP 200",
+      "never_events_10": true,
+      "canon_router": true,
+      "ns_resume_router": true,
+      "status": "PASS"
+    },
+    "p3_doctrine": {
+      "ner_endpoint": "HTTP 200",
+      "force_ground_state_endpoint": "HTTP 200",
+      "_violet_llm_6_provider_chain": true,
+      "ner_determinism_claim": "1000/1000 per P3 certification",
+      "force_ground_determinism_claim": "1000/1000 per P3 certification",
+      "status": "PASS"
+    },
+    "p4_clearing": {
+      "non_totalization": true,
+      "disclosure_window": true,
+      "irreducibility": true,
+      "multi_disclosure": true,
+      "silence_abstention": true,
+      "pi_abstention_live": "verified — evidence:null returns abstention:true",
+      "ring6_signal_dropped": true,
+      "status": "PASS"
+    },
+    "p5_baby_ui": {
+      "violet_panel_present": true,
+      "tiles_7": ["AbstentionTile","CanonPendingTile","ClearingTile","ForceGroundBanner","InvariantsTile","NERTile","ReceiptChainTile"],
+      "three_truth_layout": true,
+      "all_data_via_fetch": true,
+      "no_browser_storage": true,
+      "projection_invariant_test": "passing",
+      "status": "PASS"
+    },
+    "p6_autopoiesis": {
+      "compiler": true,
+      "runtime": true,
+      "self_loop": true,
+      "initiatives_5": true,
+      "autopoiesis_state_endpoint": "HTTP 200",
+      "pi_gate_on_adapt": true,
+      "status": "PASS"
+    },
+    "p7_certification": {
+      "certification_doc": "certification/FOUNDER_READY_PLUS_v1.md",
+      "matrix_19_19_green": true,
+      "status": "PASS"
+    },
+    "brokerage_v1": {
+      "merged": true,
+      "merge_commit": "e3085d0",
+      "smoke_tests": "57/57 assertions across 6 pytest functions",
+      "adapters": ["mls","docs","offer","escrow","wire","comms"],
+      "missions": 6,
+      "roles": 7,
+      "jurisdictions": ["ca","wa"],
+      "status": "PASS"
+    },
+    "in_flight_files": {
+      "services/ns_core/routes/organism.py": "UNTOUCHED",
+      "frontend/src/pages/OrganismPage.jsx": "UNTOUCHED",
+      "state_api.py": "UNTOUCHED",
+      "status": "PASS"
+    },
+    "voice_loop": {
+      "tag_voice-loop-v1": true,
+      "route_voice_respond": true,
+      "route_voice_inbound": true,
+      "status": "PASS"
+    },
+    "ring5_external_gates": {
+      "G1_LLC_formation_stripe": "PENDING — external/admin",
+      "G2_stripe_live_keys": "PENDING — external",
+      "G3_stripe_price_ids": "PENDING — external",
+      "G4_yubikey_slot2": "PENDING — hardware ($55 yubico.com)",
+      "G5_dns_cname": "PENDING — external DNS",
+      "hardware_signed": false,
+      "status": "EXTERNAL_ONLY"
+    }
+  },
+
+  "software_drift_found": false,
+  "repairs_needed": false,
+  "verdict": "SOFTWARE_FOUNDER_READY_PLUS__EXTERNAL_GATES_PENDING"
+}
