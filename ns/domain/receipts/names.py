@@ -34,5 +34,9 @@ RECEIPT_NAMES: frozenset[str] = frozenset(
         # T4 (reserved)
         "dimensional_contradiction_detected",
         "manifold_projection_lawful",
+        # B2/B3 NCOM + PIIC
+        "ncom_state_transitioned",
+        "piic_stage_advanced",
+        "ncom_veto_emitted",
     }
 )
