@@ -1,0 +1,61 @@
+{
+  "timestamp": "20260418T025918Z",
+  "branch": "boot-operational-closure",
+  "sha": "9facc74",
+  "services": {
+    "ns_core":   "ok",
+    "state_api": "ok",
+    "handrail":  "ok",
+    "continuum": "ok"
+  },
+  "alexandria_mount": "ok",
+  "state_api_snapshot": {
+  "machine_id": "Mikes-Mac-Studio.local",
+  "state": "LIVE",
+  "boot_mode": "EXECUTION_ENABLED",
+  "git": {
+    "commit": "9facc7435132",
+    "branch": "boot-operational-closure"
+  },
+  "alexandria": {
+    "mounted": true,
+    "writable": true
+  },
+  "database": {
+    "status": "online",
+    "host_port": 5433,
+    "migration_version": null
+  },
+  "services": {
+    "ns_core": "running",
+    "alexandria": "running",
+    "model_router": "running",
+    "violet": "running",
+    "canon": "running",
+    "integrity": "running",
+    "omega": "running",
+    "handrail": "running",
+    "continuum": "running"
+  },
+  "providers": {
+    "anthropic": {
+      "configured": false
+    },
+    "ollama_local": {
+      "installed": true,
+      "version": "ollama version is 0.21.0",
+      "reachable": true,
+      "models": [
+        "llama3:latest",
+        "mistral:latest",
+        "gpt-oss:20b"
+      ],
+      "model_count": 3
+    }
+  },
+  "receipt_chain": "error: Extra data: line 1 column 17 (char 16)",
+  "degraded": [],
+  "timestamp": "2026-04-18T02:59:18.169831Z"
+},
+  "verdict": "READY_FOR_SHUTDOWN"
+}

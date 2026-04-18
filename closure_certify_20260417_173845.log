@@ -1,0 +1,39 @@
+
+[0;35m[1mNS CLOSURE CERTIFY[0m
+[0;36m[INFO][0m Repo: /Users/axiolevns/axiolev_runtime
+[0;36m[INFO][0m Log: /Users/axiolevns/axiolev_runtime/closure_certify_20260417_173845.log
+[0;36m[INFO][0m Cert output: /Volumes/NSExternal/ALEXANDRIA/CLOSURE_CERTIFICATION_20260417_173845.json
+[0;36m[INFO][0m Git: boot-operational-closure @ e3085d0
+
+[0;35m[1mRuntime State[0m
+[0;32m[PASS][0m state_api - responding on :9090
+[0;31m[FAIL][0m state_value - state=missing
+[0;31m[FAIL][0m boot_mode - boot_mode=missing
+[0;31m[FAIL][0m degraded_services - degraded=missing
+[0;32m[PASS][0m ns_core - live at http://127.0.0.1:9000/healthz
+[0;32m[PASS][0m handrail - live at http://127.0.0.1:8011/healthz
+[0;32m[PASS][0m continuum - live at http://127.0.0.1:8788/state
+[0;32m[PASS][0m omega - live at http://127.0.0.1:9000/api/v1/omega/healthz
+[0;32m[PASS][0m voice - live at http://127.0.0.1:9000/violet/status
+
+[0;35m[1mOllama[0m
+[0;32m[PASS][0m ollama_binary - Warning: could not connect to a running Ollama instance
+[0;32m[PASS][0m ollama_reachable - local API reachable with 0 model(s)
+
+[0;35m[1mOrganism UI[0m
+[0;31m[FAIL][0m organism_ui - frontend route not responding at :3000/organism
+[0;32m[PASS][0m organism_backend - overview endpoint responding at :9000/api/organism/overview
+
+[0;35m[1mProof Artifacts[0m
+[0;31m[FAIL][0m e2e_proof - no codex end-to-end proof artifact found
+
+[0;35m[1mScript Hygiene[0m
+[0;32m[PASS][0m syntax:NS_RIGHT_DEEP_VERIFY.sh - bash -n clean
+[0;32m[PASS][0m syntax:NS_FINAL_CLOSURE_SPRINT.sh - bash -n clean
+[0;32m[PASS][0m syntax:NS_CLOSURE_CERTIFY.sh - bash -n clean
+
+[0;35m[1mCertification[0m
+[0;36m[INFO][0m Passed: 12
+[0;36m[INFO][0m Failed: 5
+[0;36m[INFO][0m Verdict: LIVE_FOUNDER_PLUS
+[0;36m[INFO][0m Certification: /Volumes/NSExternal/ALEXANDRIA/CLOSURE_CERTIFICATION_20260417_173845.json

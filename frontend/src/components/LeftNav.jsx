@@ -9,6 +9,7 @@ const routes = [
   { path: '/runtime', label: 'Runtime' },
   { path: '/memory', label: 'Memory' },
   { path: '/governance', label: 'Governance' },
+  { path: '/organism', label: 'Organism' },
   { path: '/omega', label: '⍉ Omega' },
   { path: '/calls', label: 'Calls' },
   { path: '/build', label: 'Build' },

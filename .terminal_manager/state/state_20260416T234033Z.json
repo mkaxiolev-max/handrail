@@ -1,0 +1,55 @@
+{
+  "return_block_version": 1,
+  "worker_kind": "code_state_review",
+  "stamp": "20260416T234033Z",
+  "host": "Mikes-Mac-Studio.local",
+  "repo": "/Users/axiolevns/axiolev_runtime",
+  "git": {
+    "branch": "boot-operational-closure",
+    "head": "05b4d13",
+    "expected_branch": "boot-operational-closure"
+  },
+  "services": {
+    "docker_healthy": "0",
+    "docker_total": "0",
+    "expected_healthy": 7
+  },
+  "doctrine": {
+    "ner_impl_present": false,
+    "force_ground_impl_present": false,
+    "doctrine_md_present": false
+  },
+  "ring6": {
+    "ax_core_json": false,
+    "never_event_corpus": false,
+    "resume_ns_sh": false,
+    "axiolev_push_sh": false
+  },
+  "voice_loop": {
+    "respond_route": true,
+    "polly_matthew": true
+  },
+  "ui": {
+    "violet_panel": false,
+    "ner_tile": false,
+    "force_ground_banner": false,
+    "clearing_tile": false
+  },
+  "mac_integration": {
+    "launchd_plist": true,
+    "menubar_artifact": true,
+    "shortcuts": false,
+    "hotkey": true
+  },
+  "autopoiesis": {
+    "compiler": false,
+    "program_runtime": false,
+    "autonarration": false,
+    "self_loop": false
+  },
+  "yubikey": {
+    "slot_1_expected": "26116460",
+    "slot_2_status": "PENDING_HARDWARE"
+  },
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

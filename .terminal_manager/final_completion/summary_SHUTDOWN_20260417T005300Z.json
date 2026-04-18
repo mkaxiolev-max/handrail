@@ -1,0 +1,31 @@
+{
+  "stamp": "20260417T005300Z",
+  "event": "MAC_SHUTDOWN — graceful halt after Phase 1",
+  "repo": "/Users/axiolevns/axiolev_runtime",
+  "phases": {
+    "phase_1": "true — 11/11 services up, voice loop intact",
+    "phase_2": "not_run",
+    "phase_3": "not_run",
+    "phase_4": "not_run",
+    "phase_5": "not_run",
+    "phase_6": "not_run",
+    "phase_7": "not_run"
+  },
+  "service_state_at_halt": {
+    "all_12_containers": "healthy per docker compose ps",
+    "state_api_9090": "container running, port not bound"
+  },
+  "resume_on_next_session": {
+    "step_1": "docker compose up -d (services will be down after shutdown)",
+    "step_2": "SKIP_PHASE=1 bash .terminal_manager/final_completion.sh  (skips P1, starts at P2)",
+    "note": "P1 return block already written — orchestrator will advance to P2 immediately on resume if SKIP_PHASE=1"
+  },
+  "open_items_for_next_session": [
+    "PDP /pdp/decide returning 500 — needs route investigation before P7 cert",
+    "Omega /simulate path verification",
+    "HIC /evaluate correct trigger payload",
+    "Phases P2 Ring6, P3 Doctrine, P4 Clearing, P5 UI, P6 Autopoiesis, P7 FinalCert"
+  ],
+  "hardware_gates_open": ["YK_slot_2", "Ring_5_gates_1..5"],
+  "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
+}

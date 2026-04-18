@@ -1,11 +1,14 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
+import os
 import httpx
 
 router = APIRouter(prefix="/router", tags=["router"])
 
-OLLAMA_URL = "http://host.docker.internal:11434"
+OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "host.docker.internal")
+OLLAMA_PORT = os.environ.get("OLLAMA_PORT", "11434")
+OLLAMA_URL = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
 
 TASK_ROUTING = {
     "parse_claims": "llama3",
@@ -67,16 +70,21 @@ async def router_status():
     try:
         async with httpx.AsyncClient(timeout=3.0) as client:
             resp = await client.get(f"{OLLAMA_URL}/api/tags")
+            resp.raise_for_status()
             tags = resp.json()
             local_count = len(tags.get("models", []))
             ollama_ok = True
+            models = [m.get("name") for m in tags.get("models", []) if m.get("name")]
     except Exception:
         local_count = 0
         ollama_ok = False
+        models = []
 
     return {
         "ollama_reachable": ollama_ok,
         "local_models_available": local_count,
+        "models": models,
+        "ollama_base": OLLAMA_URL,
         "policy": "local-first",
         "routing_table": TASK_ROUTING,
         "default_model": DEFAULT_MODEL,

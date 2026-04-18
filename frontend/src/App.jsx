@@ -9,6 +9,7 @@ import MemoryPage from './pages/MemoryPage'
 import GovernancePage from './pages/GovernancePage'
 import CallsPage from './pages/CallsPage'
 import BuildPage from './pages/BuildPage'
+import OrganismPage from './pages/OrganismPage'
 import OmegaPage from './pages/OmegaPage'
 import VioletPage from './pages/VioletPage'
 
@@ -24,6 +25,7 @@ function App() {
             <Route path="/runtime" element={<RuntimePage />} />
             <Route path="/memory" element={<MemoryPage />} />
             <Route path="/governance" element={<GovernancePage />} />
+            <Route path="/organism" element={<OrganismPage />} />
             <Route path="/calls" element={<CallsPage />} />
             <Route path="/build" element={<BuildPage />} />
             <Route path="/omega" element={<OmegaPage />} />
