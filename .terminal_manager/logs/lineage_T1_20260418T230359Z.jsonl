@@ -7,3 +7,6 @@
 {"ts": "2026-04-18T23:04:00Z", "terminal": "T1", "event": "yubikey_preflight", "subject": "ring-1", "status": "warn", "detail": "missing_pre_ring4"}
 {"ts": "2026-04-18T23:04:00Z", "terminal": "T1", "event": "ring_start", "subject": "ring-1", "status": "start", "detail": "name=L1 Constitutional Layer test=ns/tests/test_ring1_constitutional_layer.py"}
 {"ts": "2026-04-18T23:05:49Z", "terminal": "T1", "event": "ring_pytest", "subject": "ring-1", "status": "green", "detail": "attempt=1 test=ns/tests/test_ring1_constitutional_layer.py"}
+{"ts": "2026-04-18T23:05:52Z", "terminal": "T1", "event": "ring_tagged", "subject": "ring-1", "status": "ok", "detail": "tag=ring1-constitutional-layer-v1"}
+{"ts": "2026-04-18T23:05:53Z", "terminal": "T1", "event": "yubikey_preflight", "subject": "ring-2", "status": "warn", "detail": "missing_pre_ring4"}
+{"ts": "2026-04-18T23:05:53Z", "terminal": "T1", "event": "ring_start", "subject": "ring-2", "status": "start", "detail": "name=L5/L6/L7/L8 Substrate test=ns/tests/test_ring2_substrate_layers.py"}

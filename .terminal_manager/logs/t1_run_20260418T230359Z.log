@@ -22,3 +22,17 @@ Ring 1 is green — 22/22 tests passing, committed as `ring-1: L1 Constitutional
 - `ns/tests/test_ring1_constitutional_layer.py` — 22 tests covering all schemas, service, and integrity types
 2026-04-18T23:05:49Z [T1] INFO Running pytest: ns/tests/test_ring1_constitutional_layer.py (attempt 1)
 2026-04-18T23:05:49Z [T1] OK   Ring 1 GREEN on attempt 1
+2026-04-18T23:05:52Z [T1] INFO tag ring1-constitutional-layer-v1 already present — skip
+2026-04-18T23:05:52Z [T1] OK   Ring 1 tagged ring1-constitutional-layer-v1
+2026-04-18T23:05:53Z [T1] WARN YubiKey 26116460 not detected (non-fatal before Ring 4)
+2026-04-18T23:05:53Z [T1] ==> === RING 2 (L5/L6/L7/L8 Substrate) BEGIN ===
+2026-04-18T23:05:53Z [T1] INFO Invoking Claude Code for Ring 2 (L5/L6/L7/L8 Substrate)
+**35/35 green.** Ring 2 (L5/L6/L7/L8 Substrate) is complete and tagged `ring2-substrate-layers-v1`.
+
+What was built:
+- `ns/domain/receipts/names.py` — `RECEIPT_NAMES` frozenset (22 authoritative names, T1+T3+T4 reserved slots)
+- `ns/domain/receipts/emitter.py` — fsync'd append-only JSONL writer enforcing I2/I5 via SHA-256 hash-chain
+- `ns/domain/receipts/store.py` — `ReceiptStore.verify_chain()` + `ChainIntegrityError` (I5 provenance inertness)
+- `ns/integrations/alexandria.py` — `AlexandrianArchive` + `alexandrian_archive` alias covering L5 (Alexandrian Lexicon baptisms/supersessions), L6 (State Manifold shards), L7 (branches/projections), L8 (Lineage Fabric ledger)
+- `ns/integrations/ether.py` — `GradientField` + `gradient_field` alias (L2)
+- `ns/tests/test_ring2_substrate_layers.py` — 35 tests covering I2 append-only, I5 hash-chain tamper detection, I10 supersession-not-deletion, locked ontology aliases

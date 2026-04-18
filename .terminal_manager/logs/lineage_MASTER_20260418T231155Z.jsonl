@@ -1,0 +1,8 @@
+{"ts": "2026-04-18T23:11:55Z", "terminal": "MASTER", "event": "master_boot", "subject": "boot", "status": "start", "detail": "run=20260418T231155Z repo=/Users/axiolevns/axiolev_runtime"}
+{"ts": "2026-04-18T23:11:55Z", "terminal": "MASTER", "event": "dirs_ready", "subject": "boot", "status": "ok", "detail": "logs_ledger"}
+{"ts": "2026-04-18T23:11:55Z", "terminal": "MASTER", "event": "yubikey_preflight", "subject": "hardware", "status": "ok", "detail": "serial=26116460"}
+{"ts": "2026-04-18T23:11:55Z", "terminal": "MASTER", "event": "prompt_written", "subject": "boot", "status": "ok", "detail": "path=/Users/axiolevns/axiolev_runtime/PROMPT.md"}
+{"ts": "2026-04-18T23:11:56Z", "terminal": "MASTER", "event": "alex_layout", "subject": "substrate", "status": "ok", "detail": "root=/Volumes/NSExternal/ALEXANDRIA"}
+{"ts": "2026-04-18T23:11:56Z", "terminal": "MASTER", "event": "phase_boundary", "subject": "phase-A", "status": "start", "detail": "T1 Rings 1-6"}
+{"ts": "2026-04-18T23:11:56Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-1", "status": "start", "detail": "name=Constitutional Layer test=ns/tests/test_ring1_constitutional_layer.py"}
+{"ts": "2026-04-18T23:12:14Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-1", "status": "green", "detail": "attempt=1"}
