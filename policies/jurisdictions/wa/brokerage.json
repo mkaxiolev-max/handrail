@@ -1,0 +1,31 @@
+{
+  "jurisdiction": "WA",
+  "vertical": "brokerage",
+  "version": "v1",
+  "citations": [
+    "RCW 9.73.030 (all-party consent; announcement-based consent permitted)",
+    "RCW 18.86 (brokerage relationships, pamphlet requirement)",
+    "RCW 19.158 (commercial telephone solicitation; real-estate carveout)"
+  ],
+  "rules": {
+    "call_recording_requires_all_party_consent": true,
+    "announcement_recorded_required": true,
+    "pamphlet_surface_required": true,
+    "agency_relationship_step_required": true,
+    "outbound_high_compliance_mode": true,
+    "consent_status_required_before_outbound_recommendation": true,
+    "fair_housing_lint_required_for_listing_marketing": true,
+    "wire_execution_blocked": true,
+    "wire_playbook_required": true,
+    "agency_check_required_before_offer_actions": true
+  },
+  "forbidden_actions": [
+    "wire.send",
+    "offer.request_signatures_without_agency_check",
+    "listing.publish_without_disclosure_completion",
+    "buyer.advance_consult_without_pamphlet_surface"
+  ],
+  "required_receipts": [
+    "ComputeReceipt","IDS_trace","transcript_chunk_if_voice_used","pamphlet_ack_if_buyer_or_seller_consult"
+  ]
+}

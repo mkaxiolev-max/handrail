@@ -1,0 +1,8 @@
+{
+  "role_id":"hunter_operator","voice_profile":"hunter_voice_v1",
+  "missions":["MG.RESI.HUNTER.PROSPECT"],
+  "allowed_states":["H0","H1","H2","H3","H4","H5"],
+  "functions":["surface_propensity","suggest_opening_line","check_consent","guide_call","log_outcome"],
+  "memory_scope_spec":{"allowed_keys":["candidate.public_record","candidate.propensity_score","candidate.consent_status"],
+                       "excluded_keys":["candidate.private_financial","candidate.health_info"]}
+}

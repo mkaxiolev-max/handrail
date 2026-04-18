@@ -1,0 +1,29 @@
+{
+  "jurisdiction": "CA",
+  "vertical": "brokerage",
+  "version": "v1",
+  "citations": [
+    "CA Penal Code 632 (all-party consent, confidential communications)",
+    "CA Penal Code 632.7 (cellular/cordless communications)",
+    "42 USC 3601 et seq. (Fair Housing Act)",
+    "47 USC 227 (TCPA)"
+  ],
+  "rules": {
+    "call_recording_requires_all_party_consent": true,
+    "pre_capture_disclosure_required": true,
+    "tcpa_dnc_check_required_for_outbound": true,
+    "fair_housing_lint_required_for_listing_marketing": true,
+    "fair_housing_lint_required_for_buyer_match": true,
+    "wire_execution_blocked": true,
+    "wire_playbook_required": true,
+    "agency_check_required_before_offer_actions": true,
+    "required_disclosure_bundle_check": true
+  },
+  "forbidden_actions": [
+    "wire.send",
+    "offer.request_signatures_without_agency_check",
+    "listing.publish_without_disclosure_completion",
+    "comms.call_outbound_without_dnc_check"
+  ],
+  "required_receipts": ["ComputeReceipt","IDS_trace","transcript_chunk_if_voice_used"]
+}

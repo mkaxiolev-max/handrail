@@ -1,0 +1,8 @@
+{
+  "role_id":"violet_interface_operator","voice_profile":"violet_voice_v1",
+  "allowed_states":["B1","B2","P0","P1","P2","P3","P4","P5"],
+  "functions":["frame_context","capture_intent","ask_missing_questions","offer_next_step","generate_whisper"],
+  "forbidden":["unverified_regulatory_claims","wire_execution","pricing_commitment_without_role_transfer"],
+  "memory_scope_spec":{"allowed_keys":["deal.stage","deal.parties","deal.next_step","deal.notes_public"],
+                       "excluded_keys":["deal.pricing_floor","deal.negotiation_strategy","deal.financial_disclosure"]}
+}

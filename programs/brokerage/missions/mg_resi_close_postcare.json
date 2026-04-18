@@ -1,0 +1,15 @@
+{
+  "mission_id": "MG.RESI.CLOSE.POSTCARE",
+  "version": "v1",
+  "default_role": "violet_interface_operator",
+  "states": ["P0_recording_confirmed","P1_key_handoff","P2_settlement_review",
+             "P3_review_request_queued","P4_referral_nurture_scheduled","P5_archive"],
+  "transitions": [
+    {"from":"P0_recording_confirmed","trigger":"keys_delivered","to":"P1_key_handoff"},
+    {"from":"P1_key_handoff","trigger":"settlement_reviewed","to":"P2_settlement_review"},
+    {"from":"P2_settlement_review","trigger":"review_queued","to":"P3_review_request_queued"},
+    {"from":"P3_review_request_queued","trigger":"nurture_scheduled","to":"P4_referral_nurture_scheduled"},
+    {"from":"P4_referral_nurture_scheduled","trigger":"archived","to":"P5_archive"}
+  ],
+  "adapters": ["comms"]
+}

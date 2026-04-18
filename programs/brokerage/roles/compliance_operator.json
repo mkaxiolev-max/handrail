@@ -1,0 +1,7 @@
+{
+  "role_id":"compliance_operator","voice_profile":"compliance_voice_v1",
+  "allowed_states":["*"],
+  "functions":["fair_housing_lint","tcpa_dnc_check","ca_recording_consent_check","wa_recording_announcement_check","agency_check","wire_fraud_block"],
+  "memory_scope_spec":{"allowed_keys":["*"],"excluded_keys":[]},
+  "note":"Full read scope to enforce gates; cannot execute adapters directly."
+}
