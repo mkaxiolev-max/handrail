@@ -60,3 +60,18 @@ All 48 tests green. The Ring 4 Canon Promotion Gate is fully implemented:
 - **`ns/tests/test_ring4_canon_promotion.py`** — 48 tests covering all gate conditions, quorum formula, receipts, I1/I4 invariants, Ring 6 integration, RelationBinding, and router structure
 2026-04-18T23:20:04Z [MASTER] INFO pytest ns/tests/test_ring4_canon_promotion.py (attempt 1)
 2026-04-18T23:20:04Z [MASTER] OK   ring-4 GREEN on attempt 1
+[boot-operational-closure 60c5c6c] ring-4: L3 Intake + Canon gate (6 conditions + I1 + I4) green — AXIOLEV Holdings LLC © 2026
+ 8 files changed, 618 insertions(+), 3 deletions(-)
+ create mode 100644 .terminal_manager/logs/pytest_ring-4_a1_20260418T231155Z.log
+ create mode 100644 ns/api/routers/canon.py
+ create mode 100644 ns/domain/models/g2_invariant.py
+ create mode 100644 ns/services/canon/relation_binding.py
+ create mode 100644 ns/tests/test_ring4_canon_promotion.py
+2026-04-18T23:20:04Z [MASTER] OK   ring-4 tagged ring-4-canon-promotion-v1
+2026-04-18T23:20:04Z [MASTER] ==> === ring-5 (External Gates Noted) ===
+2026-04-18T23:20:04Z [MASTER] INFO Invoking Claude Code: phase=ring-5 (External Gates Noted) workdir=/Users/axiolevns/axiolev_runtime
+All 10 tests green. 
+
+Created `ns/domain/policies/external_gates.py` with the 5 pending out-of-band gates and `ns/tests/test_ring5_external_gates_noted.py` with 10 tests covering structure, ids, statuses, notes, and no-network-call guarantee. Ready to tag `ring-5-external-gates-noted-v1`.
+2026-04-18T23:20:37Z [MASTER] INFO pytest ns/tests/test_ring5_external_gates_noted.py (attempt 1)
+2026-04-18T23:20:38Z [MASTER] OK   ring-5 GREEN on attempt 1
