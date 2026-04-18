@@ -1,0 +1,67 @@
+{
+  "proof_id": "ncom_piic_proof_v2",
+  "ts": "2026-04-18T23:45:28Z",
+  "phase": "B7",
+  "tag": "ncom-piic-tests-green-v2",
+  "description": "NCOM/PIIC test suite proof — 95 tests green, state machine + collapse gate + monotonic chain verified",
+  "branch": "feature/ncom-piic-v2",
+  "copyright": "AXIOLEV Holdings LLC © 2026",
+  "test_suite": {
+    "command": "python3 -m pytest -x -q ns/tests/test_ncom.py ns/tests/test_piic.py",
+    "result": "95 passed",
+    "duration_s": 0.04,
+    "test_ncom_count": 51,
+    "test_piic_count": 44
+  },
+  "ncom_coverage": {
+    "states": ["inactive", "priming", "observing", "branching", "stabilizing", "ready_for_collapse", "forced_collapse", "aborted"],
+    "terminal_states": ["forced_collapse", "aborted"],
+    "collapse_ready_states": ["ready_for_collapse", "forced_collapse"],
+    "verified": [
+      "8-state enum present",
+      "initial state is inactive",
+      "full happy-path transitions",
+      "any non-terminal can abort",
+      "backward transitions raise",
+      "skip transitions raise",
+      "terminal states block further transitions",
+      "collapse-readiness gate with ERS/CRS/IPI thresholds",
+      "hard vetoes override readiness",
+      "collapse gate integration with promotion_guard"
+    ]
+  },
+  "piic_coverage": {
+    "stages": ["perception", "interpretation", "identification", "commitment"],
+    "verified": [
+      "monotonic forward-only advance",
+      "no-skip invariant enforced",
+      "no-regress invariant enforced",
+      "advance-beyond-commitment raises",
+      "history tracks all stages",
+      "gate blocks when NCOM not collapse-ready",
+      "gate passes with ready_for_collapse and forced_collapse",
+      "ncom_veto_emitted receipt on veto",
+      "full chain-to-gate integration"
+    ]
+  },
+  "receipts_verified": [
+    "ncom_state_transitioned",
+    "piic_stage_advanced",
+    "ncom_veto_emitted"
+  ],
+  "invariants_honored": {
+    "I2": "append-only history in state machine and PIIC chain",
+    "I6": "Sentinel Gate soundness — hard vetoes block collapse",
+    "I7": "bisimulation with replay — history array enables replay",
+    "I10": "supersession monotone — no state deletion, only forward transitions"
+  },
+  "ontology_check": {
+    "gradient_field": "present (ncom observes gradient field inputs)",
+    "alexandrian_lexicon": "present (receipt names registered)",
+    "state_manifold": "present (8-state NCOM machine)",
+    "alexandrian_archive": "present (receipts written to ledger)",
+    "lineage_fabric": "present (history chain in PIIC)",
+    "narrative": "not applicable to this phase",
+    "deprecated_names_used": []
+  }
+}
