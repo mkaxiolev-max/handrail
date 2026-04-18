@@ -19,3 +19,9 @@
 {"ts": "2026-04-18T23:20:04Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-4", "status": "ok", "detail": "tag=ring-4-canon-promotion-v1"}
 {"ts": "2026-04-18T23:20:04Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-5", "status": "start", "detail": "name=External Gates Noted test=ns/tests/test_ring5_external_gates_noted.py"}
 {"ts": "2026-04-18T23:20:38Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-5", "status": "green", "detail": "attempt=1"}
+{"ts": "2026-04-18T23:20:38Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-5", "status": "ok", "detail": "tag=ring-5-external-gates-noted-v1"}
+{"ts": "2026-04-18T23:20:38Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-6", "status": "start", "detail": "name=G2 3-form Invariant test=ns/tests/test_ring6_g2_invariant.py"}
+{"ts": "2026-04-18T23:20:46Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-6", "status": "red", "detail": "attempt=1"}
+{"ts": "2026-04-18T23:20:49Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-6", "status": "red", "detail": "attempt=2"}
+{"ts": "2026-04-18T23:20:52Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-6", "status": "red", "detail": "attempt=3"}
+{"ts": "2026-04-18T23:20:53Z", "terminal": "MASTER", "event": "build_failed", "subject": "master", "status": "error", "detail": "ring-6 (G2 3-form Invariant) failed after 3 attempts"}
