@@ -1,0 +1,38 @@
+{
+  "verification_timestamp": "2026-04-17T20:42:00Z",
+  "wrapper": "tauri",
+  "tauri_version": "2.10.1",
+  "build_exit_code": 0,
+  "bundle": {
+    "path": "apps/dist/NS Infinity.app",
+    "source_path": "apps/ns-tauri/src-tauri/target/release/bundle/macos/NS Infinity.app",
+    "desktop_symlink": "~/Desktop/NS∞ Tauri.app",
+    "arch": "arm64",
+    "bundle_id": "com.axiolev.ns-infinity",
+    "codesign": "adhoc",
+    "executable": "Contents/MacOS/ns-infinity",
+    "frontend_embedded": true
+  },
+  "launch": {
+    "process_running": true,
+    "window_title": "NS∞ Founder Console",
+    "alexandria_mounted": true,
+    "boot_helper_executed": true,
+    "boot_helper_completed": true
+  },
+  "services_post_launch": {
+    "ns_core_9000": "live",
+    "state_api_9090": "live",
+    "handrail_8011": "live",
+    "continuum_8788": "live"
+  },
+  "login_autostart": {
+    "strategy": "boot-helper-at-login",
+    "launchagent": "com.axiolev.ns_founder_boot",
+    "status": "loaded"
+  },
+  "signed": false,
+  "notarized": false,
+  "true_mac_app": true,
+  "verdict": "TRUE_MAC_APP_COMPLETE"
+}
