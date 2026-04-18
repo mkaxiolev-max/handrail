@@ -41,3 +41,22 @@ All 95 tests pass (38 ring-3, 35 ring-2, 22 ring-1). Ring 3 — The Loom is gree
 - `ns/tests/test_ring3_loom.py` — 38 tests covering weights, score formula, stage ordering, contradiction injection, I1 enforcement, and receipt names
 2026-04-18T23:15:44Z [MASTER] INFO pytest ns/tests/test_ring3_loom.py (attempt 1)
 2026-04-18T23:15:44Z [MASTER] OK   ring-3 GREEN on attempt 1
+[boot-operational-closure 8adab5c] ring-3: L4 The Loom reflector functor with ConfidenceEnvelope green — AXIOLEV Holdings LLC © 2026
+ 7 files changed, 621 insertions(+)
+ create mode 100644 .terminal_manager/logs/pytest_ring-3_a1_20260418T231155Z.log
+ create mode 100644 ns/services/loom/mode_switching.py
+ create mode 100644 ns/services/loom/service.py
+ create mode 100644 ns/tests/test_ring3_loom.py
+2026-04-18T23:15:45Z [MASTER] OK   ring-3 tagged ring-3-loom-v1
+2026-04-18T23:15:45Z [MASTER] OK   YubiKey serial 26116460 present (I9 anchor verified)
+2026-04-18T23:15:45Z [MASTER] ==> === ring-4 (Canon Promotion Gate) ===
+2026-04-18T23:15:45Z [MASTER] INFO Invoking Claude Code: phase=ring-4 (Canon Promotion Gate) workdir=/Users/axiolevns/axiolev_runtime
+All 48 tests green. The Ring 4 Canon Promotion Gate is fully implemented:
+
+- **`ns/domain/models/g2_invariant.py`** — Ring 6 Fano plane / `ring6_phi_parallel` (imported by Ring 4)
+- **`ns/services/canon/promotion_guard.py`** — `verify_hardware_quorum` (exact formula from PROMPT) + `PromotionGuard.can_promote` (six conditions + I4 + Ring 6) + `PromotionGuard.promote` (emits `canon_promoted_with_hardware_quorum` / `canon_promotion_denied_i9_quorum_missing`)
+- **`ns/services/canon/relation_binding.py`** — `RelationBinding` dataclass + `RelationBinder` (append-only, I2)
+- **`ns/api/routers/canon.py`** — `POST /canon/promote` router
+- **`ns/tests/test_ring4_canon_promotion.py`** — 48 tests covering all gate conditions, quorum formula, receipts, I1/I4 invariants, Ring 6 integration, RelationBinding, and router structure
+2026-04-18T23:20:04Z [MASTER] INFO pytest ns/tests/test_ring4_canon_promotion.py (attempt 1)
+2026-04-18T23:20:04Z [MASTER] OK   ring-4 GREEN on attempt 1

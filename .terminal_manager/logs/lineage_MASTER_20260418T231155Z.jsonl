@@ -12,3 +12,7 @@
 {"ts": "2026-04-18T23:12:35Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-2", "status": "ok", "detail": "tag=ring-2-substrate-layers-v1"}
 {"ts": "2026-04-18T23:12:35Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-3", "status": "start", "detail": "name=The Loom test=ns/tests/test_ring3_loom.py"}
 {"ts": "2026-04-18T23:15:44Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-3", "status": "green", "detail": "attempt=1"}
+{"ts": "2026-04-18T23:15:44Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-3", "status": "ok", "detail": "tag=ring-3-loom-v1"}
+{"ts": "2026-04-18T23:15:45Z", "terminal": "MASTER", "event": "yubikey_preflight", "subject": "hardware", "status": "ok", "detail": "serial=26116460"}
+{"ts": "2026-04-18T23:15:45Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-4", "status": "start", "detail": "name=Canon Promotion Gate test=ns/tests/test_ring4_canon_promotion.py"}
+{"ts": "2026-04-18T23:20:04Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-4", "status": "green", "detail": "attempt=1"}
