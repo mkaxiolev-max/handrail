@@ -5,3 +5,4 @@
 {"ts": "2026-04-18T23:30:39Z", "terminal": "MASTER", "event": "alex_layout", "subject": "substrate", "status": "ok", "detail": "root=/Volumes/NSExternal/ALEXANDRIA"}
 {"ts": "2026-04-18T23:30:39Z", "terminal": "MASTER", "event": "phase_boundary", "subject": "phase-A", "status": "start", "detail": "T1 Rings 1-6"}
 {"ts": "2026-04-18T23:30:39Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-1", "status": "start", "detail": "name=Constitutional Layer test=ns/tests/test_ring1_constitutional_layer.py"}
+{"ts": "2026-04-18T23:31:29Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-1", "status": "green", "detail": "attempt=1"}
