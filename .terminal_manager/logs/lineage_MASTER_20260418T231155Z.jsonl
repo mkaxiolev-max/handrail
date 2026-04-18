@@ -9,3 +9,6 @@
 {"ts": "2026-04-18T23:12:14Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-1", "status": "ok", "detail": "tag=ring-1-constitutional-layer-v1"}
 {"ts": "2026-04-18T23:12:14Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-2", "status": "start", "detail": "name=Substrate Layers test=ns/tests/test_ring2_substrate_layers.py"}
 {"ts": "2026-04-18T23:12:34Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-2", "status": "green", "detail": "attempt=1"}
+{"ts": "2026-04-18T23:12:35Z", "terminal": "MASTER", "event": "phase_tagged", "subject": "ring-2", "status": "ok", "detail": "tag=ring-2-substrate-layers-v1"}
+{"ts": "2026-04-18T23:12:35Z", "terminal": "MASTER", "event": "phase_start", "subject": "ring-3", "status": "start", "detail": "name=The Loom test=ns/tests/test_ring3_loom.py"}
+{"ts": "2026-04-18T23:15:44Z", "terminal": "MASTER", "event": "phase_pytest", "subject": "ring-3", "status": "green", "detail": "attempt=1"}
