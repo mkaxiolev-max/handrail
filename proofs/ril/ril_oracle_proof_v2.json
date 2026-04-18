@@ -1,0 +1,76 @@
+{
+  "proof_id": "ril_oracle_proof_v2",
+  "phase": "C — T3 RIL + ORACLE v2",
+  "date": "2026-04-18",
+  "author": "axiolevns",
+  "org": "AXIOLEV Holdings LLC",
+  "tags": [
+    "oracle-v2-contract-v2",
+    "oracle-v2-adjudicator-v2",
+    "oracle-policy-matrix-v2",
+    "ril-oracle-bridge-v2",
+    "ril-oracle-tests-green-v2"
+  ],
+  "milestones": {
+    "C5": {
+      "tag": "oracle-v2-contract-v2",
+      "file": "ns/api/schemas/oracle.py",
+      "models": [
+        "OracleDecision", "HandrailScope", "OracleSeverity",
+        "ConstitutionalContext", "OracleCondition", "OracleBlockingReason",
+        "HandrailExecutionEnvelope", "OracleAdjudicationRequest", "OracleAdjudicationResponse"
+      ],
+      "status": "green"
+    },
+    "C6": {
+      "tag": "oracle-v2-adjudicator-v2",
+      "files": [
+        "ns/services/oracle/adjudicator.py",
+        "ns/services/oracle/service.py",
+        "ns/services/oracle/constitutional_overlays.py",
+        "ns/services/oracle/decision_selector.py",
+        "ns/services/oracle/envelope_builder.py",
+        "ns/services/oracle/founder_translation.py",
+        "ns/services/oracle/trace_builder.py"
+      ],
+      "g2_import": "ring6_phi_parallel from ns.domain.models.g2_invariant",
+      "two_stage_adjudication": true,
+      "status": "green"
+    },
+    "C7": {
+      "tag": "oracle-policy-matrix-v2",
+      "file": "ns/services/oracle/policy_matrix.py",
+      "never_event_ops": 4,
+      "high_risk_domains": 5,
+      "tier_severity_map": true,
+      "status": "green"
+    },
+    "C8": {
+      "tag": "ril-oracle-bridge-v2",
+      "files": [
+        "ns/api/routers/ril.py",
+        "ns/api/routers/oracle.py"
+      ],
+      "endpoints": ["POST /ril/evaluate", "POST /oracle/adjudicate"],
+      "status": "green"
+    },
+    "C9": {
+      "tag": "ril-oracle-tests-green-v2",
+      "test_file": "ns/tests/test_oracle_v2.py",
+      "tests_written": 28,
+      "tests_required": 5,
+      "full_suite_tests": 335,
+      "status": "green"
+    }
+  },
+  "invariants_honored": ["I1", "I2", "I3", "I4", "I5", "I6", "I7", "I8", "I9", "I10"],
+  "ontology_locked": {
+    "Gradient Field": "L2",
+    "Alexandrian Lexicon": "L5",
+    "State Manifold": "L6",
+    "Alexandrian Archive": "L7",
+    "Lineage Fabric": "L8",
+    "Narrative": "L10"
+  },
+  "deprecated_names_used": false
+}
