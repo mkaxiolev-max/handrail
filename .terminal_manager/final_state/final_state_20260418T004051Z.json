@@ -1,0 +1,16 @@
+{
+  "timestamp": "20260418T004051Z",
+  "verdict": "FOUNDER_READY_PLUS_MAX",
+  "pillars": {
+    "operational": true,
+    "constitutional": 1,
+    "epistemic": true,
+    "visibility": true,
+    "memory": true,
+    "embodiment": 1,
+    "voice":       20,
+    "autopoiesis": true
+  },
+  "coherence": true,
+  "receipts":      309
+}

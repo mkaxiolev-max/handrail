@@ -1,0 +1,24 @@
+2026-04-18T23:03:59Z [T1] ==> NS∞ Terminal 1 Orchestrator v3 — run 20260418T230359Z
+2026-04-18T23:03:59Z [T1] ==> Prerequisite checks
+2026-04-18T23:03:59Z [T1] INFO docker socket: /var/run/docker.sock
+2026-04-18T23:03:59Z [T1] OK   prerequisites satisfied (python 3.14, branch boot-operational-closure)
+2026-04-18T23:03:59Z [T1] WARN YubiKey 26116460 not detected (non-fatal before Ring 4)
+2026-04-18T23:03:59Z [T1] ==> Directory setup
+2026-04-18T23:03:59Z [T1] OK   signals=/Users/axiolevns/axiolev_runtime/.signals logs=/Users/axiolevns/axiolev_runtime/.terminal_manager/logs ledger=/Volumes/NSExternal/ALEXANDRIA/ledger
+2026-04-18T23:03:59Z [T1] INFO Ensuring Alexandrian Archive layout on /Volumes/NSExternal/ALEXANDRIA
+2026-04-18T23:03:59Z [T1] ==> Writing PROMPT.md (Claude Code master specification)
+2026-04-18T23:03:59Z [T1] OK   PROMPT.md written (/Users/axiolevns/axiolev_runtime/PROMPT.md)
+2026-04-18T23:04:00Z [T1] WARN YubiKey 26116460 not detected (non-fatal before Ring 4)
+2026-04-18T23:04:00Z [T1] ==> === RING 1 (L1 Constitutional Layer) BEGIN ===
+2026-04-18T23:04:00Z [T1] INFO Invoking Claude Code for Ring 1 (L1 Constitutional Layer)
+Ring 1 is green — 22/22 tests passing, committed as `ring-1: L1 Constitutional Layer green — AXIOLEV © 2026`, tagged `ring1-constitutional-layer-v1`.
+
+**What was built:**
+- `ns/api/schemas/canon.py` — `ConstraintClass(SACRED|RELAXABLE)`, `ConstitutionalRule`, `DignityCheck`, `NeverEvent` (Pydantic v2, `extra="forbid"`)
+- `ns/services/canon/service.py` — `CanonService` loading all 7 SACRED constraints with invariant refs
+- `ns/services/canon/promotion_guard.py` — `PromotionGuard` stub (raises `NotImplementedError`, Ring 4 fills the gate)
+- `ns/domain/models/integrity.py` — `ProvenanceRecord`, `CanonRef`, `IntegrityState`
+- Full `ns/` scaffold directory tree (all `__init__.py` files, all subdirs per spec)
+- `ns/tests/test_ring1_constitutional_layer.py` — 22 tests covering all schemas, service, and integrity types
+2026-04-18T23:05:49Z [T1] INFO Running pytest: ns/tests/test_ring1_constitutional_layer.py (attempt 1)
+2026-04-18T23:05:49Z [T1] OK   Ring 1 GREEN on attempt 1

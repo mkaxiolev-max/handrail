@@ -1,0 +1,18 @@
+ M certification/finalization_20260410_190134/run.log
+ D frontend/dist/assets/index-e7bbdd89.js
+ M frontend/dist/index.html
+ M frontend/src/App.jsx
+ M frontend/src/components/LeftNav.jsx
+ M services/model_router/main.py
+ M services/model_router/routes/router.py
+ M services/ns_core/main.py
+?? .terminal_manager/
+?? HOMEBREW_LEFT.sh
+?? NS_BROKERAGE_V1_BUILD.sh
+?? NS_CLOSURE_CERTIFY.sh
+?? NS_FINAL_CLOSURE_SPRINT.sh
+?? NS_RIGHT_DEEP_VERIFY.sh
+?? frontend/dist/assets/index-0fa12329.js
+?? frontend/src/pages/OrganismPage.jsx
+?? services/ns_core/routes/organism.py
+?? state_api.py

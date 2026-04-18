@@ -79,10 +79,10 @@ PROVIDERS: dict[str, dict] = {
         "local": False,
     },
     "ollama": {
-        "live": True,  # availability checked at runtime — no key needed
+        "live": False,  # runtime reachability determines actual live state
         "key_env": "OLLAMA_HOST",
         "primary_model": OLLAMA_MODEL,
-        "always_active": True,
+        "always_active": False,
         "local": True,
     },
 }
@@ -91,6 +91,34 @@ for name, cfg in PROVIDERS.items():
     status = "LIVE" if cfg["live"] else ("ALWAYS_ON" if cfg["always_active"] else "DEFERRED")
     local_tag = " [LOCAL]" if cfg.get("local") else ""
     logger.info(f"  {name:12s}: {status}  model={cfg['primary_model']}{local_tag}")
+
+
+async def probe_ollama_runtime() -> dict:
+    """Return truthful local Ollama reachability and model inventory."""
+    try:
+        import httpx
+
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            resp.raise_for_status()
+            data = resp.json()
+        models = [m.get("name") for m in data.get("models", []) if m.get("name")]
+        return {
+            "reachable": True,
+            "model_count": len(models),
+            "models": models,
+            "default_model": OLLAMA_MODEL,
+            "base_url": OLLAMA_BASE_URL,
+        }
+    except Exception as e:
+        return {
+            "reachable": False,
+            "model_count": 0,
+            "models": [],
+            "default_model": OLLAMA_MODEL,
+            "base_url": OLLAMA_BASE_URL,
+            "error": str(e),
+        }
 
 # ── Anthropic ──────────────────────────────────────────────────────────────
 async def call_anthropic(prompt: str, model: str = "claude-haiku-4-5-20251001",
@@ -357,7 +385,35 @@ class AdjudicationRequest(BaseModel):
 # ── Routes ─────────────────────────────────────────────────────────────────
 @app.get("/healthz")
 async def healthz():
-    live = [n for n, c in PROVIDERS.items() if c["live"] or c["always_active"]]
+    ollama_runtime = await probe_ollama_runtime()
+    provider_state = {}
+    live = []
+
+    for name, cfg in PROVIDERS.items():
+        key_present = key_live(os.environ.get(cfg["key_env"], "")) if cfg["key_env"] else False
+        live_now = cfg["live"]
+        extra = {}
+        if name == "ollama":
+            live_now = ollama_runtime["reachable"]
+            key_present = False
+            extra = {
+                "reachable": ollama_runtime["reachable"],
+                "model_count": ollama_runtime["model_count"],
+                "models": ollama_runtime["models"],
+                "base_url": ollama_runtime["base_url"],
+            }
+            if not ollama_runtime["reachable"]:
+                extra["error"] = ollama_runtime.get("error")
+        if live_now or cfg["always_active"]:
+            live.append(name)
+        provider_state[name] = {
+            "live": live_now,
+            "always_active": cfg["always_active"],
+            "model": cfg["primary_model"],
+            "key_present": key_present,
+            "local": cfg.get("local", False),
+            **extra,
+        }
     return {
         "status": "ok",
         "service": "model_router",
@@ -366,32 +422,39 @@ async def healthz():
         "primary": "anthropic",
         "primary_model": "claude-haiku-4-5-20251001",
         "local_llm": OLLAMA_MODEL,
-        "providers": {
-            name: {
-                "live": cfg["live"],
-                "always_active": cfg["always_active"],
-                "model": cfg["primary_model"],
-                "key_present": key_live(os.environ.get(cfg["key_env"], "")),
-                "local": cfg.get("local", False),
-            }
-            for name, cfg in PROVIDERS.items()
-        },
+        "providers": provider_state,
     }
 
 @app.get("/providers")
 async def providers():
-    return {
-        "providers": {
-            name: {
-                "live": cfg["live"],
-                "always_active": cfg["always_active"],
-                "primary_model": cfg["primary_model"],
-                "key_env": cfg["key_env"],
-                "key_present": key_live(os.environ.get(cfg["key_env"], "")),
-                "local": cfg.get("local", False),
+    ollama_runtime = await probe_ollama_runtime()
+    provider_state = {}
+    for name, cfg in PROVIDERS.items():
+        key_present = key_live(os.environ.get(cfg["key_env"], "")) if cfg["key_env"] else False
+        live_now = cfg["live"]
+        extra = {}
+        if name == "ollama":
+            live_now = ollama_runtime["reachable"]
+            key_present = False
+            extra = {
+                "reachable": ollama_runtime["reachable"],
+                "model_count": ollama_runtime["model_count"],
+                "models": ollama_runtime["models"],
+                "base_url": ollama_runtime["base_url"],
             }
-            for name, cfg in PROVIDERS.items()
+            if not ollama_runtime["reachable"]:
+                extra["error"] = ollama_runtime.get("error")
+        provider_state[name] = {
+            "live": live_now,
+            "always_active": cfg["always_active"],
+            "primary_model": cfg["primary_model"],
+            "key_env": cfg["key_env"],
+            "key_present": key_present,
+            "local": cfg.get("local", False),
+            **extra,
         }
+    return {
+        "providers": provider_state
     }
 
 @app.get("/ollama/models")

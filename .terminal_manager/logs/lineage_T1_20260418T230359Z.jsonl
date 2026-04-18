@@ -1,0 +1,9 @@
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "t1_boot", "subject": "boot", "status": "start", "detail": "run=20260418T230359Z repo=/Users/axiolevns/axiolev_runtime"}
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "prereq_check", "subject": "boot", "status": "ok", "detail": "python=3.14 branch=boot-operational-closure"}
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "yubikey_preflight", "subject": "ring-0", "status": "warn", "detail": "missing_pre_ring4"}
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "dirs_ready", "subject": "boot", "status": "ok", "detail": "signals,logs,ledger"}
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "archive_layout", "subject": "ring-2", "status": "ok", "detail": "root=/Volumes/NSExternal/ALEXANDRIA"}
+{"ts": "2026-04-18T23:03:59Z", "terminal": "T1", "event": "prompt_written", "subject": "boot", "status": "ok", "detail": "path=/Users/axiolevns/axiolev_runtime/PROMPT.md"}
+{"ts": "2026-04-18T23:04:00Z", "terminal": "T1", "event": "yubikey_preflight", "subject": "ring-1", "status": "warn", "detail": "missing_pre_ring4"}
+{"ts": "2026-04-18T23:04:00Z", "terminal": "T1", "event": "ring_start", "subject": "ring-1", "status": "start", "detail": "name=L1 Constitutional Layer test=ns/tests/test_ring1_constitutional_layer.py"}
+{"ts": "2026-04-18T23:05:49Z", "terminal": "T1", "event": "ring_pytest", "subject": "ring-1", "status": "green", "detail": "attempt=1 test=ns/tests/test_ring1_constitutional_layer.py"}
