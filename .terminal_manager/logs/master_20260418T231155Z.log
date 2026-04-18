@@ -26,3 +26,18 @@ All 22 tests green. `python3 -m pytest -x -q ns/tests/test_ring1_constitutional_
 All 35 tests are already green. The ring-2 substrate layers implementation is complete and passing.
 2026-04-18T23:12:34Z [MASTER] INFO pytest ns/tests/test_ring2_substrate_layers.py (attempt 1)
 2026-04-18T23:12:34Z [MASTER] OK   ring-2 GREEN on attempt 1
+[boot-operational-closure 8a91ce8] ring-2: L5 Alexandrian Lexicon + L6 State Manifold + L7 Alexandrian Archive + L8 Lineage Fabric green — AXIOLEV Holdings LLC © 2026
+ 3 files changed, 17 insertions(+)
+ create mode 100644 .terminal_manager/logs/pytest_ring-2_a1_20260418T231155Z.log
+2026-04-18T23:12:35Z [MASTER] OK   ring-2 tagged ring-2-substrate-layers-v1
+2026-04-18T23:12:35Z [MASTER] ==> === ring-3 (The Loom) ===
+2026-04-18T23:12:35Z [MASTER] INFO Invoking Claude Code: phase=ring-3 (The Loom) workdir=/Users/axiolevns/axiolev_runtime
+All 95 tests pass (38 ring-3, 35 ring-2, 22 ring-1). Ring 3 — The Loom is green.
+
+**Delivered:**
+- `ns/services/loom/mode_switching.py` — `LoomMode` (7-stage enum) + `ModeSwitcher` (monotonic advance, reset)
+- `ns/services/loom/service.py` — `ConfidenceEnvelope` (exact weights 0.45/0.25/0.15/0.15, sum-to-1 asserted at import), `LoomReflection`, `LoomService.reflect()` (full generate→test→contradict→reweight→narrate→store→reenter loop)
+- `ns/domain/receipts/names.py` — 3 loom receipt names added
+- `ns/tests/test_ring3_loom.py` — 38 tests covering weights, score formula, stage ordering, contradiction injection, I1 enforcement, and receipt names
+2026-04-18T23:15:44Z [MASTER] INFO pytest ns/tests/test_ring3_loom.py (attempt 1)
+2026-04-18T23:15:44Z [MASTER] OK   ring-3 GREEN on attempt 1

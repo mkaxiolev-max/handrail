@@ -27,6 +27,10 @@ RECEIPT_NAMES: frozenset[str] = frozenset(
         "alexandrian_lexicon_baptism_receipted",
         "alexandrian_lexicon_drift_blocked",
         "narrative_emitted_with_receipt_hash",
+        # T1 Ring 3 — The Loom (L4)
+        "loom_reflection_completed",
+        "loom_mode_transitioned",
+        "loom_contradiction_injected",
         # T4 (reserved)
         "dimensional_contradiction_detected",
         "manifold_projection_lawful",
