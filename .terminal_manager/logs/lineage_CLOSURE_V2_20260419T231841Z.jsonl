@@ -16,3 +16,7 @@
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z5", "status": "info", "detail": "ui base"}
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z5", "status": "ok", "detail": "ui base scaffolded"}
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z5a", "status": "info", "detail": "ui named routes"}
+{"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z5a", "status": "ok", "detail": "ui 8 routes integrated"}
+{"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z6", "status": "info", "detail": "verification"}
+{"ts": "2026-04-19T23:19:45Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z6", "status": "ok", "detail": "gates=3/5"}
+{"ts": "2026-04-19T23:19:45Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z7", "status": "info", "detail": "certification"}

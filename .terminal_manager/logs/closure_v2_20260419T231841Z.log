@@ -89,3 +89,24 @@
 2026-04-19T23:19:44Z [CLOSURE_V2] >>> Z5a UI addition named route surface
 2026-04-19T23:19:44Z [CLOSURE_V2] OK   wrote /Users/axiolevns/axiolev_runtime/ns/services/ui/router.py
 2026-04-19T23:19:44Z [CLOSURE_V2] OK   wrote /Users/axiolevns/axiolev_runtime/ns/tests/test_ui_named_routes.py
+[90m4:19PM[0m [32mINF[0m [1m0 commits scanned.[0m
+[90m4:19PM[0m [32mINF[0m [1mscanned ~9910 bytes (9.91 KB) in 23.1ms[0m
+[90m4:19PM[0m [32mINF[0m [1mno leaks found[0m
+[boot-operational-closure 8af204c] Z5a: ui named route surface (8 endpoints) — AXIOLEV Holdings LLC © 2026
+ 5 files changed, 270 insertions(+)
+ create mode 100644 artifacts/ui_addition_20260419T231841Z.md
+ create mode 100644 ns/services/ui/router.py
+ create mode 100644 ns/tests/test_ui_named_routes.py
+2026-04-19T23:19:44Z [CLOSURE_V2] >>> Z6 ready-to-boot verification
+2026-04-19T23:19:44Z [CLOSURE_V2] ==> Gate 1: Alexandrian Archive
+2026-04-19T23:19:44Z [CLOSURE_V2] OK   gate 1: Alexandrian Archive writable, ledger present
+2026-04-19T23:19:44Z [CLOSURE_V2] ==> Gate 2: boot surface
+2026-04-19T23:19:44Z [CLOSURE_V2] WARN gate 2: missing: scripts/boot/verify_and_save.sh scripts/boot/shutdown_prep.sh
+2026-04-19T23:19:44Z [CLOSURE_V2] ==> Gate 3: runtime surface
+2026-04-19T23:19:44Z [CLOSURE_V2] WARN gate 3: runtime references only 0/4
+2026-04-19T23:19:44Z [CLOSURE_V2] ==> Gate 4: constitutional surface
+2026-04-19T23:19:44Z [CLOSURE_V2] OK   gate 4: constitutional surface present (canon_gate + pdp + hic)
+2026-04-19T23:19:44Z [CLOSURE_V2] ==> Gate 5: visibility surface (real test run)
+2026-04-19T23:19:45Z [CLOSURE_V2] OK   gate 5: all tests green, no skips
+2026-04-19T23:19:45Z [CLOSURE_V2] INFO gates: gate1=1 gate2=0 gate3=0 gate4=1 gate5=1 total=3/5
+2026-04-19T23:19:45Z [CLOSURE_V2] >>> Z7 closure certification + tagging

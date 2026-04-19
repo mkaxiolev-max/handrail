@@ -1,0 +1,10 @@
+{
+  "ts": "20260419T231841Z",
+  "gate1_alexandrian_archive": 1,
+  "gate2_boot_surface": 0,
+  "gate3_runtime_surface": 0,
+  "gate4_constitutional_surface": 1,
+  "gate5_visibility_surface": 1,
+  "total_green": 3,
+  "ready_to_boot": false
+}
