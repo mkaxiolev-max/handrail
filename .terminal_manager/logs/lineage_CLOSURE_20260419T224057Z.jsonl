@@ -11,3 +11,10 @@
 {"ts": "2026-04-19T22:41:46Z", "terminal": "CLOSURE", "event": "z2_end", "subject": "ontology", "status": "ok", "detail": "gaps=0 report=/Users/axiolevns/axiolev_runtime/artifacts/ontology_audit_20260419T224057Z.md"}
 {"ts": "2026-04-19T22:41:47Z", "terminal": "CLOSURE", "event": "phase_start", "subject": "omega-Z3", "status": "start", "detail": "tests=ns/tests/test_omega_projection.py"}
 {"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "phase_pytest", "subject": "omega-Z3", "status": "green", "detail": "attempt=1"}
+{"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "phase_tagged", "subject": "omega-Z3", "status": "ok", "detail": "tag=omega-l10-v1"}
+{"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "media_engine_skipped", "subject": "z4", "status": "skip", "detail": "no_zip"}
+{"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "ui_addition_skipped", "subject": "z5", "status": "skip", "detail": "no_spec"}
+{"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "z6_start", "subject": "boot", "status": "start", "detail": ""}
+{"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "z6_end", "subject": "boot", "status": "warn", "detail": "passed=4 failed=1"}
+{"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "z7_start", "subject": "closure_cert", "status": "start", "detail": ""}
+{"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "certification_written", "subject": "closure_cert", "status": "ok", "detail": "path=/Users/axiolevns/axiolev_runtime/certification/NS_CLOSURE_MAX_v1.md gates_failed=1"}

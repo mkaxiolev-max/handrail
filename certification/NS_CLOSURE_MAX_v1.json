@@ -1,0 +1,19 @@
+{
+  "certification_id": "NS_CLOSURE_MAX_v1",
+  "certified_at": "20260419T224057Z",
+  "commit": "c492926",
+  "owner": "AXIOLEV Holdings LLC",
+  "gate_failures": 1,
+  "ontology_gaps_at_start": 0,
+  "safe_to_push": false,
+  "total_ns_tags": 61,
+  "verdict": "CLOSURE_PARTIAL",
+  "external_gates_remaining": [
+    "stripe_llc_verification",
+    "stripe_live_keys_vercel",
+    "root_handrail_price_ids",
+    "yubikey_slot2",
+    "dns_cname_root"
+  ],
+  "doctrine": "Models propose, NS decides, Violet speaks, Handrail executes, Alexandrian Archive remembers."
+}

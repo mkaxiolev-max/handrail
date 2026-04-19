@@ -1,0 +1,20 @@
+{
+  "ts": "2026-04-19T22:46:30.355810Z",
+  "gates": {
+    "1_alexandria": "PASS",
+    "2_boot": "PASS",
+    "3_runtime": "OFFLINE (0/4 live \u2014 start ./boot.sh to confirm)",
+    "4_constitutional": "PASS",
+    "5_visibility": "PASS (749 tests green)"
+  },
+  "passed": 4,
+  "failed": 1,
+  "verdict": "NOT_READY",
+  "external_gates_remaining": [
+    "stripe_llc_verification",
+    "stripe_live_keys_vercel",
+    "root_handrail_price_ids",
+    "yubikey_slot2",
+    "dns_cname_root"
+  ]
+}
