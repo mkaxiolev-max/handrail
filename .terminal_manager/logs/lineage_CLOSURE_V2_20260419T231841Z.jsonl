@@ -20,3 +20,5 @@
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z6", "status": "info", "detail": "verification"}
 {"ts": "2026-04-19T23:19:45Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z6", "status": "ok", "detail": "gates=3/5"}
 {"ts": "2026-04-19T23:19:45Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z7", "status": "info", "detail": "certification"}
+{"ts": "2026-04-19T23:19:46Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z7", "status": "ok", "detail": "closure v2 certified; gates=3/5"}
+{"ts": "2026-04-19T23:19:46Z", "terminal": "CLOSURE_V2", "event": "closure_v2_complete", "subject": "closure", "status": "ok", "detail": "ts=20260419T231841Z"}

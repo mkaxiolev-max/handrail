@@ -110,3 +110,15 @@
 2026-04-19T23:19:45Z [CLOSURE_V2] OK   gate 5: all tests green, no skips
 2026-04-19T23:19:45Z [CLOSURE_V2] INFO gates: gate1=1 gate2=0 gate3=0 gate4=1 gate5=1 total=3/5
 2026-04-19T23:19:45Z [CLOSURE_V2] >>> Z7 closure certification + tagging
+[90m4:19PM[0m [32mINF[0m [1m0 commits scanned.[0m
+[90m4:19PM[0m [32mINF[0m [1mscanned ~4251 bytes (4.25 KB) in 19.3ms[0m
+[90m4:19PM[0m [32mINF[0m [1mno leaks found[0m
+[boot-operational-closure 012534e] Z7: closure max v2 certification — AXIOLEV Holdings LLC © 2026
+ 7 files changed, 79 insertions(+)
+ create mode 100644 artifacts/gate_total.tmp
+ create mode 100644 artifacts/pytest_20260419T231841Z.log
+ create mode 100644 artifacts/ready_to_boot_gates_20260419T231841Z.json
+ create mode 100644 certification/NS_CLOSURE_MAX_v2.json
+ create mode 100644 certification/NS_CLOSURE_MAX_v2.md
+2026-04-19T23:19:46Z [CLOSURE_V2] WARN ready-to-boot tag NOT applied (gates: 3/5)
+2026-04-19T23:19:46Z [CLOSURE_V2] >>> NS∞ Closure Max v2 — complete
