@@ -29,3 +29,19 @@
 2026-04-19T23:24:42Z [CLOSURE_V2] >>> Z2 live ontology audit
 2026-04-19T23:25:31Z [CLOSURE_V2] WARN deprecated ontology names present — see /Users/axiolevns/axiolev_runtime/artifacts/ontology_audit_20260419T232440Z.md
 2026-04-19T23:25:31Z [CLOSURE_V2] INFO ontology audit: /Users/axiolevns/axiolev_runtime/artifacts/ontology_audit_20260419T232440Z.md
+[90m4:25PM[0m [32mINF[0m [1m0 commits scanned.[0m
+[90m4:25PM[0m [32mINF[0m [1mscanned ~7641 bytes (7.64 KB) in 23ms[0m
+[90m4:25PM[0m [32mINF[0m [1mno leaks found[0m
+[boot-operational-closure e7916cb] Z2: live ontology audit — AXIOLEV Holdings LLC © 2026
+ 3 files changed, 59 insertions(+)
+ create mode 100644 artifacts/ontology_audit_20260419T232440Z.md
+2026-04-19T23:25:32Z [CLOSURE_V2] >>> Z3 Omega L10 projection/ego layer
+2026-04-19T23:25:32Z [CLOSURE_V2] OK   wrote /Users/axiolevns/axiolev_runtime/ns/omega/__init__.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/primitives.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/canon_gate.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/projection.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/ctf.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/hic.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/pdp.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/omega/api.py
+2026-04-19T23:25:32Z [CLOSURE_V2] INFO guarded skip (already present): /Users/axiolevns/axiolev_runtime/ns/tests/test_omega_primitives.py
