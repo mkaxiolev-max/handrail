@@ -6,3 +6,5 @@
 {"ts": "2026-04-19T23:18:41Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z1", "status": "info", "detail": "security scrub"}
 {"ts": "2026-04-19T23:18:44Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z1", "status": "warn", "detail": "push gate blocked (scan unclean or skipped)"}
 {"ts": "2026-04-19T23:18:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z2", "status": "info", "detail": "ontology audit"}
+{"ts": "2026-04-19T23:19:43Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z2", "status": "ok", "detail": "ontology audit written"}
+{"ts": "2026-04-19T23:19:43Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z3", "status": "info", "detail": "omega layer"}
