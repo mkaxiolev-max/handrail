@@ -1,0 +1,13 @@
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "closure_boot", "subject": "boot", "status": "start", "detail": "run=20260419T224057Z"}
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "preflight_start", "subject": "z0", "status": "start", "detail": "run=20260419T224057Z repo=/Users/axiolevns/axiolev_runtime"}
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "yubikey_preflight", "subject": "hw", "status": "ok", "detail": "serial=26116460"}
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "preflight_end", "subject": "z0", "status": "ok", "detail": "python=3.14 branch=boot-operational-closure"}
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "prompt_written", "subject": "closure", "status": "ok", "detail": "path=/Users/axiolevns/axiolev_runtime/CLOSURE_PROMPT.md"}
+{"ts": "2026-04-19T22:40:57Z", "terminal": "CLOSURE", "event": "z1_start", "subject": "security", "status": "start", "detail": "scrub=0"}
+{"ts": "2026-04-19T22:41:27Z", "terminal": "CLOSURE", "event": "secret_scan", "subject": "security", "status": "warn", "detail": "hits=24 report=/Users/axiolevns/axiolev_runtime/artifacts/secrets_scan_20260419T224057Z.txt"}
+{"ts": "2026-04-19T22:41:46Z", "terminal": "CLOSURE", "event": "gitleaks", "subject": "security", "status": "warn", "detail": "findings=67"}
+{"ts": "2026-04-19T22:41:46Z", "terminal": "CLOSURE", "event": "z1_end", "subject": "security", "status": "ok", "detail": "safe_to_push=0"}
+{"ts": "2026-04-19T22:41:46Z", "terminal": "CLOSURE", "event": "z2_start", "subject": "ontology", "status": "start", "detail": ""}
+{"ts": "2026-04-19T22:41:46Z", "terminal": "CLOSURE", "event": "z2_end", "subject": "ontology", "status": "ok", "detail": "gaps=0 report=/Users/axiolevns/axiolev_runtime/artifacts/ontology_audit_20260419T224057Z.md"}
+{"ts": "2026-04-19T22:41:47Z", "terminal": "CLOSURE", "event": "phase_start", "subject": "omega-Z3", "status": "start", "detail": "tests=ns/tests/test_omega_projection.py"}
+{"ts": "2026-04-19T22:46:29Z", "terminal": "CLOSURE", "event": "phase_pytest", "subject": "omega-Z3", "status": "green", "detail": "attempt=1"}

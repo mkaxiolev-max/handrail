@@ -1,0 +1,298 @@
+2026-04-19T22:40:57Z [CLOSURE] >>> NS∞ Closure Max Orchestrator — run 20260419T224057Z
+2026-04-19T22:40:57Z [CLOSURE] INFO AXIOLEV Holdings LLC © 2026
+2026-04-19T22:40:57Z [CLOSURE] INFO flags: scrub_history=0 push_safe=0 dry_run=0 pull=0 single_phase=''
+2026-04-19T22:40:57Z [CLOSURE] >>> Z0 — Preflight + safety
+2026-04-19T22:40:57Z [CLOSURE] OK   python3 3.14
+2026-04-19T22:40:57Z [CLOSURE] OK   repo on boot-operational-closure
+2026-04-19T22:40:57Z [CLOSURE] OK   Alexandrian Archive mounted: /Volumes/NSExternal/ALEXANDRIA
+2026-04-19T22:40:57Z [CLOSURE] OK   YubiKey 26116460 present (I4/I9 anchor)
+2026-04-19T22:40:57Z [CLOSURE] WARN working tree has 18 uncommitted paths — closure will commit them inside each phase scope
+2026-04-19T22:40:57Z [CLOSURE] ==> Writing CLOSURE_PROMPT.md (Omega L10 + media + UI spec)
+2026-04-19T22:40:57Z [CLOSURE] OK   CLOSURE_PROMPT.md written
+2026-04-19T22:40:57Z [CLOSURE] >>> Z1 — Security scrub (gitleaks + leaked-PAT detection)
+2026-04-19T22:40:57Z [CLOSURE] INFO installing gitleaks via brew (may take 30-60s)
+==> Auto-updating Homebrew...
+Adjust how often this is run with `$HOMEBREW_AUTO_UPDATE_SECS` or disable with
+`$HOMEBREW_NO_AUTO_UPDATE=1`. Hide these hints with `$HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+==> Downloading https://ghcr.io/v2/homebrew/core/portable-ruby/blobs/sha256:f41c72b891c40623f9d5cd2135f58a1b8a5c014ae04149888289409316276c72
+#=#=#                                                                          ##O#-#                                                                         ##O=#  #                                                                       ##                                                                         3.5%#######                                                                    9.7%##########                                                                14.5%##############                                                            19.7%###############                                                           22.2%#####################                                                     29.8%###########################                                               37.8%################################                                          45.6%######################################                                    53.9%############################################                              62.1%#################################################                         69.0%########################################################                  78.2%#############################################################             86.0%###################################################################       93.8%######################################################################## 100.0%
+==> Pouring portable-ruby-4.0.2_1.arm64_big_sur.bottle.tar.gz
+==> Auto-updated Homebrew!
+Updated 3 taps (cloudflare/cloudflare, homebrew/core and homebrew/cask).
+==> New Formulae
+apache-arrow-adbc: Cross-language, Arrow-native database access
+apache-arrow-adbc-glib: GLib bindings for Apache Arrow ADBC
+apfel: Apple Intelligence from the command-line, with OpenAi-compatible API server
+apkeep: Command-line tool for downloading APK files from various sources
+atuin-server: Sync server for atuin - Improved shell history for zsh, bash, fish and nushell
+buildkitd: Concurrent, cache-efficient, and Dockerfile-agnostic builder toolkit (Daemon)
+cc-connect: Bridges local AI coding agents to messaging platforms
+checkpwn: Check Have I Been Pwned and see if it's time for you to change passwords
+cline: AI-powered coding agent for complex work
+cloudflare-speed-cli: Cloudflare-based speed test with optional TUI
+cni-plugins: Container Network Interface plugins
+containerd: Open and reliable container runtime
+crip: Tool to extract server certificates
+ctx7: Manage AI coding skills and documentation context
+cyan: iOS app injector and modifier
+dart-sass: Reference implementation of Sass, written in Dart
+dartaotruntime: Command-line tool for running AOT-compiled snapshots of Dart code
+dispenso: High-performance C++ library for parallel programming
+dlpack: Common in-memory tensor structure
+docker-engine: Pack, ship and run any application as a lightweight container (Daemon)
+dtop: Terminal dashboard for Docker monitoring across multiple hosts
+et: Remote terminal with IP roaming
+expert: Official Elixir Language Server Protocol implementation
+ffc.h: Single-header C99 accelerated float/double parsing
+flowrs: TUI application for Apache Airflow
+fvm: Manage Flutter SDK versions per project
+garden: Grow and cultivate collections of Git trees
+ggml: Tensor library for machine learning
+git-format-staged: Git command to transform staged files using a formatting command
+git-pkgs: Track package dependencies across git history
+gittype: CLI code-typing game that turns your source code into typing challenges
+googleworkspace-cli: CLI for Drive, Gmail, Calendar, Sheets, Docs, Chat, Admin, and more
+graalvm: JDK distribution with Graal compiler and Native Image
+icestorm: Tools for analyzing and creating Lattice iCE40 FPGA bitstream files
+ipapatch: CLI tool to patch iOS IPA files and their plugins
+jsongrep: Query tool for JSON, YAML, TOML, and other structured formats
+kubectl-tree: Kubectl plugin to browse Kubernetes object hierarchies as a tree
+landrun: Lightweight, secure sandbox for running Linux processes using Landlock LSM
+lazycut: Terminal-based video trimming TUI
+libheif-plugins: ISO/IEC 23008-12:2017 HEIF file format decoder and encoder
+libkiwix: Common code base for all Kiwix ports
+libpathrs: C-friendly API to make path resolution safer on Linux
+lief: Library to Instrument Executable Formats
+lua@5.4: Powerful, lightweight programming language
+merve: C++ lexer for extracting named exports from CommonJS modules
+miniaudio: Audio playback and capture library
+mkbrr: Is a tool to create, modify and inspect torrent files. Fast
+models: Fast TUI and CLI for browsing AI models, benchmarks, and coding agents
+nbytes: Library of byte handling functions extracted from Node.js core
+nextpnr-ice40: Portable FPGA place and route tool for Lattice iCE40
+nfd2nfc: Convert filesystem entry names from NFD to NFC for cross-platform compatibility
+nono: Capability-based sandbox shell for AI agents with OS-enforced isolation
+odinfmt: Formatter for The Odin Programming Language
+oh-my-agent: Portable multi-agent harness for .agents-based skills and workflows
+ols: Language server for The Odin Programming Language
+openspec: Spec-driven development (SDD) for AI coding assistants
+openssl@4: Cryptography and SSL/TLS Toolkit
+opentimestamps-client: Create and verify OpenTimestamps proofs
+overturemaps: Python tools for interacting with Overture Maps data
+paneru: Sliding, tiling window manager for MacOS
+pay: HTTP client that automatically handles 402 Payment Required
+pet: Simple command-line snippet manager
+pipewire-gstreamer: GStreamer Plugin for PipeWire
+pocket-id: Open-source identity provider for secure user authentication
+portless: Replace port numbers with stable, named local URLs for humans and agents
+powershell: Command-line shell and scripting language
+proxelar: Man-in-the-Middle proxy for HTTP/HTTPS traffic
+qtcanvaspainter: Accelerated 2D painting solution for Qt Quick and QRhi-based render targets
+qttasktree: General purpose library for asynchronous task execution
+resticprofile: Configuration profiles manager and scheduler for restic backup
+rpiboot: Raspberry Pi USB boot tool for Compute Modules
+rustpython: Python Interpreter written in Rust
+rustypaste-cli: CLI tool for rustypaste
+rvvm: RISC-V Virtual Machine
+sarif-fmt: Pretty print SARIF files to easy human readable output
+scala-cli: Scala language runner and build tool
+sem-cli: Semantic version control CLI with entity-level diffs and blame
+sheets: Terminal based spreadsheet tool
+skills: Open agent skills ecosystem
+skip: Tool for building Swift apps for Android
+spicedb: Open Source, Google Zanzibar-inspired database
+summarize: Multi-modal AI tool to extract and summarize content
+t2sz: Compress a file into a seekable zstd with per-file seeking for tar archives
+termframe: Terminal output SVG screenshot tool
+termusic: Music Player TUI written in Rust
+tini: Tiny but valid init for containers
+topicctl: Declarative Kafka topic management
+torf-cli: CLI tool for creating, reading and editing torrent files
+tsshd: UDP SSH server for trzsz-ssh (tssh) with roaming support
+upterm: Instant terminal sharing
+vapoursynth-bestsource: Audio/video source and FFmpeg wrapper
+vapoursynth-bm3d: BM3D denoising filter for VapourSynth
+vapoursynth-descale: VapourSynth plugin to undo upscaling
+vuls: Agentless Vulnerability Scanner for Linux/FreeBSD
+weave: Entity-level semantic merge driver for Git using tree-sitter
+wireplumber: Session / policy manager implementation for PipeWire
+wmbusmeters: Read wired or wireless mbus protocol to acquire utility meter readings
+x-cli: Command-line power tool for Twitter
+xcursorgen: Create an X cursor file from a collection of PNG images
+yelp-xsl: Document transformations from Yelp
+zig@0.15: Programming language designed for robustness, optimality, and clarity
+zsign: Cross-platform codesigning tool for iOS apps
+zvbi: Vertical Blanking Interval (VBI) decoding library
+zxc: High-performance asymmetric lossless compression library
+zycore-c: Zyan Core Library for C
+==> New Casks
+altar-ai: AI-powered meeting assistant
+appgridmac: AI-assisted Launchpad replacement
+backblaze-restore: Computer backup restore client
+baoliandeng: VPN proxy powered by Mihomo (Clash Meta)
+bettercapture: Screen recorder
+cadran: Desktop clock rendered behind your icons
+cc-switch: Configuration manager for AI coding agents
+claude-code@latest: Terminal-based AI coding assistant
+clearance: Markdown viewer and editor
+copilot-language-server: Language Server Protocol server for GitHub Copilot
+craft-agents: AI assistant for connecting and working across data sources
+dbeaverteam: Universal database tool and SQL client
+dbvr: Lightweight CLI tool for running database operations
+equibop: Custom Discord App
+fabric-app: Personal knowledge management and note-taking app
+fidelity-trader+: Trading platform
+fluidvoice: Offline voice-to-text dictation app with AI enhancement
+font-bjcree
+font-datatype
+font-estedad
+font-ghanachocolate
+font-gmarket-sans
+font-iosevka-charon
+font-iosevka-charon-mono
+font-ioskeley-mono
+font-miranda-sans
+font-saira-stencil
+font-selawik
+font-strichpunkt-sans
+google-gemini: Native desktop AI assistant from Google
+gram: Code editor focused on stability, without AI, subscriptions, or telemetry
+happ: Platform for building proxies to bypass network restrictions
+hive-app: AI agent orchestrator for parallel coding across projects
+idevice-pair: Generate pair records for iOS devices
+incident-io: Incident management platform
+intellij-idea-oss: Open-source edition of IntelliJ IDEA
+intiface-central: Frontend application for the Buttplug sex toy control library
+jiba: Apple Music metadata localisation tool
+koharu: ML-powered manga translator
+ltx-desktop: Desktop app for generating videos with LTX models
+macshot: Screenshot and screen recording tool
+nimbalyst: Visual workspace for building with Codex and Claude Code
+notchi: Notch companion for Claude Code
+nvidia-sync: Utility for launching applications and containers on remote Linux systems
+ob-xf: Virtual analog synthesizer
+openin: Route links, emails, and files to your preferred apps
+orchard: Native GUI for Apple Containers
+paper-design: Design tool for creating interfaces and prototypes
+paseo: Self-hosted daemon for AI coding agents
+plamo-translate: Translator focused on Japanese
+pluralplay-flclashx: Cross-platform proxy client based on ClashMeta
+proton-meet: Desktop client for Proton Meet
+puremac: Open-source application manager and system cleaner
+radial: Gesture-based launcher for apps, text snippets, and scripts
+rayon: AI-powered drawing for interior designers and architects
+remanager: Desktop app for managing mods on reMarkable tablets
+renameclick: Local-first AI app for file renaming and organisation
+rowboat: Open-source AI coworker, with memory
+scribus@devel: Free and open-source page layout program
+seamly2d: Pattern making software
+spectra-app: OpenSpec document management desktop app
+spokenly: Dictation and transcription app with AI-powered editing
+supasidebar: Arc-like sidebar to save links, files and folders from any browser
+super: Analytics database that fuses structured and semi-structured data
+t3-code: Minimal GUI for AI code agents
+t3-code@nightly: Minimal GUI for AI code agents
+tablen: Native SQL client
+tablepro: Native database client for many database types
+tencent-ugit: Tencent Git GUI Client
+ulaa: Privacy-centric browser with advanced tracking protection
+unblocked: AI-powered developer collaboration platform
+vcmi: Open-source engine for Heroes of Might & Magic III
+vibe-island: Dynamic island AI agent utility
+vibeproxy: Menu bar app for using AI subscriptions with coding tools
+voicemod: Real-time voice changer and soundboard
+voiden@beta: API development tool
+wallspace: Live wallpaper app
+worksheet-crafter: Worksheet and lesson material creator
+wowup-cf: World of Warcraft addon manager
+x-air-edit: Remote control for the Behringer X AIR series mixers
+xdeck: TweetDeck-style X/Twitter client
+
+You have 24 outdated formulae and 1 outdated cask installed.
+
+==> Fetching downloads for: gitleaks
+✔︎ Bottle Manifest gitleaks (8.30.1)
+✔︎ Bottle gitleaks (8.30.1)
+==> Pouring gitleaks--8.30.1.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/gitleaks/8.30.1: 10 files, 15.4MB
+==> Running `brew cleanup gitleaks`...
+Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
+Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+==> `brew cleanup` has not been run in the last 30 days, running now...
+Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`.
+Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`).
+Removing: /Users/axiolevns/Library/Caches/Homebrew/ca-certificates_bottle_manifest--2025-12-02... (2KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/ca-certificates--2025-12-02... (131.8KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/lz4_bottle_manifest--1.10.0-1... (13.8KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/lz4--1.10.0... (279.7KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/mpdecimal_bottle_manifest--4.0.1... (11.9KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/mpdecimal--4.0.1... (186.2KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/openssl@3_bottle_manifest--3.6.0... (11.8KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/openssl@3--3.6.0... (10.9MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/openssl@3--3.6.1... (10.9MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/python@3.12_bottle_manifest--3.12.12-3... (28.2KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/python@3.12--3.12.12... (18MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/python@3.14_bottle_manifest--3.14.2-1... (29.5KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/python@3.14--3.14.2... (18.8MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/readline_bottle_manifest--8.3.3... (10.0KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/readline--8.3.3... (757.9KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/sqlite_bottle_manifest--3.51.1... (11.4KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/sqlite--3.51.1... (2.4MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/zstd_bottle_manifest--1.5.7-1... (16.2KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/zstd--1.5.7... (793.5KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/api-source/Homebrew/homebrew-cask/0ac8b13761fcad3e3c903850df4956ab9d0005d2/Cask/ngrok.rb... (1.3KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/api-source/Homebrew/homebrew-cask/3b0db4d900b30c85c049510ec650cb6dafb4dce0/Cask/ngrok.rb... (1.3KB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/bootsnap/2e654ee727608e789627b1650a5578555b79999f32c649f5867e41c3bd6a9883... (647 files, 5.7MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/bootsnap/b72e5134e0c29352f27278b0d0b535599d84c5338f6a429e709b448cf7d3721c... (650 files, 5.7MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/bootsnap/af1302dbf92394f6844c6728933903dc247921c87371c88c2f492e443b72b436... (647 files, 5.7MB)
+Removing: /Users/axiolevns/Library/Caches/Homebrew/bootsnap/3f9aa844ce6daa83be4a0faaf7be6f4595fdf4b98f8be6536d9524120f6eec81... (662 files, 5.8MB)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/ykman... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/pycparser... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/cryptography... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/cffi... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/sqlite... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/cloudflared... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/postgresql@16... (1.4KB)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/oniguruma... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/pcre2... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/portaudio... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/node... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/jq... (64B)
+Removing: /Users/axiolevns/Library/Logs/Homebrew/ripgrep... (64B)
+Removing: /opt/homebrew/var/homebrew/tmp/.cellar/openssl@3... (7,623 files, 37.6MB)
+==> Caveats
+zsh completions have been installed to:
+  /opt/homebrew/share/zsh/site-functions
+2026-04-19T22:41:15Z [CLOSURE] INFO regex secret scan → /Users/axiolevns/axiolev_runtime/artifacts/secrets_scan_20260419T224057Z.txt
+2026-04-19T22:41:27Z [CLOSURE] WARN SECRET SCAN: 24 suspicious commits — see /Users/axiolevns/axiolev_runtime/artifacts/secrets_scan_20260419T224057Z.txt
+2026-04-19T22:41:27Z [CLOSURE] INFO running gitleaks detect → /Users/axiolevns/axiolev_runtime/artifacts/gitleaks_20260419T224057Z.json
+
+    ○
+    │╲
+    │ ○
+    ○ ░
+    ░    gitleaks
+
+[90m3:41PM[0m [32mINF[0m [1mscanned ~473294021 bytes (473.29 MB) in 19s[0m
+[90m3:41PM[0m [33mWRN[0m [1mleaks found: 67[0m
+2026-04-19T22:41:46Z [CLOSURE] WARN gitleaks: 67 findings in working tree — /Users/axiolevns/axiolev_runtime/artifacts/gitleaks_20260419T224057Z.json
+2026-04-19T22:41:46Z [CLOSURE] OK   pre-commit secret-guard hook installed: /Users/axiolevns/axiolev_runtime/.git/hooks/pre-commit
+2026-04-19T22:41:46Z [CLOSURE] WARN secrets in history detected — pass --scrub-history to rewrite (advisory only)
+2026-04-19T22:41:46Z [CLOSURE] >>> Z2 — Live ontology audit (10 layers → runtime)
+2026-04-19T22:41:46Z [CLOSURE] OK   ontology audit → /Users/axiolevns/axiolev_runtime/artifacts/ontology_audit_20260419T224057Z.md (gaps=0)
+2026-04-19T22:41:47Z [CLOSURE] >>> Z3 — Omega L10 projection/ego layer
+2026-04-19T22:41:47Z [CLOSURE] ==> === omega-Z3 (Omega L10 projection/ego layer — six recovery strategies, six modes, confidence envelope, Lineage receipts) ===
+2026-04-19T22:41:47Z [CLOSURE] INFO Invoking Claude Code: omega-Z3 workdir=/Users/axiolevns/axiolev_runtime
+**Z3 complete. 749/749 tests green.**
+
+Files created:
+- `ns/domain/models/omega_primitives.py` — Pydantic v2 primitives (all 15 types from spec)
+- `ns/integrations/omega_store.py` — fsync/flock hash-chained Lineage Fabric store
+- `ns/services/omega/projection_engine.py` — 6 recovery strategies in locked order
+- `ns/api/routers/omega.py` — `POST /omega/projections`, `GET /omega/projections/{id}`, `POST /omega/storytime`, `GET /omega/storytime/{id}`
+- `ns/api/server.py` — FastAPI app with lifespan, omega router wired in
+- `ns/tests/test_omega_projection.py` — 32 tests (all 6 strategies, all 6 modes, confidence score, order_used, ledger receipt, canon gate integrity, store primitives, storytime, serialization round-trip)
+
+Z4/Z5 skipped — source archives absent, skip receipts written to Lineage Fabric.
+2026-04-19T22:46:28Z [CLOSURE] INFO pytest ns/tests/test_omega_projection.py (attempt 1)
+2026-04-19T22:46:29Z [CLOSURE] OK   omega-Z3 GREEN on attempt 1
