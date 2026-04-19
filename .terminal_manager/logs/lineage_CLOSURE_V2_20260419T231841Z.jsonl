@@ -14,3 +14,5 @@
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z4", "status": "info", "detail": "media engine"}
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z4", "status": "warn", "detail": "media engine zip absent"}
 {"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z5", "status": "info", "detail": "ui base"}
+{"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z5", "status": "ok", "detail": "ui base scaffolded"}
+{"ts": "2026-04-19T23:19:44Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z5a", "status": "info", "detail": "ui named routes"}
