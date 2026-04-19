@@ -8,3 +8,5 @@
 {"ts": "2026-04-19T23:24:42Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z2", "status": "info", "detail": "ontology audit"}
 {"ts": "2026-04-19T23:25:32Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z2", "status": "ok", "detail": "ontology audit written"}
 {"ts": "2026-04-19T23:25:32Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z3", "status": "info", "detail": "omega layer"}
+{"ts": "2026-04-19T23:25:32Z", "terminal": "CLOSURE_V2", "event": "phase_end", "subject": "Z3", "status": "ok", "detail": "Omega layer integrated"}
+{"ts": "2026-04-19T23:25:32Z", "terminal": "CLOSURE_V2", "event": "phase_start", "subject": "Z3b", "status": "info", "detail": "entity primitive"}
