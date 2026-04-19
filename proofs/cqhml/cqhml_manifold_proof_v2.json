@@ -1,0 +1,97 @@
+{
+  "proof_id": "cqhml_manifold_proof_v2",
+  "phase": "E10",
+  "description": "CQHML Manifold Engine \u2014 tests-and-proofs (>=24 tests)",
+  "generated_at": "2026-04-19T00:43:37.487515Z",
+  "author": "axiolevns <axiolevns@axiolev.com>",
+  "copyright": "AXIOLEV Holdings LLC \u00a9 2026",
+  "branch": "feature/cqhml-manifold-v2",
+  "total_tests": 348,
+  "test_files": {
+    "ns/tests/test_cqhml_dimensions.py": "457ceb52385d65735ec8a5d9129082803b04299f8bc590168fd27ee795382785",
+    "ns/tests/test_cqhml_quaternion.py": "188abe13f9b89973ece1553545af237394ac0de92343985b60ffd7d4e45fd88c",
+    "ns/tests/test_cqhml_story_atom_loom.py": "35eb7414184ce01b1c3962e195353e334c5c6504424a909b6692d9accead803b",
+    "ns/tests/test_cqhml_contradiction_engine.py": "b283532efd54b8184b89b3ebfb00e3bab2d45a61defe8f20eecd4a87dde2e4e8",
+    "ns/tests/test_cqhml_projection_service.py": "03e996649954b20fde5ad7a0f93de1077b11866511e365bac76606adeee41c84",
+    "ns/tests/test_cqhml_spin7_phi.py": "ad288ae5920a9160920061a3529331b35786b955d48c73faa42d0df2e79f2fc9",
+    "ns/tests/test_cqhml_omega_router.py": "3ca5af7783e1451ac7701a8eb72a1e9a912b5e2727f3d16a103a053432e90e16",
+    "ns/tests/test_cqhml_oracle_dim_gate.py": "6626aa41a56674c7c324451e073e5789a64833e0bf9602f0910e4980a2951377"
+  },
+  "components": {
+    "E1": {
+      "tag": "cqhml-manifold-doctrine-v2",
+      "desc": "doctrine-scaffold"
+    },
+    "E2": {
+      "tag": "cqhml-dimensions-v2",
+      "desc": "dimensions-pydantic-models"
+    },
+    "E3": {
+      "tag": "cqhml-quaternion-core-v2",
+      "desc": "cqhml-quaternion-core"
+    },
+    "E4": {
+      "tag": "cqhml-story-atom-loom-v2",
+      "desc": "cqhml-story-atom-loom"
+    },
+    "E5": {
+      "tag": "cqhml-contradiction-engine-v2",
+      "desc": "dimensional-contradiction-engine"
+    },
+    "E6": {
+      "tag": "cqhml-projection-service-v2",
+      "desc": "dimensional-projection-service"
+    },
+    "E7": {
+      "tag": "cqhml-spin7-phi-v2",
+      "desc": "spin7-cayley-phi"
+    },
+    "E8": {
+      "tag": "cqhml-omega-router-v2",
+      "desc": "omega-manifold-router"
+    },
+    "E9": {
+      "tag": "cqhml-oracle-dim-gate-v2",
+      "desc": "oracle-dimensional-gate"
+    },
+    "E10": {
+      "tag": "cqhml-manifold-tests-green-v2",
+      "desc": "tests-and-proofs"
+    }
+  },
+  "invariants_honored": [
+    "I1",
+    "I2",
+    "I3",
+    "I4",
+    "I5",
+    "I6",
+    "I7",
+    "I8",
+    "I9",
+    "I10"
+  ],
+  "locked_ontology": {
+    "L2": "Gradient Field",
+    "L5": "Alexandrian Lexicon",
+    "L6": "State Manifold",
+    "L7": "Alexandrian Archive",
+    "L8": "Lineage Fabric",
+    "L10": "Narrative"
+  },
+  "deprecated_names_absent": [
+    "Ether",
+    "CTF",
+    "Storytime (as layer)",
+    "Lexicon alone",
+    "Manifold alone",
+    "Alexandria alone"
+  ],
+  "result": "GREEN",
+  "tags": [
+    "cqhml-manifold-tests-green-v2",
+    "cqhml-manifold-v2",
+    "cqhml-manifold-merged-v2",
+    "ns-infinity-manifold-complete-v1.0.0"
+  ]
+}
