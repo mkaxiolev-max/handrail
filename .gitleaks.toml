@@ -1,0 +1,13 @@
+# axiolev-closure-v2-marker
+# AXIOLEV Holdings LLC © 2026
+# Gitleaks config: baseline allowlist for test fixtures only.
+title = "axiolev-ns-infinity"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  "ns/tests/fixtures/.*",
+  "tests/fixtures/.*",
+]

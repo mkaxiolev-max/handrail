@@ -18,3 +18,5 @@
 {"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "z6_end", "subject": "boot", "status": "warn", "detail": "passed=4 failed=1"}
 {"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "z7_start", "subject": "closure_cert", "status": "start", "detail": ""}
 {"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "certification_written", "subject": "closure_cert", "status": "ok", "detail": "path=/Users/axiolevns/axiolev_runtime/certification/NS_CLOSURE_MAX_v1.md gates_failed=1"}
+{"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "z7_end", "subject": "closure_cert", "status": "ok", "detail": "gates_failed=1"}
+{"ts": "2026-04-19T22:46:30Z", "terminal": "CLOSURE", "event": "closure_complete", "subject": "final", "status": "ok", "detail": "run=20260419T224057Z gate_fail=1"}
