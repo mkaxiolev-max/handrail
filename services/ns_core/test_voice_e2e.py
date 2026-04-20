@@ -53,15 +53,20 @@ def test_voice_session_lifecycle_transitions():
     assert r1["status"] == "ok", f"ready→listening failed: {r1}"
     assert r1["state"] == "listening"
 
-    # LISTENING → PROCESSING
-    r2 = _post(f"/voice/session/{session_id}/transition", {"state": "processing"})
-    assert r2["status"] == "ok", f"listening→processing failed: {r2}"
-    assert r2["state"] == "processing"
+    # LISTENING → TRANSCRIBING
+    r2 = _post(f"/voice/session/{session_id}/transition", {"state": "transcribing"})
+    assert r2["status"] == "ok", f"listening→transcribing failed: {r2}"
+    assert r2["state"] == "transcribing"
 
-    # PROCESSING → RESPONDING
-    r3 = _post(f"/voice/session/{session_id}/transition", {"state": "responding"})
-    assert r3["status"] == "ok", f"processing→responding failed: {r3}"
-    assert r3["state"] == "responding"
+    # TRANSCRIBING → THINKING
+    r3 = _post(f"/voice/session/{session_id}/transition", {"state": "thinking"})
+    assert r3["status"] == "ok", f"transcribing→thinking failed: {r3}"
+    assert r3["state"] == "thinking"
+
+    # THINKING → RESPONDING
+    r4 = _post(f"/voice/session/{session_id}/transition", {"state": "responding"})
+    assert r4["status"] == "ok", f"thinking→responding failed: {r4}"
+    assert r4["state"] == "responding"
 
 
 # ── T3: Intent through voice → receipt in chain ───────────────────────────────

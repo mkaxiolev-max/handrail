@@ -10,7 +10,7 @@ import json
 @pytest.mark.asyncio
 async def test_intent_execute_returns_receipt_hash(client):
     resp = await client.post("/intent/execute", json={
-        "text": "what is the current system state", "mode": "command", "actor": "founder_test"})
+        "intent": "what is the current system state", "mode": "command", "actor": "founder_test"})
     assert resp.status_code == 200
     data = resp.json()
     assert "receipt_hash" in data, "ENFORCEMENT BROKEN: no receipt_hash returned"
@@ -20,7 +20,7 @@ async def test_intent_execute_returns_receipt_hash(client):
 async def test_receipt_prev_hash_advances_monotonically(client, chain):
     for i in range(3):
         await client.post("/intent/execute", json={
-            "text": f"test intent {i}", "mode": "command", "actor": "invariant_test"})
+            "intent": f"test intent {i}", "mode": "command", "actor": "invariant_test"})
     receipts = chain.get_last_n(3)
     for i in range(1, len(receipts)):
         assert receipts[i].prev_hash == receipts[i-1].hash, (

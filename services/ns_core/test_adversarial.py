@@ -46,7 +46,8 @@ def test_narrative_hypothesis_no_stabilize_without_falsify():
         would_falsify=None,
     )
     buf.add(obj)
-    assert not obj.can_stabilize(), "Hypothesis without based_on+would_falsify must not stabilize"
+    ok, _ = obj.can_stabilize()
+    assert not ok, "Hypothesis without based_on+would_falsify must not stabilize"
     advanced = obj.advance_state()
     assert advanced != NarrativeState.stabilized, "Hypothesis must not reach stabilized without anti-closure invariants"
 
@@ -101,8 +102,8 @@ def test_hyperobject_axis_isolation():
 
     # Each axis is independent — no cross-contamination
     assert obj.narrative.summary == "", "narrative.summary must be empty after setting other axes"
-    assert obj.policy.active_constraints == [], "policy.active_constraints must be empty"
-    assert obj.epistemic.confidence == 0.0, "epistemic.confidence must be default 0.0"
+    assert obj.policy.obligations == [], "policy.obligations must be empty"
+    assert obj.epistemic.overall_confidence == 0.5, "epistemic.overall_confidence must be default 0.5"
 
 
 # ── T8: Metabolism backlog — contradiction must land in backlog ────────────────
@@ -112,8 +113,8 @@ def test_metabolism_contradiction_backlog():
     # Ingest two contradictory claims
     a = engine.intake("market_is_large", "claim", {"value": True})
     b = engine.intake("market_is_large", "claim", {"value": False})
-    engine.stress(a.object_id)
-    engine.stress(b.object_id)
+    engine.stress(a.object_id, contradictions=[b.object_id], stress_score=0.9)
+    engine.stress(b.object_id, contradictions=[a.object_id], stress_score=0.9)
     backlog = engine.contradiction_backlog()
     # Both objects are stressed — the backlog query should find them
     assert isinstance(backlog, list), "contradiction_backlog must return a list"
@@ -132,12 +133,12 @@ def test_program_extraction_from_procedural_text():
     Step 4: Obtain founder approval.
     """
     parser = DocumentParser()
-    doc = parser.parse_text(text, source_id="test_adv")
+    doc = parser.parse_text("test_adv", text)
     extractor = ProgramExtractor()
     candidates = extractor.extract(doc)
     assert len(candidates) > 0, "Procedural text must emit at least one ProgramCandidate"
-    assert candidates[0].candidate_type in ("procedure", "protocol", "policy", "workflow"), \
-        f"Unexpected candidate type: {candidates[0].candidate_type}"
+    assert candidates[0].program_type in ("procedure", "protocol", "policy", "workflow", "governance"), \
+        f"Unexpected program_type: {candidates[0].program_type}"
 
 
 # ── T10: Watch payload compact — body must stay ≤50 chars ────────────────────
@@ -145,7 +146,7 @@ def test_watch_payload_enforces_body_limit():
     from device.watch_plane import WatchPlane, WatchAction
     plane = WatchPlane()
     long_body = "This is a watch notification body that is definitely way too long for the Apple Watch display surface"
-    plane.notify(action=WatchAction.alert, title="Test", body=long_body)
+    plane.notify(title="Test", body=long_body)
     notes = plane.pending_notifications()
     assert len(notes) > 0
     last = notes[-1]
