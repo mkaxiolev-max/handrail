@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from ns_api.app.routers import system, engine, programs, memory, governance, replay, omega
+from ns_api.app.routers import ui as ui_router
 
 app = FastAPI(
     title="NS API",
@@ -25,6 +26,7 @@ app.include_router(memory.router)
 app.include_router(governance.router)
 app.include_router(replay.router)
 app.include_router(omega.router)
+app.include_router(ui_router.router)
 
 
 @app.get("/health")

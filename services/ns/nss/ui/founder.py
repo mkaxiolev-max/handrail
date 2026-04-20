@@ -920,11 +920,23 @@ async function founderVerbSubmit() {
       founderOut(r.ok ? `✅ Enrolled ${slot_id} serial=${serial}` : `❌ ${r.detail||JSON.stringify(r)}`, !r.ok);
       if (r.ok) setTimeout(refreshYubiKey, 800);
     } else if (_pendingVerb === 'promote_capability') {
-      founderOut(`✅ Promote queued: ${val} — wire to capability graph in next sprint`);
+      const r = await fetch('/capability/update', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({node_id: val, state: 'active'})
+      }).then(x=>x.json());
+      founderOut(r.ok !== false ? `✅ Capability promoted: ${val}` : `❌ ${r.detail||JSON.stringify(r)}`, r.ok === false);
     } else if (_pendingVerb === 'quarantine_capability') {
-      founderOut(`⚠️ Quarantine queued: ${val} — wire to capability graph in next sprint`);
+      const r = await fetch('/capability/update', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({node_id: val, state: 'quarantined'})
+      }).then(x=>x.json());
+      founderOut(r.ok !== false ? `⚠️ Capability quarantined: ${val}` : `❌ ${r.detail||JSON.stringify(r)}`, r.ok === false);
     } else if (_pendingVerb === 'resume_capability') {
-      founderOut(`✅ Resume queued: ${val} — wire to capability graph in next sprint`);
+      const r = await fetch('/capability/update', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({node_id: val, state: 'active'})
+      }).then(x=>x.json());
+      founderOut(r.ok !== false ? `✅ Capability resumed: ${val}` : `❌ ${r.detail||JSON.stringify(r)}`, r.ok === false);
     }
   } catch(e) {
     founderOut('Error: '+e.message, true);

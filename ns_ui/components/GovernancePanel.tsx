@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { tokens } from '@/lib/design-tokens'
 
+const NS_URL = process.env.NEXT_PUBLIC_NS_URL || 'http://localhost:9000'
+
 const PRESSURE_COLORS: Record<string, string> = {
   ring5_pending: tokens.colors.warning,
   operational:   tokens.colors.healthy,
@@ -14,7 +16,7 @@ function VioletStatusCard() {
   useEffect(() => {
     const fetch_ = async () => {
       try {
-        const r = await fetch('http://localhost:9000/violet/status')
+        const r = await fetch(`${NS_URL}/violet/status`)
         setStatus(await r.json())
       } catch { /* silent */ }
     }

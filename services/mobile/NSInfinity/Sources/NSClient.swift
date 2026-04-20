@@ -9,8 +9,7 @@ class NSClient: ObservableObject {
     @Published var healthStatus: [String: Any] = [:]
 
     var baseURL: String {
-        ProcessInfo.processInfo.environment["NS_BASE_URL"]
-            ?? "https://monica-problockade-caylee.ngrok-free.dev"
+        ProcessInfo.processInfo.environment["NS_BASE_URL"] ?? "http://localhost:9000"
     }
 
     func checkHealth() async {

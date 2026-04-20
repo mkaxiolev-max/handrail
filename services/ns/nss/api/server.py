@@ -32,6 +32,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parents[4]))  # axiolev_runtime root — exposes ns.* package
 
 from nss.core.storage import bootstrap, health as storage_health, get_ether
 from nss.core.receipts import ReceiptChain
@@ -111,6 +112,27 @@ from nss.san import state as san_state
 from nss.autopoietic import planner as cap_planner
 from nss.autopoietic import commit_event as commit_svc
 from nss.kernel.dignity import get_quorum
+
+try:
+    from ns.services.ui.router import ui_router as _ui_router
+    _UI_ROUTER_AVAILABLE = True
+except Exception:
+    _ui_router = None
+    _UI_ROUTER_AVAILABLE = False
+
+try:
+    from ns.api.routers.ui_runtime import router as _ui_runtime_router
+    _UI_RUNTIME_ROUTER_AVAILABLE = True
+except Exception:
+    _ui_runtime_router = None
+    _UI_RUNTIME_ROUTER_AVAILABLE = False
+
+try:
+    from ns.services.ui.websocket_events import broadcaster as _ws_broadcaster
+    _WS_BROADCASTER_AVAILABLE = True
+except Exception:
+    _ws_broadcaster = None
+    _WS_BROADCASTER_AVAILABLE = False
 
 
 class ExecRequest(BaseModel):
@@ -3663,6 +3685,280 @@ setInterval(refresh, 5000);
             return _j.loads(r.read())
         except Exception as e:
             return {"ok": False, "error": str(e)}
+
+    # ── UI named-route surface (L10 projections) ─────────────────────────────
+    if _UI_ROUTER_AVAILABLE and _ui_router is not None:
+        app.include_router(_ui_router)
+
+    # ── Founder Console API surface (NCOM/PIIC) ───────────────────────────────
+    if _UI_RUNTIME_ROUTER_AVAILABLE and _ui_runtime_router is not None:
+        app.include_router(_ui_runtime_router)
+
+    # ── /system/now — React SPA SystemContext heartbeat ───────────────────────
+    @app.get("/system/now")
+    async def system_now():
+        import subprocess as _sp, shutil as _sh
+        git_commit = "unknown"
+        try:
+            if _sh.which("git"):
+                git_commit = _sp.check_output(
+                    ["git", "rev-parse", "--short", "HEAD"],
+                    stderr=_sp.DEVNULL, cwd=str(Path(__file__).parents[4])
+                ).decode().strip()
+        except Exception:
+            pass
+        sh = storage_health()
+        return {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "status": "ok",
+            "git_commit": git_commit,
+            "shalom": sh.get("shalom", False),
+            "alexandria_mounted": sh.get("alexandria_root_exists", False),
+            "ring": 4,
+            "boot_mode": "sovereign",
+        }
+
+    # ── /ws/console — Founder Console v11 live WebSocket ─────────────────────
+    @app.websocket("/ws/console")
+    async def ws_console(ws: WebSocket):
+        await ws.accept()
+        if _WS_BROADCASTER_AVAILABLE and _ws_broadcaster is not None:
+            _ws_broadcaster.register(ws.send_text)
+        try:
+            while True:
+                try:
+                    await asyncio.wait_for(ws.receive_text(), timeout=30.0)
+                except asyncio.TimeoutError:
+                    await ws.send_text('{"event":"ping","payload":{}}')
+        except (WebSocketDisconnect, Exception):
+            pass
+        finally:
+            if _WS_BROADCASTER_AVAILABLE and _ws_broadcaster is not None:
+                _ws_broadcaster.unregister(ws.send_text)
+
+    # ── /violet/chat — VioletChat UI endpoint ─────────────────────────────────
+    @app.post("/violet/chat")
+    async def violet_chat(request: Request):
+        body = await request.json()
+        message = body.get("message", body.get("text", "")).strip()
+        if not message:
+            return JSONResponse({"ok": False, "error": "message required"}, status_code=400)
+        response_text = "Intelligence layer unavailable."
+        provider_name = "fallback"
+        try:
+            router = get_router()
+            result = await asyncio.to_thread(
+                router.route_sync, message,
+                "You are Violet, the intelligence layer of NS∞. Be concise and sovereign.",
+                "default"
+            )
+            response_text = result.get("response", response_text)
+            provider_name = result.get("model", "violet")
+        except Exception:
+            pass
+        receipt_chain.emit("VIOLET_CHAT", {"kind": "ui", "ref": "violet_chat"},
+                           {"query_len": len(message)}, {"response_len": len(response_text)})
+        return {"ok": True, "text": response_text, "provider": provider_name,
+                "ts": datetime.now(timezone.utc).isoformat()}
+
+    # ── /feed — TimelineRail feed ─────────────────────────────────────────────
+    @app.get("/feed")
+    async def feed_get():
+        events = []
+        try:
+            ledger = os.environ.get(
+                "NS_ALEX_LEDGER",
+                "/Volumes/NSExternal/ALEXANDRIA/ledger/ns_events.jsonl"
+            )
+            p = Path(ledger)
+            if p.exists():
+                with p.open("r", encoding="utf-8") as fh:
+                    lines = fh.readlines()
+                for ln in lines[-20:]:
+                    ln = ln.strip()
+                    if not ln:
+                        continue
+                    try:
+                        e = json.loads(ln)
+                        events.append({
+                            "type": e.get("event", "event"),
+                            "label": str(e.get("subject", e.get("sha256", "")[:12])),
+                            "ts": e.get("ts", ""),
+                        })
+                    except Exception:
+                        continue
+        except Exception:
+            pass
+        if not events:
+            sh = storage_health()
+            events = [{
+                "type": "system",
+                "label": f"NS∞ — shalom={'✓' if sh.get('shalom') else '✗'}",
+                "ts": datetime.now(timezone.utc).isoformat(),
+            }]
+        return {"ts": datetime.now(timezone.utc).isoformat(), "items": events}
+
+    # ── /feed/build — BriefingPage feed builder ───────────────────────────────
+    @app.post("/feed/build")
+    async def feed_build():
+        sh = storage_health()
+        cards = [
+            {"id": "system_health", "type": "health",
+             "label": f"System Health — shalom={'true' if sh.get('shalom') else 'false'}"},
+            {"id": "alexandria", "type": "memory",
+             "label": f"Alexandria — {'mounted' if sh.get('alexandria_root_exists') else 'offline'}"},
+        ]
+        try:
+            recent_sessions = active_sessions()
+            if recent_sessions:
+                cards.append({"id": "voice", "type": "voice",
+                               "label": f"Voice — {len(recent_sessions)} active session(s)"})
+        except Exception:
+            pass
+        try:
+            canon_path = os.environ.get(
+                "NS_CANON_RULES",
+                "/Volumes/NSExternal/ALEXANDRIA/canon/rules.jsonl"
+            )
+            if Path(canon_path).exists():
+                with open(canon_path) as fh:
+                    rule_count = sum(1 for _ in fh if _.strip())
+                cards.append({"id": "canon", "type": "canon",
+                               "label": f"Canon — {rule_count} rule(s) active"})
+        except Exception:
+            pass
+        return {"ts": datetime.now(timezone.utc).isoformat(), "cards": cards}
+
+    # ── /api/organism/overview — OrganismPage full telemetry ─────────────────
+    @app.get("/api/organism/overview")
+    async def organism_overview():
+        import subprocess as _sp2, shutil as _sh2, urllib.request as _ur2, time as _t2
+        ts = datetime.now(timezone.utc).isoformat()
+        git_commit = "unknown"
+        try:
+            if _sh2.which("git"):
+                git_commit = _sp2.check_output(
+                    ["git", "rev-parse", "--short", "HEAD"],
+                    stderr=_sp2.DEVNULL, cwd=str(Path(__file__).parents[4])
+                ).decode().strip()
+        except Exception:
+            pass
+
+        sh = storage_health()
+
+        def _probe(url: str) -> tuple:
+            t0 = _t2.monotonic()
+            try:
+                _ur2.urlopen(url, timeout=2)
+                return "live", int((_t2.monotonic() - t0) * 1000)
+            except Exception:
+                return "down", None
+
+        services = []
+        for svc_id, label, endpoint, health_url in [
+            ("ns_core",   "NS Core",   "http://localhost:9000", "http://localhost:9000/healthz"),
+            ("handrail",  "Handrail",  "http://localhost:8011", "http://localhost:8011/healthz"),
+            ("continuum", "Continuum", "http://localhost:8788", "http://localhost:8788/state"),
+            ("ns_api",    "NS API",    "http://localhost:9011", "http://localhost:9011/health"),
+            ("alexandria","Alexandria","http://localhost:9001", "http://localhost:9001/healthz"),
+        ]:
+            status, latency = _probe(health_url)
+            services.append({"id": svc_id, "label": label, "endpoint": endpoint,
+                              "status": status, "latency_ms": latency, "payload": {}})
+
+        ledger_path = Path(os.environ.get(
+            "NS_ALEX_LEDGER",
+            "/Volumes/NSExternal/ALEXANDRIA/ledger/ns_events.jsonl"
+        ))
+        receipt_files = len(list(ledger_path.parent.glob("*.jsonl"))) if ledger_path.parent.exists() else 0
+        latest_receipt = ""
+        try:
+            if ledger_path.exists():
+                lines = ledger_path.read_text().splitlines()
+                for ln in reversed(lines):
+                    if ln.strip():
+                        latest_receipt = json.loads(ln).get("sha256", "")[:16]
+                        break
+        except Exception:
+            pass
+
+        try:
+            reg = get_registry_with_status()
+            providers = [
+                {"id": k, "status": "live" if v.get("available") else "down",
+                 "model": v.get("model", ""), "model_count": 1,
+                 "endpoint": v.get("endpoint", "")}
+                for k, v in reg.items()
+            ]
+        except Exception:
+            providers = []
+
+        ns_status, _ = _probe("http://localhost:9000/healthz")
+        hr_status, _ = _probe("http://localhost:8011/healthz")
+        hr_payload = {}
+        try:
+            r = _ur2.urlopen("http://localhost:8011/healthz", timeout=2)
+            hr_payload = json.loads(r.read())
+        except Exception:
+            pass
+
+        violet_status, _ = _probe("http://localhost:9000/violet/status")
+        violet_payload = {}
+        try:
+            r = _ur2.urlopen("http://localhost:9000/violet/status", timeout=2)
+            violet_payload = json.loads(r.read())
+        except Exception:
+            pass
+
+        omega_status, _ = _probe("http://localhost:9010/healthz")
+        omega_health = {}
+        try:
+            r = _ur2.urlopen("http://localhost:9010/healthz", timeout=2)
+            omega_health = json.loads(r.read())
+        except Exception:
+            pass
+
+        return {
+            "captured_at": ts,
+            "system_state": {
+                "state": "live" if sh.get("shalom") else "degraded",
+                "boot_mode": "sovereign",
+                "git_commit": git_commit,
+                "shalom": sh.get("shalom", False),
+                "degraded": [] if ns_status == "live" and hr_status == "live" else
+                            [s["id"] for s in services if s["status"] != "live"],
+            },
+            "services": services,
+            "providers": providers,
+            "memory": {
+                "atoms_total": "unknown",
+                "receipt_files": receipt_files,
+                "alexandria_mounted": sh.get("alexandria_root_exists", False),
+                "latest_receipt": latest_receipt,
+            },
+            "execution": {
+                "status": hr_status,
+                "payload": hr_payload,
+            },
+            "governance": {
+                "hic": {"status": "live" if ns_status == "live" else "down"},
+                "pdp": {"status": "live" if ns_status == "live" else "down"},
+            },
+            "voice": {
+                "status": violet_status,
+                "sessions_count": len(active_sessions()),
+                "violet": violet_payload,
+            },
+            "body": {
+                "gateway": {"status": "unknown"},
+                "adapter": {"status": "unknown"},
+            },
+            "omega": {
+                "status": omega_status,
+                "runs_count": "unknown",
+                "health": omega_health,
+            },
+        }
 
     return app
 

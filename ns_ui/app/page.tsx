@@ -1,255 +1,283 @@
 "use client"
 import { useState, useEffect } from 'react'
 import { tokens } from '@/lib/design-tokens'
-import { VoiceOverlay } from '@/components/VoiceOverlay'
-import { OrganismMap } from '@/components/OrganismMap'
-import { EngineRoom } from '@/components/EngineRoom'
-import { ProgramsRuntime } from '@/components/ProgramsRuntime'
-import { GovernancePanel } from '@/components/GovernancePanel'
-import { Timeline } from '@/components/Timeline'
-import { OmegaPanel } from '@/components/OmegaPanel'
+import { VoiceOverlay }      from '@/components/VoiceOverlay'
+import { OrganismMap }       from '@/components/OrganismMap'
+import { EngineRoom }        from '@/components/EngineRoom'
+import { ProgramsRuntime }   from '@/components/ProgramsRuntime'
+import { GovernanceSpace }   from '@/components/GovernanceSpace'
+import { MemorySpace }       from '@/components/MemorySpace'
+import { BuildSpace }        from '@/components/BuildSpace'
+import { ExecutionSpace }    from '@/components/ExecutionSpace'
+import { VoiceSpace }        from '@/components/VoiceSpace'
+import { TimelineSpace }     from '@/components/TimelineSpace'
+import { OmegaPanel }        from '@/components/OmegaPanel'
+import { FounderHome }       from '@/components/FounderHome'
 import { VioletLogo, AxiolevWordmark } from '@/components/VioletMark'
-import { VioletPanel } from "../components/VioletPanel"
+import { VioletPanel }       from '@/components/VioletPanel'
 
-const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9000'
+// NS_API defaults to ns_api :9001 (local) or env override in Docker/Tauri
+const NS_API = process.env.NEXT_PUBLIC_NS_API_URL || 'http://localhost:9001'
 
-type Mode = 'organism'|'engine'|'runtime'|'memory'|'governance'|'omega'|'build'
+type Mode =
+  | 'founder'
+  | 'organism'
+  | 'engine'
+  | 'runtime'
+  | 'memory'
+  | 'governance'
+  | 'build'
+  | 'execution'
+  | 'voice'
+  | 'timeline'
+  | 'omega'
 
-const MODES: {id: Mode, label: string, color: string}[] = [
-  {id:'organism', label:'Living Architecture', color: tokens.colors.violet},
-  {id:'engine', label:'Engine Room', color: tokens.colors.handrail},
-  {id:'runtime', label:'Programs Runtime', color: '#88FFAA'},
-  {id:'memory', label:'Memory / Alexandria', color: tokens.colors.alexandria},
-  {id:'governance', label:'Governance', color: tokens.colors.kernel},
-  {id:'omega', label:'Omega Simulation', color: tokens.colors.buildSpace},
-  {id:'build', label:'Build Space', color: tokens.colors.buildSpace},
+interface ModeConfig { id: Mode; label: string; color: string; desc: string }
+
+const MODES: ModeConfig[] = [
+  { id: 'founder',    label: 'Founder Home',        color: tokens.colors.founder,    desc: 'Priorities, health, open loops' },
+  { id: 'organism',   label: 'Living Architecture', color: tokens.colors.violet,     desc: 'Autopoietic organism view' },
+  { id: 'engine',     label: 'Engine Room',         color: tokens.colors.handrail,   desc: 'Cognition, adjudication, execution' },
+  { id: 'runtime',    label: 'Programs',            color: '#88FFAA',                desc: '10 constitutional programs' },
+  { id: 'memory',     label: 'Memory',              color: tokens.colors.alexandria, desc: 'Alexandria ledger + receipts' },
+  { id: 'governance', label: 'Governance',          color: tokens.colors.kernel,     desc: 'Never-events, rings, quorum' },
+  { id: 'build',      label: 'Build Space',         color: tokens.colors.buildSpace, desc: 'Input → program → dispatch' },
+  { id: 'execution',  label: 'Execution',           color: tokens.colors.adjudication, desc: 'Dispatch history, Handrail moat' },
+  { id: 'voice',      label: 'Voice',               color: tokens.colors.voice,      desc: 'Sessions, telephony, receipts' },
+  { id: 'timeline',   label: 'Timeline',            color: tokens.colors.textSecondary, desc: 'Reality feed, receipted deltas' },
+  { id: 'omega',      label: 'Omega',               color: '#4A6FA5',                desc: 'Bounded branch simulation' },
 ]
 
 export default function Home() {
-  const [mode, setMode] = useState<Mode>('organism')
-  const [systemState, setSystemState] = useState<any>(null)
-  const [engineData, setEngineData] = useState<any>(null)
-  const [programs, setPrograms] = useState<any[]>([])
-  const [govState, setGovState] = useState<any>(null)
-  const [timeline, setTimeline] = useState<any[]>([])
-  const [selectedNode, setSelectedNode] = useState<string|null>(null)
+  const [mode, setMode] = useState<Mode>('founder')
+  const [systemState, setSystemState]     = useState<any>(null)
+  const [engineData, setEngineData]       = useState<any>(null)
+  const [programs, setPrograms]           = useState<any[]>([])
+  const [govState, setGovState]           = useState<any>(null)
+  const [timeline, setTimeline]           = useState<any[]>([])
   const [violetIdentity, setVioletIdentity] = useState<any>(null)
-  const [omegaRuns, setOmegaRuns] = useState<any>(null)
-  const [omegaLatest, setOmegaLatest] = useState<any>(null)
+  const [omegaRuns, setOmegaRuns]         = useState<any>(null)
+  const [omegaLatest, setOmegaLatest]     = useState<any>(null)
 
-  const fetchAll = async () => {
+  const fetchShared = async () => {
     try {
-      const [sys, eng, progs, gov, tl, vi, omegaRunsResp] = await Promise.allSettled([
-        fetch(`${NS_API}/api/v1/system/state`).then(r=>r.json()),
-        fetch(`${NS_API}/api/v1/engine/live`).then(r=>r.json()),
-        fetch(`${NS_API}/api/v1/programs`).then(r=>r.json()),
-        fetch(`${NS_API}/api/v1/governance/state`).then(r=>r.json()),
-        fetch(`${NS_API}/api/v1/system/timeline`).then(r=>r.json()),
-        fetch('http://localhost:9000/violet/identity').then(r=>r.json()),
-        fetch(`${NS_API}/api/v1/omega/runs`).then(r=>r.json()),
+      const [sys, eng, progs, gov, tl, vi, omR] = await Promise.allSettled([
+        fetch(`${NS_API}/api/v1/system/state`).then(r => r.json()),
+        fetch(`${NS_API}/api/v1/engine/live`).then(r => r.json()),
+        fetch(`${NS_API}/api/v1/programs`).then(r => r.json()),
+        fetch(`${NS_API}/api/v1/governance/state`).then(r => r.json()),
+        fetch(`${NS_API}/api/v1/system/timeline`).then(r => r.json()),
+        fetch(`${process.env.NEXT_PUBLIC_NS_URL || 'http://localhost:9000'}/violet/identity`).then(r => r.json()),
+        fetch(`${NS_API}/api/v1/omega/runs`).then(r => r.json()),
       ])
-      if (sys.status==='fulfilled') setSystemState(sys.value)
-      if (eng.status==='fulfilled') setEngineData(eng.value)
-      if (progs.status==='fulfilled') {
+      if (sys.status  === 'fulfilled') setSystemState(sys.value)
+      if (eng.status  === 'fulfilled') setEngineData(eng.value)
+      if (progs.status === 'fulfilled') {
         const p = progs.value
         setPrograms(Array.isArray(p) ? p : (p?.programs || []))
       }
-      if (gov.status==='fulfilled') setGovState(gov.value)
-      if (tl.status==='fulfilled') setTimeline(Array.isArray(tl.value) ? tl.value : [])
-      if (vi.status==='fulfilled') setVioletIdentity(vi.value)
-      if (omegaRunsResp.status==='fulfilled') {
-        setOmegaRuns(omegaRunsResp.value)
-        const firstRun = omegaRunsResp.value?.runs?.[0]
-        if (firstRun?.run_id) {
+      if (gov.status === 'fulfilled') setGovState(gov.value)
+      if (tl.status  === 'fulfilled') setTimeline(Array.isArray(tl.value) ? tl.value : [])
+      if (vi.status  === 'fulfilled') setVioletIdentity(vi.value)
+      if (omR.status === 'fulfilled') {
+        setOmegaRuns(omR.value)
+        const first = omR.value?.runs?.[0]
+        if (first?.run_id) {
           try {
-            const latest = await fetch(`${NS_API}/api/v1/omega/runs/${firstRun.run_id}`).then(r=>r.json())
-            const branchData = await fetch(`${NS_API}/api/v1/omega/runs/${firstRun.run_id}/branches`).then(r=>r.json())
-            setOmegaLatest({...latest, branches: branchData?.branches || []})
-          } catch(e) {}
+            const [latest, branches] = await Promise.all([
+              fetch(`${NS_API}/api/v1/omega/runs/${first.run_id}`).then(r => r.json()),
+              fetch(`${NS_API}/api/v1/omega/runs/${first.run_id}/branches`).then(r => r.json()),
+            ])
+            setOmegaLatest({ ...latest, branches: branches?.branches || [] })
+          } catch {}
         } else {
           setOmegaLatest(null)
         }
       }
-    } catch(e) {}
+    } catch {}
   }
 
-  useEffect(() => { fetchAll(); const i = setInterval(fetchAll, 5000); return () => clearInterval(i) }, [])
+  useEffect(() => {
+    fetchShared()
+    const id = setInterval(fetchShared, 6000)
+    return () => clearInterval(id)
+  }, [])
 
   const currentMode = MODES.find(m => m.id === mode)!
+  const shalom = systemState?.services?.some((s: any) => s.service === 'ns' && s.healthy)
 
   return (
-    <div style={{minHeight:'100vh',background:tokens.colors.bg,display:'flex',flexDirection:'column'}}>
+    <div style={{ minHeight: '100vh', background: tokens.colors.bg, display: 'flex', flexDirection: 'column' }}>
       <VoiceOverlay />
 
       {/* Top bar */}
-      <div style={{background:'#080C1E',borderBottom:`1px solid ${tokens.colors.border}`,
-        padding:'10px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <div style={{display:'flex',alignItems:'center',gap:16}}>
-          <VioletLogo size={28} />
-          <AxiolevWordmark style={{fontSize:11}} />
-          <span style={{color:tokens.colors.textSecondary,fontSize:11}}>NS∞ · Living Architecture</span>
-          <span style={{color:tokens.colors.adjudication,fontSize:10}}>
+      <div style={{
+        background: '#080C1E', borderBottom: `1px solid ${tokens.colors.border}`,
+        padding: '8px 20px', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <VioletLogo size={26} />
+          <AxiolevWordmark />
+          <span style={{ color: tokens.colors.textSecondary, fontSize: 10 }}>NS∞ · Founder Habitat</span>
+          <span style={{
+            fontSize: 9, padding: '1px 7px',
+            background: systemState ? 'rgba(0,255,136,0.08)' : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${systemState ? 'rgba(0,255,136,0.25)' : tokens.colors.border}`,
+            borderRadius: 3,
+            color: systemState ? tokens.colors.healthy : tokens.colors.textSecondary,
+          }}>
             {systemState ? '● LIVE' : '○ CONNECTING'}
           </span>
         </div>
         {violetIdentity && (
-          <div style={{fontSize:10,color:tokens.colors.textSecondary}}>
-            <span style={{color:tokens.colors.violet}}>Violet</span>
+          <div style={{ fontSize: 9, color: tokens.colors.textSecondary }}>
+            <span style={{ color: tokens.colors.violet }}>Violet</span>
             {' '}{violetIdentity.version} · {violetIdentity.shalom ? '✓ Shalom' : '⚠ Shalom'}
           </div>
         )}
       </div>
 
-      <div style={{display:'flex',flex:1}}>
-        {/* Left rail - mode navigation */}
-        <div style={{width:180,background:'#080C1E',borderRight:`1px solid ${tokens.colors.border}`,
-          padding:'16px 8px',display:'flex',flexDirection:'column',gap:4}}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Left rail */}
+        <div style={{
+          width: 164, background: '#080C1E', borderRight: `1px solid ${tokens.colors.border}`,
+          padding: '12px 6px', display: 'flex', flexDirection: 'column', gap: 2,
+          flexShrink: 0, overflowY: 'auto',
+        }}>
           {MODES.map(m => (
             <button key={m.id} onClick={() => setMode(m.id)} style={{
-              background: mode===m.id ? `${m.color}22` : 'transparent',
-              border: `1px solid ${mode===m.id ? m.color : 'transparent'}`,
-              borderRadius:6, padding:'8px 12px', cursor:'pointer',
-              color: mode===m.id ? m.color : tokens.colors.textSecondary,
-              fontSize:11, textAlign:'left', transition:'all 0.2s'
+              background: mode === m.id ? `${m.color}18` : 'transparent',
+              border: `1px solid ${mode === m.id ? m.color + '66' : 'transparent'}`,
+              borderRadius: 5, padding: '7px 10px', cursor: 'pointer',
+              color: mode === m.id ? m.color : tokens.colors.textSecondary,
+              fontSize: 10, textAlign: 'left', transition: 'all 0.15s',
+              lineHeight: 1.2,
             }}>{m.label}</button>
           ))}
 
-          <div style={{marginTop:'auto',borderTop:`1px solid ${tokens.colors.border}`,paddingTop:12}}>
-            <div style={{fontSize:9,color:tokens.colors.textSecondary,marginBottom:4}}>SERVICES</div>
-            {[
-              {label:'Handrail :8011', port:8011},
-              {label:'NS :9000', port:9000},
-              {label:'ns_api :9001', port:9001},
-              {label:'Voice :9002', port:9002},
-              {label:'Telephony :9003', port:9003},
-              {label:'Conf :9004', port:9004},
-            ].map(s => (
-              <div key={s.port} style={{fontSize:9,color:tokens.colors.healthy,marginBottom:2}}>
-                ● {s.label}
+          <div style={{ marginTop: 'auto', borderTop: `1px solid ${tokens.colors.border}`, paddingTop: 10 }}>
+            <div style={{ fontSize: 8, color: tokens.colors.textSecondary, marginBottom: 4, paddingLeft: 4 }}>
+              SERVICES
+            </div>
+            {systemState?.services?.slice(0, 5).map((s: any) => (
+              <div key={s.service} style={{
+                fontSize: 8, color: s.healthy ? tokens.colors.healthy : tokens.colors.warning,
+                paddingLeft: 4, marginBottom: 2,
+              }}>
+                {s.healthy ? '●' : '○'} {s.service}
               </div>
-            ))}
+            )) ?? (
+              <div style={{ fontSize: 8, color: tokens.colors.textSecondary, paddingLeft: 4 }}>
+                connecting…
+              </div>
+            )}
           </div>
         </div>
 
         {/* Center canvas */}
-        <div style={{flex:1,padding:16,overflow:'auto'}}>
-          <div style={{marginBottom:12,display:'flex',alignItems:'center',gap:8}}>
-            <h2 style={{margin:0,fontSize:16,color:currentMode.color}}>{currentMode.label}</h2>
-            <span style={{fontSize:10,color:tokens.colors.textSecondary}}>
-              {mode==='organism' ? '— Autopoietic organism view' :
-               mode==='engine' ? '— Cognition, adjudication, execution' :
-               mode==='runtime' ? '— 10 constitutional programs' :
-               mode==='memory' ? '— Alexandria ledger + receipts' :
-               mode==='governance' ? '— Never-events, rings, quorum' :
-               mode==='omega' ? '— Bounded, provisional branch simulation' :
-               '— Design sandbox (outside canon)'}
-            </span>
+        <div style={{ flex: 1, padding: 16, overflow: 'auto' }}>
+          <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h2 style={{ margin: 0, fontSize: 15, color: currentMode.color }}>{currentMode.label}</h2>
+            <span style={{ fontSize: 10, color: tokens.colors.textSecondary }}>— {currentMode.desc}</span>
           </div>
 
-          {mode==='organism' && <OrganismMap systemState={systemState} />}
-          {mode==='engine' && <EngineRoom engineData={engineData} programs={programs} />}
-          {mode==='runtime' && <ProgramsRuntime programs={programs} />}
-          {mode==='memory' && (
-            <div style={{background:'#0D1533',borderRadius:8,padding:16}}>
-              <div style={{color:tokens.colors.alexandria,marginBottom:12,fontSize:12,fontWeight:'bold'}}>
-                ALEXANDRIA — Memory Ledger
-              </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>
-                {[
-                  {label:'Receipts', path:'/Volumes/NSExternal/receipts/', color:tokens.colors.handrail},
-                  {label:'Atoms', path:'/Volumes/NSExternal/alexandria/atoms/', color:tokens.colors.adjudication},
-                  {label:'Corpus', path:'/Volumes/NSExternal/alexandria/raw_ingest/', color:tokens.colors.violet},
-                ].map(m => (
-                  <div key={m.label} style={{background:'#0A0E27',borderRadius:6,padding:12,
-                    border:`1px solid ${m.color}33`}}>
-                    <div style={{color:m.color,fontSize:11,marginBottom:4}}>{m.label}</div>
-                    <div style={{fontSize:9,color:tokens.colors.textSecondary}}>{m.path}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{marginTop:12}}>
-                <div style={{color:tokens.colors.textSecondary,fontSize:10,marginBottom:8}}>Recent Timeline</div>
-                <Timeline events={timeline} />
-              </div>
-            </div>
-          )}
-          {mode==='governance' && <GovernancePanel govState={govState} />}
-          {mode==='omega' && <OmegaPanel omegaRuns={omegaRuns} omegaLatest={omegaLatest} />}
-          {mode==='build' && (
-            <div style={{background:'#0A1020',border:`2px dashed ${tokens.colors.buildSpace}`,
-              borderRadius:12,padding:32,textAlign:'center',color:tokens.colors.buildSpace}}>
-              <div style={{fontSize:24,marginBottom:8}}>⬡</div>
-              <div style={{fontSize:14,fontWeight:'bold',marginBottom:8}}>BUILD SPACE</div>
-              <div style={{fontSize:11,opacity:0.7,maxWidth:400,margin:'0 auto'}}>
-                Design sandbox — outside the canonical boundary.<br/>
-                Proposals, speculative builds, roadmaps, and unresolved questions live here.<br/>
-                Nothing here mutates Canon without explicit promotion.
-              </div>
-            </div>
-          )}
+          {mode === 'founder'    && <FounderHome />}
+          {mode === 'organism'   && <OrganismMap systemState={systemState} />}
+          {mode === 'engine'     && <EngineRoom engineData={engineData} programs={programs} />}
+          {mode === 'runtime'    && <ProgramsRuntime programs={programs} />}
+          {mode === 'memory'     && <MemorySpace />}
+          {mode === 'governance' && <GovernanceSpace />}
+          {mode === 'build'      && <BuildSpace />}
+          {mode === 'execution'  && <ExecutionSpace />}
+          {mode === 'voice'      && <VoiceSpace />}
+          {mode === 'timeline'   && <TimelineSpace />}
+          {mode === 'omega'      && <OmegaPanel omegaRuns={omegaRuns} omegaLatest={omegaLatest} />}
         </div>
 
-        {/* Right panel */}
-        <div style={{width:260,background:'#080C1E',borderLeft:`1px solid ${tokens.colors.border}`,
-          padding:16,overflow:'auto'}}>
-          <div style={{fontSize:11,color:tokens.colors.textSecondary,marginBottom:12,fontWeight:'bold'}}>
+        {/* Right panel — System State + Violet */}
+        <div style={{
+          width: 248, background: '#080C1E', borderLeft: `1px solid ${tokens.colors.border}`,
+          padding: 12, overflow: 'auto', flexShrink: 0,
+        }}>
+          <div style={{ fontSize: 10, color: tokens.colors.textSecondary, marginBottom: 10, fontWeight: 700 }}>
             SYSTEM STATE
           </div>
           {systemState ? (
-            <div style={{fontSize:10}}>
-              <div style={{color:tokens.colors.adjudication,marginBottom:4}}>
-                Phase: {systemState.metrics?.phase || 'idle'}
+            <div style={{ fontSize: 9 }}>
+              <div style={{ color: tokens.colors.adjudication, marginBottom: 3 }}>
+                Phase: {systemState.metrics?.phase || 'active'}
               </div>
-              <div style={{color:tokens.colors.textSecondary}}>
-                Integrity: {((systemState.metrics?.autopoietic_integrity||0)*100).toFixed(0)}%
-              </div>
-              <div style={{color:tokens.colors.textSecondary}}>
-                Memory: {((systemState.metrics?.memory_usage||0)*100).toFixed(0)}%
-              </div>
-              <div style={{marginTop:8,color:tokens.colors.textSecondary}}>Services:</div>
-              {systemState.nodes?.slice(0,6).map((n:any) => (
-                <div key={n.id} style={{fontSize:9,color: n.health==='ok' ? tokens.colors.healthy : tokens.colors.warning}}>
-                  {n.health==='ok'?'●':'○'} {n.label}
+              {systemState.metrics?.autopoietic_integrity != null && (
+                <div style={{ color: tokens.colors.textSecondary, marginBottom: 3 }}>
+                  Integrity: {((systemState.metrics.autopoietic_integrity) * 100).toFixed(0)}%
                 </div>
-              ))}
-              {systemState.services?.slice(0,6).map((s:any) => (
-                <div key={s.service} style={{fontSize:9,color: s.healthy ? tokens.colors.healthy : tokens.colors.warning}}>
-                  {s.healthy?'●':'○'} {s.service}
-                </div>
-              ))}
+              )}
+              <div style={{ marginTop: 6 }}>
+                {systemState.services?.slice(0, 8).map((s: any) => (
+                  <div key={s.service} style={{ color: s.healthy ? tokens.colors.healthy : tokens.colors.warning, marginBottom: 2 }}>
+                    {s.healthy ? '●' : '○'} {s.service}
+                    {s.latency_ms != null && (
+                      <span style={{ color: tokens.colors.textSecondary, marginLeft: 4 }}>
+                        {Math.round(s.latency_ms)}ms
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div style={{fontSize:10,color:tokens.colors.textSecondary,opacity:0.5}}>
-              Connecting to NS API...
+            <div style={{ fontSize: 9, color: tokens.colors.textSecondary, opacity: 0.5 }}>
+              Connecting to NS API…
             </div>
           )}
 
           {violetIdentity && (
-            <div style={{marginTop:16,padding:10,background:'#0D1533',borderRadius:8,
-              border:`1px solid ${tokens.colors.violet}33`}}>
-              <div style={{color:tokens.colors.violet,fontSize:10,fontWeight:'bold',marginBottom:6}}>VIOLET</div>
-              <div style={{fontSize:9,color:tokens.colors.textSecondary,lineHeight:1.6}}>
-                <div>{violetIdentity.axiom?.slice(0,80)}...</div>
-                <div style={{marginTop:4,color:tokens.colors.adjudication}}>
-                  {violetIdentity.shalom ? '✓ Shalom' : '⚠ Shalom'}
-                </div>
+            <div style={{
+              marginTop: 14, padding: 8, background: '#0D1533', borderRadius: 7,
+              border: `1px solid ${tokens.colors.violet}33`,
+            }}>
+              <div style={{ color: tokens.colors.violet, fontSize: 9, fontWeight: 700, marginBottom: 4 }}>VIOLET</div>
+              <div style={{ fontSize: 8, color: tokens.colors.textSecondary, lineHeight: 1.5 }}>
+                {violetIdentity.axiom?.slice(0, 90)}…
+              </div>
+              <div style={{ marginTop: 4, fontSize: 8, color: violetIdentity.shalom ? tokens.colors.healthy : tokens.colors.warning }}>
+                {violetIdentity.shalom ? '✓ Shalom' : '⚠ Shalom'}
               </div>
             </div>
           )}
 
-          <div style={{ marginTop: 16, height: 400, overflow: "hidden" }}>
+          <div style={{ marginTop: 14, height: 380, overflow: 'hidden' }}>
             <VioletPanel compact={true} />
           </div>
         </div>
       </div>
 
-      {/* Bottom timeline */}
-      <div style={{background:'#080C1E',borderTop:`1px solid ${tokens.colors.border}`,
-        padding:'8px 16px'}}>
-        <div style={{fontSize:9,color:tokens.colors.textSecondary,marginBottom:4}}>
-          TIMELINE — Receipts / Commits / Executions
+      {/* Bottom timeline strip */}
+      <div style={{
+        background: '#080C1E', borderTop: `1px solid ${tokens.colors.border}`,
+        padding: '6px 14px', flexShrink: 0,
+      }}>
+        <div style={{ fontSize: 8, color: tokens.colors.textSecondary, marginBottom: 3 }}>
+          REALITY FEED
         </div>
-        <Timeline events={timeline} />
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto' }}>
+          {timeline.slice(0, 12).map((e: any, i: number) => (
+            <div key={i} style={{
+              flexShrink: 0, fontSize: 8, fontFamily: 'monospace',
+              color: tokens.colors.textSecondary,
+              padding: '2px 8px', background: 'rgba(255,255,255,0.03)',
+              border: `1px solid ${tokens.colors.border}`, borderRadius: 3,
+            }}>
+              {e.event_type} {e.summary?.slice(0, 30)}
+            </div>
+          ))}
+          {!timeline.length && (
+            <span style={{ fontSize: 8, color: tokens.colors.textSecondary, opacity: 0.5 }}>
+              No timeline events yet
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -248,5 +248,25 @@ services:
       retries: 5
       start_period: 30s
 
+  ns_ui:
+    build:
+      context: ns_ui
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NEXT_PUBLIC_NS_API_URL: http://ns_api:9011
+      NEXT_PUBLIC_NS_URL: http://ns_core:9000
+      NEXT_PUBLIC_HANDRAIL_URL: http://handrail:8011
+    depends_on:
+      ns_api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+
 volumes:
   pgdata:

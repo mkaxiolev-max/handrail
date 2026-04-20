@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "identifier": "com.axiolev.ns-infinity",
   "build": {
-    "frontendDist": "../../../frontend/dist",
-    "devUrl": "http://localhost:3000",
+    "frontendDist": "../../../ns_ui/out",
+    "devUrl": "http://localhost:3001",
     "beforeDevCommand": "",
     "beforeBuildCommand": ""
   },

@@ -1,0 +1,14 @@
+{
+  "timestamp": "20260420T004753Z",
+  "branch": "boot-operational-closure",
+  "sha": "bb10b94",
+  "services": {
+    "ns_core":   "fail",
+    "state_api": "fail",
+    "handrail":  "fail",
+    "continuum": "fail"
+  },
+  "alexandria_mount": "ok",
+  "state_api_snapshot": {},
+  "verdict": "NOT_READY_FOR_SHUTDOWN"
+}
