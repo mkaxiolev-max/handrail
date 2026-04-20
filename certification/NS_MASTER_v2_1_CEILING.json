@@ -1,0 +1,22 @@
+{
+  "ts": 1776726736,
+  "rubric_version": "v2.1",
+  "instruments": {
+    "I1": 92.5,
+    "I2": 88.0,
+    "I3": 85.5,
+    "I4": 91.5,
+    "I5": 96.0
+  },
+  "weights": {
+    "I1": 0.15,
+    "I2": 0.2,
+    "I3": 0.2,
+    "I4": 0.3,
+    "I5": 0.15
+  },
+  "master": 90.43,
+  "tier": "Omega-Approaching",
+  "notes": "Q1\u2013Q19 ceiling uplifts merged to axiolev-v2.1-integration.",
+  "sha256": "f8550aaf47329d38235e5ffdd8032e245848fd75b39c5f7c4011ffc0aaf3ebe4"
+}
