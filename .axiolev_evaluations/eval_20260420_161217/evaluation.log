@@ -1,0 +1,139 @@
+
+════════════════════════════════════════════════════════════════════
+  AXIOLEV SCRIPT 1 — NS∞ EVALUATION
+════════════════════════════════════════════════════════════════════
+  [INFO] Run ID:          eval_20260420_161217
+  [INFO] Repo:            /Users/axiolevns/axiolev_runtime
+  [INFO] Alexandria:      /Volumes/NSExternal/ALEXANDRIA
+  [INFO] Output dir:      /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217
+  [INFO] Docker socket:   unix:///var/run/docker.sock
+  [INFO] Date:            2026-04-20T23:12:17Z
+
+── PHASE 0 — ENVIRONMENT SANITY ──────────────────────────────────────────────────────────────
+  [OK]   Repo directory accessible
+  [OK]   Git state: HEAD=08512687bf04760f850cd22528e77db57190fcc4  branch=axiolev-v2.1-integration  dirty=1 files
+  [OK]   Alexandria accessible: 100405 entries, 64G
+  [OK]   Python: Python 3.14.2
+  [OK]   docker present
+  [OK]   curl present
+  [OK]   jq present
+  [OK]   git present
+  [OK]   shasum present
+  [OK]   openssl present
+
+── PHASE 1 — DOCKER SERVICE HEALTH ──────────────────────────────────────────────────────────────
+  [OK]   Docker services: 16 running, 16 healthy
+  [OK]   Service healthy on :8011
+  [OK]   Service healthy on :9001
+  [OK]   Service healthy on :9002
+  [OK]   Service healthy on :9003
+  [OK]   Service healthy on :9004
+
+── PHASE 2 — TEST SUITE EXECUTION ──────────────────────────────────────────────────────────────
+  [INFO] Running pytest...
+........................................................................ [ 42%]
+........................................................................ [ 84%]
+..............F...........                                               [100%]
+=================================== FAILURES ===================================
+____________________________ test_disjointness_high ____________________________
+tests/test_three_realities.py:15: in test_disjointness_high
+    assert _state().disjointness_score() > 0.5
+E   AssertionError: assert 0.5 > 0.5
+E    +  where 0.5 = disjointness_score()
+E    +    where disjointness_score = ThreeRealityState(lexicon={'id': 'A', 'tier': 'canon'}, alexandria={'id': 'A', 'ts': 1.0}, san={'tier': 'canon', 'ts': 1.0}).disjointness_score
+E    +      where ThreeRealityState(lexicon={'id': 'A', 'tier': 'canon'}, alexandria={'id': 'A', 'ts': 1.0}, san={'tier': 'canon', 'ts': 1.0}) = _state()
+=========================== short test summary info ============================
+FAILED tests/test_three_realities.py::test_disjointness_high - AssertionError...
+1 failed, 169 passed in 1.86s
+  [OK]   Tests: 169/170 passed (1 failed)
+
+── PHASE 3 — CONSTITUTIONAL INVARIANT AUDIT ──────────────────────────────────────────────────────────────
+  [OK]   Invariant HIC_VETO: present in 3 file(s)
+  [OK]   Invariant PDP_POLICY: present in 2 file(s)
+  [OK]   Invariant OMEGA_BOUNDED: present in 2 file(s)
+  [OK]   Invariant RECEIPT_CHAIN: present in 48 file(s)
+  [OK]   Invariant APPEND_ONLY: present in 7 file(s)
+  [OK]   Invariant MONOTONE: present in 35 file(s)
+  [OK]   Invariant DIGNITY_KERNEL: present in 24 file(s)
+  [OK]   Invariant REVERSIBLE: present in 48 file(s)
+  [OK]   Invariant THREE_REALITIES: present in 5 file(s)
+  [OK]   Invariant HAMILTONIAN: present in 12 file(s)
+  [OK]   Invariant coverage: 10/10 (100.0%)
+  [OK]   Alexandria chain structure present
+
+── PHASE 4 — I₁ SUPER-OMEGA v2 EVALUATION ──────────────────────────────────────────────────────────────
+  [OK]   I₁ Super-Omega v2 composite: 88.02
+
+── PHASE 5 — I₂ OMEGA INTELLIGENCE v2 EVALUATION ──────────────────────────────────────────────────────────────
+  [OK]   Calibration telemetry code found
+  [OK]   I₂ Omega Intelligence v2 composite: 82.42
+
+── PHASE 6 — I₃ UOIE v2 EVALUATION ──────────────────────────────────────────────────────────────
+  [WARN] UOIE harness not found in repo — will use architectural estimates
+  [OK]   I₃ UOIE v2 composite: 84.60 (pending third-party admin)
+
+── PHASE 7 — I₄ GPX-Ω EVALUATION ──────────────────────────────────────────────────────────────
+  [OK]   GPX/hormetic harness detected
+  [OK]   I₄ GPX-Ω composite: 86.80
+
+── PHASE 8 — I₅ SAQ (SOVEREIGN ARCHITECTURE QUALITY) EVALUATION ──────────────────────────────────────────────────────────────
+  [OK]   I₅ SAQ composite: 87.50
+
+── PHASE 9 — MASTER COMPOSITE v2.1 ──────────────────────────────────────────────────────────────
+  [OK]   MASTER v2.1: 85.77  (Certified Advanced)
+
+── PHASE 10 — EVIDENCE BUNDLE ASSEMBLY ──────────────────────────────────────────────────────────────
+<stdin>:5: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  [OK]   Evidence bundle written to /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/evidence_bundle.json
+  [OK]   Evidence bundle committed to Alexandria: /Volumes/NSExternal/ALEXANDRIA/axiolev_evaluations/eval_20260420_161217.json
+
+── PHASE 11 — SCORECARD EMISSION ──────────────────────────────────────────────────────────────
+════════════════════════════════════════════════════════════════════════
+AXIOLEV NS∞ EVALUATION SCORECARD
+Run ID: eval_20260420_161217
+Date:   2026-04-20T23:13:09Z
+Repo:   /Users/axiolevns/axiolev_runtime @ 08512687bf04760f850cd22528e77db57190fcc4
+════════════════════════════════════════════════════════════════════════
+
+INSTRUMENT SCORES (v2.1 rubric)
+────────────────────────────────────────────────────────────────────────
+  I₁  Super-Omega v2           88.02   (weight 0.15)
+  I₂  Omega Intelligence v2    82.42   (weight 0.20)
+  I₃  UOIE v2                  84.60   (weight 0.20, pending admin)
+  I₄  GPX-Ω                    86.80   (weight 0.30)
+  I₅  SAQ                      87.50   (weight 0.15)
+  ────────────────────────────────────────────────────────────────────
+  MASTER v2.1                  85.77
+  TIER                         Certified Advanced
+
+SUBSTRATE STATE
+────────────────────────────────────────────────────────────────────────
+  Tests:               169 / 170 passing (1 failed)
+  Invariants:          10 / 10 present (100.0%)
+  Alexandria:          structured (100405 entries, 64G)
+  Docker services:     16 healthy / 11 expected
+  NS∞ health probes:   5 / 5 responding
+
+EVIDENCE BUNDLE
+────────────────────────────────────────────────────────────────────────
+  Receipt: /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/evidence_bundle.json
+  Log:     /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/evaluation.log
+
+GAPS FOR SCRIPT 2 (SYNTHESIS)
+────────────────────────────────────────────────────────────────────────
+  [P2] UOIE harness not productionized
+
+════════════════════════════════════════════════════════════════════════
+NEXT: Run Script 2 to implement P1-P3 interventions and re-evaluate.
+════════════════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════════════
+  EVALUATION COMPLETE
+════════════════════════════════════════════════════════════════════
+  [INFO] Evidence bundle:  /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/evidence_bundle.json
+  [INFO] Scorecard:        /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/scorecard.txt
+  [INFO] Log:              /Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161217/evaluation.log
+  [INFO] 
+  [INFO] Master composite: 85.77 (Certified Advanced)
+  [INFO] 
+  [INFO] Next step: Run Script 2 (full integration synthesis) to uplift scores.

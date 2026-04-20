@@ -1,0 +1,14 @@
+........................................................................ [ 42%]
+........................................................................ [ 84%]
+..............F...........                                               [100%]
+=================================== FAILURES ===================================
+____________________________ test_disjointness_high ____________________________
+tests/test_three_realities.py:15: in test_disjointness_high
+    assert _state().disjointness_score() > 0.5
+E   AssertionError: assert 0.5 > 0.5
+E    +  where 0.5 = disjointness_score()
+E    +    where disjointness_score = ThreeRealityState(lexicon={'id': 'A', 'tier': 'canon'}, alexandria={'id': 'A', 'ts': 1.0}, san={'tier': 'canon', 'ts': 1.0}).disjointness_score
+E    +      where ThreeRealityState(lexicon={'id': 'A', 'tier': 'canon'}, alexandria={'id': 'A', 'ts': 1.0}, san={'tier': 'canon', 'ts': 1.0}) = _state()
+=========================== short test summary info ============================
+FAILED tests/test_three_realities.py::test_disjointness_high - AssertionError...
+1 failed, 169 passed in 1.86s
