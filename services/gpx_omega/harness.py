@@ -41,11 +41,12 @@ class SignatureClassifier:
         recovery = b5-b0
         monotone_decline = b0>b1>b2>b3>b4
         monotone_improve = b0<b1<b2<b3<b4
-        if monotone_improve and b5>b0 and hi>0.2: return Signature.SUPER_GNOSEOGENIC
+        # BRITTLE first — monotone decline with no bounce-back
+        if monotone_decline and b5 < b0-10: return Signature.BRITTLE
+        if monotone_improve and b5>=b0 and hi>=0.2: return Signature.SUPER_GNOSEOGENIC
         if (b2>b1 or b3>b1) and abs(recovery)<10 and hi>0.1: return Signature.GENERATIVE
         if b4<b0 and abs(recovery)<5: return Signature.PLASTIC
         if b4<b0 and recovery<-5 and b5>b4: return Signature.REACTIVE
-        if monotone_decline and b5<b0-10: return Signature.BRITTLE
         if recovery>5: return Signature.GENERATIVE
         if recovery>-5: return Signature.PLASTIC
         if recovery>-15: return Signature.REACTIVE
