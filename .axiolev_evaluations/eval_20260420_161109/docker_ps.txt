@@ -1,0 +1,16 @@
+axiolev_runtime-ns_ui-1|Up About an hour (unhealthy)
+axiolev_runtime-ns_core-1|Up About an hour (healthy)
+axiolev_runtime-ns_api-1|Up About an hour (healthy)
+axiolev_runtime-handrail-1|Up About an hour (healthy)
+axiolev_runtime-omega-1|Up About an hour (healthy)
+axiolev_runtime-alexandria-1|Up About an hour (healthy)
+axiolev_runtime-continuum-1|Up About an hour (healthy)
+axiolev_runtime-violet-1|Up About an hour (healthy)
+axiolev_runtime-canon-1|Up About an hour (healthy)
+axiolev_runtime-integrity-1|Up About an hour (healthy)
+axiolev_runtime-model_router-1|Up About an hour (healthy)
+axiolev_runtime-redis-1|Up About an hour (healthy)
+axiolev_runtime-postgres-1|Up About an hour (healthy)
+ns_postgres|Up About an hour
+ns_redis|Up About an hour
+ns_chromadb|Up About an hour
