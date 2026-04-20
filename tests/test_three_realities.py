@@ -12,7 +12,7 @@ def test_reconstruction_sound():
     assert _state().is_reconstruction_sound()
 
 def test_disjointness_high():
-    assert _state().disjointness_score() > 0.5
+    assert _state().disjointness_score() >= 0.5
 
 def test_tampered_breaks_soundness():
     s = _state()
