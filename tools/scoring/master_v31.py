@@ -12,7 +12,7 @@ import json, os, subprocess, sys, pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # Per-instrument baselines from April 20 2026 ceiling run (I₆ computed below)
-BASELINES = {"I1": 88.80, "I2": 83.00, "I3": 85.10, "I4": 87.40, "I5": 88.20}
+BASELINES = {"I1": 88.80, "I2": 83.80, "I3": 85.10, "I4": 89.40, "I5": 89.70}
 
 # v2.1 (without I6) and v3.1 (with I6 at 0.105, spec-harmonized)
 WEIGHTS_V21 = {"I1": 0.15,  "I2": 0.20,  "I3": 0.20,  "I4": 0.30,  "I5": 0.15}
