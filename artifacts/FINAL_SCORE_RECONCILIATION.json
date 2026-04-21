@@ -1,0 +1,30 @@
+{
+  "generated": "2026-04-21T21:19Z",
+  "certified_score": 91.63,
+  "live_score": 92.27,
+  "delta": 0.64,
+  "live_credits_active": true,
+  "nvir_rate": 0.974,
+  "nvir_ttl_seconds": 3600,
+  "nvir_age_at_measurement_seconds": 1680,
+  "i6_with_tests": 95.97,
+  "i6_without_tests": 89.95,
+  "super_omega_result": "14/14 pass",
+  "reproducible_command": "python3 tools/scoring/master_v31.py",
+  "conservative_command": "python3 tools/scoring/master_v31.py --no-tests",
+  "reason_for_delta": "compute_i6_subs() with 14/14 empirical Super-Omega passes uses 50/50 blend + 2.0 bonus, raising I6 from 89.95 to 95.97 (+0.105 instrument weight = +0.64 composite)",
+  "gap_to_omega_certified_from_live": 0.73,
+  "gap_to_omega_certified_from_certified": 1.37,
+  "omega_certified_threshold": 93.0,
+  "omega_full_threshold": 96.0,
+  "current_band": "OMEGA-APPROACHING",
+  "instruments": {
+    "I1": 88.80,
+    "I2": 89.74,
+    "I3": 89.34,
+    "I4": 97.88,
+    "I5": 89.70,
+    "I6_live": 95.97,
+    "I6_no_tests": 89.95
+  }
+}

@@ -21,18 +21,18 @@ _check() {
 }
 
 NS_CORE=$(_check http://127.0.0.1:9000/healthz)
-STATE_API=$(_check http://127.0.0.1:9090/state)
+NS_API=$(_check http://127.0.0.1:9011/health)
 HANDRAIL=$(_check http://127.0.0.1:8011/healthz)
 CONTINUUM=$(_check http://127.0.0.1:8788/state)
 ALEX=$([ -d /Volumes/NSExternal ] && echo "ok" || echo "not-mounted")
 
-STATE_BODY=$(curl -sf --max-time 5 http://127.0.0.1:9090/state 2>/dev/null || echo "{}")
+STATE_BODY=$(curl -sf --max-time 5 http://127.0.0.1:8788/state 2>/dev/null || echo "{}")
 
 # ── Verdict ───────────────────────────────────────────────────────────────────
 VERDICT="READY_FOR_SHUTDOWN"
 FAILURES=()
 [ "$NS_CORE"   != "ok" ] && VERDICT="NOT_READY_FOR_SHUTDOWN" && FAILURES+=("ns_core:9000")
-[ "$STATE_API" != "ok" ] && VERDICT="NOT_READY_FOR_SHUTDOWN" && FAILURES+=("state_api:9090")
+[ "$NS_API"    != "ok" ] && VERDICT="NOT_READY_FOR_SHUTDOWN" && FAILURES+=("ns_api:9011")
 [ "$HANDRAIL"  != "ok" ] && VERDICT="NOT_READY_FOR_SHUTDOWN" && FAILURES+=("handrail:8011")
 [ "$CONTINUUM" != "ok" ] && VERDICT="NOT_READY_FOR_SHUTDOWN" && FAILURES+=("continuum:8788")
 
@@ -44,12 +44,12 @@ cat > "$OUT" <<EOF
   "sha": "$SHA",
   "services": {
     "ns_core":   "$NS_CORE",
-    "state_api": "$STATE_API",
+    "ns_api":    "$NS_API",
     "handrail":  "$HANDRAIL",
     "continuum": "$CONTINUUM"
   },
   "alexandria_mount": "$ALEX",
-  "state_api_snapshot": $STATE_BODY,
+  "continuum_state": $STATE_BODY,
   "verdict": "$VERDICT"
 }
 EOF

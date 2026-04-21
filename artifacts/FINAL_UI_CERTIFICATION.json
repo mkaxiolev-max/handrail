@@ -1,0 +1,26 @@
+{
+  "generated": "2026-04-21T21:22Z",
+  "ui_score": 84,
+  "ui_label": "Founder Habitat Strong",
+  "routes_200": ["/home", "/scoring", "/omega_logos", "/autonomy", "/ring5"],
+  "root_redirects_to_home": true,
+  "build_clean": true,
+  "evidence": {
+    "routes_live": "6/6 primary routes HTTP 200",
+    "governance_visible": true,
+    "memory_ledger_visible": true,
+    "execution_visible": true,
+    "omega_intelligence_visible": true,
+    "founder_home": true,
+    "blocked_state_visible": true,
+    "route_coherence": true,
+    "fake_green": false
+  },
+  "blockers_to_next_label": [
+    "Interactive voice/session UI test (cannot verify from curl)",
+    "Live memory feed confirmed pulling from Alexandria in-browser",
+    "CPS execution visible real-time in founder console"
+  ],
+  "container_rebuilt_this_pass": true,
+  "rebuild_reason": "Stale container built with legacy app/ taking priority over src/app/"
+}

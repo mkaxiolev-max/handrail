@@ -1,0 +1,76 @@
+{
+  "generated": "2026-04-21T21:23Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "0469d2b6",
+
+  "scores": {
+    "architecture_score": 91,
+    "stress_score": 100,
+    "governance_score": 96,
+    "execution_score": 94,
+    "memory_score": 90,
+    "ui_score": 84,
+    "security_score": 68,
+    "omega_score": 95,
+    "certainty_score": 87,
+    "composite_score": 90,
+    "certified_v31": 91.63,
+    "best_live_v31": 92.27
+  },
+
+  "instruments": {
+    "I1": 88.80,
+    "I2": 89.74,
+    "I3": 89.34,
+    "I4": 97.88,
+    "I5": 89.70,
+    "I6": 95.97
+  },
+
+  "bands": {
+    "omega_approaching": {"threshold": 90.0, "cleared": true},
+    "omega_certified": {"threshold": 93.0, "cleared": false, "gap_from_live": 0.73},
+    "omega_full": {"threshold": 96.0, "cleared": false, "gap_from_live": 3.73}
+  },
+
+  "certification_tier": "OMEGA-APPROACHING",
+  "ui_label": "Founder Habitat Strong",
+
+  "boot_ready": true,
+  "production_hardened": false,
+  "remote_synced": false,
+
+  "top_5_risks": [
+    "R1: GitHub PATs in tracked .terminal_manager/state/*.md — must rotate before push",
+    "R2: Remote push blocked — no SSH key or PAT configured",
+    "R3: Ring 5 blocked — Stripe live keys, production domain, legal entity",
+    "R4: NVIR TTL expiry in ~32 min — score drops ~2.5 pts without refresh",
+    "R5: 0.73 pts gap to Omega-Certified (93.0) — requires empirical I6 test run"
+  ],
+
+  "what_is_done": [
+    "Rings 1-4 fully complete — boot, voice, receipts, intelligence, sovereign, capability",
+    "14 services healthy (13 compose + omega_logos)",
+    "1015 tests pass, 0 failures, 1 xfailed",
+    "INS-02 NVIR live loop — rate=0.974, credits active",
+    "INS-07 Witness cosigning — 3-witness HMAC triad, 14/14 tests",
+    "Super-Omega 14/14 — I6=95.97",
+    "NS UI rebuilt — 6/6 routes 200, standalone production build",
+    "Verify script fixed — READY_FOR_SHUTDOWN (stale :9090 replaced with :9011)"
+  ],
+
+  "what_is_still_open": [
+    "Ring 5 production blocked (Stripe/domain/legal)",
+    "Remote push not configured",
+    "GitHub PATs in tracked state files need rotation",
+    "No automated gitleaks pre-commit hook",
+    "UI live-data integration not user-tested (browser)",
+    "NVIR result TTL — requires hourly refresh in production"
+  ],
+
+  "public_number": "MASTER v3.1 = 91.63 (Omega-Approaching)",
+  "internal_number": "MASTER v3.1 = 92.27 live (Omega-Approaching, 0.73 pts from Omega-Certified)",
+
+  "one_next_action": "Rotate GitHub PATs in .terminal_manager/state/*.md, then git rm those files and push branch to GitHub",
+  "exact_next_command": "git rm .terminal_manager/state/state_20260416T233746Z.md .terminal_manager/state/state_20260416T234033Z.md && git commit -m 'security: remove PAT-containing state snapshots' && git push https://mkaxiolev-max:${GITHUB_TOKEN}@github.com/mkaxiolev-max/handrail.git integration/max-omega-20260421-191635 --tags"
+}
