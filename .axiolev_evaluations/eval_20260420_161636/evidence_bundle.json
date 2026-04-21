@@ -1,0 +1,62 @@
+{
+  "run_id": "eval_20260420_161636",
+  "timestamp": "2026-04-20T23:17:28.852837Z",
+  "repo": {
+    "path": "/Users/axiolevns/axiolev_runtime",
+    "head": "a004549f15873704eaa5150faf263463dbebd56b",
+    "branch": "axiolev-v2.1-integration",
+    "dirty_files": 2
+  },
+  "environment": {
+    "alexandria": {
+      "path": "/Volumes/NSExternal/ALEXANDRIA",
+      "entries": 100407,
+      "size": "64G",
+      "attestation": "structured"
+    },
+    "docker": {
+      "socket": "unix:///var/run/docker.sock",
+      "services_running": 16,
+      "services_healthy": 16
+    },
+    "python": "Python 3.14.2"
+  },
+  "tests": {
+    "passed": 174,
+    "failed": 0,
+    "total": 174
+  },
+  "invariants": {
+    "count": 10,
+    "present": 10,
+    "pct": 100.0
+  },
+  "scores": {
+    "I1_super_omega_v2": 88.02,
+    "I2_omega_intelligence_v2": 82.42,
+    "I3_uoie_v2": 84.6,
+    "I4_gpx_omega": 86.8,
+    "I5_saq": 87.5,
+    "MASTER_v2_1": 85.77,
+    "tier": "Certified Advanced"
+  },
+  "weights": {
+    "v2.1": {
+      "I1": 0.15,
+      "I2": 0.2,
+      "I3": 0.2,
+      "I4": 0.3,
+      "I5": 0.15
+    }
+  },
+  "artifacts": {
+    "pytest_output": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/pytest_output.txt",
+    "i1_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/i1_breakdown.txt",
+    "i2_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/i2_breakdown.txt",
+    "i3_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/i3_breakdown.txt",
+    "i4_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/i4_breakdown.txt",
+    "i5_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/i5_breakdown.txt",
+    "log": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161636/evaluation.log"
+  },
+  "receipt_hash": "ba45b0f3bfda096522bcde4e07634a836a601ef0c0a292fad908b30b3d673c65"
+}

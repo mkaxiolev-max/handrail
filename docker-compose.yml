@@ -271,3 +271,24 @@ services:
 
 volumes:
   pgdata:
+
+  omega_logos:
+    build:
+      context: .
+      dockerfile: services/omega_logos/Dockerfile
+    image: ns/omega_logos:latest
+    container_name: ns_omega_logos
+    restart: unless-stopped
+    ports:
+      - "9010:9010"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ALEXANDRIA=/alexandria
+    volumes:
+      - ${ALEXANDRIA:-/Volumes/NSExternal/ALEXANDRIA}:/alexandria
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:9010/api/v1/omega/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+

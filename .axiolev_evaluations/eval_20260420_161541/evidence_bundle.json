@@ -1,0 +1,62 @@
+{
+  "run_id": "eval_20260420_161541",
+  "timestamp": "2026-04-20T23:16:33.599911Z",
+  "repo": {
+    "path": "/Users/axiolevns/axiolev_runtime",
+    "head": "a004549f15873704eaa5150faf263463dbebd56b",
+    "branch": "axiolev-v2.1-integration",
+    "dirty_files": 1
+  },
+  "environment": {
+    "alexandria": {
+      "path": "/Volumes/NSExternal/ALEXANDRIA",
+      "entries": 100406,
+      "size": "64G",
+      "attestation": "structured"
+    },
+    "docker": {
+      "socket": "unix:///var/run/docker.sock",
+      "services_running": 16,
+      "services_healthy": 16
+    },
+    "python": "Python 3.14.2"
+  },
+  "tests": {
+    "passed": 174,
+    "failed": 0,
+    "total": 174
+  },
+  "invariants": {
+    "count": 10,
+    "present": 10,
+    "pct": 100.0
+  },
+  "scores": {
+    "I1_super_omega_v2": 88.02,
+    "I2_omega_intelligence_v2": 82.42,
+    "I3_uoie_v2": 84.6,
+    "I4_gpx_omega": 86.8,
+    "I5_saq": 87.5,
+    "MASTER_v2_1": 85.77,
+    "tier": "Certified Advanced"
+  },
+  "weights": {
+    "v2.1": {
+      "I1": 0.15,
+      "I2": 0.2,
+      "I3": 0.2,
+      "I4": 0.3,
+      "I5": 0.15
+    }
+  },
+  "artifacts": {
+    "pytest_output": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/pytest_output.txt",
+    "i1_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/i1_breakdown.txt",
+    "i2_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/i2_breakdown.txt",
+    "i3_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/i3_breakdown.txt",
+    "i4_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/i4_breakdown.txt",
+    "i5_breakdown": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/i5_breakdown.txt",
+    "log": "/Users/axiolevns/axiolev_runtime/.axiolev_evaluations/eval_20260420_161541/evaluation.log"
+  },
+  "receipt_hash": "38687c67e176a5777bd77c05aaef625e4ee9ec2a621109405683ac8d97fb62dd"
+}

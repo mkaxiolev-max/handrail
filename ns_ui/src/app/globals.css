@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root { --ax-gold:#fbbf24; --ax-ink:#0a0a0f; }
+html,body{height:100%}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+@keyframes ax_pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+.ax-pulse{animation: ax_pulse 2.4s ease-in-out infinite}
+@keyframes ax_shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+.ax-shimmer{ background:linear-gradient(90deg,transparent,rgba(251,191,36,.15),transparent); background-size:200% 100%; animation:ax_shimmer 2.4s linear infinite }

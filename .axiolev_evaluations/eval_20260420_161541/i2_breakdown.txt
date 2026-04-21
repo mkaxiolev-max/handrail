@@ -1,0 +1,14 @@
+I2_ACC=82.85
+I2_CAL=81.45
+I2_ABS=83.55
+I2_SUB=79.95
+I2_COMPOSITE=82.42
+I2_D1 Perception=82/80/84/80/80
+I2_D2 BranchGen=78/77/75/76/75
+I2_D3 BranchRank=80/80/78/78/78
+I2_D4 RecursiveSelf=85/83/82/82/83
+I2_D5 Contradiction=88/85/88/85/85
+I2_D6 Grounding=86/82/90/84/82
+I2_D7 Abstention=82/86/95/80/80
+I2_D8 MetaAwareness=84/82/82/80/80
+I2_D9 Commitment=83/80/80/80/78
