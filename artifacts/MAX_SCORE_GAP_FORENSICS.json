@@ -1,0 +1,82 @@
+{
+  "generated": "2026-04-21T21:41Z",
+  "score_no_tests": 91.63,
+  "score_live": 92.27,
+  "score_live_nvir": 92.27,
+  "score_live_max_nvir_rate": 92.52,
+  "omega_gap_to_93": 0.73,
+  "omega_gap_to_93_after_max_safe_uplift": 0.48,
+  "nvir_rate": 0.974,
+  "nvir_rate_ceiling": 0.974,
+  "gap_by_instrument": {
+    "I1": {"score": 88.80, "weight": 0.135, "contribution": 11.988, "shortfall": -0.567, "credits": "none"},
+    "I2": {"score": 89.74, "weight": 0.185, "contribution": 16.601, "shortfall": -0.604, "credits": "nvir_applied"},
+    "I3": {"score": 89.34, "weight": 0.175, "contribution": 15.635, "shortfall": -0.641, "credits": "nvir_applied"},
+    "I4": {"score": 97.88, "weight": 0.255, "contribution": 24.959, "shortfall": 1.244, "credits": "nvir_applied_maxed"},
+    "I5": {"score": 89.70, "weight": 0.145, "contribution": 13.007, "shortfall": -0.479, "credits": "none"},
+    "I6": {"score": 95.97, "weight": 0.105, "contribution": 10.077, "shortfall": 0.312, "credits": "super_omega_empirical"}
+  },
+  "gap_conclusion": "Structural — I1/I5 have no available credits; I2/I3 credits are already maxed via NVIR rate=0.974. New Ring capability required.",
+  "uplift_levers": [
+    {
+      "lever": "NVIR rate 0.974→1.0 via larger corpus or more steps",
+      "domain": "I4/I2/I3",
+      "estimated_uplift": 0.245,
+      "confidence": "MEDIUM",
+      "cost": "2 min rerun",
+      "safe_now": true,
+      "note": "NVIR rate 0.974 is the stable ceiling for current 115-entry corpus"
+    },
+    {
+      "lever": ".gitleaksignore false positive removal",
+      "domain": "security",
+      "estimated_uplift": "security_score +5",
+      "confidence": "HIGH",
+      "cost": "done",
+      "safe_now": true
+    },
+    {
+      "lever": "Pre-commit hook (already installed)",
+      "domain": "security",
+      "estimated_uplift": "security_score already +15",
+      "confidence": "HIGH",
+      "cost": "already done",
+      "safe_now": true
+    },
+    {
+      "lever": "Scorer canonical mode field",
+      "domain": "certainty",
+      "estimated_uplift": "certainty_score +5",
+      "confidence": "HIGH",
+      "cost": "done",
+      "safe_now": true
+    },
+    {
+      "lever": "I6 sub-baseline changes without evidence",
+      "domain": "I6",
+      "estimated_uplift": "NOT_HONEST",
+      "confidence": "N/A",
+      "cost": "N/A",
+      "safe_now": false,
+      "note": "Would require fabricating evidence"
+    },
+    {
+      "lever": "I2/I3 baseline increase on top of NVIR credits",
+      "domain": "I2/I3",
+      "estimated_uplift": "NOT_HONEST",
+      "confidence": "N/A",
+      "cost": "N/A",
+      "safe_now": false,
+      "note": "Double-counts with NVIR credit formula"
+    },
+    {
+      "lever": "I1/I5 baseline increase",
+      "domain": "I1/I5",
+      "estimated_uplift": "+0.135 or +0.145 per pt",
+      "confidence": "LOW",
+      "cost": "weeks of new Ring work",
+      "safe_now": false,
+      "note": "Requires genuine new capability"
+    }
+  ]
+}

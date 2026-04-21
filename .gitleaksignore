@@ -1,0 +1,9 @@
+# NS∞ gitleaks ignore — false positives only. Real findings must still be rotated.
+# AXIOLEV Holdings LLC © 2026
+
+# services/handrail-adapter-macos/tests/test_clipboard.py
+# RuleID: stripe-access-token
+# Reason: FALSE POSITIVE — test uses fake value "whsec_abc123XYZ==" to verify
+#         Dignity Guard clipboard reader strips secrets. Not a real Stripe token.
+# sha256: not computed — annotate by file path
+services/handrail-adapter-macos/tests/test_clipboard.py:stripe-access-token

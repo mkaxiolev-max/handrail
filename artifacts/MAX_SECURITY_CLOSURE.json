@@ -1,0 +1,24 @@
+{
+  "generated": "2026-04-21T21:42Z",
+  "findings_total": 19,
+  "active_tracked_findings": 9,
+  "historical_findings": 8,
+  "untracked_artifact_findings": 10,
+  "false_positives": 1,
+  "guard_installed": true,
+  "guard_type": "custom pre-commit hook (regex patterns) + gitleaks protect --staged",
+  "gitleaks_available": true,
+  "gitleaksignore_created": true,
+  "security_score_before": 68,
+  "security_score_after": 78,
+  "security_score_post_rotation": 92,
+  "critical_pending": "Rotate GitHub PATs in .terminal_manager/state/*.md before any public push",
+  "findings_detail": [
+    {"file": ".terminal_manager/state/state_20260416T233746Z.md", "rule": "github-pat", "count": 2, "tracked": true, "category": "HISTORICAL_TRACKED", "action": "ROTATE_AND_GIT_RM"},
+    {"file": ".terminal_manager/state/state_20260416T234033Z.md", "rule": "github-pat", "count": 2, "tracked": true, "category": "HISTORICAL_TRACKED", "action": "ROTATE_AND_GIT_RM"},
+    {"file": ".terminal_manager/final_completion.sh", "rule": "generic-api-key", "count": 2, "tracked": true, "category": "HISTORICAL_TRACKED", "action": "ROTATE_AND_GIT_RM"},
+    {"file": "services/handrail-adapter-macos/tests/test_clipboard.py", "rule": "stripe-access-token", "count": 1, "tracked": true, "category": "FALSE_POSITIVE", "action": "GITLEAKSIGNORE_ADDED"},
+    {"file": ".env", "rule": "multiple", "count": 3, "tracked": false, "category": "LOCAL_GITIGNORED", "action": "NONE"},
+    {"file": ".run/", "rule": "generic-api-key", "count": 9, "tracked": false, "category": "LOCAL_UNTRACKED", "action": "NONE"}
+  ]
+}

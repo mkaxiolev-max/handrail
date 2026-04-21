@@ -1,0 +1,88 @@
+{
+  "generated": "2026-04-21T21:43Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "current (post-commit, see git log)",
+
+  "scores": {
+    "certified_v31": 91.63,
+    "best_live_v31": 92.27,
+    "architecture_score": 91,
+    "stress_score": 100,
+    "governance_score": 96,
+    "execution_score": 94,
+    "memory_score": 90,
+    "ui_score": 88,
+    "security_score": 78,
+    "omega_score": 95,
+    "certainty_score": 90,
+    "composite_score": 91
+  },
+
+  "instruments": {
+    "I1": 88.80,
+    "I2": 89.74,
+    "I3": 89.34,
+    "I4": 97.88,
+    "I5": 89.70,
+    "I6": 95.97
+  },
+
+  "nvir": {
+    "rate": 0.974,
+    "credits": {"I4": 8.48, "I2": 5.936, "I3": 4.24},
+    "ttl_seconds": 3600,
+    "refresh_command": "python3 -m services.nvir.live_loop"
+  },
+
+  "exact_gap_to_93": 0.73,
+  "exact_gap_sources": {
+    "I1_shortfall": 0.567,
+    "I2_shortfall": 0.604,
+    "I3_shortfall": 0.641,
+    "I4_over": -1.244,
+    "I5_shortfall": 0.479,
+    "I6_over": -0.312,
+    "net_gap": 0.733,
+    "explanation": "I4 and I6 over-contribute; I1/I2/I3/I5 all below 93.0 target with no available grounded uplifts"
+  },
+  "max_safe_uplift_available": 0.245,
+  "max_reachable_score_this_pass": 92.52,
+  "structural_gap": 0.48,
+
+  "bands": {
+    "omega_approaching": {"threshold": 90.0, "cleared": true},
+    "omega_certified": {"threshold": 93.0, "cleared": false, "gap_live": 0.73, "gap_certified": 1.37},
+    "omega_full": {"threshold": 96.0, "cleared": false}
+  },
+
+  "certification_tier": "OMEGA-APPROACHING",
+  "ui_label": "Founder Habitat Strong",
+  "boot_ready": true,
+  "production_hardened": false,
+  "remote_synced": false,
+
+  "public_number": "MASTER v3.1 = 91.63 (Omega-Approaching, conservative)",
+  "internal_number": "MASTER v3.1 = 92.27 live (Omega-Approaching, 0.73 from Omega-Certified)",
+  "canonical_command": "python3 tools/scoring/master_v31.py",
+  "conservative_command": "python3 tools/scoring/master_v31.py --no-tests",
+
+  "top_5_risks": [
+    "GitHub PATs in tracked .terminal_manager/state/*.md — rotate before any public push",
+    "Remote push not configured — software sealed locally; needs SSH key or PAT",
+    "Ring 5 blocked — Stripe live keys, production domain, legal entity (AXIOLEV Holdings LLC)",
+    "NVIR TTL expiry — score decays ~3.4 pts if NVIR not refreshed within 60 min",
+    "Score gap 0.73 pts to Omega-Certified — structural, requires new I1/I5 capability"
+  ],
+
+  "one_next_action": "Rotate the GitHub PATs referenced in .terminal_manager/state/*.md at github.com/settings/tokens, then git rm those files, commit, and push branch to complete the remote seal",
+  "exact_next_command": "git rm .terminal_manager/state/state_20260416T233746Z.md .terminal_manager/state/state_20260416T234033Z.md .terminal_manager/final_completion.sh && git commit -m 'security: remove PAT-containing historical state files' && git push \"https://mkaxiolev-max:${GITHUB_TOKEN}@github.com/mkaxiolev-max/handrail.git\" integration/max-omega-20260421-191635 --tags",
+
+  "what_was_applied_this_pass": [
+    "NVIR refreshed (rate=0.974 confirmed stable ceiling)",
+    "Scorer canonical mode field added (canonical.score/mode/nvir_active/nvir_rate)",
+    ".gitleaksignore created (test_clipboard.py false positive suppressed)",
+    "Pre-commit hook confirmed present (security score corrected to 78)",
+    "Gap forensics: exact 0.733 gap decomposed per instrument",
+    "Full open items register: 11 closed, 3 bounded, 1 external, 1 deferred"
+  ]
+}

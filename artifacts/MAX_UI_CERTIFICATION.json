@@ -1,0 +1,32 @@
+{
+  "generated": "2026-04-21T21:42Z",
+  "ui_score": 88,
+  "ui_label": "Founder Habitat Strong",
+  "routes": {
+    "/": {"http": 307, "target": "/home"},
+    "/home": {"http": 200},
+    "/scoring": {"http": 200},
+    "/omega_logos": {"http": 200},
+    "/autonomy": {"http": 200},
+    "/ring5": {"http": 200}
+  },
+  "criteria": {
+    "build_clean": true,
+    "route_coherence": true,
+    "root_redirects_correctly": true,
+    "primary_pages_live": true,
+    "governance_visible": true,
+    "memory_ledger_visible": true,
+    "execution_visible": true,
+    "omega_visible": true,
+    "founder_home_useful": true,
+    "blocked_state_visible": true,
+    "no_fake_green": true
+  },
+  "evidence": "6/6 primary routes HTTP 200; src/app/ canonical; tsconfig clean; standalone production build",
+  "blockers_to_mind_blow": [
+    "Live data interaction not user-tested (Alexandria memory feed, CPS execution results, real-time score)",
+    "Voice/interactive session not verifiable from curl",
+    "MIND BLOW requires confirmed live data pipeline, not just structural wiring"
+  ]
+}

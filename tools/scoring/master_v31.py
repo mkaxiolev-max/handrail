@@ -122,6 +122,12 @@ def report(run_tests: bool = True) -> Dict:
     i6 = i6_composite(subs)
     instr_scores = dict(BASELINES); instr_scores["I6"] = i6
     nvir_rate, nvir_credits = _apply_nvir_live(instr_scores)
+    v31 = master(instr_scores, WEIGHTS_V31)
+    nvir_fresh = nvir_rate is not None
+    # Canonical mode: live (tests + fresh NVIR) is primary; no-tests is conservative fallback.
+    scoring_mode = "live" if run_tests else "no-tests"
+    if not nvir_fresh:
+        scoring_mode += "+nvir-stale"
     return {
         "tests": cat_results,
         "i6_subs": subs,
@@ -130,7 +136,14 @@ def report(run_tests: bool = True) -> Dict:
         "master": {
             "v2_1": master(instr_scores, WEIGHTS_V21),  # I6 excluded via renorm
             "v3_0": master(instr_scores, WEIGHTS_V30),
-            "v3_1": master(instr_scores, WEIGHTS_V31),
+            "v3_1": v31,
+        },
+        "canonical": {
+            "score": v31,
+            "mode": scoring_mode,
+            "nvir_active": nvir_fresh,
+            "nvir_rate": nvir_rate,
+            "note": "Run without --no-tests with fresh NVIR for canonical live score.",
         },
         "nvir_live": {"rate": nvir_rate, "credits": nvir_credits},
         "bands": {
