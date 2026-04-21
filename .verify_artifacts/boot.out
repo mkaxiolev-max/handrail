@@ -1,0 +1,73 @@
+2026-04-21T03:20:53Z [INFO] ns_verify.sh v1.0.0 phase=boot
+
+━━━ PHASE 2 — BOOT (docker compose up + health gates) ━━━
+2026-04-21T03:20:53Z [INFO] docker compose -f /Users/axiolevns/axiolev_runtime/docker-compose.yml up -d
+time="2026-04-20T20:20:53-07:00" level=warning msg="/Users/axiolevns/axiolev_runtime/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container axiolev_runtime-continuum-1  Running
+ Container axiolev_runtime-postgres-1  Running
+ Container axiolev_runtime-omega-1  Running
+ Container axiolev_runtime-model_router-1  Running
+ Container axiolev_runtime-redis-1  Running
+ Container axiolev_runtime-alexandria-1  Running
+ Container axiolev_runtime-handrail-1  Running
+ Container axiolev_runtime-ns_core-1  Running
+ Container axiolev_runtime-canon-1  Running
+ Container axiolev_runtime-violet-1  Running
+ Container axiolev_runtime-ns_api-1  Running
+ Container axiolev_runtime-ns_ui-1  Running
+ Container axiolev_runtime-integrity-1  Running
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-redis-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Waiting
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-redis-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-ns_core-1  Waiting
+ Container axiolev_runtime-handrail-1  Waiting
+ Container axiolev_runtime-continuum-1  Waiting
+ Container axiolev_runtime-omega-1  Waiting
+ Container axiolev_runtime-postgres-1  Healthy
+ Container axiolev_runtime-continuum-1  Healthy
+ Container axiolev_runtime-omega-1  Healthy
+ Container axiolev_runtime-ns_core-1  Healthy
+ Container axiolev_runtime-handrail-1  Healthy
+ Container axiolev_runtime-ns_api-1  Waiting
+ Container axiolev_runtime-ns_api-1  Healthy
+2026-04-21T03:20:54Z [INFO] awaiting health on HTTP services (max 120s each)
+STATUS: PASS component=service:postgres reason=container up (port 5432 internal)
+2026-04-21T03:20:54Z [PASS] service:postgres — container up (port 5432 internal)
+STATUS: PASS component=service:redis reason=container up (port 6379 internal)
+2026-04-21T03:20:55Z [PASS] service:redis — container up (port 6379 internal)
+STATUS: PASS component=service:ns_core reason=healthz=ok port=9000 t=0s
+2026-04-21T03:20:55Z [PASS] service:ns_core — healthz=ok port=9000 t=0s
+STATUS: PASS component=service:alexandria reason=healthz=ok port=9001 t=0s
+2026-04-21T03:20:55Z [PASS] service:alexandria — healthz=ok port=9001 t=0s
+STATUS: PASS component=service:model_router reason=healthz=ok port=9002 t=0s
+2026-04-21T03:20:55Z [PASS] service:model_router — healthz=ok port=9002 t=0s
+STATUS: PASS component=service:violet reason=healthz=ok port=9003 t=0s
+2026-04-21T03:20:55Z [PASS] service:violet — healthz=ok port=9003 t=0s
+STATUS: PASS component=service:canon reason=healthz=ok port=9004 t=0s
+2026-04-21T03:20:55Z [PASS] service:canon — healthz=ok port=9004 t=0s
+STATUS: PASS component=service:integrity reason=healthz=ok port=9005 t=0s
+2026-04-21T03:20:55Z [PASS] service:integrity — healthz=ok port=9005 t=0s
+STATUS: PASS component=service:omega reason=healthz=ok port=9010 t=0s
+2026-04-21T03:20:55Z [PASS] service:omega — healthz=ok port=9010 t=0s
+STATUS: PASS component=service:handrail reason=healthz=ok port=8011 t=0s
+2026-04-21T03:20:55Z [PASS] service:handrail — healthz=ok port=8011 t=0s
+STATUS: PASS component=service:continuum reason=healthz=ok port=8788 t=0s
+2026-04-21T03:20:55Z [PASS] service:continuum — healthz=ok port=8788 t=0s
+STATUS: PASS component=service:ns_api reason=healthz=ok port=9011 t=0s
+2026-04-21T03:20:55Z [PASS] service:ns_api — healthz=ok port=9011 t=0s
+RECEIPT: phase=boot hash=3270dfbfdc436d5427f1215960e6a0e16020ec99864d225bb553b82da11f2dbb
+2026-04-21T03:20:55Z [PASS] ALL 11 SERVICES HEALTHY — organism LIVE

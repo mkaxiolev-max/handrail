@@ -1,0 +1,37 @@
+2026-04-21T03:13:55Z [INFO] ns_verify.sh v1.0.0 phase=preflight
+
+━━━ PHASE 1 — PREFLIGHT ━━━
+STATUS: PASS component=tool:docker reason=/usr/local/bin/docker
+2026-04-21T03:13:55Z [PASS] tool:docker — /usr/local/bin/docker
+STATUS: PASS component=tool:curl reason=/usr/bin/curl
+2026-04-21T03:13:55Z [PASS] tool:curl — /usr/bin/curl
+STATUS: PASS component=tool:python3 reason=/opt/homebrew/bin/python3
+2026-04-21T03:13:55Z [PASS] tool:python3 — /opt/homebrew/bin/python3
+STATUS: PASS component=tool:git reason=/usr/bin/git
+2026-04-21T03:13:55Z [PASS] tool:git — /usr/bin/git
+STATUS: PASS component=tool:shasum reason=/usr/bin/shasum
+2026-04-21T03:13:55Z [PASS] tool:shasum — /usr/bin/shasum
+STATUS: PASS component=tool:jq reason=/opt/homebrew/bin/jq
+2026-04-21T03:13:55Z [PASS] tool:jq — /opt/homebrew/bin/jq
+STATUS: INFO component=bash reason=3.2.57(1)-release
+2026-04-21T03:13:55Z [INFO] bash — 3.2.57(1)-release
+STATUS: PASS component=NS_HOME reason=/Users/axiolevns/axiolev_runtime
+2026-04-21T03:13:55Z [PASS] NS_HOME — /Users/axiolevns/axiolev_runtime
+STATUS: INFO component=repo reason=branch=axiolev-v2.1-integration head=a004549f dirty_files=3
+2026-04-21T03:13:56Z [INFO] repo — branch=axiolev-v2.1-integration head=a004549f dirty_files=3
+STATUS: WARN component=repo reason=uncommitted changes (3 files)
+2026-04-21T03:13:56Z [WARN] repo — uncommitted changes (3 files)
+FIX: cd /Users/axiolevns/axiolev_runtime && git status
+STATUS: PASS component=alexandria_ssd reason=mounted at /Volumes/NSExternal/ALEXANDRIA (free=3748869MB)
+2026-04-21T03:13:56Z [PASS] alexandria_ssd — mounted at /Volumes/NSExternal/ALEXANDRIA (free=3748869MB)
+STATUS: PASS component=docker_socket reason=unix:///Users/axiolevns/.docker/run/docker.sock
+2026-04-21T03:13:56Z [PASS] docker_socket — unix:///Users/axiolevns/.docker/run/docker.sock
+STATUS: PASS component=docker_daemon reason=version=29.1.3
+2026-04-21T03:13:56Z [PASS] docker_daemon — version=29.1.3
+STATUS: PASS component=env_vars reason=all required vars present
+2026-04-21T03:13:56Z [PASS] env_vars — all required vars present
+STATUS: PASS component=compose_file reason=/Users/axiolevns/axiolev_runtime/docker-compose.yml
+2026-04-21T03:13:56Z [PASS] compose_file — /Users/axiolevns/axiolev_runtime/docker-compose.yml
+STATUS: PASS component=port_conflicts reason=no pre-existing listeners
+2026-04-21T03:13:56Z [PASS] port_conflicts — no pre-existing listeners
+RECEIPT: phase=preflight hash=8546aaaa03af0c07d84ac79247157714b32e1e17453926d83dda04753c3fc25b

@@ -258,11 +258,12 @@ services:
       NEXT_PUBLIC_NS_API_URL: http://ns_api:9011
       NEXT_PUBLIC_NS_URL: http://ns_core:9000
       NEXT_PUBLIC_HANDRAIL_URL: http://handrail:8011
+      HOSTNAME: "0.0.0.0"
     depends_on:
       ns_api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3001"]
+      test: ["CMD-SHELL", "wget -qO- http://$(hostname -i | awk '{print $1}'):3001"]
       interval: 15s
       timeout: 5s
       retries: 3

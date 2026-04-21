@@ -1,0 +1,82 @@
+2026-04-21T03:33:52Z [INFO] ns_verify.sh v1.0.0 phase=verify
+
+━━━ PHASE 3 — VERIFY (features + invariants + endpoints) ━━━
+2026-04-21T03:33:52Z [INFO] 3.1 endpoint battery
+STATUS: PASS component=endpoint:ns_core/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_core/healthz — GET 200
+STATUS: PASS component=endpoint:ns_core/api/organism/overview reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_core/api/organism/overview — GET 200
+STATUS: PASS component=endpoint:ns_core/canon/invariants reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_core/canon/invariants — GET 200
+STATUS: PASS component=endpoint:ns_core/violet/status reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_core/violet/status — GET 200
+STATUS: PASS component=endpoint:ns_core/hic/gates reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_core/hic/gates — GET 200
+STATUS: PASS component=endpoint:alexandria/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:alexandria/healthz — GET 200
+STATUS: PASS component=endpoint:alexandria/atoms reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:alexandria/atoms — GET 200
+STATUS: PASS component=endpoint:model_router/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:model_router/healthz — GET 200
+STATUS: PASS component=endpoint:model_router/providers reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:model_router/providers — GET 200
+STATUS: PASS component=endpoint:violet/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:violet/healthz — GET 200
+STATUS: PASS component=endpoint:canon/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:canon/healthz — GET 200
+STATUS: PASS component=endpoint:integrity/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:integrity/healthz — GET 200
+STATUS: PASS component=endpoint:integrity/integrity/chain reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:integrity/integrity/chain — GET 200
+STATUS: PASS component=endpoint:integrity/integrity/verify reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:integrity/integrity/verify — GET 200
+STATUS: PASS component=endpoint:omega/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:omega/healthz — GET 200
+STATUS: PASS component=endpoint:omega/omega/runs reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:omega/omega/runs — GET 200
+STATUS: PASS component=endpoint:handrail/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:handrail/healthz — GET 200
+STATUS: PASS component=endpoint:handrail/yubikey/status reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:handrail/yubikey/status — GET 200
+STATUS: PASS component=endpoint:continuum/healthz reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:continuum/healthz — GET 200
+STATUS: PASS component=endpoint:continuum/state reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:continuum/state — GET 200
+STATUS: PASS component=endpoint:ns_api/health reason=GET 200
+2026-04-21T03:33:52Z [PASS] endpoint:ns_api/health — GET 200
+2026-04-21T03:33:52Z [INFO] 3.2 constitutional invariants (10)
+STATUS: PASS component=invariants reason=all 10 present and enforced=True
+2026-04-21T03:33:52Z [PASS] invariants — all 10 present and enforced=True
+2026-04-21T03:33:52Z [INFO] 3.3 append-only ledger write→read→tamper-check
+STATUS: PASS component=ledger_write reason=id=4c1f23a4-f889-45c8-be22-2ce77a052065 status=appended
+2026-04-21T03:33:52Z [PASS] ledger_write — id=4c1f23a4-f889-45c8-be22-2ce77a052065 status=appended
+STATUS: PASS component=ledger_readback reason=id 4c1f23a4-f889-45c8-be22-2ce77a052065 found in chain
+2026-04-21T03:33:52Z [PASS] ledger_readback — id 4c1f23a4-f889-45c8-be22-2ce77a052065 found in chain
+STATUS: PASS component=ledger_append_only reason=DELETE refused with 404 (append-only enforced)
+2026-04-21T03:33:52Z [PASS] ledger_append_only — DELETE refused with 404 (append-only enforced)
+2026-04-21T03:33:52Z [INFO] 3.4 receipt chain sha-256 linkage
+STATUS: PASS component=chain_integrity reason=sha-256 chain valid chain_length=54
+2026-04-21T03:33:52Z [PASS] chain_integrity — sha-256 chain valid chain_length=54
+2026-04-21T03:33:52Z [INFO] 3.5 canon single-write
+STATUS: PASS component=canon_single_write reason=unauthorized promote correctly rejected (ok=false)
+2026-04-21T03:33:53Z [PASS] canon_single_write — unauthorized promote correctly rejected (ok=false)
+2026-04-21T03:33:53Z [INFO] 3.6 Dignity Hamiltonian veto (NE3 — secret-in-args trigger)
+STATUS: PASS component=dignity_veto reason=NE3 triggered DIGNITY_KERNEL_VIOLATION (secret-in-args blocked)
+2026-04-21T03:33:53Z [PASS] dignity_veto — NE3 triggered DIGNITY_KERNEL_VIOLATION (secret-in-args blocked)
+2026-04-21T03:33:53Z [INFO] 3.7 model router /providers (no live inference)
+STATUS: PASS component=router:anthropic reason=registered in /providers
+2026-04-21T03:33:53Z [PASS] router:anthropic — registered in /providers
+STATUS: PASS component=router:openai reason=registered in /providers
+2026-04-21T03:33:53Z [PASS] router:openai — registered in /providers
+STATUS: PASS component=router:gemini reason=registered in /providers
+2026-04-21T03:33:53Z [PASS] router:gemini — registered in /providers
+2026-04-21T03:33:53Z [INFO] 3.8 Violet rendering separation (ns_core proxy)
+STATUS: PASS component=violet_render reason=status mode=founder_ready interface=violet (projection-only confirmed)
+2026-04-21T03:33:53Z [PASS] violet_render — status mode=founder_ready interface=violet (projection-only confirmed)
+2026-04-21T03:33:53Z [INFO] 3.9 state reconstruction (autopoiesis.state)
+STATUS: PASS component=state_reconstruct reason=autopoiesis tracking 10 programs
+2026-04-21T03:33:53Z [PASS] state_reconstruct — autopoiesis tracking 10 programs
+2026-04-21T03:33:53Z [INFO] 3.10 YubiKey quorum (Ring 5 gate — handrail)
+STATUS: WARN component=yubikey_quorum reason=enrolled_count=0 — Ring 5 Gate G4 (slot_2 procurement + re-enrollment pending)
+2026-04-21T03:33:53Z [WARN] yubikey_quorum — enrolled_count=0 — Ring 5 Gate G4 (slot_2 procurement + re-enrollment pending)
+RECEIPT: phase=verify hash=da063477461a8049fe921c34eec6b7bce2ad86a4ab1af1fdeca53a4da96374c1

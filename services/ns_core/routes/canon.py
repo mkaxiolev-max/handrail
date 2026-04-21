@@ -90,18 +90,20 @@ async def canon_pending():
 
 @router.get("/canon/invariants")
 async def canon_invariants():
+    invariant_names = [
+        "Dignity Kernel read-only",
+        "Violet is projection only",
+        "Alexandria append-only",
+        "LLMs never define truth",
+        "Ambiguity fails closed",
+        "Execution requires simulation",
+        "Execution requires proof receipt",
+        "Mission graph bypass forbidden",
+        "Canon mutation requires CanonCommit",
+        "Founder signature required for G5",
+    ]
     invariants = [
-        {"id": f"INV-{i+1}", "name": name} for i, name in enumerate([
-            "Dignity Kernel read-only",
-            "Violet is projection only",
-            "Alexandria append-only",
-            "LLMs never define truth",
-            "Ambiguity fails closed",
-            "Execution requires simulation",
-            "Execution requires proof receipt",
-            "Mission graph bypass forbidden",
-            "Canon mutation requires CanonCommit",
-            "Founder signature required for G5",
-        ])
+        {"id": f"INV-{i+1}", "name": name, "enforced": True, "ring": "R1-R4"}
+        for i, name in enumerate(invariant_names)
     ]
     return _rb(True, 0, "canon.invariants", artifacts=invariants)
