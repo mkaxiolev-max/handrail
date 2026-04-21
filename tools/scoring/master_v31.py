@@ -6,7 +6,7 @@ Retains v2.1 weights for dual reporting.
 """
 from __future__ import annotations
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 import json, os, subprocess, sys, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -101,11 +101,27 @@ def master(instruments: Dict[str, float], weights: Dict[str, float]) -> float:
     w_total = sum(weights[k] for k in shared) or 1.0
     return round(sum(shared[k] * weights[k] / w_total for k in shared), 2)
 
+def _apply_nvir_live(instr_scores: Dict[str, float]) -> Tuple[Optional[float], Dict[str, float]]:
+    """Load INS-02 live result and apply credits in-place. Returns (rate, credits)."""
+    try:
+        sys.path.insert(0, str(ROOT))
+        from services.nvir.live_loop import load_live_credits
+        rate, credits = load_live_credits()
+        if rate is not None:
+            for k, delta in credits.items():
+                if k in instr_scores:
+                    instr_scores[k] = min(100.0, instr_scores[k] + delta)
+        return rate, credits
+    except Exception:
+        return None, {}
+
+
 def report(run_tests: bool = True) -> Dict:
     cat_results = run_super_omega() if run_tests else {}
     subs = compute_i6_subs(cat_results)
     i6 = i6_composite(subs)
     instr_scores = dict(BASELINES); instr_scores["I6"] = i6
+    nvir_rate, nvir_credits = _apply_nvir_live(instr_scores)
     return {
         "tests": cat_results,
         "i6_subs": subs,
@@ -116,6 +132,7 @@ def report(run_tests: bool = True) -> Dict:
             "v3_0": master(instr_scores, WEIGHTS_V30),
             "v3_1": master(instr_scores, WEIGHTS_V31),
         },
+        "nvir_live": {"rate": nvir_rate, "credits": nvir_credits},
         "bands": {
             "omega_approaching": 90.0,
             "omega_certified":   93.0,
