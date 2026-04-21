@@ -269,9 +269,6 @@ services:
       retries: 3
       start_period: 45s
 
-volumes:
-  pgdata:
-
   omega_logos:
     build:
       context: .
@@ -291,4 +288,7 @@ volumes:
       interval: 10s
       timeout: 5s
       retries: 6
+
+volumes:
+  pgdata:
 
