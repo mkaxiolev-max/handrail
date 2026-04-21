@@ -1,0 +1,55 @@
+{
+  "generated": "2026-04-21T21:03Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "fc6a8c86",
+  "master_score": {
+    "v2_1": 91.95,
+    "v3_0": 91.68,
+    "v3_1": 91.63
+  },
+  "instruments": {
+    "I1": 88.80,
+    "I2": 89.74,
+    "I3": 89.34,
+    "I4": 97.88,
+    "I5": 89.70,
+    "I6": 89.95
+  },
+  "i6_subs": {
+    "C1": 89.0,
+    "C2": 96.0,
+    "C3": 88.0,
+    "C4": 83.0,
+    "C5": 93.0
+  },
+  "nvir_live": {
+    "rate": 0.974,
+    "credits": {"I4": 8.48, "I2": 5.936, "I3": 4.24}
+  },
+  "bands": {
+    "omega_approaching": {"threshold": 90.0, "cleared": true},
+    "omega_certified": {"threshold": 93.0, "cleared": false, "gap": 1.37},
+    "omega_full": {"threshold": 96.0, "cleared": false, "gap": 4.37}
+  },
+  "certification_label": "OMEGA-APPROACHING",
+  "tests": {
+    "total_passed": 1015,
+    "total_failed": 1,
+    "known_failures": ["test_state_api_9090_reachable"],
+    "stress_run_78_of_78": true,
+    "super_omega_14_of_14": true,
+    "witness_14_of_14": true,
+    "nvir_16_of_16": true
+  },
+  "live_services": 14,
+  "ring_status": {
+    "ring1": "COMPLETE",
+    "ring2": "COMPLETE",
+    "ring3": "COMPLETE",
+    "ring4": "COMPLETE",
+    "ring5": "BLOCKED"
+  },
+  "never_events_triggered": false,
+  "alexandria_corrupted": false,
+  "overall_verdict": "CERTIFIED: OMEGA-APPROACHING — All Rings 1-4 operational"
+}

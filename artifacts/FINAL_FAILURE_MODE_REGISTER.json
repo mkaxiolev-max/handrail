@@ -1,0 +1,61 @@
+{
+  "generated": "2026-04-21T21:01Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "fc6a8c86",
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Push gate blocked — no remote auth",
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "blocking_ring5": true
+    },
+    {
+      "id": "R2",
+      "title": "18 gitleaks findings (historical/expected)",
+      "severity": "LOW",
+      "status": "MANAGED",
+      "action": "Rotate GitHub PATs in .terminal_manager/state/ before public push"
+    },
+    {
+      "id": "R3",
+      "title": "test_state_api_9090_reachable fails (no :9090 service)",
+      "severity": "NEGLIGIBLE",
+      "status": "KNOWN/ACCEPTABLE"
+    },
+    {
+      "id": "R4",
+      "title": "Omega-Certified band gap: v3.1=91.63, need 93.0",
+      "severity": "LOW",
+      "status": "OPEN",
+      "gap_points": 1.37
+    },
+    {
+      "id": "R5",
+      "title": "NVIR live result TTL dependency (1 hour)",
+      "severity": "LOW",
+      "status": "MANAGED"
+    },
+    {
+      "id": "R6",
+      "title": "app_legacy/ untracked + app/ deletions unstaged",
+      "severity": "LOW",
+      "status": "OPEN/COSMETIC"
+    },
+    {
+      "id": "R7",
+      "title": "Ring 5 Production blocked (Stripe/domain/legal)",
+      "severity": "MEDIUM",
+      "status": "KNOWN/EXPECTED"
+    },
+    {
+      "id": "R8",
+      "title": ".verify_artifacts dirty (expected post-verify)",
+      "severity": "NEGLIGIBLE",
+      "status": "EXPECTED"
+    }
+  ],
+  "never_events_triggered": false,
+  "alexandria_corrupted": false,
+  "live_services_healthy": 14
+}

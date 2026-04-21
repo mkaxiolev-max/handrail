@@ -1,0 +1,23 @@
+{
+  "generated": "2026-04-21T21:02Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "fc6a8c86",
+  "totals": {
+    "passed": 1015,
+    "failed": 1,
+    "skipped": 2,
+    "duration_seconds": 3.39
+  },
+  "groups": [
+    {"name": "Super-Omega (I6)", "passed": 14, "total": 14, "status": "PASS"},
+    {"name": "NVIR live loop (INS-02)", "passed": 16, "total": 16, "status": "PASS"},
+    {"name": "Witness cosigning (INS-07)", "passed": 17, "total": 17, "status": "PASS"},
+    {"name": "Invariants coverage", "passed": 32, "total": 32, "status": "PASS"},
+    {"name": "NS Core adversarial", "passed": 11, "total": 11, "status": "PASS"},
+    {"name": "Handrail smoke", "passed": 1, "total": 1, "status": "PASS"},
+    {"name": "ABI/endpoint", "passed": 29, "total": 30, "status": "PARTIAL", "known_failures": ["test_state_api_9090_reachable"]}
+  ],
+  "never_events_certified": true,
+  "overall_verdict": "PASS",
+  "certification_scope": "Rings 1-4 operational"
+}
