@@ -1,0 +1,25 @@
+{
+  "generated": "2026-04-22T02:38Z",
+  "safety_tag": "secret-closure-pre-rewrite-20260422T023701Z",
+  "rewrite_needed": true,
+  "rewrite_level": "recommended",
+  "triggers": [
+    {"commit": "67ef55f8", "file": ".terminal_manager/state/state_20260416T233746Z.md", "rule": "github-pat", "severity": "HIGH"},
+    {"commit": "67ef55f8", "file": ".terminal_manager/state/state_20260416T234033Z.md", "rule": "github-pat", "severity": "HIGH"},
+    {"commit": "abc43ec8", "file": ".env", "rule": "anthropic-api-key", "severity": "HIGH"},
+    {"commit": "abc43ec8", "file": ".env", "rule": "openai-api-key", "severity": "HIGH"},
+    {"commit": "abc43ec8", "file": ".env", "rule": "generic-api-key (Twilio)", "severity": "MEDIUM"},
+    {"commit": "78cf7c7c", "file": ".run/boot/*/compose_resolved.txt", "rule": "generic-api-key", "severity": "MEDIUM"}
+  ],
+  "exact_commands": [
+    "brew install git-filter-repo",
+    "git clone --mirror . ../axiolev_runtime_mirror_backup_$(date +%Y%m%d)",
+    "git filter-repo --path .env --invert-paths",
+    "git filter-repo --path .terminal_manager/state/state_20260416T233746Z.md --invert-paths",
+    "git filter-repo --path .terminal_manager/state/state_20260416T234033Z.md --invert-paths",
+    "git filter-repo --path .run/ --invert-paths"
+  ],
+  "force_push_required": true,
+  "action_required_before_rewrite": "Rotate all credentials at provider level first",
+  "rotate_providers": ["github", "anthropic", "openai", "twilio"]
+}

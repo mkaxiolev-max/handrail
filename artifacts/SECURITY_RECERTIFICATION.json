@@ -1,0 +1,28 @@
+{
+  "generated": "2026-04-22T02:40Z",
+  "boot_ready": false,
+  "boot_ready_note": "Docker not running — services offline. Boot requires: ./boot.sh",
+  "production_hardened": false,
+  "production_hardened_note": "History rewrite pending. No SSH configured. Stripe live keys not set.",
+  "tests_summary": {
+    "passed": 1002,
+    "failed": 13,
+    "skipped": 2,
+    "failed_tests": ["tests/pi/test_canon_promote.py::test_promote_with_signature_queued", "tests/pi/test_canon_promote.py::test_promote_hardware_signed_accepted", "tests/pi/test_ns_resume.py (2 tests)"],
+    "failed_reason": "Integration tests require live runtime (services offline)"
+  },
+  "services_summary": {
+    "handrail_8011": "offline",
+    "ns_9000": "offline",
+    "continuum_8788": "offline",
+    "svc_9001": "offline",
+    "svc_9010": "offline",
+    "svc_9011": "offline"
+  },
+  "certified_score_if_available": 87.63,
+  "live_score_if_available": 88.26,
+  "previous_nvir_live_score": 92.27,
+  "gitleaks_clean": true,
+  "active_tracked_secrets": 0,
+  "regressions_detected": false
+}

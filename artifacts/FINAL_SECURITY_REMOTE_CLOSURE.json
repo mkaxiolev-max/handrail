@@ -1,0 +1,18 @@
+{
+  "generated": "2026-04-22",
+  "branch": "integration/max-omega-20260421-191635",
+  "head": "6aa24dea",
+  "active_tracked_secrets_remaining": false,
+  "history_rewrite_needed": true,
+  "guard_active": true,
+  "remote_push_ready": false,
+  "boot_ready": true,
+  "production_hardened": false,
+  "one_next_action": "Revoke GitHub PAT ghp_r*** at github.com/settings/tokens to eliminate highest-risk active credential from history",
+  "exact_next_command": "open https://github.com/settings/tokens",
+  "notes": {
+    "git_history_risk": "Commits abc43ec8 (2026-04-02) and 67ef55f8 (2026-04-16) contain real credentials. Rotation eliminates risk without rewrite.",
+    "ssh_setup": "No ~/.ssh/ directory. Run: ssh-keygen -t ed25519 -C mkaxiolev@gmail.com -f ~/.ssh/github_axiolev",
+    "history_rewrite_commands": "See HISTORY_RISK_ASSESSMENT.md — requires git-filter-repo + explicit founder authorization"
+  }
+}

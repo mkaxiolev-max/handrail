@@ -1,0 +1,19 @@
+{
+  "generated": "2026-04-22T02:38Z",
+  "remote_url": "https://github.com/mkaxiolev-max/handrail.git",
+  "remote_mode": "https",
+  "ssh_auth": false,
+  "ssh_directory_exists": false,
+  "push_ready": false,
+  "push_ready_note": "SSH not configured. HTTPS push may work via Keychain PAT but unverified. PAT in history may be the stored credential — must revoke and replace.",
+  "exact_next_command": "ssh-keygen -t ed25519 -C 'mkaxiolev@gmail.com' -f ~/.ssh/github_axiolev",
+  "full_ssh_setup_sequence": [
+    "ssh-keygen -t ed25519 -C 'mkaxiolev@gmail.com' -f ~/.ssh/github_axiolev",
+    "eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/github_axiolev",
+    "pbcopy < ~/.ssh/github_axiolev.pub  # then add to github.com/settings/keys",
+    "ssh-keyscan -H github.com >> ~/.ssh/known_hosts",
+    "ssh -T git@github.com",
+    "git remote set-url origin git@github.com:mkaxiolev-max/handrail.git"
+  ],
+  "notes": "After revoking the historical PAT, a new auth method is required. SSH is preferred."
+}

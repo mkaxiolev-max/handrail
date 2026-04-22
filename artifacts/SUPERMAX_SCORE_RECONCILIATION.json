@@ -1,0 +1,19 @@
+{
+  "generated": "2026-04-22T02:40Z",
+  "certified_score": 87.63,
+  "best_live_score": 92.27,
+  "no_tests_score": 87.63,
+  "live_with_tests_score": 88.26,
+  "supermax_composite_score": 87.0,
+  "delta": 4.64,
+  "delta_explanation": "NVIR credits (~3.7) + test pass uplift (~0.63) only active when services running",
+  "live_credits_active": false,
+  "reproducible_commands": {
+    "certified": "python3 tools/scoring/master_v31.py --no-tests 2>/dev/null",
+    "live": "python3 tools/scoring/master_v31.py 2>/dev/null",
+    "best_live": "./boot.sh && sleep 60 && python3 tools/scoring/master_v31.py"
+  },
+  "public_score": "87.63",
+  "internal_score": "92.27",
+  "reason_for_delta": "NVIR loop and live API health checks only active with running services"
+}
