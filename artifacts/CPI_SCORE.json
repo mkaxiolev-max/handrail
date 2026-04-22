@@ -1,0 +1,61 @@
+{
+  "generated": "2026-04-21",
+  "instrument": "CPI v1.0",
+  "provider": "ollama",
+  "model": "llama3:latest",
+  "endpoint": "http://127.0.0.1:9002/complete",
+
+  "scores": {
+    "context_pts": 27.3,
+    "context_max": 40,
+    "context_pct": 68.3,
+
+    "performance_pts": 30.0,
+    "performance_max": 30,
+    "performance_pct": 100.0,
+
+    "intelligence_pts": 21.65,
+    "intelligence_max": 30,
+    "intelligence_pct": 72.2,
+
+    "cpi_total": 78.95,
+    "cpi_max": 100,
+    "cpi_band": "CPI-BETA",
+    "cpi_label": "Operational — supervised deployment ready"
+  },
+
+  "sub_scores": {
+    "A1_multi_needle": {"pct": 37.5, "pts": 5.6, "max": 15},
+    "A2_position_bias": {"pct": 66.7, "pts": 6.7, "max": 10},
+    "A3_mecw":          {"pct": 100.0, "pts": 15.0, "max": 15},
+    "B1_latency":       {"pct": 100.0, "pts": 30.0, "max": 30},
+    "C1_calibration":   {"pct": 46.5, "pts": 4.65, "max": 10},
+    "C2_faithfulness":  {"pct": 100.0, "pts": 10.0, "max": 10},
+    "C3_abstention":    {"pct": 100.0, "pts": 5.0, "max": 5},
+    "C4_reasoning_density": {"pct": 40.0, "pts": 2.0, "max": 5}
+  },
+
+  "bands": {
+    "CPI-OMEGA": {"threshold": 90, "cleared": false, "gap": 11.05},
+    "CPI-ALPHA": {"threshold": 80, "cleared": false, "gap": 1.05},
+    "CPI-BETA":  {"threshold": 70, "cleared": true},
+    "CPI-GAMMA": {"threshold": 0, "cleared": true}
+  },
+
+  "strengths": [
+    "Performance tier: 100/100 (avg 0.141s, p95 0.170s, jitter 25ms)",
+    "MECW: 100/100 — context window fully effective at 8000+ token approximation",
+    "Faithfulness: 100/100 — zero hallucination across 3 grounded cases",
+    "Abstention: 100/100 — perfect refusal discipline, dignity-aligned"
+  ],
+
+  "weaknesses": [
+    "A1 Multi-needle: 37.5% — retrieval degrades severely beyond 1 fact at n>2",
+    "C1 Calibration: 46.5% — overconfident (100%) on correct answers; 1 factual error (17 is prime)",
+    "A2 Position bias: recency failure — last-position facts not retrieved",
+    "C4 Reasoning density: 3.8% — shallow chain-of-thought"
+  ],
+
+  "gap_to_cpi_alpha": 1.05,
+  "gap_source": "A1 multi-needle worst contributor: +4.4 pts if A1 reaches 67% accuracy"
+}

@@ -1,0 +1,32 @@
+{
+  "tier": "B",
+  "label": "Performance",
+  "max_points": 30,
+  "provider": "ollama",
+  "model": "llama3:latest",
+
+  "B1_latency": {
+    "n_calls": 5,
+    "latencies_s": [0.166, 0.118, 0.125, 0.125, 0.170],
+    "avg_s": 0.141,
+    "p50_s": 0.125,
+    "p95_s": 0.170,
+    "jitter_ms": 25.1,
+    "ttft_proxy_ms": 140.8,
+    "tps_proxy": 71.0,
+    "tps_proxy_note": "~10 output tokens / 0.141s avg = 71.0 tps (proxy — not streaming)",
+    "scoring_band": "EXCELLENT",
+    "scoring_note": "avg 0.141s well under 0.3s threshold; full score",
+    "pts_earned": 30.0
+  },
+
+  "unknowns": {
+    "true_ttft": "UNKNOWN — requires streaming; non-streaming round-trip reported",
+    "true_tps": "UNKNOWN — requires streaming token counts from model_router",
+    "kv_cache_hit_rate": "UNKNOWN — Ollama internal implementation",
+    "gpu_energy_j": "UNKNOWN — no hardware instrumentation available"
+  },
+
+  "performance_total_pts": 30.0,
+  "performance_score_pct": 100.0
+}

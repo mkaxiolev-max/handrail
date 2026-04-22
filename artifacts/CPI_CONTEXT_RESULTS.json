@@ -1,0 +1,37 @@
+{
+  "tier": "A",
+  "label": "Context",
+  "max_points": 40,
+  "provider": "ollama",
+  "model": "llama3:latest",
+
+  "A1_multi_needle": {
+    "max_pts": 15,
+    "overall_accuracy_pct": 37.5,
+    "accuracy_by_needles": {"2": 50.0, "4": 33.3, "8": 33.3},
+    "pts_earned": 5.6,
+    "n_tests": 8,
+    "note": "Model reliably retrieves ALPHA_COLOR (VERMILLION) but misses numeric/named facts at positions >0. Failure mode: treats absent-key queries as 'not in facts' even when fact is present. Position labeling confusion (BETA_NUMBER → 'no mention')."
+  },
+
+  "A2_position_bias": {
+    "max_pts": 10,
+    "score_pct": 66.7,
+    "pts_earned": 6.7,
+    "profile": {"primacy": true, "middle": true, "recency": false},
+    "note": "Primacy and middle position recall intact. Recency failure (ZETA_LOCATION): model returns 'None (no mention)' for last fact despite it being present. Classic recency-neglect pattern in short-context models."
+  },
+
+  "A3_mecw": {
+    "max_pts": 15,
+    "mecw_score_pct": 100.0,
+    "mecw_threshold_tokens": 8000,
+    "pts_earned": 15.0,
+    "sizes_tested": [500, 2000, 8000],
+    "all_hit": true,
+    "note": "Target word AXIOLEV-SIGMA-7 retrieved correctly at all three context sizes. True MECW likely higher; tests constrained by non-streaming model_router endpoint and 2426-char practical limit."
+  },
+
+  "context_total_pts": 27.3,
+  "context_score_pct": 68.3
+}

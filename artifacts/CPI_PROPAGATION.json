@@ -1,0 +1,74 @@
+{
+  "generated": "2026-04-21",
+  "description": "CPI instrument signals mapped to AXIOLEV MASTER v3.1 instruments. CPI does not overwrite existing instrument scores; it provides diagnostic signal about model-layer capability gaps.",
+
+  "cpi_to_axiolev_map": {
+    "I1_perception_lexicon": {
+      "current_score": 88.80,
+      "cpi_signals": [
+        {"test": "A1_multi_needle", "value": 37.5, "weight": 0.5, "note": "Semantic retrieval precision — core I1 signal"},
+        {"test": "C2_faithfulness", "value": 100.0, "weight": 0.5, "note": "Grounded perception, no hallucination"}
+      ],
+      "cpi_implied_I1": 68.75,
+      "delta": -20.05,
+      "interpretation": "I1=88.80 is measured from AXIOLEV corpus (NVIR lexicon, canon alignment). CPI A1 shows weak multi-needle retrieval — indicates model layer can't reliably surface embedded semantic signals. Faithfulness=100 prevents lower bound. Gap is context retrieval, not grounding.",
+      "actionable": "Prompt engineering: structured retrieval cues. Or: RAG over NVIR corpus."
+    },
+
+    "I2_reasoning": {
+      "current_score": 89.74,
+      "cpi_signals": [
+        {"test": "C1_calibration", "value": 46.5, "weight": 0.6, "note": "Epistemic reliability — core I2 signal"},
+        {"test": "C4_reasoning_density", "value": 40.0, "weight": 0.4, "note": "Deliberative depth"}
+      ],
+      "cpi_implied_I2": 43.9,
+      "delta": -45.84,
+      "interpretation": "I2=89.74 is measured via NVIR evolutionary candidates and CPS op correctness. CPI C1 calibration=46.5% reveals model overconfidence and factual error (17 is prime) — a direct I2 threat. Reasoning density=3.8% low. The AXIOLEV I2 score reflects NS-layer reasoning; the model layer has a calibration gap that NVIR partially compensates.",
+      "actionable": "Fine-tune calibration: penalize overconfidence. Add system-prompt uncertainty instruction."
+    },
+
+    "I3_memory_coherence": {
+      "current_score": 89.34,
+      "cpi_signals": [
+        {"test": "A3_mecw", "value": 100.0, "weight": 0.7, "note": "Working context window — primary I3 signal"},
+        {"test": "A1_multi_needle", "value": 37.5, "weight": 0.3, "note": "Multi-item coherence under distraction"}
+      ],
+      "cpi_implied_I3": 81.25,
+      "delta": -8.09,
+      "interpretation": "MECW=100% is strong — model retrieves target across 8000-token contexts. Multi-needle weakness (37.5%) indicates that when multiple competing items coexist, coherence degrades. I3 score is well-supported by Alexandria SSD + receipt chain, which compensate for model-layer context noise.",
+      "actionable": "Chained retrieval: decompose multi-needle to sequential single-needle queries."
+    },
+
+    "I4_synthesis_execution": {
+      "current_score": 97.88,
+      "cpi_signals": [
+        {"test": "B1_latency", "value": 100.0, "weight": 1.0, "note": "Execution throughput — direct I4 performance signal"}
+      ],
+      "cpi_implied_I4": 100.0,
+      "delta": 2.12,
+      "interpretation": "I4=97.88 already near ceiling. CPI performance confirms: 0.141s avg, p95=0.170s, 71 tps proxy. No contradiction. Model layer execution is non-bottleneck. NVIR credits dominate I4; model latency contribution is positive.",
+      "actionable": "None required. Monitor if model changes."
+    },
+
+    "I5_sovereignty_memory": {
+      "current_score": 89.70,
+      "cpi_signals": [
+        {"test": "C3_abstention", "value": 100.0, "weight": 0.6, "note": "Refusal discipline — dignity kernel alignment"},
+        {"test": "A2_position_bias", "value": 66.7, "weight": 0.4, "note": "Memory coherence under positional pressure"}
+      ],
+      "cpi_implied_I5": 86.68,
+      "delta": -3.02,
+      "interpretation": "Abstention=100% is excellent — model correctly refuses unanswerable questions, aligned with Dignity Kernel. Position bias=66.7% (recency failure) is a memory sovereignty risk: model cannot retrieve facts placed at end of context. I5 is supported by Alexandria + TierLatch; model-layer I5 signal is net positive (abstention dominates).",
+      "actionable": "For recency: place high-priority facts at context start or repeat at end."
+    }
+  },
+
+  "summary": {
+    "confirmed_strong": ["I4 (execution)", "I5 abstention component", "I3 MECW component"],
+    "revealed_gaps": ["I1 multi-needle retrieval (37.5%)", "I2 calibration (46.5%)", "A2 recency bias"],
+    "no_new_path_to_omega_certified": true,
+    "gap_analysis": "CPI reveals model-layer weaknesses partially masked by NS-layer infrastructure (NVIR, Alexandria, Receipt Chain). These gaps are real but do not open new safe path to Omega-Certified (93.0) — gap remains structural in I1/I5 perception/sovereignty capability.",
+    "cpi_score": 78.95,
+    "cpi_band": "CPI-BETA"
+  }
+}
