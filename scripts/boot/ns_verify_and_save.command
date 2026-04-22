@@ -28,6 +28,22 @@ ALEX=$([ -d /Volumes/NSExternal ] && echo "ok" || echo "not-mounted")
 
 STATE_BODY=$(curl -sf --max-time 5 http://127.0.0.1:8788/state 2>/dev/null || echo "{}")
 
+# ── Live score snapshot (non-blocking, best-effort) ───────────────────────────
+V31_SCORE=$(python3 tools/scoring/master_v31.py --no-tests 2>/dev/null \
+    | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['canonical']['score'])" 2>/dev/null \
+    || echo "null")
+V31_MODE="no-tests"
+NVIR_RATE=$(python3 -c "
+from services.nvir.live_loop import load_live_credits
+r,_ = load_live_credits(); print(r if r else 'null')
+" 2>/dev/null || echo "null")
+if [ "$NVIR_RATE" != "null" ]; then
+  V31_SCORE=$(python3 tools/scoring/master_v31.py --no-tests 2>/dev/null \
+      | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['canonical']['score'])" 2>/dev/null \
+      || echo "null")
+  V31_MODE="no-tests+nvir"
+fi
+
 # ── Verdict ───────────────────────────────────────────────────────────────────
 VERDICT="READY_FOR_SHUTDOWN"
 FAILURES=()
@@ -50,6 +66,9 @@ cat > "$OUT" <<EOF
   },
   "alexandria_mount": "$ALEX",
   "continuum_state": $STATE_BODY,
+  "v31_score": $V31_SCORE,
+  "v31_mode": "$V31_MODE",
+  "nvir_rate": $NVIR_RATE,
   "verdict": "$VERDICT"
 }
 EOF

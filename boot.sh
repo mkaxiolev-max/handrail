@@ -98,6 +98,10 @@ else
   log "Skipping Twilio webhook update (missing ngrok URL or Twilio credentials)"
 fi
 
+# ─── NVIR LIVE LOOP (background, non-blocking) ───────────────────────────────
+log "Starting NVIR live loop (background)..."
+python3 -m services.nvir.live_loop >/dev/null 2>&1 &
+
 # ─── BOOT COMPLETE ───────────────────────────────────────────────────────────
 echo ""
 echo "╔══════════════════════════════════════════════════╗"
