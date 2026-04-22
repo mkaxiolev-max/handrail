@@ -1,0 +1,14 @@
+{
+  "timestamp": "20260421T212231Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "sha": "0469d2b6",
+  "services": {
+    "ns_core":   "ok",
+    "state_api": "fail",
+    "handrail":  "ok",
+    "continuum": "ok"
+  },
+  "alexandria_mount": "ok",
+  "state_api_snapshot": {},
+  "verdict": "NOT_READY_FOR_SHUTDOWN"
+}

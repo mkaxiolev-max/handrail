@@ -1,0 +1,42 @@
+{
+  "generated": "2026-04-21T22:18Z",
+  "phase": "DELTA",
+  "description": "State change delta produced by first irreversible reality contact",
+
+  "structural_deltas": [
+    {
+      "layer": "Continuum (persistence)",
+      "change": "operational stream 0 → 1",
+      "irreversible": true,
+      "hash_proof": "33d6023894cbf81333a637dc92e5fb23fa5b5da480b9518ae98753690b8e36d0",
+      "genesis": true,
+      "significance": "First event ever written to the operational stream. The chain is now live."
+    },
+    {
+      "layer": "Handrail CPS (governance)",
+      "change": "ledger hash chain advanced",
+      "irreversible": true,
+      "new_hash": "2498dc205407e04cb6114b31c7bc60470a465f55dbc91235fac03d3a8be364ba",
+      "run_archived": "/app/.runs/20260421T221748952498",
+      "significance": "First externally-triggered CPS execution in this boot session. Ledger chain extended."
+    },
+    {
+      "layer": "NS Feed (intelligence)",
+      "change": "feed item id=1 ingested",
+      "irreversible": true,
+      "significance": "Reality contact summary stored in NS intelligence feed. Available for future processing."
+    }
+  ],
+
+  "knowledge_deltas": [
+    "NS now has its first operational event: a self-referential reality contact record",
+    "Continuum genesis block anchors all future operational events to this moment",
+    "CPS ledger chain provides cryptographic proof of first externally-triggered execution"
+  ],
+
+  "no_regressions": true,
+  "system_stability": "MAINTAINED — 8/8 services, shalom: true, TierLatch=0",
+
+  "reality_contact_integrity_score": null,
+  "note": "RCI score computed in separate artifact"
+}

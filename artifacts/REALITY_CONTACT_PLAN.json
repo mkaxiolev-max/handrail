@@ -1,0 +1,58 @@
+{
+  "generated": "2026-04-21T22:17Z",
+  "phase": "PLAN",
+  "mission": "NS∞ FIRST IRREVERSIBLE CONTACT WITH REALITY",
+  "description": "Three governed contact scenarios, executed sequentially. Each produces durable evidence that survives process restart.",
+
+  "contacts": [
+    {
+      "id": "RC-A",
+      "sequence": 1,
+      "label": "CPS Health Execution — Handrail governance layer",
+      "method": "POST",
+      "url": "http://127.0.0.1:8011/ops/cps",
+      "body_file": ".cps/health_check.json",
+      "success_criteria": ["ops_executed: 4", "no failures", "receipt_id present"],
+      "evidence_written_to": "failure_events.jsonl (on any failure), execution response",
+      "expected_state_change": "handrail transitions +4, last_receipt updated"
+    },
+    {
+      "id": "RC-B",
+      "sequence": 2,
+      "label": "Continuum Operational Stream — First real event append",
+      "method": "POST",
+      "url": "http://127.0.0.1:8788/append",
+      "body": {
+        "stream": "operational",
+        "type": "reality_contact",
+        "source": "ns_certifier",
+        "payload": {
+          "event": "FIRST_IRREVERSIBLE_CONTACT",
+          "mission": "NS∞ FIRST IRREVERSIBLE CONTACT WITH REALITY — MAX INGESTION PASS",
+          "ts": "2026-04-21T22:17Z",
+          "cpi_score": 78.95,
+          "master_v31": 92.27,
+          "branch": "axiolev-v2.1-integration"
+        }
+      },
+      "success_criteria": ["ok: true", "stream operational count: 1"],
+      "evidence_written_to": "Continuum SSD /Volumes/NSExternal/ALEXANDRIA/continuum/",
+      "expected_state_change": "continuum.operational += 1"
+    },
+    {
+      "id": "RC-C",
+      "sequence": 3,
+      "label": "NS Feed Ingest — Intelligence layer ether contact",
+      "method": "POST",
+      "url": "http://127.0.0.1:9000/feed",
+      "body": {
+        "content": "AXIOLEV NS∞ first irreversible reality contact executed 2026-04-21. System confirmed: three-tier stack healthy, CPI=78.95 (CPI-BETA), MASTER v3.1=92.27 (Omega-Approaching). Continuum first event written. Governance rails nominal. Reality contact verified.",
+        "source": "ns_certifier",
+        "type": "reality_contact_summary"
+      },
+      "success_criteria": ["feed_items > 115", "receipt generated"],
+      "evidence_written_to": "Alexandria ether store + receipt chain",
+      "expected_state_change": "memory.feed_items += 1"
+    }
+  ]
+}

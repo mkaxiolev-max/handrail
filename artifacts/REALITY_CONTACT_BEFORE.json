@@ -1,0 +1,54 @@
+{
+  "generated": "2026-04-21T22:17Z",
+  "phase": "BEFORE",
+  "description": "Pre-contact system baseline snapshot",
+
+  "services": {
+    "handrail_8011": "healthy",
+    "ns_core_9000": "healthy",
+    "continuum_8788": "healthy",
+    "tier_latch": 0,
+    "ssd_mounted": true
+  },
+
+  "state": {
+    "system_now": {"services_healthy": 8, "services_expected": 8, "shalom": true},
+    "violet": {"mode": "founder_ready", "voice_state": "idle", "active_program": null, "pressure": "low"},
+    "memory": {"atoms": 87, "edges": 908, "feed_items": 115, "receipts": 63},
+    "last_receipt": "2026-04-21T21:49:56.190597 bcce5f78fc670bf8",
+    "continuum_streams": {"legal": 0, "knowledge": 0, "semantic": 0, "operational": 0, "institutional": 0},
+    "handrail_transitions": 67,
+    "handrail_state_deltas": 60,
+    "handrail_schemas_frozen": 60,
+    "boot_sovereign": false
+  },
+
+  "selected_contact_surfaces": [
+    {
+      "id": "RC-A",
+      "label": "CPS Health Execution",
+      "tier": "Handrail (governance layer)",
+      "route": "POST http://127.0.0.1:8011/ops/cps",
+      "plan": ".cps/health_check.json",
+      "irreversibility": "Execution logged to failure_events.jsonl; receipt generated",
+      "governed_by": "CPS executor, policy gate, dignity kernel"
+    },
+    {
+      "id": "RC-B",
+      "label": "Continuum First Operational Event",
+      "tier": "Continuum (persistence layer)",
+      "route": "POST http://127.0.0.1:8788/append",
+      "payload_type": "reality_contact",
+      "irreversibility": "Append-only stream, TierLatch=0, SSD persisted",
+      "governed_by": "TierLatch (cannot downgrade), append-only invariant"
+    },
+    {
+      "id": "RC-C",
+      "label": "NS Feed Ingest (ether)",
+      "tier": "NS Core (intelligence layer)",
+      "route": "POST http://127.0.0.1:9000/feed",
+      "irreversibility": "Feed item added to Alexandria ether store, atom/edge count incremented",
+      "governed_by": "NS receipt chain, ether append"
+    }
+  ]
+}
