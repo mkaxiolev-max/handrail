@@ -101,8 +101,10 @@
 				AA000000000000000000000C /* DesignSystem */,
 				AA000000000000000000000D /* Resources */,
 				AA0000000000000000000004 /* Products */,
-				AA000000000000000000000F /* Frameworks */,
+				AA0000000000000000000044 /* Frameworks */,
 			);
+			name = NSInfinityApp;
+			path = NSInfinityApp;
 			sourceTree = "<group>";
 		};
 		AA0000000000000000000004 /* Products */ = {
@@ -205,7 +207,7 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		AA000000000000000000000F /* Frameworks */ = {
+		AA0000000000000000000044 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000003B /* Metal.framework */,

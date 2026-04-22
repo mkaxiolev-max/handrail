@@ -52,9 +52,14 @@ struct ParticleUniforms {
 };
 
 struct ParticleOut {
-    float4 position [[position]];
+    float4 position    [[position]];
     float  brightness;
-    float  size [[point_size]];
+    float  size        [[point_size]];
+};
+
+struct ParticleFragIn {
+    float  brightness;
+    float2 point_coord [[point_coord]];
 };
 
 // Hash functions for pseudo-random particles
@@ -88,7 +93,7 @@ vertex ParticleOut particle_vertex(uint vid                             [[vertex
     return out;
 }
 
-fragment float4 particle_fragment(ParticleOut in [[stage_in]]) {
+fragment float4 particle_fragment(ParticleFragIn in [[stage_in]]) {
     // Point sprite: soft circle
     float2 uv = in.point_coord * 2.0 - 1.0;
     float d = length(uv);
