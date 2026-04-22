@@ -1,8 +1,8 @@
 # NS∞ Verification Report
 
-- Generated: 2026-04-21T19:09:18Z
+- Generated: 2026-04-21T20:34:28Z
 - Script: ns_verify.sh v1.0.0 (ns-verify-20260420)
-- Repo: branch=axiolev-v2.1-integration head=a004549f
+- Repo: branch=integration/max-omega-20260421-191635 head=4a03d6f1
 - NS_HOME: /Users/axiolevns/axiolev_runtime
 - Alexandria: /Volumes/NSExternal/ALEXANDRIA
 

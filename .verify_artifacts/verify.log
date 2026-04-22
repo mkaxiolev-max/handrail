@@ -1,0 +1,4 @@
+2026-04-21T20:34:28Z [INFO] ns_verify.sh v1.0.0 phase=report
+2026-04-21T20:34:28Z [STEP] PHASE 7 — REPORT
+2026-04-21T20:34:28Z [INFO] report → /Users/axiolevns/axiolev_runtime/.verify_artifacts/REPORT.md
+2026-04-21T20:34:28Z [WARN] alexandria_receipt submission failed

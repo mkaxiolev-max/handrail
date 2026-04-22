@@ -1,0 +1,14 @@
+{
+  "timestamp": "20260422T032542Z",
+  "branch": "integration/max-omega-20260421-191635",
+  "sha": "6aa24dea",
+  "services": {
+    "ns_core":   "ok",
+    "ns_api":    "ok",
+    "handrail":  "ok",
+    "continuum": "ok"
+  },
+  "alexandria_mount": "ok",
+  "continuum_state": {"global_tier":0,"isolated_domains":{}},
+  "verdict": "READY_FOR_SHUTDOWN"
+}
