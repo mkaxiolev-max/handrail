@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Sandbox: enabled. Network client only — localhost runtime access. -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+    <!-- Outbound network connections to localhost runtime (9000/8011/8788) -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+    <!-- Microphone access for voice lane -->
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+    <!-- Hardened runtime — required for notarization -->
+    <key>com.apple.security.cs.allow-jit</key>
+    <false/>
+    <key>com.apple.security.cs.disable-library-validation</key>
+    <false/>
+</dict>
+</plist>

@@ -35,6 +35,8 @@
 		AA000000000000000000008A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000003A /* Assets.xcassets */; };
 		AA000000000000000000008B /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA000000000000000000003B /* Metal.framework */; };
 		AA000000000000000000008C /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA000000000000000000003C /* MetalKit.framework */; };
+		AA000000000000000000008D /* ScoreHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000003E /* ScoreHistory.swift */; };
+		AA000000000000000000008E /* KeyboardHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000003F /* KeyboardHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +70,9 @@
 		AA000000000000000000003B /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		AA000000000000000000003C /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		AA000000000000000000003D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA000000000000000000003E /* ScoreHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreHistory.swift; sourceTree = "<group>"; };
+		AA000000000000000000003F /* KeyboardHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardHandler.swift; sourceTree = "<group>"; };
+		AA0000000000000000000041 /* NSInfinityApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NSInfinityApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000000000039 /* WindowManager.swift */,
+				AA000000000000000000003F /* KeyboardHandler.swift */,
 			);
 			path = AppKit;
 			sourceTree = "<group>";
@@ -177,6 +183,7 @@
 			children = (
 				AA0000000000000000000036 /* AppState.swift */,
 				AA0000000000000000000037 /* ServiceHealth.swift */,
+				AA000000000000000000003E /* ScoreHistory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -301,6 +308,8 @@
 				AA0000000000000000000087 /* ServiceHealth.swift in Sources */,
 				AA0000000000000000000088 /* DSColors.swift in Sources */,
 				AA0000000000000000000089 /* WindowManager.swift in Sources */,
+				AA000000000000000000008D /* ScoreHistory.swift in Sources */,
+				AA000000000000000000008E /* KeyboardHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,7 +413,7 @@
 		AA0000000000000000000010 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "NSInfinityApp/Resources/NSInfinityApp.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
@@ -426,7 +435,7 @@
 		AA0000000000000000000011 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_ENTITLEMENTS = "NSInfinityApp/Resources/NSInfinityApp.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";

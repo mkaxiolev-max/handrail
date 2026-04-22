@@ -2,6 +2,8 @@ import Metal
 import MetalKit
 import simd
 
+// ── Domain types ──────────────────────────────────────────────────────────────
+
 struct OrganismNode: Identifiable, Equatable {
     let id: String
     let label: String
@@ -20,12 +22,37 @@ struct Vertex {
     var color: SIMD4<Float>
 }
 
+struct CameraUniforms {
+    var zoom: Float
+    var pan: SIMD2<Float>
+    var time: Float
+}
+
+struct ParticleUniforms {
+    var time: Float
+    var resolution: SIMD2<Float>
+    var zoom: Float
+    var pan: SIMD2<Float>
+}
+
+// ── NodeOverlayState: governance/stress/memory-pressure ─────────────────────
+
+struct NodeOverlayState {
+    var stress: Float        = 0   // 0–1 — red pulse
+    var governance: Float    = 0   // 0–1 — amber halo
+    var memoryPressure: Float = 0  // 0–1 — blue desaturate
+    var executionReady: Float = 1  // 0–1 — green ring brightens
+}
+
+// ── OrganismRenderer ─────────────────────────────────────────────────────────
+
 final class OrganismRenderer: NSObject, MTKViewDelegate {
     var onNodeSelected: ((OrganismNode) -> Void)?
 
     private let device: MTLDevice
     private var commandQueue: MTLCommandQueue!
     private var pipelineState: MTLRenderPipelineState!
+    private var particlePipeline: MTLRenderPipelineState!
     private var vertexBuffer: MTLBuffer!
     private var nodes: [OrganismNode]
     private var time: Float = 0
@@ -34,6 +61,11 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
     private var zoom: Float = 1.0
     private var panOffset: SIMD2<Float> = .zero
     private var selectedNodeID: String? = nil
+
+    // Overlay states keyed by node id
+    var overlayStates: [String: NodeOverlayState] = [:]
+
+    // ── Canonical topology ───────────────────────────────────────────────────
 
     static let canonicalNodes: [OrganismNode] = [
         OrganismNode(id: "violet",       label: "Violet",       role: .violet,       position: SIMD2(0, 0),         radius: 0.12, isActive: true),
@@ -49,37 +81,39 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
         OrganismNode(id: "membrane",     label: "Membrane",     role: .membrane,     position: SIMD2(0, 0.70),      radius: 0.07, isActive: true),
     ]
 
+    // ── Init ─────────────────────────────────────────────────────────────────
+
     init?(mtkView: MTKView) {
         guard let device = mtkView.device else { return nil }
         self.device = device
         self.nodes = OrganismRenderer.canonicalNodes
         super.init()
         commandQueue = device.makeCommandQueue()
-        buildPipeline(mtkView: mtkView)
+        buildPipelines(mtkView: mtkView)
     }
 
-    // MARK: — Camera controls
+    // ── Camera controls ──────────────────────────────────────────────────────
 
     func adjustZoom(delta: Float) {
-        zoom = max(0.3, min(4.0, zoom + delta * zoom))
+        zoom = max(0.25, min(5.0, zoom + delta * zoom))
     }
 
     func adjustPan(dx: Float, dy: Float) {
         panOffset += SIMD2(dx / zoom, dy / zoom)
     }
 
-    // MARK: — Hit testing
+    func resetCamera() {
+        zoom = 1.0; panOffset = .zero
+    }
+
+    // ── Hit testing ──────────────────────────────────────────────────────────
 
     func hitTest(ndc: SIMD2<Float>) {
-        // Transform NDC back through camera to world space
         let worldX = (ndc.x / zoom) - panOffset.x
         let worldY = (ndc.y / zoom) - panOffset.y
-        let worldPt = SIMD2<Float>(worldX, worldY)
-
+        let pt = SIMD2<Float>(worldX, worldY)
         for node in nodes {
-            let dist = length(worldPt - node.position)
-            // Generous hit radius: node.radius * 1.5 for finger-sized targets
-            if dist < node.radius * 1.5 {
+            if length(pt - node.position) < node.radius * 1.6 {
                 selectedNodeID = node.id
                 onNodeSelected?(node)
                 return
@@ -88,94 +122,164 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
         selectedNodeID = nil
     }
 
-    // MARK: — Pipeline
+    // ── Pipeline ─────────────────────────────────────────────────────────────
 
-    private func buildPipeline(mtkView: MTKView) {
-        let library = device.makeDefaultLibrary()
-        let vertexFn   = library?.makeFunction(name: "organism_vertex")
-        let fragmentFn = library?.makeFunction(name: "organism_fragment")
+    private func buildPipelines(mtkView: MTKView) {
+        guard let library = device.makeDefaultLibrary() else { return }
 
-        let desc = MTLRenderPipelineDescriptor()
-        desc.vertexFunction   = vertexFn
-        desc.fragmentFunction = fragmentFn
-        desc.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat
-        desc.colorAttachments[0].isBlendingEnabled = true
-        desc.colorAttachments[0].sourceRGBBlendFactor      = .sourceAlpha
-        desc.colorAttachments[0].destinationRGBBlendFactor  = .oneMinusSourceAlpha
-        desc.colorAttachments[0].sourceAlphaBlendFactor     = .one
-        desc.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        // Organism pipeline
+        let vFn = library.makeFunction(name: "organism_vertex")
+        let fFn = library.makeFunction(name: "organism_fragment")
+        let orgDesc = MTLRenderPipelineDescriptor()
+        orgDesc.vertexFunction   = vFn
+        orgDesc.fragmentFunction = fFn
+        orgDesc.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat
+        blendAlpha(orgDesc.colorAttachments[0])
+        pipelineState = try? device.makeRenderPipelineState(descriptor: orgDesc)
 
-        pipelineState = try? device.makeRenderPipelineState(descriptor: desc)
+        // Particle pipeline
+        let pvFn = library.makeFunction(name: "particle_vertex")
+        let pfFn = library.makeFunction(name: "particle_fragment")
+        let ptDesc = MTLRenderPipelineDescriptor()
+        ptDesc.vertexFunction   = pvFn
+        ptDesc.fragmentFunction = pfFn
+        ptDesc.colorAttachments[0].pixelFormat = mtkView.colorPixelFormat
+        blendAlpha(ptDesc.colorAttachments[0])
+        particlePipeline = try? device.makeRenderPipelineState(descriptor: ptDesc)
     }
 
-    // MARK: — MTKViewDelegate
+    private func blendAlpha(_ att: MTLRenderPipelineColorAttachmentDescriptor) {
+        att.isBlendingEnabled              = true
+        att.sourceRGBBlendFactor           = .sourceAlpha
+        att.destinationRGBBlendFactor       = .oneMinusSourceAlpha
+        att.sourceAlphaBlendFactor         = .one
+        att.destinationAlphaBlendFactor     = .oneMinusSourceAlpha
+    }
+
+    // ── MTKViewDelegate ──────────────────────────────────────────────────────
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        guard let pipelineState,
-              let drawable = view.currentDrawable,
-              let descriptor = view.currentRenderPassDescriptor,
-              let commandBuffer = commandQueue.makeCommandBuffer(),
-              let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)
+        guard let pipelineState, let particlePipeline,
+              let drawable    = view.currentDrawable,
+              let descriptor  = view.currentRenderPassDescriptor,
+              let cmdBuf      = commandQueue.makeCommandBuffer(),
+              let encoder     = cmdBuf.makeRenderCommandEncoder(descriptor: descriptor)
         else { return }
 
         time += 0.016
-        let vertices = buildVertices(viewSize: view.drawableSize)
-        let byteLen = MemoryLayout<Vertex>.stride * vertices.count
-        vertexBuffer = device.makeBuffer(bytes: vertices, length: byteLen, options: [])
+        let size = view.drawableSize
+
+        // 1. Particle field (background layer)
+        drawParticles(encoder: encoder, viewSize: size, particleCount: 280)
+
+        // 2. Organism
+        drawOrganism(encoder: encoder, viewSize: size)
+
+        encoder.endEncoding()
+        cmdBuf.present(drawable)
+        cmdBuf.commit()
+    }
+
+    // ── Particle pass ─────────────────────────────────────────────────────────
+
+    private func drawParticles(encoder: MTLRenderCommandEncoder, viewSize: CGSize, particleCount: Int) {
+        guard let particlePipeline else { return }
+        encoder.setRenderPipelineState(particlePipeline)
+        var uniforms = ParticleUniforms(
+            time: time,
+            resolution: SIMD2(Float(viewSize.width), Float(viewSize.height)),
+            zoom: zoom,
+            pan: panOffset
+        )
+        encoder.setVertexBytes(&uniforms, length: MemoryLayout<ParticleUniforms>.stride, index: 0)
+        encoder.drawPrimitives(type: .point, vertexStart: 0, vertexCount: particleCount)
+    }
+
+    // ── Organism pass ─────────────────────────────────────────────────────────
+
+    private func drawOrganism(encoder: MTLRenderCommandEncoder, viewSize: CGSize) {
+        guard let pipelineState else { return }
+        let aspect = Float(viewSize.width / max(viewSize.height, 1))
+        let verts = buildVertices(aspect: aspect)
+        let byteLen = MemoryLayout<Vertex>.stride * verts.count
+        vertexBuffer = device.makeBuffer(bytes: verts, length: byteLen, options: [])
 
         encoder.setRenderPipelineState(pipelineState)
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-
-        var uniforms = CameraUniforms(zoom: zoom, pan: panOffset, time: time)
-        encoder.setVertexBytes(&uniforms, length: MemoryLayout<CameraUniforms>.stride, index: 1)
-        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
-        encoder.endEncoding()
-
-        commandBuffer.present(drawable)
-        commandBuffer.commit()
+        var cam = CameraUniforms(zoom: zoom, pan: panOffset, time: time)
+        encoder.setVertexBytes(&cam, length: MemoryLayout<CameraUniforms>.stride, index: 1)
+        encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: verts.count)
     }
 
-    private func buildVertices(viewSize: CGSize) -> [Vertex] {
-        var verts: [Vertex] = []
-        let aspect = Float(viewSize.width / max(viewSize.height, 1))
+    // ── Vertex construction ──────────────────────────────────────────────────
 
-        // Draw connections
+    private func buildVertices(aspect: Float) -> [Vertex] {
+        var v: [Vertex] = []
+        let violet = nodes.first(where: { $0.id == "violet" })!
+
+        // Connections
         for node in nodes where node.id != "violet" {
-            let center = nodes.first(where: { $0.id == "violet" })!
-            let alpha: Float = node.id == selectedNodeID ? 0.7 : 0.2
-            let color = nodeColor(node).opacity(alpha)
-            verts.append(contentsOf: makeLink(from: center.position, to: node.position,
-                                               width: 0.004, aspect: aspect, color: color))
+            let ov = overlayStates[node.id]
+            let baseAlpha: Float = node.id == selectedNodeID ? 0.70 : 0.22
+            let stressBoost = (ov?.stress ?? 0) * 0.3
+            v += makeLink(from: violet.position, to: node.position,
+                          width: 0.0035, aspect: aspect,
+                          color: nodeColor(node).opacity(baseAlpha + stressBoost))
         }
 
-        // Draw node circles
+        // Node circles + overlay halos
         for node in nodes {
             let isSelected = node.id == selectedNodeID
-            let baseColor = nodeColor(node)
-            let fillColor = isSelected ? baseColor.opacity(1.0) : baseColor.opacity(0.75)
-            let pulse = node.id == "violet" ? 0.025 * sin(time * 2.1) : 0
-            let highlightBoost: Float = isSelected ? 0.02 : 0
+            let ov = overlayStates[node.id] ?? NodeOverlayState()
+            let base = nodeColor(node)
 
-            verts.append(contentsOf: makeCircle(
-                center: node.position,
-                radius: node.radius + pulse + highlightBoost,
-                aspect: aspect, color: fillColor, segments: 40
-            ))
+            // Stress halo (red)
+            if ov.stress > 0.05 {
+                let haloColor = SIMD4<Float>(0.95, 0.25, 0.25, ov.stress * 0.4 * (0.7 + 0.3 * sin(time * 4)))
+                v += makeCircle(center: node.position, radius: node.radius + 0.022,
+                                aspect: aspect, color: haloColor, segments: 32)
+            }
+            // Governance halo (amber)
+            if ov.governance > 0.05 {
+                let haColor = SIMD4<Float>(0.95, 0.75, 0.10, ov.governance * 0.35)
+                v += makeRing(center: node.position, radius: node.radius + 0.018,
+                              aspect: aspect, color: haColor, lineWidth: 0.008, segments: 32)
+            }
+            // Memory pressure (blue desaturate — drawn as cool overlay)
+            if ov.memoryPressure > 0.05 {
+                let mpColor = SIMD4<Float>(0.10, 0.65, 0.95, ov.memoryPressure * 0.25)
+                v += makeCircle(center: node.position, radius: node.radius,
+                                aspect: aspect, color: mpColor, segments: 32)
+            }
+            // Execution ready (bright green ring)
+            if ov.executionReady > 0.5 && node.id == "handrail" {
+                let erColor = SIMD4<Float>(0.20, 0.85, 0.45, ov.executionReady * 0.6)
+                v += makeRing(center: node.position, radius: node.radius + 0.012,
+                              aspect: aspect, color: erColor, lineWidth: 0.005, segments: 32)
+            }
+
+            // Core circle
+            let violetPulse: Float = node.id == "violet"
+                ? 0.022 * sin(time * 2.2) + 0.010 * sin(time * 5.1)
+                : 0
+            let selectedBoost: Float = isSelected ? 0.015 : 0
+            let fillColor = isSelected ? base.opacity(1.0) : base.opacity(0.78)
+            v += makeCircle(center: node.position,
+                            radius: node.radius + violetPulse + selectedBoost,
+                            aspect: aspect, color: fillColor, segments: 40)
 
             // Selection ring
             if isSelected {
-                verts.append(contentsOf: makeRing(
-                    center: node.position,
-                    radius: node.radius + 0.025,
-                    aspect: aspect, color: baseColor.opacity(0.9),
-                    lineWidth: 0.006, segments: 40
-                ))
+                v += makeRing(center: node.position, radius: node.radius + 0.028,
+                              aspect: aspect, color: base.opacity(0.95), lineWidth: 0.006, segments: 40)
             }
         }
-        return verts
+        return v
     }
+
+    // ── Geometry helpers ──────────────────────────────────────────────────────
 
     private func nodeColor(_ node: OrganismNode) -> SIMD4<Float> {
         switch node.role {
@@ -191,63 +295,49 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
 
     private func makeCircle(center: SIMD2<Float>, radius: Float, aspect: Float,
                              color: SIMD4<Float>, segments: Int) -> [Vertex] {
-        var verts: [Vertex] = []
-        let step = (2.0 * Float.pi) / Float(segments)
+        var v: [Vertex] = []; let step = Float.pi * 2 / Float(segments)
         for i in 0..<segments {
-            let a0 = Float(i) * step
-            let a1 = Float(i + 1) * step
-            let cx = SIMD2<Float>(center.x, center.y)
-            let p0 = cx + SIMD2(cos(a0) * radius / aspect, sin(a0) * radius)
-            let p1 = cx + SIMD2(cos(a1) * radius / aspect, sin(a1) * radius)
-            verts.append(Vertex(position: cx, color: color))
-            verts.append(Vertex(position: p0, color: color.opacity(0.55)))
-            verts.append(Vertex(position: p1, color: color.opacity(0.55)))
+            let a0 = Float(i) * step; let a1 = a0 + step
+            let c = SIMD2<Float>(center.x, center.y)
+            let p0 = c + SIMD2(cos(a0) * radius / aspect, sin(a0) * radius)
+            let p1 = c + SIMD2(cos(a1) * radius / aspect, sin(a1) * radius)
+            v += [Vertex(position: c, color: color),
+                  Vertex(position: p0, color: color.opacity(0.50)),
+                  Vertex(position: p1, color: color.opacity(0.50))]
         }
-        return verts
+        return v
     }
 
     private func makeRing(center: SIMD2<Float>, radius: Float, aspect: Float,
                            color: SIMD4<Float>, lineWidth: Float, segments: Int) -> [Vertex] {
-        var verts: [Vertex] = []
-        let step = (2.0 * Float.pi) / Float(segments)
-        let r0 = radius - lineWidth * 0.5
-        let r1 = radius + lineWidth * 0.5
+        var v: [Vertex] = []; let step = Float.pi * 2 / Float(segments)
+        let r0 = radius - lineWidth * 0.5; let r1 = radius + lineWidth * 0.5
         for i in 0..<segments {
-            let a0 = Float(i) * step
-            let a1 = Float(i + 1) * step
+            let a0 = Float(i) * step; let a1 = a0 + step
             let p00 = center + SIMD2(cos(a0) * r0 / aspect, sin(a0) * r0)
             let p01 = center + SIMD2(cos(a0) * r1 / aspect, sin(a0) * r1)
             let p10 = center + SIMD2(cos(a1) * r0 / aspect, sin(a1) * r0)
             let p11 = center + SIMD2(cos(a1) * r1 / aspect, sin(a1) * r1)
-            verts.append(Vertex(position: p00, color: color))
-            verts.append(Vertex(position: p01, color: color))
-            verts.append(Vertex(position: p10, color: color))
-            verts.append(Vertex(position: p01, color: color))
-            verts.append(Vertex(position: p11, color: color))
-            verts.append(Vertex(position: p10, color: color))
+            v += [Vertex(position: p00, color: color), Vertex(position: p01, color: color),
+                  Vertex(position: p10, color: color), Vertex(position: p01, color: color),
+                  Vertex(position: p11, color: color), Vertex(position: p10, color: color)]
         }
-        return verts
+        return v
     }
 
     private func makeLink(from a: SIMD2<Float>, to b: SIMD2<Float>, width: Float,
                            aspect: Float, color: SIMD4<Float>) -> [Vertex] {
         let dir = normalize(b - a)
         let perp = SIMD2<Float>(-dir.y, dir.x) * SIMD2(width / aspect, width)
-        let p0 = a + perp; let p1 = a - perp
-        let p2 = b + perp; let p3 = b - perp
-        return [
-            Vertex(position: p0, color: color), Vertex(position: p1, color: color), Vertex(position: p2, color: color),
-            Vertex(position: p1, color: color), Vertex(position: p3, color: color), Vertex(position: p2, color: color),
-        ]
+        let p0 = a + perp; let p1 = a - perp; let p2 = b + perp; let p3 = b - perp
+        return [Vertex(position: p0, color: color), Vertex(position: p1, color: color),
+                Vertex(position: p2, color: color), Vertex(position: p1, color: color),
+                Vertex(position: p3, color: color), Vertex(position: p2, color: color)]
     }
-}
-
-struct CameraUniforms {
-    var zoom: Float
-    var pan: SIMD2<Float>
-    var time: Float
 }
 
 private extension SIMD4 where Scalar == Float {
     func opacity(_ a: Float) -> SIMD4<Float> { SIMD4(x, y, z, a) }
 }
+
+private func += <T>(lhs: inout [T], rhs: [T]) { lhs.append(contentsOf: rhs) }

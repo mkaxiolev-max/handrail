@@ -5,6 +5,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         configureMainWindow()
+        KeyboardHandler.shared.activate(appState: AppState.shared)
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        KeyboardHandler.shared.deactivate()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
