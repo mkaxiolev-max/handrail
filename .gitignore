@@ -39,3 +39,7 @@ state_api.log
 .execution_enabled
 *.output
 certification/finalization_*/run.log
+
+# Terminal manager state files — may contain session tokens or PATs
+.terminal_manager/state/
+.terminal_manager/logs/

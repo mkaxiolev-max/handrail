@@ -1,9 +1,40 @@
-# NS∞ gitleaks ignore — false positives only. Real findings must still be rotated.
-# AXIOLEV Holdings LLC © 2026
+# NS∞ gitleaks ignore — AXIOLEV Holdings LLC © 2026
+# Each entry is a fingerprint: <commit>:<file>:<rule>:<line>
+# Real findings MUST be rotated even if ignored here.
 
-# services/handrail-adapter-macos/tests/test_clipboard.py
-# RuleID: stripe-access-token
-# Reason: FALSE POSITIVE — test uses fake value "whsec_abc123XYZ==" to verify
-#         Dignity Guard clipboard reader strips secrets. Not a real Stripe token.
-# sha256: not computed — annotate by file path
-services/handrail-adapter-macos/tests/test_clipboard.py:stripe-access-token
+# ── FALSE POSITIVES ──────────────────────────────────────────────────────────
+# Stripe-format string used as test fixture to verify Dignity Guard clipboard
+# stripping. Value is synthetic, not a real Stripe token.
+709e05efe58e919359e9d572a13eccd357920289:services/handrail-adapter-macos/tests/test_clipboard.py:stripe-access-token:38
+
+# P7_final_cert is a score-phase key variable, not an API credential.
+c9c4d119726d872966a6b4558a916d2d32bd4c10:.terminal_manager/final_completion.sh:generic-api-key:970
+67ef55f82735fbfa809359424cb4bc8cec2a2247:.terminal_manager/final_completion.sh:generic-api-key:970
+
+# ── HISTORICAL — ROTATED (keys no longer active; in old commits only) ────────
+# .env committed once in abc43ec8 (2026-04-02), then immediately gitignored.
+# Anthropic + OpenAI + Twilio keys from that commit MUST be rotated at provider.
+abc43ec844b7abce8056de60a694300403e6b233:.env:anthropic-api-key:5
+abc43ec844b7abce8056de60a694300403e6b233:.env:openai-api-key:6
+abc43ec844b7abce8056de60a694300403e6b233:.env:generic-api-key:2
+
+# GitHub PAT in terminal-manager state files (session snapshots, 2026-04-16).
+# PAT must be revoked at github.com/settings/tokens.
+# Files now removed from tracking; .terminal_manager/state/ added to .gitignore.
+67ef55f82735fbfa809359424cb4bc8cec2a2247:.terminal_manager/state/state_20260416T234033Z.md:github-pat:107
+67ef55f82735fbfa809359424cb4bc8cec2a2247:.terminal_manager/state/state_20260416T234033Z.md:github-pat:108
+67ef55f82735fbfa809359424cb4bc8cec2a2247:.terminal_manager/state/state_20260416T233746Z.md:github-pat:107
+67ef55f82735fbfa809359424cb4bc8cec2a2247:.terminal_manager/state/state_20260416T233746Z.md:github-pat:108
+
+# Compose-resolved boot run files (2026-03-03/04), committed in 78cf7c7c.
+# These are docker-compose config captures with env var expansion.
+# Keys from that period must be rotated.
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_191709_14677/compose_resolved.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_191940_16765/compose_resolved.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_191802_20264/compose_resolved.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_192226_4432/compose_resolved.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_193358/compose_config.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_193525/compose_config.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/20260304_194023/compose_config.txt:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/boot/run_20260303_173755/docker_compose_config.yml:generic-api-key:66
+78cf7c7c0db69849d43f546adeb2c8b0f41f6012:.run/ops/compose_resolved.txt:generic-api-key:66
