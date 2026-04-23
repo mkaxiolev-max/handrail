@@ -30,13 +30,15 @@ struct TopBar: View {
             Spacer()
 
             // HUD indicators
+            let onlineCount = appState.services.filter { $0.status == .online }.count
+            let totalCount  = appState.services.count
             HUDPill(label: "DOCKER",
-                    value: appState.isServicesOnline ? "UP" : "DOWN",
-                    color: appState.isServicesOnline ? DSColors.online : DSColors.offline)
-            HUDPill(label: "INVARIANTS", value: "HELD",  color: DSColors.online)
-            HUDPill(label: "RINGS",      value: "4/5",   color: DSColors.accentAmber)
-            HUDPill(label: "YUBIKEY",    value: "SLOT-1", color: DSColors.online)
-            HUDPill(label: "SHALOM",     value: "✓",     color: DSColors.violet)
+                    value: "\(onlineCount)/\(totalCount)",
+                    color: onlineCount == totalCount ? DSColors.online : DSColors.accentAmber)
+            HUDPill(label: "INVARIANTS", value: "8/10",       color: DSColors.online)
+            HUDPill(label: "RING 5",     value: "0/5",        color: DSColors.accentAmber)
+            HUDPill(label: "YUBIKEY",    value: "26116460",   color: DSColors.online)
+            HUDPill(label: "SHALOM",     value: "✓",          color: DSColors.online)
 
             Divider().frame(height: 20).overlay(DSColors.surfaceBorder)
 

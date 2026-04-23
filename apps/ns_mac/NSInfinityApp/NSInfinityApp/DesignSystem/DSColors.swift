@@ -1,13 +1,26 @@
 import SwiftUI
 
 enum DSColors {
-    // Violet system — relational shell
+    // Canonical Living Architecture spec tokens (ground truth — exact hex)
+    enum Spec {
+        static let violet   = Color(red: 0.000, green: 0.831, blue: 1.000)  // #00D4FF
+        static let founder  = Color(red: 1.000, green: 0.420, blue: 0.000)  // #FF6B00
+        static let chambers = Color(red: 0.420, green: 0.000, blue: 1.000)  // #6B00FF
+        static let adj      = Color(red: 0.000, green: 1.000, blue: 0.533)  // #00FF88
+        static let handrail = Color(red: 0.000, green: 1.000, blue: 1.000)  // #00FFFF
+        static let alex     = Color(red: 1.000, green: 1.000, blue: 0.000)  // #FFFF00
+        static let kernel   = Color(red: 1.000, green: 0.200, blue: 0.200)  // #FF3333
+        static let build    = Color(red: 0.290, green: 0.435, blue: 0.647)  // #4A6FA5
+        static let bg       = Color(red: 0.039, green: 0.055, blue: 0.153)  // #0A0E27
+    }
+
+    // Violet system — relational shell (UI accent; see Spec.violet for org-map node color)
     static let violet          = Color(red: 0.56, green: 0.35, blue: 0.95)
     static let violetDim       = Color(red: 0.56, green: 0.35, blue: 0.95, opacity: 0.35)
     static let violetFaint     = Color(red: 0.56, green: 0.35, blue: 0.95, opacity: 0.10)
 
     // Surface system
-    static let background      = Color(red: 0.05, green: 0.05, blue: 0.07)
+    static let background      = Color(red: 0.039, green: 0.055, blue: 0.153)  // #0A0E27
     static let surfaceElevated = Color(red: 0.09, green: 0.09, blue: 0.12)
     static let surfaceCard     = Color(red: 0.11, green: 0.11, blue: 0.15)
     static let surfaceBorder   = Color(red: 0.20, green: 0.20, blue: 0.28)

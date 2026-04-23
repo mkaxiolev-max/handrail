@@ -14,6 +14,7 @@ struct OrganismNode: Identifiable, Equatable {
 
     enum NodeRole {
         case violet, chamber, adjudication, handrail, alexandria, kernel, membrane
+        case founder, programs, yubiKey, buildSpace
     }
 }
 
@@ -68,17 +69,25 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
     // ── Canonical topology ───────────────────────────────────────────────────
 
     static let canonicalNodes: [OrganismNode] = [
-        OrganismNode(id: "violet",       label: "Violet",       role: .violet,       position: SIMD2(0, 0),         radius: 0.12, isActive: true),
-        OrganismNode(id: "ch1",          label: "Arbiter",      role: .chamber,      position: SIMD2(-0.35, 0.20),  radius: 0.07, isActive: true),
-        OrganismNode(id: "ch2",          label: "Voice",        role: .chamber,      position: SIMD2(0.35, 0.20),   radius: 0.07, isActive: true),
-        OrganismNode(id: "ch3",          label: "Ether",        role: .chamber,      position: SIMD2(0, 0.42),      radius: 0.07, isActive: true),
-        OrganismNode(id: "ch4",          label: "SAN",          role: .chamber,      position: SIMD2(-0.35, -0.20), radius: 0.07, isActive: true),
-        OrganismNode(id: "ch5",          label: "Semantic",     role: .chamber,      position: SIMD2(0.35, -0.20),  radius: 0.07, isActive: true),
-        OrganismNode(id: "adjudication", label: "Adjudication", role: .adjudication, position: SIMD2(0, -0.42),     radius: 0.08, isActive: true),
-        OrganismNode(id: "handrail",     label: "Handrail",     role: .handrail,     position: SIMD2(-0.65, 0),     radius: 0.09, isActive: true),
-        OrganismNode(id: "alexandria",   label: "Alexandria",   role: .alexandria,   position: SIMD2(0.65, 0),      radius: 0.09, isActive: true),
-        OrganismNode(id: "kernel",       label: "Kernel",       role: .kernel,       position: SIMD2(0, -0.70),     radius: 0.07, isActive: true),
-        OrganismNode(id: "membrane",     label: "Membrane",     role: .membrane,     position: SIMD2(0, 0.70),      radius: 0.07, isActive: true),
+        // Core
+        OrganismNode(id: "violet",       label: "Violet",       role: .violet,       position: SIMD2(0, 0),          radius: 0.12, isActive: true),
+        // Five chambers — Forge, Institute, Board, Omega, Registry
+        OrganismNode(id: "ch1",          label: "Institute",    role: .chamber,      position: SIMD2(-0.35, 0.20),   radius: 0.07, isActive: true),
+        OrganismNode(id: "ch2",          label: "Board",        role: .chamber,      position: SIMD2(0.35, 0.20),    radius: 0.07, isActive: true),
+        OrganismNode(id: "ch3",          label: "Forge",        role: .chamber,      position: SIMD2(0, 0.42),       radius: 0.07, isActive: true),
+        OrganismNode(id: "ch4",          label: "Omega",        role: .chamber,      position: SIMD2(-0.35, -0.20),  radius: 0.07, isActive: true),
+        OrganismNode(id: "ch5",          label: "Registry",     role: .chamber,      position: SIMD2(0.35, -0.20),   radius: 0.07, isActive: true),
+        // Constitutional interior
+        OrganismNode(id: "adjudication", label: "Adjudication", role: .adjudication, position: SIMD2(0, -0.42),      radius: 0.08, isActive: true),
+        OrganismNode(id: "handrail",     label: "Handrail",     role: .handrail,     position: SIMD2(-0.65, 0),      radius: 0.09, isActive: true),
+        OrganismNode(id: "kernel",       label: "Kernel",       role: .kernel,       position: SIMD2(0, -0.70),      radius: 0.07, isActive: true),
+        OrganismNode(id: "yubikey",      label: "YubiKey",      role: .yubiKey,      position: SIMD2(0.28, -0.58),   radius: 0.05, isActive: true),
+        // Constitutional exterior
+        OrganismNode(id: "alexandria",   label: "Alexandria",   role: .alexandria,   position: SIMD2(0.65, 0),       radius: 0.09, isActive: true),
+        OrganismNode(id: "programs",     label: "Programs",     role: .programs,     position: SIMD2(0.75, 0.45),    radius: 0.06, isActive: true),
+        OrganismNode(id: "buildspace",   label: "Build Space",  role: .buildSpace,   position: SIMD2(0.80, -0.55),   radius: 0.06, isActive: true),
+        OrganismNode(id: "founder",      label: "Founder",      role: .founder,      position: SIMD2(-0.78, 0.62),   radius: 0.06, isActive: true),
+        OrganismNode(id: "membrane",     label: "Membrane",     role: .membrane,     position: SIMD2(0, 0.70),       radius: 0.05, isActive: true),
     ]
 
     // ── Init ─────────────────────────────────────────────────────────────────
@@ -283,13 +292,17 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
 
     private func nodeColor(_ node: OrganismNode) -> SIMD4<Float> {
         switch node.role {
-        case .violet:       return SIMD4(0.56, 0.35, 0.95, 1.0)
-        case .chamber:      return SIMD4(0.10, 0.90, 0.90, 0.85)
-        case .adjudication: return SIMD4(0.95, 0.75, 0.10, 0.90)
-        case .handrail:     return SIMD4(0.20, 0.85, 0.45, 0.90)
-        case .alexandria:   return SIMD4(0.10, 0.65, 0.95, 0.90)
-        case .kernel:       return SIMD4(0.95, 0.25, 0.45, 0.90)
-        case .membrane:     return SIMD4(0.75, 0.55, 0.95, 0.80)
+        case .violet:       return SIMD4(0.000, 0.831, 1.000, 1.00)  // #00D4FF
+        case .chamber:      return SIMD4(0.420, 0.000, 1.000, 0.85)  // #6B00FF
+        case .adjudication: return SIMD4(0.000, 1.000, 0.533, 0.90)  // #00FF88
+        case .handrail:     return SIMD4(0.000, 1.000, 1.000, 0.90)  // #00FFFF
+        case .alexandria:   return SIMD4(1.000, 1.000, 0.000, 0.90)  // #FFFF00
+        case .kernel:       return SIMD4(1.000, 0.200, 0.200, 0.90)  // #FF3333
+        case .founder:      return SIMD4(1.000, 0.420, 0.000, 0.90)  // #FF6B00
+        case .programs:     return SIMD4(0.290, 0.435, 0.647, 0.85)  // #4A6FA5
+        case .buildSpace:   return SIMD4(0.290, 0.435, 0.647, 0.85)  // #4A6FA5
+        case .yubiKey:      return SIMD4(0.200, 0.800, 0.500, 0.85)  // greenish
+        case .membrane:     return SIMD4(0.000, 0.831, 1.000, 0.30)  // #00D4FF faint
         }
     }
 

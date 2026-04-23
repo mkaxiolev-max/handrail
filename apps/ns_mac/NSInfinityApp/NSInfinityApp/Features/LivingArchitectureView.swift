@@ -11,15 +11,43 @@ struct LivingArchitectureView: View {
             MetalOrganismView(selectedNode: $selectedNode)
                 .ignoresSafeArea()
 
-            // Node labels overlaid in SwiftUI coordinate space
+            // Constitutional boundary + privacy membrane (SwiftUI overlay layer)
             GeometryReader { geo in
+                let W = geo.size.width
+                let H = geo.size.height
+
+                // Privacy membrane: translucent ring around Violet (NDC center)
+                // Screen radius = NDC_radius * H * 0.38 (circle, both axes equal in screen space)
+                let membraneR = H * 0.22 * 0.38
+                Circle()
+                    .stroke(DSColors.Spec.violet.opacity(0.18), lineWidth: 10)
+                    .frame(width: membraneR * 2, height: membraneR * 2)
+                    .position(x: W / 2, y: H / 2)
+                    .allowsHitTesting(false)
+
+                // Constitutional boundary: dashed ellipse enclosing chambers + adj + handrail + kernel + yubikey
+                // Derived from NDC extents: x ∈ [-0.74, 0.44], y ∈ [-0.77, 0.50]
+                // NDC center: (-0.15, -0.135), semi-axes: (0.59, 0.635)
+                // Screen center: (0.443W, 0.551H), screen semi-axes: (0.224W, 0.241H)
+                let ellipseW = W * 0.448
+                let ellipseH = H * 0.482
+                let ellipseCX = W * 0.443
+                let ellipseCY = H * 0.551
+                Ellipse()
+                    .stroke(style: StrokeStyle(lineWidth: 1.5, dash: [7, 4]))
+                    .foregroundColor(DSColors.Spec.violet.opacity(0.35))
+                    .frame(width: ellipseW, height: ellipseH)
+                    .position(x: ellipseCX, y: ellipseCY)
+                    .allowsHitTesting(false)
+
+                // Node labels
                 ForEach(OrganismRenderer.canonicalNodes) { node in
-                    let nx = CGFloat(node.position.x) * geo.size.width  * 0.38 + geo.size.width  / 2
-                    let ny = (1 - CGFloat(node.position.y) * 0.38 - 0.5) * geo.size.height
+                    let nx = CGFloat(node.position.x) * W * 0.38 + W / 2
+                    let ny = (1 - CGFloat(node.position.y) * 0.38 - 0.5) * H
                     Text(node.label)
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundColor(labelColor(node.role))
-                        .position(x: nx, y: ny + CGFloat(node.radius) * geo.size.height * 0.30 + 14)
+                        .position(x: nx, y: ny + CGFloat(node.radius) * H * 0.30 + 14)
                         .allowsHitTesting(false)
                 }
             }
@@ -60,13 +88,17 @@ struct LivingArchitectureView: View {
 
     func labelColor(_ role: OrganismNode.NodeRole) -> Color {
         switch role {
-        case .violet:       return DSColors.violet
-        case .chamber:      return DSColors.accentCyan
-        case .adjudication: return DSColors.accentAmber
-        case .handrail:     return DSColors.online
-        case .alexandria:   return DSColors.accentCyan
-        case .kernel:       return DSColors.offline
-        case .membrane:     return DSColors.violetDim
+        case .violet:       return DSColors.Spec.violet
+        case .chamber:      return DSColors.Spec.chambers
+        case .adjudication: return DSColors.Spec.adj
+        case .handrail:     return DSColors.Spec.handrail
+        case .alexandria:   return DSColors.Spec.alex
+        case .kernel:       return DSColors.Spec.kernel
+        case .founder:      return DSColors.Spec.founder
+        case .programs:     return DSColors.Spec.build
+        case .buildSpace:   return DSColors.Spec.build
+        case .yubiKey:      return DSColors.online
+        case .membrane:     return DSColors.Spec.violet.opacity(0.40)
         }
     }
 }
@@ -106,13 +138,17 @@ private struct NodeDetailPanel: View {
 
     var nodeColor: Color {
         switch node.role {
-        case .violet:       return DSColors.violet
-        case .chamber:      return DSColors.accentCyan
-        case .adjudication: return DSColors.accentAmber
-        case .handrail:     return DSColors.online
-        case .alexandria:   return DSColors.accentCyan
-        case .kernel:       return DSColors.offline
-        case .membrane:     return DSColors.violetDim
+        case .violet:       return DSColors.Spec.violet
+        case .chamber:      return DSColors.Spec.chambers
+        case .adjudication: return DSColors.Spec.adj
+        case .handrail:     return DSColors.Spec.handrail
+        case .alexandria:   return DSColors.Spec.alex
+        case .kernel:       return DSColors.Spec.kernel
+        case .founder:      return DSColors.Spec.founder
+        case .programs:     return DSColors.Spec.build
+        case .buildSpace:   return DSColors.Spec.build
+        case .yubiKey:      return DSColors.online
+        case .membrane:     return DSColors.Spec.violet.opacity(0.40)
         }
     }
 }
@@ -126,7 +162,11 @@ extension OrganismNode.NodeRole: CustomStringConvertible {
         case .handrail:     return "Deterministic Execution — CPS Gate"
         case .alexandria:   return "Continuity Spine — Knowledge Reality"
         case .kernel:       return "Boundary & Safety — Dignity Kernel"
-        case .membrane:     return "Privacy Membrane"
+        case .founder:      return "Founder — Principal Authority"
+        case .programs:     return "Program Library — Runtime State"
+        case .buildSpace:   return "Build Space — Exterior to Constitutional Boundary"
+        case .yubiKey:      return "YubiKey — Hardware Quorum Gate"
+        case .membrane:     return "Privacy Membrane — Violet Boundary"
         }
     }
 }

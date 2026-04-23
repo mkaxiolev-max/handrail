@@ -68,30 +68,53 @@ private struct TimelineEmptyCard: View {
 private struct TimelineEventCard: View {
     let receipt: ReceiptEntry
 
+    // Color-coded by layer per Living Architecture spec tokens
+    var layerColor: Color {
+        let op = receipt.op.lowercased()
+        if op.contains("adjudication") || op.contains("adjudicate") { return DSColors.Spec.adj }
+        if op.contains("atom_write")   || op.contains("atom")       { return DSColors.Spec.alex }
+        if op.contains("invariant")                                  { return DSColors.Spec.kernel }
+        if op.contains("receipt")                                    { return DSColors.Spec.violet }
+        if op.contains("cps")         || op.contains("handrail")    { return DSColors.Spec.handrail }
+        if op.contains("chamber")     || op.contains("forge") ||
+           op.contains("institute")   || op.contains("board")       { return DSColors.Spec.chambers }
+        return DSColors.Spec.violet
+    }
+
+    var rowType: String {
+        let op = receipt.op.lowercased()
+        if op.contains("adjudication") || op.contains("adjudicate") { return "adjudication" }
+        if op.contains("atom_write")   || op.contains("atom")       { return "atom_write" }
+        if op.contains("invariant")                                  { return "invariant_check" }
+        return "receipt"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(receipt.op)
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                    .foregroundColor(DSColors.accentCyan)
+                    .foregroundColor(layerColor)
                     .lineLimit(1)
                 Spacer()
-                statusDot
+                Circle()
+                    .fill(receipt.status == "ok" || receipt.status == "success" ? DSColors.online : DSColors.offline)
+                    .frame(width: 5, height: 5)
             }
-            Text(receipt.ts)
-                .font(.system(size: 8))
-                .foregroundColor(DSColors.textTertiary)
+            HStack {
+                Text(rowType)
+                    .font(.system(size: 7, weight: .medium))
+                    .foregroundColor(layerColor.opacity(0.70))
+                Spacer()
+                Text(receipt.ts)
+                    .font(.system(size: 8))
+                    .foregroundColor(DSColors.textTertiary)
+            }
         }
         .padding(8)
         .frame(width: 160)
-        .background(DSColors.surfaceCard)
+        .background(layerColor.opacity(0.05))
         .cornerRadius(6)
-        .overlay(RoundedRectangle(cornerRadius: 6).stroke(DSColors.surfaceBorder, lineWidth: 1))
-    }
-
-    var statusDot: some View {
-        Circle()
-            .fill(receipt.status == "ok" || receipt.status == "success" ? DSColors.online : DSColors.offline)
-            .frame(width: 5, height: 5)
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(layerColor.opacity(0.25), lineWidth: 1))
     }
 }

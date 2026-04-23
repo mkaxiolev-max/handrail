@@ -6,75 +6,58 @@ struct VoiceOverlay: View {
 
     var body: some View {
         VStack {
-            Spacer()
             HStack {
                 Spacer()
-                ZStack(alignment: .bottomTrailing) {
+                ZStack(alignment: .topTrailing) {
                     if isExpanded {
                         VoicePanel(appState: appState, isExpanded: $isExpanded)
                             .transition(.asymmetric(
-                                insertion: .scale(scale: 0.85, anchor: .bottomTrailing).combined(with: .opacity),
-                                removal:   .scale(scale: 0.85, anchor: .bottomTrailing).combined(with: .opacity)
+                                insertion: .scale(scale: 0.85, anchor: .topTrailing).combined(with: .opacity),
+                                removal:   .scale(scale: 0.85, anchor: .topTrailing).combined(with: .opacity)
                             ))
-                            .offset(x: 0, y: -60)
+                            .offset(x: 0, y: 44)
                     }
-                    VoiceOrb(state: appState.voiceState, isExpanded: $isExpanded)
+                    VoicePill(state: appState.voiceState, isExpanded: $isExpanded)
                 }
-                .padding(.trailing, 32)
-                .padding(.bottom, 160)
+                .padding(.trailing, 16)
+                .padding(.top, 4)
                 .animation(.spring(response: 0.32, dampingFraction: 0.78), value: isExpanded)
             }
+            Spacer()
         }
     }
 }
 
-// MARK: — Orb
+// MARK: — Voice Pill (spec: top-right, "Violet · ready", pulsing dot, violet token)
 
-struct VoiceOrb: View {
+struct VoicePill: View {
     let state: VoiceState
     @Binding var isExpanded: Bool
     @State private var pulse: Bool = false
 
     var body: some View {
-        ZStack {
-            if state == .listening || state == .processing {
+        HStack(spacing: 7) {
+            // Pulsing dot — voice-membrane animation
+            ZStack {
                 Circle()
-                    .stroke(stateColor.opacity(0.25), lineWidth: 2)
-                    .frame(width: pulse ? 72 : 52, height: pulse ? 72 : 52)
+                    .fill(DSColors.Spec.violet.opacity(0.25))
+                    .frame(width: pulse ? 12 : 8, height: pulse ? 12 : 8)
                     .animation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true), value: pulse)
                 Circle()
-                    .stroke(stateColor.opacity(0.12), lineWidth: 2)
-                    .frame(width: pulse ? 90 : 68, height: pulse ? 90 : 68)
-                    .animation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true).delay(0.2), value: pulse)
+                    .fill(DSColors.Spec.violet)
+                    .frame(width: 6, height: 6)
             }
-            Circle()
-                .fill(RadialGradient(
-                    colors: [stateColor.opacity(0.95), stateColor.opacity(0.45)],
-                    center: .center, startRadius: 2, endRadius: 24
-                ))
-                .frame(width: 50, height: 50)
-                .overlay(
-                    Image(systemName: stateIcon)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundColor(.white)
-                )
-                .shadow(color: stateColor.opacity(0.55), radius: 14)
-                .onTapGesture { isExpanded.toggle() }
+            Text("Violet · \(state.label.lowercased())")
+                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .foregroundColor(DSColors.Spec.violet)
         }
+        .padding(.horizontal, 12).padding(.vertical, 6)
+        .background(DSColors.Spec.violet.opacity(0.10))
+        .clipShape(Capsule())
+        .overlay(Capsule().stroke(DSColors.Spec.violet.opacity(0.35), lineWidth: 1))
+        .shadow(color: DSColors.Spec.violet.opacity(0.20), radius: 8)
+        .onTapGesture { isExpanded.toggle() }
         .onAppear { pulse = true }
-    }
-
-    var stateColor: Color { state.color.color }
-
-    var stateIcon: String {
-        switch state {
-        case .dormant:    return "mic.slash"
-        case .ready:      return "mic"
-        case .listening:  return "waveform"
-        case .processing: return "cpu"
-        case .responding: return "speaker.wave.2"
-        case .muted:      return "mic.slash.fill"
-        }
     }
 }
 

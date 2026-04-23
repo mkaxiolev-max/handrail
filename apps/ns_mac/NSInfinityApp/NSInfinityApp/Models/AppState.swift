@@ -2,10 +2,10 @@ import Foundation
 import Combine
 
 enum HabitatMode: String, CaseIterable, Identifiable {
-    case founderHome    = "Founder Home"
     case livingArch     = "Living Architecture"
     case engineRoom     = "Engine Room"
-    case alexandria     = "Alexandria"
+    case founderHome    = "Programs Runtime"
+    case alexandria     = "Memory"
     case governance     = "Governance"
     case buildSpace     = "Build Space"
 
@@ -13,10 +13,10 @@ enum HabitatMode: String, CaseIterable, Identifiable {
 
     var icon: String {
         switch self {
-        case .founderHome:  return "house.fill"
         case .livingArch:   return "circle.hexagongrid.fill"
         case .engineRoom:   return "gearshape.2.fill"
-        case .alexandria:   return "archivebox.fill"
+        case .founderHome:  return "square.stack.3d.up.fill"
+        case .alexandria:   return "memorychip"
         case .governance:   return "building.columns.fill"
         case .buildSpace:   return "hammer.fill"
         }
@@ -26,7 +26,7 @@ enum HabitatMode: String, CaseIterable, Identifiable {
 final class AppState: ObservableObject {
     static let shared = AppState()
 
-    @Published var currentMode: HabitatMode = .founderHome
+    @Published var currentMode: HabitatMode = .livingArch
     @Published var services: [ServiceHealth] = ServiceHealth.allServices
     @Published var score: Double = 0
     @Published var scoreLabel: String = "—"
