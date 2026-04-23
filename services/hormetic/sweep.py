@@ -24,6 +24,7 @@ from services.gpx_omega import (
     PressureFixture,
     run_sweep,
 )
+from .classifier import SweepClassifier
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -248,12 +249,15 @@ def run_uoie_sweep(
     for bm in band_metrics.values():
         bm.post_sweep_drift = post_sweep_drift
 
+    signature = SweepClassifier().classify(trajectory, post_sweep_drift)
+
     result = UoieSweepResult(
         run_id=run_id,
         model=model_name,
         band_metrics=band_metrics,
         trajectory=trajectory,
         post_sweep_drift=post_sweep_drift,
+        signature=signature,
         ts=ts,
     )
 
