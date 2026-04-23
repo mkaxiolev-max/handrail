@@ -6,10 +6,20 @@ falls back to heuristic analysis (numeric evaluation, known identities,
 bracket-balance) otherwise.
 
 I3 constraint: confidence ceiling I3_ADMIN_CAP (0.95).
+Lineage Fabric: every result anchored to a chained receipt.
+
+Claim: plain string (Lean 4 expression, formula, or symbolic assertion).
+Context keys:
+  claim_id      — str (auto-generated if absent)
+  identity_key  — str: golden lookup key (e.g. "euler_identity")
+  lean_src      — str: custom Lean 4 source to feed to the shell (overrides default #check)
 """
 from __future__ import annotations
-import re, uuid
-from typing import Any, Dict
+
+import re
+import time
+import uuid
+from typing import Any, Dict, List
 
 from .contracts import ValidationResult, Verdict, emit_lineage_receipt, cap_confidence
 
@@ -28,7 +38,7 @@ _NUMERIC_RE = re.compile(
 
 def _check_balance(expr: str) -> bool:
     pairs = {"(": ")", "[": "]", "{": "}"}
-    stack: list[str] = []
+    stack: List[str] = []
     for ch in expr:
         if ch in pairs:
             stack.append(pairs[ch])
@@ -52,7 +62,9 @@ def _eval_numeric(claim: str) -> tuple[bool | None, str]:
 
 
 def _try_lean_shell(claim: str, context: Dict[str, Any]) -> Dict[str, Any]:
-    import shutil, subprocess, tempfile
+    import shutil
+    import subprocess
+    import tempfile
     if not shutil.which("lean"):
         return {"available": False, "verdict": None, "lean_output": "lean binary not found"}
     lean_src = context.get("lean_src", f"#check ({claim})")
@@ -74,20 +86,39 @@ class LeanMathAdapter:
     def validate(self, claim: str, context: Dict[str, Any]) -> ValidationResult:
         claim_id = context.get("claim_id", uuid.uuid4().hex[:12])
         checks: Dict[str, Any] = {}
+        flags: List[str] = []
+        audit: List[Dict[str, Any]] = []
+        ts0 = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
+        # ── bracket balance ────────────────────────────────────────────────────
         balanced = _check_balance(claim)
         checks["bracket_balance"] = balanced
+        audit.append({"step": "bracket_balance", "ts": ts0, "ok": balanced})
+        if not balanced:
+            flags.append("bracket_balance_fail")
 
+        # ── numeric evaluation ─────────────────────────────────────────────────
         numeric_ok, numeric_msg = _eval_numeric(claim)
         checks["numeric_eval"] = numeric_msg
+        audit.append({"step": "numeric_eval", "ts": ts0, "ok": numeric_ok, "msg": numeric_msg})
 
+        # ── known identity lookup ──────────────────────────────────────────────
         key = context.get("identity_key", "").lower()
         known = _KNOWN_IDENTITIES.get(key)
         checks["known_identity"] = known
+        audit.append({"step": "identity_lookup", "ts": ts0, "key": key, "ok": known})
 
+        # ── Lean 4 shell ───────────────────────────────────────────────────────
         lean_result = _try_lean_shell(claim, context)
         checks["lean_shell"] = lean_result
+        audit.append({"step": "lean_shell", "ts": ts0,
+                      "available": lean_result["available"], "ok": lean_result["verdict"]})
+        if lean_result["available"] and lean_result["verdict"] is False:
+            flags.append("lean4_rejected")
+        if not lean_result["available"]:
+            flags.append("lean_shell_unavailable")
 
+        # ── verdict + confidence ───────────────────────────────────────────────
         if lean_result["available"] and lean_result["verdict"] is not None:
             verdict: Verdict = "PASS" if lean_result["verdict"] else "FAIL"
             confidence = cap_confidence(0.92 if lean_result["verdict"] else 0.90)
@@ -109,6 +140,8 @@ class LeanMathAdapter:
             confidence = cap_confidence(0.40)
             rationale = "Structural analysis only — Lean 4 unavailable, no numeric/identity match"
 
+        audit.append({"step": "verdict", "ts": ts0, "verdict": verdict, "confidence": confidence})
+
         receipt_id, lineage_hash = emit_lineage_receipt(
             claim_id=claim_id, domain=self.domain, adapter="lean_math",
             verdict=verdict, confidence=confidence, checks=checks,
@@ -116,5 +149,6 @@ class LeanMathAdapter:
         return ValidationResult(
             claim_id=claim_id, domain=self.domain, adapter="lean_math",
             verdict=verdict, confidence=confidence, rationale=rationale,
-            checks=checks, receipt_id=receipt_id, lineage_hash=lineage_hash,
+            checks=checks, flags=flags, audit_trail=audit,
+            receipt_id=receipt_id, lineage_hash=lineage_hash,
         )

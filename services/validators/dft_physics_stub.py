@@ -12,10 +12,13 @@ Context keys recognised:
   converged  — bool | None: caller-attested SCF convergence
 
 I3 constraint: confidence ceiling I3_ADMIN_CAP (0.95).
+Lineage Fabric: every result anchored to a chained receipt.
 """
 from __future__ import annotations
+
+import time
 import uuid
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from .contracts import ValidationResult, Verdict, emit_lineage_receipt, cap_confidence
 
@@ -47,7 +50,12 @@ class DFTPhysicsAdapter:
 
     def validate(self, claim: str, context: Dict[str, Any]) -> ValidationResult:
         claim_id = context.get("claim_id", uuid.uuid4().hex[:12])
+        flags: List[str] = ["dft_engine_not_connected"]
+        audit: List[Dict[str, Any]] = []
+        ts0 = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
         checks: Dict[str, Any] = {"stub": True, "engine": "none"}
+        audit.append({"step": "init", "ts": ts0, "engine": "none", "stub": True})
 
         quantity_key = context.get("quantity")
         quantity_val = context.get("value")
@@ -56,13 +64,18 @@ class DFTPhysicsAdapter:
 
         checks["functional"]           = functional
         checks["convergence_reported"] = convergence
+        audit.append({"step": "context_parse", "ts": ts0,
+                      "quantity": quantity_key, "functional": functional,
+                      "converged": convergence})
 
         quantity_check: Dict[str, Any] = {}
         if quantity_key is not None and quantity_val is not None:
             quantity_check = _check_quantity(quantity_key, float(quantity_val))
         checks["quantity_bounds"] = quantity_check
+        audit.append({"step": "bounds_check", "ts": ts0, "result": quantity_check})
 
         if quantity_check.get("known") and quantity_check.get("in_range") is False:
+            flags.append("value_out_of_plausible_range")
             verdict: Verdict = "FAIL"
             confidence = cap_confidence(0.80)
             rationale = (
@@ -70,6 +83,7 @@ class DFTPhysicsAdapter:
                 f"{quantity_check['bounds']} — likely input error or unit mismatch"
             )
         elif convergence is False:
+            flags.append("scf_convergence_failure")
             verdict = "FAIL"
             confidence = cap_confidence(0.72)
             rationale = "Caller-reported SCF convergence failure — result unreliable"
@@ -85,6 +99,9 @@ class DFTPhysicsAdapter:
             confidence = cap_confidence(0.35)
             rationale = "Insufficient context for DFT validation — stub adapter, no live engine"
 
+        audit.append({"step": "verdict", "ts": ts0, "verdict": verdict,
+                      "confidence": confidence, "flags": flags})
+
         receipt_id, lineage_hash = emit_lineage_receipt(
             claim_id=claim_id, domain=self.domain, adapter="dft_physics_stub",
             verdict=verdict, confidence=confidence, checks=checks,
@@ -92,5 +109,6 @@ class DFTPhysicsAdapter:
         return ValidationResult(
             claim_id=claim_id, domain=self.domain, adapter="dft_physics_stub",
             verdict=verdict, confidence=confidence, rationale=rationale,
-            checks=checks, receipt_id=receipt_id, lineage_hash=lineage_hash,
+            checks=checks, flags=flags, audit_trail=audit,
+            receipt_id=receipt_id, lineage_hash=lineage_hash,
         )

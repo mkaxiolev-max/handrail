@@ -4,36 +4,84 @@ Ontology: lineage via Lineage Fabric; storage via Alexandrian Archive.
 I3 constraint: admin ceiling 95.0 — no adapter may return confidence > I3_ADMIN_CAP.
 """
 from __future__ import annotations
-import hashlib, json, os, time, uuid
-from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, Literal, Protocol
+
+import hashlib
+import json
+import os
+import time
+import uuid
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, List, Literal, Optional, Protocol, runtime_checkable
 
 Verdict = Literal["PASS", "FAIL", "UNCERTAIN", "UNSUPPORTED"]
 
 I3_ADMIN_CAP: float = 0.95  # I3 external admin ceiling — hard limit across all adapters
 
 
-@dataclass
+@dataclass(frozen=True)
 class ValidationResult:
+    """Shared result schema for every ValidatorAdapter.
+
+    Invariants (enforced in __post_init__):
+      - receipt_id / lineage_hash are non-null (Lineage Fabric anchor)
+      - confidence ∈ [0.0, I3_ADMIN_CAP]
+    """
+
     claim_id: str
     domain: str
     adapter: str
     verdict: Verdict
-    confidence: float       # 0.0–I3_ADMIN_CAP; cap enforced by cap_confidence()
+    confidence: float           # 0.0–I3_ADMIN_CAP; cap enforced by cap_confidence()
     rationale: str
     checks: Dict[str, Any]
-    receipt_id: str
-    lineage_hash: str
+    flags: List[str]            # warnings, policy notes, regulatory flags
+    audit_trail: List[Dict[str, Any]]  # append-only audit entries (FDA / compliance)
+    receipt_id: str             # Lineage Fabric receipt — non-null
+    lineage_hash: str           # SHA-256 chain hash — non-null
     ts: float = field(default_factory=time.time)
+
+    def __post_init__(self) -> None:
+        if not self.receipt_id or not self.lineage_hash:
+            raise ValueError(
+                f"ValidationResult from {self.adapter!r} must carry non-null "
+                "receipt_id and lineage_hash (Lineage Fabric anchors required)"
+            )
+        if not (0.0 <= self.confidence <= I3_ADMIN_CAP):
+            raise ValueError(
+                f"confidence {self.confidence} violates I3.admin cap "
+                f"[0.0, {I3_ADMIN_CAP}] for adapter {self.adapter!r}"
+            )
 
     def to_json(self) -> str:
         return json.dumps(asdict(self), separators=(",", ":"))
 
+    @property
+    def result_digest(self) -> str:
+        """SHA-256 of this result's canonical JSON (Lineage proof point)."""
+        return "sha256:" + hashlib.sha256(self.to_json().encode()).hexdigest()
 
+
+@runtime_checkable
 class ValidatorAdapter(Protocol):
+    """Structural protocol every domain adapter must satisfy.
+
+    Conformance verified at registration time via isinstance() against this
+    @runtime_checkable Protocol.
+    """
+
     domain: str
 
-    def validate(self, claim: str, context: Dict[str, Any]) -> ValidationResult: ...
+    def validate(self, claim: Dict[str, Any], context: Dict[str, Any]) -> ValidationResult:
+        """Validate *claim* against domain rules.
+
+        Args:
+            claim:   Domain-specific claim dict.
+            context: Caller context — actor, session_id, policy flags, etc.
+
+        Returns:
+            A frozen ValidationResult anchored to the Lineage Fabric.
+        """
+        ...
 
 
 # ---------------------------------------------------------------------------
@@ -103,4 +151,10 @@ def emit_lineage_receipt(
 
 def cap_confidence(value: float) -> float:
     """Enforce I3 admin ceiling of 0.95."""
-    return min(value, I3_ADMIN_CAP)
+    return min(max(value, 0.0), I3_ADMIN_CAP)
+
+
+def make_claim_id(claim: Dict[str, Any]) -> str:
+    """Stable 16-char hex claim identifier derived from canonical JSON."""
+    payload = json.dumps(claim, sort_keys=True)
+    return hashlib.sha256(payload.encode()).hexdigest()[:16]
