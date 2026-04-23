@@ -1,23 +1,38 @@
-"""Validator adapter contracts — AXIOLEV © 2026."""
-from typing import Protocol
+"""Validator adapter framework — AXIOLEV Holdings LLC © 2026."""
+from .contracts import (
+    ValidationResult,
+    ValidatorAdapter,
+    Verdict,
+    I3_ADMIN_CAP,
+    emit_lineage_receipt,
+    cap_confidence,
+)
+from .lean_math import LeanMathAdapter
+from .dft_physics_stub import DFTPhysicsAdapter
+from .fda_biomed import FDABiomedAdapter
+from .registry import dispatch, registered_domains
 
-class Validator(Protocol):
-    domain: str
-    def validate(self, candidate: dict) -> dict: ...
+# Legacy compatibility aliases
+LeanAdapter      = LeanMathAdapter
+DFTAdapter       = DFTPhysicsAdapter
+FDAClassAdapter  = FDABiomedAdapter
+REGISTRY = {"math": LeanMathAdapter(), "materials": DFTPhysicsAdapter(), "clinical": FDABiomedAdapter()}
 
-class LeanAdapter:
-    domain = "math"
-    def validate(self, candidate: dict) -> dict:
-        return {"ok": False, "reason": "lean adapter stub"}
-
-class DFTAdapter:
-    domain = "materials"
-    def validate(self, candidate: dict) -> dict:
-        return {"ok": False, "reason": "dft adapter stub"}
-
-class FDAClassAdapter:
-    domain = "clinical"
-    def validate(self, candidate: dict) -> dict:
-        return {"ok": False, "reason": "fda-class adapter stub"}
-
-REGISTRY = {"math": LeanAdapter(), "materials": DFTAdapter(), "clinical": FDAClassAdapter()}
+__all__ = [
+    "ValidationResult",
+    "ValidatorAdapter",
+    "Verdict",
+    "I3_ADMIN_CAP",
+    "emit_lineage_receipt",
+    "cap_confidence",
+    "LeanMathAdapter",
+    "DFTPhysicsAdapter",
+    "FDABiomedAdapter",
+    "dispatch",
+    "registered_domains",
+    # legacy
+    "LeanAdapter",
+    "DFTAdapter",
+    "FDAClassAdapter",
+    "REGISTRY",
+]
