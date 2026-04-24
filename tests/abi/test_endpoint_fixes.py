@@ -1,5 +1,6 @@
 """Live endpoint tests — P1.5 ABI freeze verification."""
 import json
+import socket
 import pytest
 import urllib.request
 import urllib.error
@@ -7,6 +8,18 @@ import urllib.error
 
 BASE = "http://127.0.0.1:9000"
 STATE_API = "http://127.0.0.1:9090"
+
+
+def _ns_reachable() -> bool:
+    try:
+        s = socket.create_connection(("127.0.0.1", 9000), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+ns_live = pytest.mark.skipif(not _ns_reachable(), reason="NS service not running on :9000")
 
 
 def _post(path, body):
@@ -30,6 +43,7 @@ def _get(url):
         return e.code, {}
 
 
+@ns_live
 def test_pdp_decide_returns_v2_deny():
     status, body = _post("/pdp/decide", {"principal": "anon", "action": "canon.promote"})
     assert body.get("return_block_version") == 2, f"expected v2, got: {body}"
@@ -38,6 +52,7 @@ def test_pdp_decide_returns_v2_deny():
     assert body.get("dignity_banner") == "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
 
 
+@ns_live
 def test_omega_simulate_403_on_allow_promotion():
     status, body = _post("/api/v1/omega/simulate", {"allow_promotion": True})
     assert status == 403, f"expected 403 on allow_promotion=true, got {status}: {body}"

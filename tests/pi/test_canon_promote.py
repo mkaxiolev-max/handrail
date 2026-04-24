@@ -1,9 +1,23 @@
 """Tests for /canon/promote endpoint."""
 import json
+import socket
+import pytest
 import urllib.request
 import urllib.error
 
 BASE = "http://127.0.0.1:9000"
+
+
+def _ns_reachable() -> bool:
+    try:
+        s = socket.create_connection(("127.0.0.1", 9000), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+ns_live = pytest.mark.skipif(not _ns_reachable(), reason="NS service not running on :9000")
 
 
 def _post(path, body):
@@ -19,6 +33,7 @@ def _post(path, body):
         return e.code, json.loads(e.read())
 
 
+@ns_live
 def test_promote_without_signature_rejected():
     status, body = _post("/canon/promote", {"candidate_id": "test-1"})
     assert body.get("return_block_version") == 2
@@ -26,6 +41,7 @@ def test_promote_without_signature_rejected():
     assert body.get("failure_reason") == "unauthorized"
 
 
+@ns_live
 def test_promote_with_signature_queued():
     status, body = _post("/canon/promote", {
         "candidate_id": "test-2",
@@ -38,6 +54,7 @@ def test_promote_with_signature_queued():
     assert arts and arts[0].get("status") == "queued"
 
 
+@ns_live
 def test_promote_hardware_signed_accepted():
     status, body = _post("/canon/promote", {
         "candidate_id": "test-3",

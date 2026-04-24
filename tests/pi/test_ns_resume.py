@@ -1,8 +1,22 @@
 """Tests for /ns/resume endpoint."""
 import json
+import socket
+import pytest
 import urllib.request
 
 BASE = "http://127.0.0.1:9000"
+
+
+def _ns_reachable() -> bool:
+    try:
+        s = socket.create_connection(("127.0.0.1", 9000), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+ns_live = pytest.mark.skipif(not _ns_reachable(), reason="NS service not running on :9000")
 
 
 def _post(path, body):
@@ -15,6 +29,7 @@ def _post(path, body):
         return r.status, json.loads(r.read())
 
 
+@ns_live
 def test_ns_resume_returns_v2():
     status, body = _post("/ns/resume", {"context": "ring6_test"})
     assert status == 200
@@ -23,6 +38,7 @@ def test_ns_resume_returns_v2():
     assert body.get("dignity_banner") == "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
 
 
+@ns_live
 def test_ns_resume_pi_check_live():
     """Quick smoke test: /pi/check also reachable after ring6 routes registered."""
     data = json.dumps({"candidate": {"op": "wire.send"}}).encode()
