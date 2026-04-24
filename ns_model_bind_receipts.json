@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-23T22:38:05.342727Z",
+  "bound_by": "ns_max_complete_models.sh v1.1.0",
+  "bindings": [
+    {
+      "role": "NS_LOCAL_TEXT_MODEL",
+      "env_key": "NS_LOCAL_TEXT_MODEL",
+      "path": "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX",
+      "runtime": "mlx",
+      "worker_runtime_active": false
+    },
+    {
+      "role": "NS_LOCAL_VLM_FAST_MODEL",
+      "env_key": "NS_LOCAL_VLM_FAST_MODEL",
+      "path": "/Volumes/NSExternal/models/local_live/Qwen3-VL-2B-Thinking",
+      "runtime": "mlx_vlm",
+      "worker_runtime_active": false
+    },
+    {
+      "role": "NS_LOCAL_VLM_STRONG_MODEL",
+      "env_key": "NS_LOCAL_VLM_STRONG_MODEL",
+      "path": "/Volumes/NSExternal/models/local_live/Qwen3-VL-32B-Instruct",
+      "runtime": "mlx_vlm",
+      "worker_runtime_active": false
+    },
+    {
+      "role": "NS_WORKER_TEXT_MODEL_1",
+      "env_key": "NS_WORKER_TEXT_MODEL_1",
+      "path": "/Volumes/NSExternal/models/workers/Kimi-K2.6",
+      "runtime": "vllm",
+      "worker_runtime_active": false
+    },
+    {
+      "role": "NS_WORKER_TEXT_MODEL_2",
+      "env_key": "NS_WORKER_TEXT_MODEL_2",
+      "path": "/Volumes/NSExternal/models/workers/DeepSeek-V3.2",
+      "runtime": "vllm",
+      "worker_runtime_active": false
+    },
+    {
+      "role": "NS_WORKER_VLM_MODEL_1",
+      "env_key": "NS_WORKER_VLM_MODEL_1",
+      "path": "/Volumes/NSExternal/models/workers/Qwen3-VL-30B-A3B-Thinking",
+      "runtime": "vllm",
+      "worker_runtime_active": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -resolvePackageDependencies -project /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj -scheme NSInfinityApp -derivedDataPath /Users/axiolevns/axiolev_runtime/.build/ns_mac_derived
+
+2026-04-23 16:35:24.184 xcodebuild[76602:776296] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+resolved source packages: 
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj -scheme NSInfinityApp -configuration Debug -destination platform=macOS -derivedDataPath /Users/axiolevns/axiolev_runtime/.build/ns_mac_derived -skipMacroValidation ONLY_ACTIVE_ARCH=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGNING_ALLOWED = NO
+    CODE_SIGNING_REQUIRED = NO
+    ONLY_ACTIVE_ARCH = YES
+

@@ -1,0 +1,48 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/VoiceOverlay.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "No active voice sessions",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "NS offline — voice unavailable",
+        "location": {
+          "startingColumn": 79,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "VOICE LANE",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 94
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ask NS…",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "↑",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 126
+        }
+      }
+    ]
+  },
+  "version": 1
+}

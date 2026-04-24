@@ -1,0 +1,319 @@
+
+== Checking Python ==
+Python 3.14.2
+
+== Checking disk space ==
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk7s1   3.6Ti    64Gi   3.6Ti     2%    123k   38G    0%   /Volumes/NSExternal
+
+== Creating or reusing virtual environment ==
+Using venv: /Users/axiolevns/ns_local_brain_env
+Python 3.14.2
+
+== Upgrading pip inside venv ==
+RUN [1/2]: python -m pip install --upgrade pip
+Requirement already satisfied: pip in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (26.0.1)
+
+== Installing required packages ==
+RUN [1/2]: python -m pip install huggingface_hub mlx mlx-lm
+Requirement already satisfied: huggingface_hub in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (1.11.0)
+Requirement already satisfied: mlx in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (0.31.2)
+Requirement already satisfied: mlx-lm in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (0.31.3)
+Requirement already satisfied: filelock>=3.10.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (3.29.0)
+Requirement already satisfied: fsspec>=2023.5.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (2026.3.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.4.3 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (1.4.3)
+Requirement already satisfied: httpx<1,>=0.23.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (0.28.1)
+Requirement already satisfied: packaging>=20.9 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (26.1)
+Requirement already satisfied: pyyaml>=5.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (6.0.3)
+Requirement already satisfied: tqdm>=4.42.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (4.67.3)
+Requirement already satisfied: typer in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (0.24.2)
+Requirement already satisfied: typing-extensions>=4.1.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub) (4.15.0)
+Requirement already satisfied: anyio in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub) (4.13.0)
+Requirement already satisfied: certifi in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub) (2026.4.22)
+Requirement already satisfied: httpcore==1.* in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub) (1.0.9)
+Requirement already satisfied: idna in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub) (3.13)
+Requirement already satisfied: h11>=0.16 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface_hub) (0.16.0)
+Requirement already satisfied: mlx-metal==0.31.2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx) (0.31.2)
+Requirement already satisfied: numpy in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (2.4.4)
+Requirement already satisfied: transformers>=5.0.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (5.6.2)
+Requirement already satisfied: sentencepiece in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (0.2.1)
+Requirement already satisfied: protobuf in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (7.34.1)
+Requirement already satisfied: jinja2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (3.1.6)
+Requirement already satisfied: regex>=2025.10.22 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (2026.4.4)
+Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (0.22.2)
+Requirement already satisfied: safetensors>=0.4.3 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (0.7.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from jinja2->mlx-lm) (3.0.3)
+Requirement already satisfied: click>=8.2.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub) (8.3.3)
+Requirement already satisfied: shellingham>=1.3.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub) (1.5.4)
+Requirement already satisfied: rich>=12.3.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub) (15.0.0)
+Requirement already satisfied: annotated-doc>=0.0.2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub) (0.0.4)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from rich>=12.3.0->typer->huggingface_hub) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from rich>=12.3.0->typer->huggingface_hub) (2.20.0)
+Requirement already satisfied: mdurl~=0.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from markdown-it-py>=2.2.0->rich>=12.3.0->typer->huggingface_hub) (0.1.2)
+
+== Resolving Hugging Face CLI ==
+Using CLI: huggingface-cli
+
+== Downloading model ==
+Download attempt 1/3
+Download command: huggingface-cli download "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit" --local-dir "/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX"
+[33mWarning: `huggingface-cli` is deprecated and no longer works. Use `hf` instead.
+[0m
+[90mHint: `hf` is already installed! Use it directly.
+[0m
+[90mHint: Examples:
+  hf auth login
+  hf download unsloth/gemma-4-31B-it-GGUF
+  hf upload my-cool-model . .
+  hf models ls --search "gemma"
+  hf repos ls --format json
+  hf jobs run python:3.12 python -c 'print("Hello!")'
+  hf --help
+[0m
+
+== Analyzing download failure ==
+WARN: Unknown download failure, retrying
+Download attempt 2/3
+Download command: huggingface-cli download "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit" --local-dir "/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX"
+[33mWarning: `huggingface-cli` is deprecated and no longer works. Use `hf` instead.
+[0m
+[90mHint: `hf` is already installed! Use it directly.
+[0m
+[90mHint: Examples:
+  hf auth login
+  hf download unsloth/gemma-4-31B-it-GGUF
+  hf upload my-cool-model . .
+  hf models ls --search "gemma"
+  hf repos ls --format json
+  hf jobs run python:3.12 python -c 'print("Hello!")'
+  hf --help
+[0m
+
+== Analyzing download failure ==
+WARN: Unknown download failure, retrying
+Download attempt 3/3
+Download command: huggingface-cli download "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit" --local-dir "/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX"
+[33mWarning: `huggingface-cli` is deprecated and no longer works. Use `hf` instead.
+[0m
+[90mHint: `hf` is already installed! Use it directly.
+[0m
+[90mHint: Examples:
+  hf auth login
+  hf download unsloth/gemma-4-31B-it-GGUF
+  hf upload my-cool-model . .
+  hf models ls --search "gemma"
+  hf repos ls --format json
+  hf jobs run python:3.12 python -c 'print("Hello!")'
+  hf --help
+[0m
+
+== Analyzing download failure ==
+WARN: Unknown download failure, retrying
+ERROR: Model download failed after 3 attempts
+
+== Checking Python ==
+Python 3.14.2
+
+== Checking target storage ==
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk7s1   3.6Ti    64Gi   3.6Ti     2%    123k   38G    0%   /Volumes/NSExternal
+
+== Creating or activating virtual environment ==
+Python 3.14.2
+/Users/axiolevns/ns_local_brain_env/bin/python
+
+== Installing required packages in venv ==
+RUN [1/2]: python -m pip install --upgrade pip
+Requirement already satisfied: pip in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (26.0.1)
+RUN [1/2]: python -m pip install huggingface_hub[cli] mlx mlx-lm
+Requirement already satisfied: mlx in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (0.31.2)
+Requirement already satisfied: mlx-lm in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (0.31.3)
+Requirement already satisfied: huggingface_hub[cli] in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (1.11.0)
+WARNING: huggingface-hub 1.11.0 does not provide the extra 'cli'
+Requirement already satisfied: filelock>=3.10.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (3.29.0)
+Requirement already satisfied: fsspec>=2023.5.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (2026.3.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.4.3 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (1.4.3)
+Requirement already satisfied: httpx<1,>=0.23.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (0.28.1)
+Requirement already satisfied: packaging>=20.9 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (26.1)
+Requirement already satisfied: pyyaml>=5.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (6.0.3)
+Requirement already satisfied: tqdm>=4.42.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (4.67.3)
+Requirement already satisfied: typer in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (0.24.2)
+Requirement already satisfied: typing-extensions>=4.1.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from huggingface_hub[cli]) (4.15.0)
+Requirement already satisfied: anyio in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub[cli]) (4.13.0)
+Requirement already satisfied: certifi in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub[cli]) (2026.4.22)
+Requirement already satisfied: httpcore==1.* in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub[cli]) (1.0.9)
+Requirement already satisfied: idna in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface_hub[cli]) (3.13)
+Requirement already satisfied: h11>=0.16 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface_hub[cli]) (0.16.0)
+Requirement already satisfied: mlx-metal==0.31.2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx) (0.31.2)
+Requirement already satisfied: numpy in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (2.4.4)
+Requirement already satisfied: transformers>=5.0.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (5.6.2)
+Requirement already satisfied: sentencepiece in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (0.2.1)
+Requirement already satisfied: protobuf in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (7.34.1)
+Requirement already satisfied: jinja2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from mlx-lm) (3.1.6)
+Requirement already satisfied: regex>=2025.10.22 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (2026.4.4)
+Requirement already satisfied: tokenizers<=0.23.0,>=0.22.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (0.22.2)
+Requirement already satisfied: safetensors>=0.4.3 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from transformers>=5.0.0->mlx-lm) (0.7.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from jinja2->mlx-lm) (3.0.3)
+Requirement already satisfied: click>=8.2.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub[cli]) (8.3.3)
+Requirement already satisfied: shellingham>=1.3.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub[cli]) (1.5.4)
+Requirement already satisfied: rich>=12.3.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub[cli]) (15.0.0)
+Requirement already satisfied: annotated-doc>=0.0.2 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from typer->huggingface_hub[cli]) (0.0.4)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from rich>=12.3.0->typer->huggingface_hub[cli]) (4.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from rich>=12.3.0->typer->huggingface_hub[cli]) (2.20.0)
+Requirement already satisfied: mdurl~=0.1 in /Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages (from markdown-it-py>=2.2.0->rich>=12.3.0->typer->huggingface_hub[cli]) (0.1.2)
+
+== Resolving Hugging Face CLI ==
+Using CLI: hf
+
+== Checking Hugging Face auth ==
+AUTH_MISSING
+WARN: HF auth not detected. Public repos may still download without login.
+WARN: If download fails with 401/403/gated, the script will prompt for login.
+
+== Downloading model ==
+Download attempt 1/3
+Fetching 19 files:   0%|          | 0/19 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 19 files:   5%|▌         | 1/19 [00:00<00:07,  2.42it/s]Fetching 19 files:  32%|███▏      | 6/19 [00:00<00:00, 13.98it/s]Fetching 19 files:  32%|███▏      | 6/19 [00:20<00:00, 13.98it/s]Fetching 19 files:  42%|████▏     | 8/19 [1:03:40<1:56:56, 637.83s/it]Fetching 19 files:  47%|████▋     | 9/19 [2:47:25<4:45:37, 1713.75s/it]Fetching 19 files: 100%|██████████| 19/19 [2:47:25<00:00, 528.73s/it]  
+[32m✓ Downloaded[0m
+  path: /Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX
+Model download complete
+
+== Verifying model directory ==
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/added_tokens.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00005-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/tokenizer_config.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/special_tokens_map.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/config.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/tokenizer.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00001-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00004-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/generation_config.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00007-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/README.md
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/merges.txt
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00002-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/chat_template.jinja
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/.gitattributes
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/vocab.json
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00006-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model-00003-of-00007.safetensors
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/.cache
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/.cache/huggingface
+/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX/model.safetensors.index.json
+Model file count: 40
+
+== Writing NS env file ==
+NS_LOCAL_TEXT_MODEL=/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX
+NS_LOCAL_RUNTIME=mlx
+NS_LOCAL_LAYER_ENABLED=true
+NS_LOCAL_LAYER_DEFAULT_LOCAL_ONLY=true
+NS_LOCAL_LAYER_ALLOW_WORKER_ESCALATION=false
+NS_LOCAL_LAYER_MODEL_CACHE_ROOT=/Volumes/NSExternal/models
+
+== Writing manifest ==
+{
+  "local_text_model": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+  "resolved_model_dir": "/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX",
+  "runtime": "mlx",
+  "locality": "mac_local",
+  "tier": "L1",
+  "status": "active_pending_test"
+}
+
+== Testing local inference ==
+Inference attempt 1/2
+<frozen runpy>:128: RuntimeWarning: 'mlx_lm.generate' found in sys.modules after import of package 'mlx_lm', but prior to execution of 'mlx_lm.generate'; this may result in unpredictable behaviour
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/generate.py", line 2096, in <module>
+    main()
+    ~~~~^^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/generate.py", line 2008, in main
+    model, tokenizer = load(
+                       ~~~~^
+        model_path,
+        ^^^^^^^^^^^
+    ...<2 lines>...
+        model_config={"quantize_activations": args.quantize_activations},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/utils.py", line 495, in load
+    tokenizer = load_tokenizer(
+        model_path, tokenizer_config, eos_token_ids=config.get("eos_token_id", None)
+    )
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/utils.py", line 433, in load_tokenizer
+    model_path = _download(
+        model_path,
+    ...<9 lines>...
+        ],
+    )
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/utils.py", line 249, in _download
+    snapshot_download(
+    ~~~~~~~~~~~~~~~~~^
+        path_or_hf_repo,
+        ^^^^^^^^^^^^^^^^
+        revision=revision,
+        ^^^^^^^^^^^^^^^^^^
+        allow_patterns=allow_patterns,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 84, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 129, in validate_repo_id
+    raise HFValidationError(f"Repo id must be a string, not {type(repo_id)}: '{repo_id}'.")
+huggingface_hub.errors.HFValidationError: Repo id must be a string, not <class 'pathlib.PosixPath'>: '/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX'.
+Calling `python -m mlx_lm.generate...` directly is deprecated. Use `mlx_lm.generate...` or `python -m mlx_lm generate ...` instead.
+WARN: Script failed near line 189
+WARN: See log: /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/bootstrap_ns_local_brain.log
+WARN: Memory or Metal issue detected
+WARN: Close other apps and retry, or switch to a smaller model
+Inference attempt 2/2
+<frozen runpy>:128: RuntimeWarning: 'mlx_lm.generate' found in sys.modules after import of package 'mlx_lm', but prior to execution of 'mlx_lm.generate'; this may result in unpredictable behaviour
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/generate.py", line 2096, in <module>
+    main()
+    ~~~~^^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/generate.py", line 2008, in main
+    model, tokenizer = load(
+                       ~~~~^
+        model_path,
+        ^^^^^^^^^^^
+    ...<2 lines>...
+        model_config={"quantize_activations": args.quantize_activations},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/utils.py", line 489, in load
+    model_path = _download(path_or_hf_repo, revision=revision)
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/mlx_lm/utils.py", line 249, in _download
+    snapshot_download(
+    ~~~~~~~~~~~~~~~~~^
+        path_or_hf_repo,
+        ^^^^^^^^^^^^^^^^
+        revision=revision,
+        ^^^^^^^^^^^^^^^^^^
+        allow_patterns=allow_patterns,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 84, in _inner_fn
+    validate_repo_id(arg_value)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/axiolevns/ns_local_brain_env/lib/python3.14/site-packages/huggingface_hub/utils/_validators.py", line 132, in validate_repo_id
+    raise HFValidationError(
+    ...<2 lines>...
+    )
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX'. Use `repo_type` argument if needed.
+Calling `python -m mlx_lm.generate...` directly is deprecated. Use `mlx_lm.generate...` or `python -m mlx_lm generate ...` instead.
+WARN: Script failed near line 189
+WARN: See log: /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/bootstrap_ns_local_brain.log
+WARN: Memory or Metal issue detected
+WARN: Close other apps and retry, or switch to a smaller model
+ERROR: Inference test failed

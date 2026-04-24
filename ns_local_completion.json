@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-23T22:38:05.342727Z",
+  "script_version": "1.1.0",
+  "local_live_verified": [],
+  "local_mirrored_worker_verified": [],
+  "worker_runtime_active": false,
+  "local_live_brain_inference_ok": false,
+  "active_download_in_progress": true,
+  "active_download_pids": [
+    7469,
+    11974,
+    30072,
+    30073,
+    30075,
+    30077
+  ],
+  "downloads_in_progress": {
+    "7469": {
+      "model": "Qwen3-30B-8bit-MLX",
+      "tier": "local_live",
+      "shards": "3/7",
+      "size_approx": "28G/~32G"
+    },
+    "11974": {
+      "model": "Qwen3-VL-2B-Thinking",
+      "tier": "local_live",
+      "size_approx": "3.3G/4.3G"
+    },
+    "30072": {
+      "model": "Qwen3-VL-32B-Instruct",
+      "tier": "local_live",
+      "size_approx": "1.8G/66.7G"
+    },
+    "30073": {
+      "model": "Qwen3-VL-30B-A3B-Thinking",
+      "tier": "worker",
+      "size_approx": "2.0G/62.2G"
+    },
+    "30075": {
+      "model": "Kimi-K2.6",
+      "tier": "worker",
+      "size_approx": "1.8G/595G"
+    },
+    "30077": {
+      "model": "DeepSeek-V3.2",
+      "tier": "worker",
+      "size_approx": "1.5G/689G"
+    }
+  },
+  "done_criteria": {
+    "venv_valid": true,
+    "hf_cli_works": true,
+    "all_local_live_downloaded": false,
+    "all_workers_mirrored": false,
+    "local_live_brain_inference_ok": false,
+    "env_file_written": true,
+    "manifest_written": true,
+    "route_matrix_written": true,
+    "completion_json_written": true,
+    "worker_boot_commands_written": true,
+    "download_receipts_written": true,
+    "bind_receipts_written": true,
+    "health_report_written": true
+  },
+  "auto_finalize_monitor_pid": 31529,
+  "resume_command": "bash /Users/axiolevns/axiolev_runtime/scripts/ns_verify_and_finalize.sh"
+}

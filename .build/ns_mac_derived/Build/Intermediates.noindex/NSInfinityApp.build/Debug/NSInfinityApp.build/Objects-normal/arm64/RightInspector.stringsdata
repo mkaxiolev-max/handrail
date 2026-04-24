@@ -1,0 +1,48 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/RightInspector.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Constitutional AI OS — NS∞",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 17
+        }
+      },
+      {
+        "comment": "",
+        "key": "Relational Shell",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "v3.1",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 25
+        }
+      },
+      {
+        "comment": "",
+        "key": "10/10 proofs · Shalom ✓",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "R%lld %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 189
+        }
+      }
+    ]
+  },
+  "version": 1
+}

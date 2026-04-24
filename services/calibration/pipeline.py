@@ -193,3 +193,100 @@ def export_prometheus() -> str:
         f'# TYPE axiolev_bss gauge',
         f'axiolev_bss {m["bss"]:.6f}',
     ])
+
+
+# ---------------------------------------------------------------------------
+# End-to-end calibration pipeline — Alexandrian Archive logging
+# ---------------------------------------------------------------------------
+
+def run_calibration_pipeline(
+    logits,
+    labels,
+    mask=None,
+    n_epochs: int = 50,
+    run_id: Optional[str] = None,
+    log_path: Optional[str] = None,
+    lr: float = 0.3,
+    init_T: float = 2.0,
+    target_coverage: float = 0.8,
+) -> Dict:
+    """End-to-end SFT calibration runner with per-epoch Alexandrian Archive logging.
+
+    Logs one JSONL record per epoch to:
+        /Volumes/NSExternal/ALEXANDRIA/calibration/<run_id>.jsonl  (primary)
+        ~/.axiolev/calibration/<run_id>.jsonl                      (fallback)
+
+    Each record schema:
+        {epoch, brier, ece, aurc, tau, coverage, risk, T, run_id, ts}
+
+    Returns final epoch metrics dict.
+    """
+    import os
+    import uuid
+    import numpy as np
+    from .metrics import brier_score, ece as ece_fn, aurc as aurc_fn
+    from .sft import sft_temperature_loop
+    from .selective import chow_optimal_threshold
+
+    if run_id is None:
+        run_id = uuid.uuid4().hex[:12]
+
+    logits_arr = np.asarray(logits, dtype=float)
+    labels_arr = np.asarray(labels, dtype=int)
+    mask_arr = np.asarray(mask, dtype=bool) if mask is not None else None
+
+    if log_path is None:
+        primary = f"/Volumes/NSExternal/ALEXANDRIA/calibration/{run_id}.jsonl"
+        fallback = os.path.expanduser(f"~/.axiolev/calibration/{run_id}.jsonl")
+        os.makedirs(os.path.dirname(primary), exist_ok=True) if os.path.isdir("/Volumes/NSExternal") else None
+        try:
+            os.makedirs(os.path.dirname(primary), exist_ok=True)
+            log_path = primary
+        except OSError:
+            os.makedirs(os.path.dirname(fallback), exist_ok=True)
+            log_path = fallback
+    else:
+        os.makedirs(os.path.dirname(os.path.abspath(log_path)), exist_ok=True)
+
+    last_record: Dict = {}
+
+    with open(log_path, "w") as fh:
+        sft_gen = sft_temperature_loop(
+            logits_arr, labels_arr, mask=mask_arr,
+            n_epochs=n_epochs, lr=lr, init_T=init_T,
+        )
+        for epoch, T in enumerate(sft_gen):
+            # Compute calibrated probabilities
+            if logits_arr.ndim == 1:
+                import math as _math
+                probs = np.array([1.0 / (1.0 + _math.exp(-float(z) / T)) for z in logits_arr])
+            else:
+                z = logits_arr / T
+                z -= z.max(axis=-1, keepdims=True)
+                e = np.exp(z)
+                probs = e / e.sum(axis=-1, keepdims=True)
+
+            active = probs[mask_arr] if mask_arr is not None else probs
+            active_labels = labels_arr[mask_arr] if mask_arr is not None else labels_arr
+
+            bs = brier_score(active, active_labels)
+            e_val = ece_fn(active, active_labels, n_bins=15)
+            a_val = aurc_fn(active, active_labels)
+            chow = chow_optimal_threshold(active, active_labels, target_coverage=target_coverage)
+
+            record: Dict = {
+                "epoch": epoch,
+                "brier": float(bs),
+                "ece": float(e_val),
+                "aurc": float(a_val),
+                "tau": float(chow["threshold"]),
+                "coverage": float(chow["coverage"]),
+                "risk": float(chow["risk"]),
+                "T": float(T),
+                "run_id": run_id,
+                "ts": time.time(),
+            }
+            fh.write(json.dumps(record) + "\n")
+            last_record = record
+
+    return last_record

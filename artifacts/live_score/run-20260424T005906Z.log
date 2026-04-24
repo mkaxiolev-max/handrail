@@ -1,0 +1,16 @@
+
+[1;36m━━━ 1. PYTEST — LIVE TEST SURFACE ━━━[0m
+[0;34m[..][0m pytest --collect-only
+[0;32m[OK][0m collected: 1399 tests across 109 files
+[0;34m[..][0m pytest run (full suite)
+[0;32m[OK][0m pytest: 1368 pass / 0 fail / 0 err / 20 skip
+
+[1;36m━━━ 2. VITEST — ns_ui ━━━[0m
+[0;34m[..][0m npm test --silent (ns_ui)
+[0;32m[OK][0m vitest: 21 pass / 0 fail
+
+[1;36m━━━ 3. XCTEST — NSInfinityApp (if target wired) ━━━[0m
+[0;34m[..][0m xcodebuild test (NSInfinityApp)
+[0;33m[!!][0m xctest target not wired (expected — deferred)
+
+[1;36m━━━ 4. DOCKER SERVICES HEALTH ━━━[0m

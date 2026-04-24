@@ -1,0 +1,61 @@
+
+[1;36m━━━ 1. PYTEST — LIVE TEST SURFACE ━━━[0m
+[0;34m[..][0m pytest --collect-only
+[0;32m[OK][0m collected: 1399 tests across 109 files
+[0;34m[..][0m pytest run (full suite)
+[0;32m[OK][0m pytest: 1368 pass / 0 fail / 0 err / 20 skip
+
+[1;36m━━━ 2. VITEST — ns_ui ━━━[0m
+[0;34m[..][0m npm test --silent (ns_ui)
+[0;32m[OK][0m vitest: 21 pass / 0 fail
+
+[1;36m━━━ 3. XCTEST — NSInfinityApp (if target wired) ━━━[0m
+[0;34m[..][0m xcodebuild test (NSInfinityApp)
+[0;33m[!!][0m xctest target not wired (expected — deferred)
+
+[1;36m━━━ 4. DOCKER SERVICES HEALTH ━━━[0m
+[0;32m[OK][0m docker: 0 healthy / 0 running
+
+[1;36m━━━ 5. GITLEAKS — SECURITY POSTURE ━━━[0m
+[90m6:00PM[0m [32mINF[0m [1m442 commits scanned.[0m
+[90m6:00PM[0m [32mINF[0m [1mscanned ~91623555 bytes (91.62 MB) in 5.04s[0m
+[90m6:00PM[0m [32mINF[0m [1mno leaks found[0m
+[0;32m[OK][0m leaks: 0
+[0;32m[OK][0m pre-commit gitleaks hook active
+
+[1;36m━━━ 6. COMPOSITE SCORES — v2.1 / v3.0 / v3.1 / v3.2 ━━━[0m
+[0;32m[OK][0m instruments loaded from scorecard
+[0;32m[OK][0m credits applied: I6 I5 I6 I4 I5 I4 I2 I2 I6 I1 I5 I6 I3 I4 I6 I7
+
+[1;36m━━━ 7. INSIGHT DELTA RANKING — MAX LEVERAGE ━━━[0m
+  INS-01  Full action-surface CPS (I6.C3+10 I4.RCI+3 I5.rev+3)       2     +2.2    1.1000    done      
+  INS-03  Reversibility registry 100% (I6.C5+8 I5.rev+8)             2     +1.6    0.8000    done      
+  INS-06  Calibration SFT tokenized Brier (I2+7)                     2     +1.4    0.7000    done      
+  INS-08  Hormetic B0-B5 sweep (I4.HDRC+5 I2.rob+3)                  2     +1.1    0.5500    done      
+  INS-04  TLA+/Apalache on Dignity Kernel (I6.C2+5 I1.D4+5 I5+4)     3     +1.4    0.4667    done      
+  INS-02  NVIR generator+oracle remaining (I2+0.8)                   3     +0.8    0.2667    done      
+  INS-05  Validator adapters Lean/DFT/FDA (I6.C4+8 I3.admin+4)       6     +1.2    0.2000    done      
+  NS-AL   Proof-carrying execution (I4+1.5 I6+2.0 I7+8.0)            8     +1.2    0.1500    done      
+  INS-07  Witness cosigning (LANDED)                                 0     +0.0    0.0000    landed    
+[0;34m[..][0m remaining delta if all pending land: +0.00 => projected v3.1 93.2600
+
+[1;36m━━━ 8. ns_max_closure.sh COMPLETION SCORE ━━━[0m
+  PREFLIGHT    done       3        3         
+  M0           done       5        5         
+  M1           done       7        7         
+  M2           done       8        8         
+  M3           done       10       10        
+  M4           done       6        6         
+  M5           done       8        8         
+  M6           done       7        7         
+  M7           done       6        6         
+  M8           done       10       10        
+  M9           done       5        5         
+  M10          done       8        8         
+  M11          done       8        8         
+  M12          done       2        2         
+  M13          done       4        4         
+  M14          done       3        3         
+[0;32m[OK][0m max-closure completion: 0.00 / 100 — incomplete
+
+[1;36m━━━ 9. EMIT ARTIFACTS ━━━[0m

@@ -1,0 +1,279 @@
+{
+  "" : {
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-primary.dia",
+    "emit-module-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-primary-emit-module.dia",
+    "pch" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-primary.swiftdeps"
+  },
+  "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/AppDelegate.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppDelegate~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/NSInfinityApp.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/KeyboardHandler.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/KeyboardHandler~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/WindowManager.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/WindowManager~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/HealthPoller~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/RuntimeAPIClient.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RuntimeAPIClient~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/DesignSystem/DSColors.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/DSColors~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/AlexandriaView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AlexandriaView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BuildSpaceView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/EngineRoomView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/EngineRoomView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/FounderHomeView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/FounderHomeView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/GovernanceView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/GovernanceView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/LivingArchitectureView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LivingArchitectureView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/OmegaView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OmegaView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/MetalView.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/MetalView~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/OrganismRenderer~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/AppState.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppState~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ScoreHistory.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ScoreHistory~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ServiceHealth.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ServiceHealth~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/AppShell.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/AppShell~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/BottomTimeline.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/BottomTimeline~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/CenterCanvas.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/CenterCanvas~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/LeftRail.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/LeftRail~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/RightInspector.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/RightInspector~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/TopBar.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/TopBar~partial.swiftmodule"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/VoiceOverlay.swift" : {
+    "const-values" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.swiftconstvalues",
+    "dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.d",
+    "diagnostics" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.dia",
+    "index-unit-output-path" : "/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.o",
+    "llvm-bc" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.bc",
+    "object" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.o",
+    "swift-dependencies" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay.swiftdeps",
+    "swiftmodule" : "/Users/axiolevns/axiolev_runtime/.build/ui_runs/20260423_150030/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/VoiceOverlay~partial.swiftmodule"
+  }
+}

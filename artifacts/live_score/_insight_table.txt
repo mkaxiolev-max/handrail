@@ -1,0 +1,9 @@
+INS-01|Full action-surface CPS (I6.C3+10 I4.RCI+3 I5.rev+3)|2|2.2|M3
+INS-03|Reversibility registry 100% (I6.C5+8 I5.rev+8)|2|1.6|M2
+INS-06|Calibration SFT tokenized Brier (I2+7)|2|1.4|M1
+INS-08|Hormetic B0-B5 sweep (I4.HDRC+5 I2.rob+3)|2|1.1|M4
+INS-04|TLA+/Apalache on Dignity Kernel (I6.C2+5 I1.D4+5 I5+4)|3|1.4|M6
+INS-02|NVIR generator+oracle remaining (I2+0.8)|3|0.8|M5
+INS-05|Validator adapters Lean/DFT/FDA (I6.C4+8 I3.admin+4)|6|1.2|M7
+INS-07|Witness cosigning (LANDED)|0|0.0|landed
+NS-AL|Proof-carrying execution (I4+1.5 I6+2.0 I7+8.0)|8|1.2|M8

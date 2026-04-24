@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-04-23T23:35:04.824442+00:00",
+  "i7_score": 10.0,
+  "i7_max": 10.0,
+  "raw_score": 100.0,
+  "raw_max": 100.0,
+  "pillars_pass": 10,
+  "pillars_fail": 0,
+  "pillars_total": 10,
+  "pillars": {
+    "T060_governance": {
+      "label": "Governance",
+      "desc": "Policy authority chain verifiable",
+      "test_file": "tests/certification/test_T060_governance.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T061_risk": {
+      "label": "Risk",
+      "desc": "Risk register coverage >= defined scope",
+      "test_file": "tests/certification/test_T061_risk.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T062_lineage": {
+      "label": "Lineage",
+      "desc": "Lineage Fabric end-to-end chain integrity",
+      "test_file": "tests/certification/test_T062_lineage.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T063_transparency": {
+      "label": "Transparency",
+      "desc": "Public-facing artifacts resolvable + signed",
+      "test_file": "tests/certification/test_T063_transparency.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T064_safety": {
+      "label": "Safety",
+      "desc": "Kill-switch + pause-budget bounds enforced",
+      "test_file": "tests/certification/test_T064_safety.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "tests_total": 4
+    },
+    "T065_bias": {
+      "label": "Bias",
+      "desc": "Bias audit pack runs clean on fixtures",
+      "test_file": "tests/certification/test_T065_bias.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T066_security": {
+      "label": "Security",
+      "desc": "Secret-scan + SBOM current; CVE SLA met",
+      "test_file": "tests/certification/test_T066_security.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "tests_total": 4
+    },
+    "T067_runtime": {
+      "label": "Runtime",
+      "desc": "Runtime invariants monitored + alertable",
+      "test_file": "tests/certification/test_T067_runtime.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T068_auditability": {
+      "label": "Auditability",
+      "desc": "Audit-log completeness + tamper-evident",
+      "test_file": "tests/certification/test_T068_auditability.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "tests_total": 3
+    },
+    "T069_continuous": {
+      "label": "Continuous",
+      "desc": "Continuous-cert daily job green for 7d rolling",
+      "test_file": "tests/certification/test_T069_continuous.py",
+      "score": 10.0,
+      "max": 10.0,
+      "status": "pass",
+      "tests_passed": 4,
+      "tests_failed": 0,
+      "tests_total": 4
+    }
+  }
+}

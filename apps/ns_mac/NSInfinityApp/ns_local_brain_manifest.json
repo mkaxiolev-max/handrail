@@ -1,0 +1,8 @@
+{
+  "local_text_model": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+  "resolved_model_dir": "/Volumes/NSExternal/models/Qwen3-30B-A3B-Thinking-2507-MLX",
+  "runtime": "mlx",
+  "locality": "mac_local",
+  "tier": "L1",
+  "status": "active_pending_test"
+}

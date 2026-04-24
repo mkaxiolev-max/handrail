@@ -1,0 +1,66 @@
+{
+  "run_id": "baseline_20260423",
+  "model": "oracle_v1",
+  "ts": "2026-04-23T22:43:22Z",
+  "trajectory": [
+    95.0,
+    95.0,
+    95.0,
+    95.0,
+    95.0,
+    95.0
+  ],
+  "post_sweep_drift": 0.0,
+  "signature": "Plastic",
+  "i3_ceiling": 95.0,
+  "band_metrics": {
+    "0": {
+      "band": 0,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": null,
+      "post_sweep_drift": 0.0
+    },
+    "1": {
+      "band": 1,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": null,
+      "post_sweep_drift": 0.0
+    },
+    "2": {
+      "band": 2,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": null,
+      "post_sweep_drift": 0.0
+    },
+    "3": {
+      "band": 3,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": null,
+      "post_sweep_drift": 0.0
+    },
+    "4": {
+      "band": 4,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": null,
+      "post_sweep_drift": 0.0
+    },
+    "5": {
+      "band": 5,
+      "score": 95.0,
+      "variance": 0.0,
+      "adaptation_rate": 0.0,
+      "recovery_time": 1,
+      "post_sweep_drift": 0.0
+    }
+  }
+}

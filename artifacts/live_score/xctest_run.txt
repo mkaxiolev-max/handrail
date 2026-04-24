@@ -1,0 +1,7 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -scheme NSInfinityApp -destination platform=macOS
+
+2026-04-23 18:00:01.033 xcodebuild[84091:883659] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-04-23 18:00:01.036 xcodebuild[84091:883659] Writing error result bundle to /var/folders/z6/8fxxyfx964n6_3hkgy2txc9h0000gn/T/ResultBundle_2026-23-04_18-00-0001.xcresult
+xcodebuild: error: Scheme NSInfinityApp is not currently configured for the test action.
+

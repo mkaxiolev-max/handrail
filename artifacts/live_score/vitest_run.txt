@@ -1,0 +1,12 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/axiolevns/axiolev_runtime/ns_ui
+
+ ✓ __tests__/habitat.test.ts (12 tests) 3ms
+ ✓ __tests__/viewmodels.test.ts (9 tests) 2ms
+
+ Test Files  2 passed (2)
+      Tests  21 passed (21)
+   Start at  17:59:59
+   Duration  452ms (transform 28ms, setup 9ms, collect 26ms, tests 4ms, environment 330ms, prepare 65ms)
+

@@ -1,0 +1,22 @@
+{
+  "version": "2.1.0",
+  "description": "NS\u221e Model Router tier registry \u2014 AXIOLEV Holdings LLC \u00a9 2026",
+  "tiers": {
+    "L1_local_text": {
+      "role": "local_text_brain",
+      "provider": "mlx_local",
+      "model_id": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+      "model_path": "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX",
+      "runtime": "mlx",
+      "priority": 10,
+      "latency_target_ms": 500,
+      "use_for": [
+        "cps_reasoning",
+        "voice_action",
+        "sovereign_decisions"
+      ],
+      "wired_at": "20260423T235021Z",
+      "active": true
+    }
+  }
+}

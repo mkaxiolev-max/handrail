@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-23T22:38:05.342727Z",
+  "venv_ok": true,
+  "hf_ok": true,
+  "hf_auth_ok": false,
+  "mlx_ok": false,
+  "local_live_models_downloaded": 0,
+  "local_live_models_total": 3,
+  "local_live_brain_inference_ok": false,
+  "worker_models_mirrored": 0,
+  "worker_models_total": 3,
+  "worker_runtime_active": false,
+  "ready_for_ns_binding": false,
+  "overall_status": "downloads_in_progress",
+  "active_download_pids": [
+    7469,
+    11974,
+    30072,
+    30073,
+    30075,
+    30077
+  ],
+  "qwen30b_shards_complete": 3,
+  "qwen30b_shards_total": 7,
+  "note": "Rerun ns_verify_and_finalize.sh once all downloads complete."
+}

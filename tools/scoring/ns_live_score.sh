@@ -141,8 +141,8 @@ if [ -d "$XCAPP_DIR" ] && have xcodebuild; then
   info "xcodebuild test (NSInfinityApp)"
   ( cd "$XCAPP_DIR" && xcodebuild test \
       -scheme NSInfinityApp -destination 'platform=macOS' 2>&1 || true ) | tee "$XFILE" >/dev/null
-  XCTEST_PASS=$(grep -c "Test Case.*passed" "$XFILE" 2>/dev/null || echo 0)
-  XCTEST_FAIL=$(grep -c "Test Case.*failed" "$XFILE" 2>/dev/null || echo 0)
+  XCTEST_PASS=$(grep -c "Test Case.*passed" "$XFILE" 2>/dev/null || true)
+  XCTEST_FAIL=$(grep -c "Test Case.*failed" "$XFILE" 2>/dev/null || true)
   XCTEST_PASS=${XCTEST_PASS:-0}; XCTEST_FAIL=${XCTEST_FAIL:-0}
   if [ "$((XCTEST_PASS + XCTEST_FAIL))" -gt 0 ]; then
     XCTEST_STATUS="wired"
@@ -160,8 +160,8 @@ hdr "4. DOCKER SERVICES HEALTH"
 
 DOCKER_HEALTHY=0; DOCKER_TOTAL=0
 if have docker; then
-  DOCKER_TOTAL=$(docker ps --format '{{.Names}}' 2>/dev/null | wc -l | tr -d ' ')
-  DOCKER_HEALTHY=$(docker ps --format '{{.Names}} {{.Status}}' 2>/dev/null | grep -c healthy || echo 0)
+  DOCKER_TOTAL=$( (docker ps --format '{{.Names}}' 2>/dev/null || true) | wc -l | tr -d ' ')
+  DOCKER_HEALTHY=$( (docker ps --format '{{.Names}} {{.Status}}' 2>/dev/null || true) | grep -c healthy || true)
   DOCKER_HEALTHY=${DOCKER_HEALTHY:-0}
   ok "docker: $DOCKER_HEALTHY healthy / $DOCKER_TOTAL running"
 else

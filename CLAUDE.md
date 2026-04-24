@@ -315,3 +315,43 @@ docker-compose down --remove-orphans && ./boot.sh
 DOCKER_HOST="unix:///Users/${USER}/.docker/run/docker.sock" docker-compose build ns
 docker-compose up -d ns
 ```
+
+---
+
+## Master Integration (ns-infinity-master-v1 @ 220/220)
+
+### Orchestration
+- Phase driver: `scripts/orchestrate/run_phase.py --phase N`
+- Phase catalog: `scripts/orchestrate/phase_catalog.json` (26 phases)
+- Score tracker (single source of truth): `/Volumes/NSExternal/ALEXANDRIA/score/master_rubric.json`
+- Receipts ledger: `/Volumes/NSExternal/ALEXANDRIA/receipts/` (append-only JSONL)
+- Preflight: `bash scripts/preflight.sh`
+- Full health: `bash scripts/health/full_health.sh`
+
+### Score display rule
+`public_score = min(100, floor(composite_220/220*100))` — bar NEVER exceeds 100 during the 26-phase run. Snaps to 100 only at Master-Cert ceremony.
+
+### Dimension weights (A–V, 220 pts total)
+Prime (A–J): A=10 B=10 C=15 D=10 E=15 F=10 G=10 H=10 I=5 J=5
+Omega (K–T): K=10 L=10 M=10 N=10 O=10 P=15 Q=15 R=10 S=5 T=5
+QR (U): U=10 | Akashic (V): V=10
+
+### Service ports
+Existing: 9001–9015 (14 services)
+Omega adds: 9016–9021
+QR adds: 9022 | Akashic adds: 9023
+Master-Cert target: 22/22 healthy
+
+### Ring-5 blockers (external — cannot be resolved autonomously)
+1. Stripe LLC verification (AXIOLEV Holdings LLC Wyoming)
+2. Live Stripe secret key in Vercel
+3. YubiKey slot 2 enrollment (2-of-2 Master-Cert quorum)
+4. DNS CNAME root.axiolev.com → root-jade-kappa.vercel.app
+5. Leaked GitHub PAT scrub (axiolev-deploy2) via git-filter-repo
+6. macOS Keychain + gitleaks pre-commit hook
+
+### Local brain
+- Model: Qwen3-30B-A3B-Thinking-2507-MLX-8bit
+- Path: /Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX
+- Venv: ~/ns_local_brain_env
+- Env: .ns_local_brain.env

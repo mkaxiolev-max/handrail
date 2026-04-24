@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0",
+  "description": "NS local model routing matrix. L-tiers run on Mac via MLX. W-tiers are mirrored workers.",
+  "tiers": {
+    "L1": {
+      "role": "local_text_brain",
+      "model_id": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+      "runtime": "mlx",
+      "inference_cmd": "python -m mlx_lm.generate --model {path} --max-tokens {max_tokens} --temp {temp} --prompt {prompt}",
+      "latency_target_ms": 500,
+      "use_for": ["cps_reasoning", "voice_action", "high_risk", "strategy", "sovereign_decisions"],
+      "escalate_to": "W1",
+      "escalate_conditions": [
+        "context_length > 32000",
+        "requires_tool_use_not_supported_by_mlx",
+        "worker_runtime_active == true"
+      ]
+    },
+    "L2": {
+      "role": "local_vlm_fast",
+      "model_id": "Qwen/Qwen3-VL-2B-Thinking",
+      "runtime": "mlx",
+      "latency_target_ms": 300,
+      "use_for": ["vision_quick", "ocr_assist", "screenshot_describe"],
+      "escalate_to": "L3",
+      "escalate_conditions": ["vision_complexity == high", "requires_detailed_analysis"]
+    },
+    "L3": {
+      "role": "local_vlm_strong",
+      "model_id": "Qwen/Qwen3-VL-32B-Instruct",
+      "runtime": "mlx",
+      "latency_target_ms": 2000,
+      "use_for": ["vision_complex", "document_understanding", "multimodal_reasoning"],
+      "escalate_to": "W3",
+      "escalate_conditions": ["video_input", "multi_image_batch", "worker_runtime_active == true"]
+    },
+    "W1": {
+      "role": "mirrored_worker_text_primary",
+      "model_id": "moonshotai/Kimi-K2.6",
+      "runtime": "vllm",
+      "runtime_active": false,
+      "use_for": ["long_context", "complex_reasoning", "batch_inference"],
+      "note": "Mirrored locally. Start via ns_worker_boot_commands.sh before use."
+    },
+    "W2": {
+      "role": "mirrored_worker_text_secondary",
+      "model_id": "deepseek-ai/DeepSeek-V3.2",
+      "runtime": "vllm",
+      "runtime_active": false,
+      "use_for": ["code_generation", "technical_analysis", "batch_tasks"],
+      "note": "Mirrored locally. Start via ns_worker_boot_commands.sh before use."
+    },
+    "W3": {
+      "role": "mirrored_worker_vlm",
+      "model_id": "Qwen/Qwen3-VL-30B-A3B-Thinking",
+      "runtime": "vllm",
+      "runtime_active": false,
+      "use_for": ["video_understanding", "high_resolution_vision", "multi_image"],
+      "note": "Mirrored locally. Start via ns_worker_boot_commands.sh before use."
+    }
+  },
+  "escalation_policy": {
+    "default_tier": "L1",
+    "worker_gate": "NS_LOCAL_LAYER_ALLOW_WORKER_ESCALATION == true AND worker_runtime_active == true",
+    "fallback_to_cloud": false,
+    "sovereign_mode": "L1_only_no_escalation"
+  }
+}

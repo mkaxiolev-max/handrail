@@ -1,0 +1,75 @@
+
+NS∞ local brain repair  ·  20260424T005708Z
+
+  venv:   /Users/axiolevns/ns_local_brain_env
+  model:  /Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX
+  repo:   lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit
+  log:    /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/ns_local_brain_repair.log
+
+
+== Activating venv ==
+  ✓ python Python 3.14.2
+  ✓ which python: /Users/axiolevns/ns_local_brain_env/bin/python
+
+== Verifying model files ==
+  ✓ config.json + tokenizer.json present
+  ✓ 7 safetensor shards (expected 7)
+  ✓ total size: 30G
+
+== Verifying packages ==
+  ✓ mlx / mlx_lm / huggingface_hub / transformers importable
+  mlx_lm 0.31.3
+
+== Inference test — strategy A (Python API direct) ==
+  ✓ strategy A succeeded
+    No need to reply with anything else.
+    
+    NS local brain online. No need to reply with anything else. NS local brain online. No need to reply with anything else. NS local brain online. No need to reply with anything else. NS local brain online. No need to reply with anything else. NS local brain online
+
+== Writing env file ==
+  ✓ wrote /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/.ns_local_brain.env
+
+== Writing manifest (DONE) ==
+{
+  "local_text_model": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+  "resolved_model_dir": "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX",
+  "runtime": "mlx",
+  "locality": "mac_local",
+  "tier": "L1",
+  "status": "DONE",
+  "inference_strategy": "python_api",
+  "venv": "/Users/axiolevns/ns_local_brain_env",
+  "verified_at_utc": "20260424T005708Z",
+  "safetensor_shards": 7,
+  "total_size": "30G"
+}
+  ✓ wrote /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/.ns_local_brain.manifest.json
+
+== Writing Alexandria receipt ==
+  ✓ receipt:  /Volumes/NSExternal/ALEXANDRIA/ledger/local_brain/20260424T005708Z/receipt.json
+
+═══ NS LOCAL BRAIN ONLINE ═══
+
+  model        Qwen3-30B-A3B-Thinking-2507-MLX-8bit
+  path         /Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX
+  runtime      mlx  ·  tier L1_local_text  ·  mac_local
+  strategy     python_api
+  shards       7/7  ·  30G
+  env          /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/.ns_local_brain.env
+  manifest     /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/.ns_local_brain.manifest.json
+  receipt      /Volumes/NSExternal/ALEXANDRIA/ledger/local_brain/20260424T005708Z/receipt.json
+
+  Use in a new shell:
+    source "/Users/axiolevns/ns_local_brain_env/bin/activate"
+    set -a; source "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/.ns_local_brain.env"; set +a
+
+  Programmatic inference (canonical for NS router):
+    from pathlib import Path
+    from mlx_lm import load, generate
+    m, t = load(str(Path("/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX")))
+    print(generate(m, t, prompt="hello", verbose=False))
+
+  CLI inference (works now):
+    mlx_lm generate --model "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX" --prompt "hello" --max-tokens 64
+
+AXIOLEV Holdings LLC © 2026

@@ -1,0 +1,13 @@
+{
+  "local_text_model": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+  "resolved_model_dir": "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX",
+  "runtime": "mlx",
+  "locality": "mac_local",
+  "tier": "L1",
+  "status": "DONE",
+  "inference_strategy": "python_api",
+  "venv": "/Users/axiolevns/ns_local_brain_env",
+  "verified_at_utc": "20260424T005708Z",
+  "safetensor_shards": 7,
+  "total_size": "30G"
+}

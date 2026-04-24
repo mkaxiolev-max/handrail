@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "generated": "2026-04-23",
+  "source": "FINAL_MAX_CANONICAL_CERTIFICATION + i7_breakdown (best-live, NVIR rate=0.974 applied)",
+  "instruments": {
+    "I1": {
+      "name": "Super-Omega v2",
+      "current": 88.80,
+      "ceiling": 88.80,
+      "ceiling_note": "Structural ceiling; no available credits. New Ring capability required."
+    },
+    "I2": {
+      "name": "Omega Intelligence v2",
+      "current": 89.74,
+      "ceiling": 90.00,
+      "ceiling_note": "NVIR rate 0.974→1.0 (+0.26 residual); larger corpus or more steps."
+    },
+    "I3": {
+      "name": "UOIE v2",
+      "current": 89.34,
+      "ceiling": 89.45,
+      "ceiling_note": "NVIR rate 0.974→1.0 (+0.11 residual)."
+    },
+    "I4": {
+      "name": "GPX-Ω",
+      "current": 97.88,
+      "ceiling": 98.11,
+      "ceiling_note": "NVIR rate 0.974→1.0 (+0.23 residual); already above 93 target."
+    },
+    "I5": {
+      "name": "SAQ",
+      "current": 89.70,
+      "ceiling": 89.70,
+      "ceiling_note": "Structural ceiling; no available credits."
+    },
+    "I6": {
+      "name": "Ω-Logos",
+      "current": 95.97,
+      "ceiling": 97.00,
+      "ceiling_note": "Super-Omega pack improvements; C4 sub-score (Oracle-completeness) has largest headroom."
+    },
+    "I7": {
+      "name": "CPS Certification Power Score",
+      "current": 100.00,
+      "ceiling": 100.00,
+      "ceiling_note": "Perfect score — 10/10 pillars pass (T060–T069). No gap."
+    }
+  },
+  "prior_supermax": 92.42,
+  "prior_supermax_version": "v3.1",
+  "prior_supermax_note": "Best live MASTER v3.1 score (FINAL_SUPERMAX_CERTIFICATION.json, 2026-04-22)"
+}

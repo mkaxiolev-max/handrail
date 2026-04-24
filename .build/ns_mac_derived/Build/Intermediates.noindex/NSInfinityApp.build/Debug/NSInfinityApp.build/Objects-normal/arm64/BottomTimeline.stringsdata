@@ -1,0 +1,16 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/BottomTimeline.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "No receipts — services offline",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 61
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,568 @@
+{
+  "total_ops": 53,
+  "reversible": 26,
+  "irreversible_with_proof": 27,
+  "irreversible_without_proof": 0,
+  "ops": [
+    {
+      "op_id": "calibration.block\u2192review",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "BLOCK",
+      "to": "REVIEW"
+    },
+    {
+      "op_id": "calibration.high_assurance\u2192pass",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "HIGH_ASSURANCE",
+      "to": "PASS"
+    },
+    {
+      "op_id": "calibration.pass\u2192high_assurance",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "PASS",
+      "to": "HIGH_ASSURANCE"
+    },
+    {
+      "op_id": "calibration.pass\u2192review",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "PASS",
+      "to": "REVIEW"
+    },
+    {
+      "op_id": "calibration.review\u2192block",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "REVIEW",
+      "to": "BLOCK"
+    },
+    {
+      "op_id": "calibration.review\u2192pass",
+      "domain": "calibration",
+      "kind": "reversible",
+      "from": "REVIEW",
+      "to": "PASS"
+    },
+    {
+      "op_id": "continuum.stream_append",
+      "domain": "continuum",
+      "kind": "irreversible",
+      "from": "stream_n",
+      "to": "stream_n+1",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:504ca1e5c713e101c1a9b4d16b57884b387a4c23becae0a5a2f1497fdbc9f193",
+        "post_state_hash": "sha256:e23e402d44c03e5d16102bab5ed74a5887ad040e11e68751a47893509bd35fca",
+        "receipt_ref": "lineage://constitutional/v1/continuum.stream_append",
+        "bounded_budget": null,
+        "compensating_action": "continuum.correction_append \u2014 append a correction event to the same stream that references the erroneous entry by sequence number"
+      }
+    },
+    {
+      "op_id": "narrative.any\u2192superseded",
+      "domain": "narrative",
+      "kind": "irreversible",
+      "from": "*",
+      "to": "superseded",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:936d511306e977d32df2bac179d10cfcd7a4a1dc733027893f159bebbcce6d2c",
+        "post_state_hash": "sha256:2d07557703c69fb33dda308263ac1d58da1708fe447f42d063f9360e7a7a711c",
+        "receipt_ref": "lineage://constitutional/v1/narrative.any\u2192superseded",
+        "bounded_budget": null,
+        "compensating_action": "narrative.supersession_review \u2014 governance review can annotate an erroneous supersession, but the supersession record itself is immutable"
+      }
+    },
+    {
+      "op_id": "narrative.buffered\u2192challenged",
+      "domain": "narrative",
+      "kind": "bounded_irreversible",
+      "from": "buffered",
+      "to": "challenged",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:3665c81b4f78532d2c3cf471ac4c609a3766bef1d26c99852f69b8d7d7500786",
+        "post_state_hash": "sha256:a1d5fd7d44b0ffbe77b3b1c8f627db6d352575541581503a16fd159f3e9efb35",
+        "receipt_ref": "lineage://constitutional/v1/narrative.buffered\u2192challenged",
+        "bounded_budget": "1 challenge token per narrative object",
+        "compensating_action": "narrative.challenge_withdraw \u2014 write withdrawal receipt to Lineage Fabric, return narrative to BUFFERED"
+      }
+    },
+    {
+      "op_id": "narrative.challenged\u2192stabilized",
+      "domain": "narrative",
+      "kind": "irreversible",
+      "from": "challenged",
+      "to": "stabilized",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:a1d5fd7d44b0ffbe77b3b1c8f627db6d352575541581503a16fd159f3e9efb35",
+        "post_state_hash": "sha256:4f19bfe5b28127ab0923cc86ac8e8c52394df20bf78b9c44cd5ba8ef4d37dbd0",
+        "receipt_ref": "lineage://constitutional/v1/narrative.challenged\u2192stabilized",
+        "bounded_budget": null,
+        "compensating_action": "narrative.supersede \u2014 create a superseding narrative via knowledge.promote_to_canon; the original stabilised record is sealed and immutable"
+      }
+    },
+    {
+      "op_id": "narrative.drafted\u2192buffered",
+      "domain": "narrative",
+      "kind": "reversible",
+      "from": "drafted",
+      "to": "buffered"
+    },
+    {
+      "op_id": "program.activated\u2192archived",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "activated",
+      "to": "archived",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:025afee93a8326b791a20506336eba945fe9fdbd9da0a4b3bddb60b14f487c01",
+        "post_state_hash": "sha256:d21b1120ca6bf78a9fbc3d0fba5c01eebc0df7dd3d071fe77b4593da9086155a",
+        "receipt_ref": "lineage://constitutional/v1/program.activated\u2192archived",
+        "bounded_budget": null,
+        "compensating_action": "governance.archive_review \u2014 governance program records the archive rationale as a canon entry; no state reversal is possible"
+      }
+    },
+    {
+      "op_id": "program.activated\u2192briefing",
+      "domain": "program",
+      "kind": "bounded_irreversible",
+      "from": "activated",
+      "to": "briefing",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:025afee93a8326b791a20506336eba945fe9fdbd9da0a4b3bddb60b14f487c01",
+        "post_state_hash": "sha256:8d6a4a61a16f7a529156f17a3fbb41d6f4bed060ccebb521294396e41a803386",
+        "receipt_ref": "lineage://constitutional/v1/program.activated\u2192briefing",
+        "bounded_budget": "1 briefing slot per activation",
+        "compensating_action": "program.briefing_abort \u2014 write abort receipt, return to ACTIVATED"
+      }
+    },
+    {
+      "op_id": "program.activated\u2192paused",
+      "domain": "program",
+      "kind": "reversible",
+      "from": "activated",
+      "to": "paused"
+    },
+    {
+      "op_id": "program.briefing\u2192archived",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "briefing",
+      "to": "archived",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:8d6a4a61a16f7a529156f17a3fbb41d6f4bed060ccebb521294396e41a803386",
+        "post_state_hash": "sha256:d21b1120ca6bf78a9fbc3d0fba5c01eebc0df7dd3d071fe77b4593da9086155a",
+        "receipt_ref": "lineage://constitutional/v1/program.briefing\u2192archived",
+        "bounded_budget": null,
+        "compensating_action": "governance.archive_review \u2014 governance program records the archive rationale; no state reversal is possible"
+      }
+    },
+    {
+      "op_id": "program.briefing\u2192executing",
+      "domain": "program",
+      "kind": "bounded_irreversible",
+      "from": "briefing",
+      "to": "executing",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:8d6a4a61a16f7a529156f17a3fbb41d6f4bed060ccebb521294396e41a803386",
+        "post_state_hash": "sha256:94d32556cce07093d4ec79484848b45fa5c2e35f7550f83f3d05032134a5af7c",
+        "receipt_ref": "lineage://constitutional/v1/program.briefing\u2192executing",
+        "bounded_budget": "1 execution run per briefing",
+        "compensating_action": "program.execution_abort \u2014 write abort receipt, halt CPS chain"
+      }
+    },
+    {
+      "op_id": "program.briefing\u2192paused",
+      "domain": "program",
+      "kind": "reversible",
+      "from": "briefing",
+      "to": "paused"
+    },
+    {
+      "op_id": "program.completed\u2192archived",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "completed",
+      "to": "archived",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:7f0d40a761cd45fa704f2c623350f988d6d8966fd4b12dbd3bce6638b1db83c6",
+        "post_state_hash": "sha256:d21b1120ca6bf78a9fbc3d0fba5c01eebc0df7dd3d071fe77b4593da9086155a",
+        "receipt_ref": "lineage://constitutional/v1/program.completed\u2192archived",
+        "bounded_budget": null,
+        "compensating_action": "knowledge.promote_to_canon \u2014 all completed outputs must be promoted to canon before archival is considered complete"
+      }
+    },
+    {
+      "op_id": "program.dormant\u2192activated",
+      "domain": "program",
+      "kind": "bounded_irreversible",
+      "from": "dormant",
+      "to": "activated",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:51272c466d5d4da76badbd4d26dcb216df90d0b01ec09b83df350a04b86e93fb",
+        "post_state_hash": "sha256:025afee93a8326b791a20506336eba945fe9fdbd9da0a4b3bddb60b14f487c01",
+        "receipt_ref": "lineage://constitutional/v1/program.dormant\u2192activated",
+        "bounded_budget": "1 program activation per instance",
+        "compensating_action": "program.deactivate_receipt \u2014 write deactivation receipt, return to DORMANT if no downstream receipts have been emitted"
+      }
+    },
+    {
+      "op_id": "program.executing\u2192paused",
+      "domain": "program",
+      "kind": "reversible",
+      "from": "executing",
+      "to": "paused"
+    },
+    {
+      "op_id": "program.executing\u2192review",
+      "domain": "program",
+      "kind": "bounded_irreversible",
+      "from": "executing",
+      "to": "review",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:94d32556cce07093d4ec79484848b45fa5c2e35f7550f83f3d05032134a5af7c",
+        "post_state_hash": "sha256:d24ad8687eeecff31fe06d2ada05f572aceaa789d5fc04ea6fb34fc77fd12021",
+        "receipt_ref": "lineage://constitutional/v1/program.executing\u2192review",
+        "bounded_budget": "1 review slot per execution",
+        "compensating_action": "program.review_abort \u2014 write abort receipt, return to EXECUTING for continuation"
+      }
+    },
+    {
+      "op_id": "program.paused\u2192activated",
+      "domain": "program",
+      "kind": "reversible",
+      "from": "paused",
+      "to": "activated"
+    },
+    {
+      "op_id": "program.paused\u2192archived",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "paused",
+      "to": "archived",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:e4427d8d3b7fb6ef27063afcebe8fdefc8c13cbee7b83c57ce56b0edcd15174a",
+        "post_state_hash": "sha256:d21b1120ca6bf78a9fbc3d0fba5c01eebc0df7dd3d071fe77b4593da9086155a",
+        "receipt_ref": "lineage://constitutional/v1/program.paused\u2192archived",
+        "bounded_budget": null,
+        "compensating_action": "governance.archive_review \u2014 governance program records the archive rationale; no state reversal is possible"
+      }
+    },
+    {
+      "op_id": "program.review\u2192archived",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "review",
+      "to": "archived",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:d24ad8687eeecff31fe06d2ada05f572aceaa789d5fc04ea6fb34fc77fd12021",
+        "post_state_hash": "sha256:d21b1120ca6bf78a9fbc3d0fba5c01eebc0df7dd3d071fe77b4593da9086155a",
+        "receipt_ref": "lineage://constitutional/v1/program.review\u2192archived",
+        "bounded_budget": null,
+        "compensating_action": "governance.archive_review \u2014 governance program records the archive rationale; no state reversal is possible"
+      }
+    },
+    {
+      "op_id": "program.review\u2192completed",
+      "domain": "program",
+      "kind": "irreversible",
+      "from": "review",
+      "to": "completed",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:d24ad8687eeecff31fe06d2ada05f572aceaa789d5fc04ea6fb34fc77fd12021",
+        "post_state_hash": "sha256:7f0d40a761cd45fa704f2c623350f988d6d8966fd4b12dbd3bce6638b1db83c6",
+        "receipt_ref": "lineage://constitutional/v1/program.review\u2192completed",
+        "bounded_budget": null,
+        "compensating_action": "knowledge.promote_to_canon \u2014 completion outcomes must be promoted to the canonical knowledge base before the completed record becomes authoritative"
+      }
+    },
+    {
+      "op_id": "program.review\u2192executing",
+      "domain": "program",
+      "kind": "reversible",
+      "from": "review",
+      "to": "executing"
+    },
+    {
+      "op_id": "receipt.emit",
+      "domain": "receipt",
+      "kind": "irreversible",
+      "from": "chain_n",
+      "to": "chain_n+1",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:b379a72b68d2540210c2ed79cea0dacd0d98aff86102a19efb4e8ed24bb8ed85",
+        "post_state_hash": "sha256:fec07b163d7693ad3d250f5bc48495f3e9e02e5374b2f78d023239d5122b2fcf",
+        "receipt_ref": "lineage://constitutional/v1/receipt.emit",
+        "bounded_budget": null,
+        "compensating_action": "receipt.emit_correction \u2014 emit a new receipt with event_type='correction' referencing the erroneous receipt_id; the original receipt is unchanged"
+      }
+    },
+    {
+      "op_id": "tier.0\u21922",
+      "domain": "tier",
+      "kind": "bounded_irreversible",
+      "from": "0",
+      "to": "2",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:24fe23d3048d35ee50a8ebe7333aa968b04a00ae217431afbfd1a97abccd8f37",
+        "post_state_hash": "sha256:5a27751fd4da7dcd45fa0bd4d242a7003b61b9640485d00f559034b9d5a45b1c",
+        "receipt_ref": "lineage://constitutional/v1/tier.0\u21922",
+        "bounded_budget": "1 isolation event; reversal requires 2-of-3 governance quorum",
+        "compensating_action": "governance.tier_review \u2014 2-of-3 governance quorum authorises tier reduction after threat resolution; reduction receipt written to Lineage Fabric"
+      }
+    },
+    {
+      "op_id": "tier.2\u21923",
+      "domain": "tier",
+      "kind": "irreversible",
+      "from": "2",
+      "to": "3",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:5a27751fd4da7dcd45fa0bd4d242a7003b61b9640485d00f559034b9d5a45b1c",
+        "post_state_hash": "sha256:555aaacfbc3619949a0072d198bf4c6326869e0f26a0b6d94ce9fae63eb0c003",
+        "receipt_ref": "lineage://constitutional/v1/tier.2\u21923",
+        "bounded_budget": null,
+        "compensating_action": "sys.shutdown_graceful \u2014 controlled shutdown sequence executes; no state reversal is constitutionally possible"
+      }
+    },
+    {
+      "op_id": "tier.isolate_domain",
+      "domain": "tier",
+      "kind": "bounded_irreversible",
+      "from": "active",
+      "to": "isolated",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:969cdc30e916317c4a2335200097e22bb4022b60c26fe5349fbec0bbc09f51de",
+        "post_state_hash": "sha256:69aaeabcc2a403b94d5bc7ca957cc78c4b15551c7fc6505034205029dc7282de",
+        "receipt_ref": "lineage://constitutional/v1/tier.isolate_domain",
+        "bounded_budget": "1 domain isolation event per domain_id",
+        "compensating_action": "governance.domain_restore \u2014 governance quorum authorises domain restoration; restoration receipt written to Lineage Fabric"
+      }
+    },
+    {
+      "op_id": "voice.awaiting_confirmation\u2192executing",
+      "domain": "voice",
+      "kind": "irreversible",
+      "from": "awaiting_confirmation",
+      "to": "executing",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:faf472b6438da16ff84fc0b4ddb3d3ea2b45197ea7a100723163177b8fbdabe8",
+        "post_state_hash": "sha256:abc87784df8c202ae6fc28e6c2322498f023ef40fce71ce6e7b6da8943d56e23",
+        "receipt_ref": "lineage://constitutional/v1/voice.awaiting_confirmation\u2192executing",
+        "bounded_budget": null,
+        "compensating_action": "cps.compensate \u2014 run registered undo op if domain supports it; governance review required for any reversal"
+      }
+    },
+    {
+      "op_id": "voice.awaiting_confirmation\u2192interrupted",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "awaiting_confirmation",
+      "to": "interrupted"
+    },
+    {
+      "op_id": "voice.awaiting_confirmation\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "awaiting_confirmation",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.error\u2192idle",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "error",
+      "to": "idle"
+    },
+    {
+      "op_id": "voice.error\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "error",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.executing\u2192error",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "executing",
+      "to": "error",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:abc87784df8c202ae6fc28e6c2322498f023ef40fce71ce6e7b6da8943d56e23",
+        "post_state_hash": "sha256:166344a49e2cf4a39768502c3ae04f5ca1a937684f7466dd59949df687af843e",
+        "receipt_ref": "lineage://constitutional/v1/voice.executing\u2192error",
+        "bounded_budget": "1 error event emission per execution",
+        "compensating_action": "voice.error_receipt_acknowledge \u2014 write acknowledgment receipt, clear error and transition to READY"
+      }
+    },
+    {
+      "op_id": "voice.executing\u2192responding",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "executing",
+      "to": "responding",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:abc87784df8c202ae6fc28e6c2322498f023ef40fce71ce6e7b6da8943d56e23",
+        "post_state_hash": "sha256:c3cb53d2f86b3015c7eb432092b05238cc5d464222c9222b648ca4203510d618",
+        "receipt_ref": "lineage://constitutional/v1/voice.executing\u2192responding",
+        "bounded_budget": "1 execution result object per execution",
+        "compensating_action": "voice.session_reset \u2014 discard execution result, log compensating receipt"
+      }
+    },
+    {
+      "op_id": "voice.idle\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "idle",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.interrupted\u2192listening",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "interrupted",
+      "to": "listening"
+    },
+    {
+      "op_id": "voice.interrupted\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "interrupted",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.listening\u2192muted",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "listening",
+      "to": "muted"
+    },
+    {
+      "op_id": "voice.listening\u2192transcribing",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "listening",
+      "to": "transcribing",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:cb9408647702370f73c9f1082cd4d7d504039b8372fe5f033764df52e706ef74",
+        "post_state_hash": "sha256:cf6839d501b63406b1b5c91e4d73862569948fce4a2779fb9abaa29944ef0aea",
+        "receipt_ref": "lineage://constitutional/v1/voice.listening\u2192transcribing",
+        "bounded_budget": "1 audio segment per transcription invocation",
+        "compensating_action": "voice.session_reset \u2014 discard partial transcript and return to IDLE; write compensating receipt to Lineage Fabric"
+      }
+    },
+    {
+      "op_id": "voice.muted\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "muted",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.ready\u2192listening",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "ready",
+      "to": "listening"
+    },
+    {
+      "op_id": "voice.ready\u2192muted",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "ready",
+      "to": "muted"
+    },
+    {
+      "op_id": "voice.responding\u2192awaiting_confirmation",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "responding",
+      "to": "awaiting_confirmation",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:c3cb53d2f86b3015c7eb432092b05238cc5d464222c9222b648ca4203510d618",
+        "post_state_hash": "sha256:faf472b6438da16ff84fc0b4ddb3d3ea2b45197ea7a100723163177b8fbdabe8",
+        "receipt_ref": "lineage://constitutional/v1/voice.responding\u2192awaiting_confirmation",
+        "bounded_budget": "1 confirmation request per responding cycle",
+        "compensating_action": "voice.confirmation_timeout \u2014 timeout path returns to READY with no action taken; write timeout receipt to Lineage Fabric"
+      }
+    },
+    {
+      "op_id": "voice.responding\u2192interrupted",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "responding",
+      "to": "interrupted"
+    },
+    {
+      "op_id": "voice.responding\u2192ready",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "responding",
+      "to": "ready"
+    },
+    {
+      "op_id": "voice.thinking\u2192error",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "thinking",
+      "to": "error",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:5be9b35363dcee674b96f09b43aedbc71da97fbe7c91eff9755b7a4bb62d6864",
+        "post_state_hash": "sha256:166344a49e2cf4a39768502c3ae04f5ca1a937684f7466dd59949df687af843e",
+        "receipt_ref": "lineage://constitutional/v1/voice.thinking\u2192error",
+        "bounded_budget": "1 error event emission per thinking cycle",
+        "compensating_action": "voice.error_receipt_acknowledge \u2014 write acknowledgment receipt, clear error and transition to READY"
+      }
+    },
+    {
+      "op_id": "voice.thinking\u2192executing",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "thinking",
+      "to": "executing",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:5be9b35363dcee674b96f09b43aedbc71da97fbe7c91eff9755b7a4bb62d6864",
+        "post_state_hash": "sha256:abc87784df8c202ae6fc28e6c2322498f023ef40fce71ce6e7b6da8943d56e23",
+        "receipt_ref": "lineage://constitutional/v1/voice.thinking\u2192executing",
+        "bounded_budget": "1 CPS execution slot per dispatch",
+        "compensating_action": "cps.compensate \u2014 run registered undo op if available; else write failure_event to Lineage Fabric and return to READY"
+      }
+    },
+    {
+      "op_id": "voice.thinking\u2192responding",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "thinking",
+      "to": "responding",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:5be9b35363dcee674b96f09b43aedbc71da97fbe7c91eff9755b7a4bb62d6864",
+        "post_state_hash": "sha256:c3cb53d2f86b3015c7eb432092b05238cc5d464222c9222b648ca4203510d618",
+        "receipt_ref": "lineage://constitutional/v1/voice.thinking\u2192responding",
+        "bounded_budget": "1 model call per thinking cycle",
+        "compensating_action": "voice.session_reset \u2014 discard response tokens, return to READY; write compensating receipt to Lineage Fabric"
+      }
+    },
+    {
+      "op_id": "voice.transcribing\u2192interrupted",
+      "domain": "voice",
+      "kind": "reversible",
+      "from": "transcribing",
+      "to": "interrupted"
+    },
+    {
+      "op_id": "voice.transcribing\u2192thinking",
+      "domain": "voice",
+      "kind": "bounded_irreversible",
+      "from": "transcribing",
+      "to": "thinking",
+      "kenosis_proof": {
+        "pre_state_hash": "sha256:cf6839d501b63406b1b5c91e4d73862569948fce4a2779fb9abaa29944ef0aea",
+        "post_state_hash": "sha256:5be9b35363dcee674b96f09b43aedbc71da97fbe7c91eff9755b7a4bb62d6864",
+        "receipt_ref": "lineage://constitutional/v1/voice.transcribing\u2192thinking",
+        "bounded_budget": "1 transcript object per ASR call",
+        "compensating_action": "voice.session_reset \u2014 discard transcript, return to IDLE; write compensating receipt to Lineage Fabric"
+      }
+    }
+  ]
+}

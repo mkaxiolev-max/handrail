@@ -1,0 +1,634 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -resolvePackageDependencies -project /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj -scheme NSInfinityApp -derivedDataPath /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived
+
+2026-04-23 17:07:12.267 xcodebuild[79232:817221] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+resolved source packages: 
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj -scheme NSInfinityApp -configuration Debug -destination platform=macOS -derivedDataPath /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived -skipMacroValidation ONLY_ACTIVE_ARCH=YES CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGNING_ALLOWED = NO
+    CODE_SIGNING_REQUIRED = NO
+    ONLY_ACTIVE_ARCH = YES
+
+2026-04-23 17:07:12.803 xcodebuild[79234:817296] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006032-000270520145801C, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006032-000270520145801C, name:My Mac }
+note: Using codesigning identity override: -
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'NSInfinityApp' in project 'NSInfinityApp' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: e09050552b6484da53631974bf18caf9
+Build description path: /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/XCBuildData/e09050552b6484da53631974bf18caf9.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/SDKStatCaches.noindex/macosx26.4-25E251-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/SDKStatCaches.noindex/macosx26.4-25E251-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp-7a7ae7ec9384550825df4190cbef71f0-VFS/all-product-headers.yaml
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp-7a7ae7ec9384550825df4190cbef71f0-VFS/all-product-headers.yaml
+
+CreateBuildDirectory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp.xcodeproj
+    builtin-create-build-directory /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibInstallName-normal-arm64.txt (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibInstallName-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibPath-normal-arm64.txt (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibPath-normal-arm64.txt
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyStaticMetadataFileList (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyMetadataFileList (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.hmap
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-project-headers.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-project-headers.hmap
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-target-headers.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-target-headers.hmap
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-non-framework-target-headers.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-own-target-headers.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-generated-files.hmap (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-generated-files.hmap
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.LinkFileList (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.LinkFileList
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_const_extract_protocols.json (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-OutputFileMap.json (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-OutputFileMap.json
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList
+
+WriteAuxiliaryFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftConstValuesFileList (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    write-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftConstValuesFileList
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/unthinned (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/unthinned
+
+MkDir /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/thinned (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /bin/mkdir -p /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/thinned
+
+Ld /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/__preview.dylib normal (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos14.0 -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -O0 -L/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -install_name @rpath/NSInfinityApp.debug.dylib -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_dependency_info.dat -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/__preview.dylib
+
+CompileMetalFile /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismShaders.metal (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.5.188.0.8H4zIP/Metal.xctoolchain/usr/bin/metal -c -target air64-apple-macos14.0 -gline-tables-only -frecord-sources -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/include -F/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -fmetal-math-mode\=fast -fmetal-math-fp32-functions\=fast -serialize-diagnostics /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Metal/OrganismShaders.dia -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Metal/OrganismShaders.air -index-store-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Index.noindex/DataStore -MMD -MT dependencies -MF /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Metal/OrganismShaders.dat /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismShaders.metal
+
+GenerateAssetSymbols /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Assets.xcassets (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Assets.xcassets --compile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources --output-format human-readable-text --notices --warnings --export-dependency-info /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_dependencies --output-partial-info-plist /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --enable-on-demand-resources NO --development-region en --target-device mac --minimum-deployment-target 14.0 --platform macosx --bundle-identifier com.axiolev.NSInfinityApp --generate-swift-asset-symbol-extensions NO --generate-swift-asset-symbols /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.swift --generate-objc-asset-symbols /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.h --generate-asset-symbol-index /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/* com.apple.actool.compilation-results */
+/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.swift
+
+
+CompileAssetCatalogVariant thinned /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Assets.xcassets (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/usr/bin/actool /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Assets.xcassets --compile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor --enable-on-demand-resources NO --development-region en --target-device mac --minimum-deployment-target 14.0 --platform macosx
+/* com.apple.actool.compilation-results */
+/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist_thinned
+/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/thinned/Assets.car
+
+
+LinkAssetCatalog /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Assets.xcassets (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-linkAssetCatalog --thinned /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/thinned --thinned-dependencies /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_output/unthinned --unthinned-dependencies /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_dependencies_unthinned --unthinned-info-plist-content /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist_unthinned --output /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources --plist-output /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist
+note: Emplaced /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources/Assets.car (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+ProcessInfoPlistFile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Info.plist /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Info.plist (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-infoPlistUtility /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Resources/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/PkgInfo -expandbuildsettings -platform macosx -additionalcontentfile /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/assetcatalog_generated_info.plist -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Info.plist
+
+MetalLink /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources/default.metallib (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.5.188.0.8H4zIP/Metal.xctoolchain/usr/bin/metal -target air64-apple-macos14.0 -frecord-sources -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources/default.metallib /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Metal/OrganismShaders.air
+
+SwiftDriver NSInfinityApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NSInfinityApp -Onone @/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -emit-localized-strings -emit-localized-strings-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64 -c -j28 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/SDKStatCaches.noindex/macosx26.4-25E251-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -output-file-map /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -sdk-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-generated-files.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-own-target-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-target-headers.hmap -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-project-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/include -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-Swift.h -working-directory /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp -experimental-emit-module-separately -disable-cmo
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_float-C8CDGU50MN2TIIXSBD06SVY8L.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_stdarg-88ZDW7J1I9CQ257JIUXYIC3DZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ptrauth-97ZNXQF9HWQMZYGNBYZYJAMRQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_stddef-DIRQRWNWV12U1VIOWDWFFCAY6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/DeveloperToolsSupport-33G318F2CDKYHXMH9VZKJ7R58.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ptrcheck-7MUEWFR1IT9K8NS0MH9WP4A2J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_stdbool-5ZEQEE3I0IR4WM5OGG5KAYAGT.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/SwiftShims-21TM89D02QQF25IPW78WT8ADQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_AvailabilityInternal-Q1HR3E3LI0XE8ZLWX3K45BS0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_SwiftConcurrencyShims-4GCJNLHZ9OR5Q3B93NCAHBTH0.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_DarwinFoundation1-ZLRL4G9SK30VE1GZPTPYQIK9.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_DarwinFoundation2-ABKZR3MP336MZJLK0FRNTFA2J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_limits-5Y8VHEUR8AY3HOM4GABEJ9EKV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/sys_types-EGC9GB0H9L9BUHVM3K5CB4B6S.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_tgmath-16DUSXFBJ2SREW0WT8Z51WIR8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_stdint-2BRJOHVY6W8VJBYPO08D54TNP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/libDER-7PEUK4AKTW0CCB21ZKKLPYBU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_intrinsics-2T90JXRQ9AAC4WQT7ZMBH9V40.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_stdatomic-AYRWG2Q2JU390GK4T5A0OJCBP.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_DarwinFoundation3-ESIM7XIVML96ZYT22A0XDRSQQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/OpenGL-4UW56AX70XSUX26HNPFP8XIKK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/_Builtin_inttypes-4RUCJK0G54BIOU3N59PP6K49H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Darwin-39168CHOCMSX35ICJOV4DX4R6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/simd-CL2AW6MMTBDLJ68Z9N9G5RKZ8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/libkern-UVOMYQGVDE6RCIL06CB5ZVC7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CUPS-AZFPJIA5FN389SGSJLBQV2H2B.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/MachO-42ZQLQ8C4V7ULVA7J7CWJ1N7R.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/launch-2WBWM3TZGPPPUGIRK9ZHIU1ZR.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ObjectiveC-C4QX7ZNLR8NGWLZSJRRGEIMBS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Spatial-EPM68YX2GA8XLY6JT3X01FJYU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/os_object-7YEDMBTHDLHK1LB5SLQAS5XUK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/os_workgroup-5Z40RZ5ECBDYU182JZ38TEDLM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Dispatch-3KXHKSX8J9GJ4Q3Z0VVEQYCZ2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreFoundation-587AY4JCLDUGY5NEJXKJUM1PD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/XPC-ED436W4Q42KFWZO6W5SDBVMX1.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/os-4VHCL4421UHMIJS2YFVM34EXZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/IOKit-ABT47W62FRSE0S835AH7YBX4Q.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CFNetwork-9QE36P0K4VHJ9JU6VIN2957H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Security-77OVO4I29GHL6UJFCY2P4WR8D.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ColorSync-8BJX6PLD7441VJCWQHPWIFY24.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreGraphics-60PXK54W2XFP7X6MLC7AZAY4G.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/DiskArbitration-AM3D60DBC3Y9IYA5KRZ5HQMM1.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreServices-DYJR3VVU61W4UDHYLJIOGOFJ2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ImageIO-486ODMVHHXJDY7OZNU4UQ6JHB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreText-CHSXOFJJAVQOI3JLIF1FGAWZH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Foundation-10DZPZFJ8YJ35M69V4U549L7H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ApplicationServices-4VHB2F0GXPF3ULK5AH7DTL11C.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/OSLog-DAQ6GBMXGYM2GHGK6TGGAIZP5.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/DataDetection-6RP0C1G0ZL8OGPFBKH05HTC2L.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/UniformTypeIdentifiers-22TGGXWUMLHC4BHUJH99VP4TD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/ModelIO-5D3CHDYQOI8U3V54FJEX669HS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/IOSurface-CSNT30Z5BU2O97BO6NMIY1P1P.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreData-9GRRLDH07I41T4ISOOMT2V1KW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Symbols-766VKN1QK4GZAOSOVR8T763G.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Accessibility-7B036FKLWQUTWY9S72SLHXKRK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreTransferable-B4N9FYSG6ZNYQ89ZIF22P4TTO.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Metal-D86C4DY0OAXPS4XTJXA730ORD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreVideo-7WPARXDO0RO8FXDU0NZSDKVSW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/CoreImage-6A39V2JNMJDMS0F5J9Y8CO1RD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/QuartzCore-3NRAD7GT1IYKIV9T007HB8H6T.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/SwiftUICore-83Q3Y9P5S147HRGPNYUHF4R8C.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/AppKit-EPX4XLVLO386XTZAHERMQ5Q0W.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/SwiftUI-5NO34SYXTPLQ6K0K4VO55TJ5A.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/MetalKit-6CMORTG1S0LC0XLCTMR763P4A.pcm
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ NSInfinityApp (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+EmitSwiftModule normal arm64 (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ AppState.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/AppState.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/AppState.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ GeneratedAssetSymbols.swift /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ HealthPoller.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift:71:40: warning: call to method 'scoreBand' in closure requires explicit use of 'self' to make capture semantics explicit; this is an error in the Swift 6 language mode
+                    state.scoreLabel = scoreBand(s)
+                                       ^
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift:55:60: warning: reference to captured var 'anyOnline' in concurrently-executing code; this is an error in the Swift 6 language mode
+            await MainActor.run { state.isServicesOnline = anyOnline }
+                                                           ^
+
+SwiftCompile normal arm64 Compiling\ WindowManager.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/WindowManager.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/WindowManager.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ ServiceHealth.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ServiceHealth.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ServiceHealth.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ RuntimeAPIClient.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/RuntimeAPIClient.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/RuntimeAPIClient.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ KeyboardHandler.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/KeyboardHandler.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/KeyboardHandler.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ ScoreHistory.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ScoreHistory.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Models/ScoreHistory.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ DSColors.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/DesignSystem/DSColors.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/DesignSystem/DSColors.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ OrganismRenderer.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift:173:19: warning: immutable value 'pipelineState' was never used; consider replacing with '_' or removing it
+        guard let pipelineState, let particlePipeline,
+              ~~~~^~~~~~~~~~~~~
+              _
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift:173:38: warning: immutable value 'particlePipeline' was never used; consider replacing with '_' or removing it
+        guard let pipelineState, let particlePipeline,
+                                 ~~~~^~~~~~~~~~~~~~~~
+                                 _
+
+SwiftCompile normal arm64 Compiling\ MetalView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/MetalView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/MetalView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ GovernanceView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/GovernanceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/GovernanceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ OmegaView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/OmegaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/OmegaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ LivingArchitectureView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/LivingArchitectureView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/LivingArchitectureView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ EngineRoomView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/EngineRoomView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/EngineRoomView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ AlexandriaView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/AlexandriaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/AlexandriaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ VoiceOverlay.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/VoiceOverlay.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/VoiceOverlay.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ BottomTimeline.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/BottomTimeline.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/BottomTimeline.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ CenterCanvas.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/CenterCanvas.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/CenterCanvas.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ RightInspector.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/RightInspector.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/RightInspector.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ LeftRail.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/LeftRail.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/LeftRail.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ AppDelegate.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/AppDelegate.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/AppDelegate.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ AppShell.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/AppShell.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/AppShell.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ NSInfinityApp.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/NSInfinityApp.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/NSInfinityApp.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ FounderHomeView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/FounderHomeView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/FounderHomeView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ TopBar.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/TopBar.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/TopBar.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftCompile normal arm64 Compiling\ BuildSpaceView.swift /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftCompile normal arm64 /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for NSInfinityApp (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriver\ Compilation\ Requirements NSInfinityApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NSInfinityApp -Onone @/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -emit-localized-strings -emit-localized-strings-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64 -c -j28 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/SDKStatCaches.noindex/macosx26.4-25E251-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -output-file-map /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -sdk-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-generated-files.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-own-target-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-target-headers.hmap -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-project-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/include -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-Swift.h -working-directory /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp -experimental-emit-module-separately -disable-cmo
+
+SwiftMergeGeneratedHeaders /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/NSInfinityApp-Swift.h /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-Swift.h (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-swiftHeaderTool -arch arm64 /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-Swift.h -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/NSInfinityApp-Swift.h
+
+Copy /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.swiftmodule /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.swiftmodule
+
+Copy /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.swiftdoc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftdoc (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftdoc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.swiftdoc
+
+Copy /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.abi.json /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.abi.json (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.abi.json /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/arm64-apple-macos.abi.json
+
+Copy /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftsourceinfo (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftsourceinfo /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.swiftmodule/Project/arm64-apple-macos.swiftsourceinfo
+
+SwiftDriverJobDiscovery normal arm64 Compiling ServiceHealth.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling ScoreHistory.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling HealthPoller.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppState.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling RuntimeAPIClient.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling GeneratedAssetSymbols.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling OrganismRenderer.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppDelegate.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling WindowManager.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling CenterCanvas.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling MetalView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling BuildSpaceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling KeyboardHandler.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling DSColors.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling TopBar.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling BottomTimeline.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling LeftRail.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppShell.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling NSInfinityApp.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling GovernanceView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling LivingArchitectureView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling OmegaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling FounderHomeView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling VoiceOverlay.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling RightInspector.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling EngineRoomView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriverJobDiscovery normal arm64 Compiling AlexandriaView.swift (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+SwiftDriver\ Compilation NSInfinityApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NSInfinityApp -Onone @/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos14.0 -g -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -emit-localized-strings -emit-localized-strings-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64 -c -j28 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/SDKStatCaches.noindex/macosx26.4-25E251-688ef53f1462e2c8f657fdc38a81448f30f9ca8789b706f8bd3fc906a70d770f.sdkstatcache -output-file-map /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -sdk-module-cache-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_const_extract_protocols.json -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-generated-files.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-own-target-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-all-target-headers.hmap -Xcc -iquote -Xcc /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-project-headers.hmap -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/include -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources-normal/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources/arm64 -Xcc -I/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-Swift.h -working-directory /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp -experimental-emit-module-separately -disable-cmo
+
+Ld /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp.debug.dylib normal (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos14.0 -dynamiclib -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -O0 -L/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -L/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug -F/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -filelist /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.LinkFileList -install_name @rpath/NSInfinityApp.debug.dylib -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @executable_path/../Frameworks -Xlinker -object_path_lto -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -dependency_info -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.swiftmodule @/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp-linker-args.resp -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -framework Metal -framework MetalKit -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp.debug.dylib
+
+ConstructStubExecutorLinkFileList /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-ExecutorLinkFileList-normal-arm64.txt (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    construct-stub-executor-link-file-list /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp.debug.dylib /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-ExecutorLinkFileList-normal-arm64.txt
+note: Using stub executor library with Swift entry point. (in target 'NSInfinityApp' from project 'NSInfinityApp')
+
+Ld /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp normal (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-macos14.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -O0 -L/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -F/Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @executable_path/../Frameworks -rdynamic -Xlinker -no_deduplicate -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp-ExecutorLinkFileList-normal-arm64.txt /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp.debug.dylib -o /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp
+
+CopySwiftLibs /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-swiftStdLibTool --copy --verbose --scan-executable /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp.debug.dylib --scan-folder /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Frameworks --scan-folder /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/PlugIns --scan-folder /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Library/SystemExtensions --scan-folder /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Extensions --scan-folder /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/Metal.framework --scan-folder /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/System/Library/Frameworks/MetalKit.framework --platform macosx --toolchain /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.5.188.0.8H4zIP/Metal.xctoolchain --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os --back-deploy-swift-span
+Ignoring --strip-bitcode because --sign was not passed
+
+ExtractAppIntentsMetadata (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /var/run/com.apple.security.cryptexd/mnt/com.apple.MobileAsset.MetalToolchain-v17.5.188.0.8H4zIP/Metal.xctoolchain --module-name NSInfinityApp --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk --xcode-version 17E202 --platform-family macOS --deployment-target 14.0 --bundle-identifier com.axiolev.NSInfinityApp --output /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/Resources --target-triple arm64-apple-macos14.0 --binary-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app/Contents/MacOS/NSInfinityApp --dependency-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp_dependency_info.dat --stringsdata-file /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftFileList --metadata-file-list /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyMetadataFileList --static-metadata-file-list /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/NSInfinityApp.DependencyStaticMetadataFileList --swift-const-vals-list /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Intermediates.noindex/NSInfinityApp.build/Debug/NSInfinityApp.build/Objects-normal/arm64/NSInfinityApp.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-04-23 17:07:22.227 appintentsmetadataprocessor[79361:817982] Starting appintentsmetadataprocessor export
+2026-04-23 17:07:22.228 appintentsmetadataprocessor[79361:817982] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+RegisterExecutionPolicyException /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-RegisterExecutionPolicyException /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app
+
+Validate /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    builtin-validationUtility /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app -no-validate-extension -infoplist-subpath Contents/Info.plist
+
+Touch /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /usr/bin/touch -c /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app
+
+RegisterWithLaunchServices /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app (in target 'NSInfinityApp' from project 'NSInfinityApp')
+    cd /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp
+    /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f -R -trusted /Users/axiolevns/axiolev_runtime/.build/agent_runs/20260423_170659/derived/Build/Products/Debug/NSInfinityApp.app
+
+note: Disabling hardened runtime with ad-hoc codesigning. (in target 'NSInfinityApp' from project 'NSInfinityApp')
+** BUILD SUCCEEDED **
+

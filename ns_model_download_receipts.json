@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-04-23T22:38:05.342727Z",
+  "receipts": [
+    {
+      "model_id": "lmstudio-community/Qwen3-30B-A3B-Thinking-2507-MLX-8bit",
+      "tier": "local_live",
+      "local_path": "/Volumes/NSExternal/models/local_live/Qwen3-30B-A3B-Thinking-2507-MLX",
+      "download_status": "downloading_3_of_7_shards_in_flat_path",
+      "download_pid": 7469,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-2B-Thinking",
+      "tier": "local_live",
+      "local_path": "/Volumes/NSExternal/models/local_live/Qwen3-VL-2B-Thinking",
+      "download_status": "downloading",
+      "download_pid": 11974,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-32B-Instruct",
+      "tier": "local_live",
+      "local_path": "/Volumes/NSExternal/models/local_live/Qwen3-VL-32B-Instruct",
+      "download_status": "downloading",
+      "download_pid": 30072,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    },
+    {
+      "model_id": "moonshotai/Kimi-K2.6",
+      "tier": "worker",
+      "local_path": "/Volumes/NSExternal/models/workers/Kimi-K2.6",
+      "download_status": "downloading",
+      "download_pid": 30075,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V3.2",
+      "tier": "worker",
+      "local_path": "/Volumes/NSExternal/models/workers/DeepSeek-V3.2",
+      "download_status": "downloading",
+      "download_pid": 30077,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-30B-A3B-Thinking",
+      "tier": "worker",
+      "local_path": "/Volumes/NSExternal/models/workers/Qwen3-VL-30B-A3B-Thinking",
+      "download_status": "downloading",
+      "download_pid": 30073,
+      "dir_nonempty": false,
+      "recorded_at": "2026-04-23T22:38:05.342727Z"
+    }
+  ]
+}
