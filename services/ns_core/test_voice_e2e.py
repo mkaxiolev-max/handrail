@@ -5,11 +5,24 @@ Proves the full loop: call → session → transcript → atom → receipt.
 These tests run against the live ns_core service (port 9000).
 Run: python -m pytest test_voice_e2e.py -v --timeout=30
 """
+import socket
 import pytest
 import requests
 import uuid
 
 BASE = "http://127.0.0.1:9000"
+
+
+def _ns_reachable() -> bool:
+    try:
+        s = socket.create_connection(("127.0.0.1", 9000), timeout=1)
+        s.close()
+        return True
+    except OSError:
+        return False
+
+
+ns_live = pytest.mark.skipif(not _ns_reachable(), reason="NS service not running on :9000")
 
 
 def _post(path: str, body: dict = {}) -> dict:
@@ -24,6 +37,7 @@ def _get(path: str) -> dict:
 
 
 # ── T1: Voice session create → state=READY ────────────────────────────────────
+@ns_live
 def test_voice_session_create_returns_ready():
     """
     POST /voice/session/create must return a session_id and state=ready.
@@ -40,6 +54,7 @@ def test_voice_session_create_returns_ready():
 
 
 # ── T2: Session lifecycle transitions ────────────────────────────────────────
+@ns_live
 def test_voice_session_lifecycle_transitions():
     """
     Create session → transition to LISTENING → transition to PROCESSING → RESPONDING.
@@ -70,6 +85,7 @@ def test_voice_session_lifecycle_transitions():
 
 
 # ── T3: Intent through voice → receipt in chain ───────────────────────────────
+@ns_live
 def test_voice_intent_produces_chained_receipt():
     """
     Create a voice session, then submit an intent via /intent/execute.

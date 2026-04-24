@@ -1,0 +1,174 @@
+{
+  "generated": "2026-04-23T23:51:23.520576+00:00",
+  "scorer_version": "v3.2",
+  "instruments": {
+    "I1": {
+      "name": "Super-Omega v2",
+      "current": 89.8,
+      "scorecard_ceiling": 88.8,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 10.2,
+      "weight_v32": 0.1215,
+      "ceiling_note": "Structural ceiling; no available credits. New Ring capability required."
+    },
+    "I2": {
+      "name": "Omega Intelligence v2",
+      "current": 90.5,
+      "scorecard_ceiling": 90.0,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 9.5,
+      "weight_v32": 0.162,
+      "ceiling_note": "NVIR rate 0.974\u21921.0 (+0.26 residual); larger corpus or more steps."
+    },
+    "I3": {
+      "name": "UOIE v2",
+      "current": 90.14,
+      "scorecard_ceiling": 89.45,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 9.86,
+      "weight_v32": 0.162,
+      "ceiling_note": "NVIR rate 0.974\u21921.0 (+0.11 residual)."
+    },
+    "I4": {
+      "name": "GPX-\u03a9",
+      "current": 100.0,
+      "scorecard_ceiling": 98.11,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 0.0,
+      "weight_v32": 0.243,
+      "ceiling_note": "NVIR rate 0.974\u21921.0 (+0.23 residual); already above 93 target."
+    },
+    "I5": {
+      "name": "SAQ",
+      "current": 92.7,
+      "scorecard_ceiling": 89.7,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 7.3,
+      "weight_v32": 0.1215,
+      "ceiling_note": "Structural ceiling; no available credits."
+    },
+    "I6": {
+      "name": "\u03a9-Logos",
+      "current": 100.0,
+      "scorecard_ceiling": 97.0,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 0.0,
+      "weight_v32": 0.09,
+      "ceiling_note": "Super-Omega pack improvements; C4 sub-score (Oracle-completeness) has largest headroom."
+    },
+    "I7": {
+      "name": "CPS Certification Power Score",
+      "current": 100.0,
+      "scorecard_ceiling": 100.0,
+      "gap_to_scorecard_ceiling": 0.0,
+      "gap_to_100": 0.0,
+      "weight_v32": 0.1,
+      "ceiling_note": "Perfect score \u2014 10/10 pillars pass (T060\u2013T069). No gap."
+    }
+  },
+  "composites": {
+    "v2_1": 93.5,
+    "v3_0": 94.05,
+    "v3_1": 94.08,
+    "v3_2": 94.74
+  },
+  "band": "Certified 93",
+  "prior_supermax": 92.42,
+  "delta_vs_supermax": 2.32,
+  "ceiling_v32": 100.0,
+  "gap_to_ceiling": 5.26,
+  "gaps_remaining": [
+    {
+      "instrument": "I3",
+      "current": 90.14,
+      "ceiling": 100.0,
+      "gap": 9.86,
+      "composite_impact": 1.5973,
+      "note": "NVIR rate 0.974\u21921.0 (+0.11 residual)."
+    },
+    {
+      "instrument": "I2",
+      "current": 90.5,
+      "ceiling": 100.0,
+      "gap": 9.5,
+      "composite_impact": 1.539,
+      "note": "NVIR rate 0.974\u21921.0 (+0.26 residual); larger corpus or more steps."
+    },
+    {
+      "instrument": "I1",
+      "current": 89.8,
+      "ceiling": 100.0,
+      "gap": 10.2,
+      "composite_impact": 1.2393,
+      "note": "Structural ceiling; no available credits. New Ring capability required."
+    },
+    {
+      "instrument": "I5",
+      "current": 92.7,
+      "ceiling": 100.0,
+      "gap": 7.3,
+      "composite_impact": 0.8869,
+      "note": "Structural ceiling; no available credits."
+    }
+  ],
+  "milestone_credits_applied": {
+    "I6.C5": 8.0,
+    "I5.reversibility": 11.0,
+    "I6.C3": 10.0,
+    "I4.RCI": 3.0,
+    "I4.HDRC": 5.0,
+    "I2.robust": 3.0,
+    "I2.remaining": 0.8,
+    "I6.C2": 5.0,
+    "I1.D4": 5.0,
+    "I5.non_bypass": 4.0,
+    "I6.C4": 8.0,
+    "I3.admin": 4.0,
+    "I4": 1.5,
+    "I6": 2.0,
+    "I7": 8.0
+  },
+  "resolved_deltas": {
+    "I6": 8.05,
+    "I5": 3.0,
+    "I4": 3.1,
+    "I2": 0.7600000000000001,
+    "I1": 1.0,
+    "I3": 0.8,
+    "I7": 8.0
+  },
+  "weights": {
+    "v2_1": {
+      "I1": 0.15,
+      "I2": 0.2,
+      "I3": 0.2,
+      "I4": 0.3,
+      "I5": 0.15
+    },
+    "v3_0": {
+      "I1": 0.15,
+      "I2": 0.2,
+      "I3": 0.175,
+      "I4": 0.275,
+      "I5": 0.15,
+      "I6": 0.1
+    },
+    "v3_1": {
+      "I1": 0.135,
+      "I2": 0.185,
+      "I3": 0.175,
+      "I4": 0.255,
+      "I5": 0.145,
+      "I6": 0.105
+    },
+    "v3_2": {
+      "I1": 0.1215,
+      "I2": 0.162,
+      "I3": 0.162,
+      "I4": 0.243,
+      "I5": 0.1215,
+      "I6": 0.09,
+      "I7": 0.1
+    }
+  }
+}
