@@ -11,7 +11,7 @@ struct RightInspector: View {
                 InspectorSection(title: "VIOLET") {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 6) {
-                            Circle().fill(DSColors.violet).frame(width: 8, height: 8)
+                            Circle().fill(DSColors.Spec.violet).frame(width: 8, height: 8)
                             Text("Relational Shell").font(.system(size: 11)).foregroundColor(DSColors.textSecondary)
                         }
                         Text("Constitutional AI OS — NS∞").font(.system(size: 10)).foregroundColor(DSColors.textTertiary)
@@ -34,11 +34,9 @@ struct RightInspector: View {
                     }
                 }
 
-                // Chamber scores from capability graph
-                if !capGraph.isEmpty {
-                    InspectorSection(title: "CHAMBER SCORES") {
-                        ChamberScoresWidget(capGraph: capGraph)
-                    }
+                // Chamber scores from capability graph — always shown; fallback values when API offline
+                InspectorSection(title: "CHAMBER SCORES") {
+                    ChamberScoresWidget(capGraph: capGraph)
                 }
 
                 // Ring status
@@ -134,7 +132,7 @@ private struct ChamberScoresWidget: View {
                                 .frame(width: geo.size.width * CGFloat(sv) / 10.0, height: 3)
                         }
                     }.frame(width: 60, height: 3)
-                    Text(String(format: sv.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.1f", sv))
+                    Text(String(format: sv.truncatingRemainder(dividingBy: 1) == 0 ? "%.0f" : "%.2f", sv))
                         .font(.system(size: 8, design: .monospaced))
                         .foregroundColor(DSColors.textTertiary)
                         .frame(width: 24)

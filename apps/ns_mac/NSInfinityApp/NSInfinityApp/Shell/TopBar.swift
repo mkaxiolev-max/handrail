@@ -10,7 +10,7 @@ struct TopBar: View {
             HStack(spacing: 6) {
                 Text("NS∞")
                     .font(.system(size: 18, weight: .black, design: .monospaced))
-                    .foregroundColor(DSColors.violet)
+                    .foregroundColor(DSColors.Spec.violet)
                 Text("AXIOLEV")
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(DSColors.textSecondary)

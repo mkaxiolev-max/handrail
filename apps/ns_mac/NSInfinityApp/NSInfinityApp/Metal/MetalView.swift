@@ -1,6 +1,14 @@
 import SwiftUI
 import MetalKit
 
+// bg token #0A0E27 — derived from DesignTokenSIMD.bg, single source of truth
+private let kMetalBgColor = MTLClearColor(
+    red: Double(DesignTokenSIMD.bg.x),
+    green: Double(DesignTokenSIMD.bg.y),
+    blue: Double(DesignTokenSIMD.bg.z),
+    alpha: 1.0
+)
+
 // NSViewRepresentable bridge: MTKView + zoom/pan + node hit-testing inside SwiftUI
 struct MetalOrganismView: NSViewRepresentable {
     @Binding var selectedNode: OrganismNode?
@@ -8,7 +16,7 @@ struct MetalOrganismView: NSViewRepresentable {
     func makeNSView(context: Context) -> OrganismMTKView {
         let view = OrganismMTKView()
         view.device = MTLCreateSystemDefaultDevice()
-        view.clearColor = MTLClearColor(red: 0.05, green: 0.05, blue: 0.07, alpha: 1.0)
+        view.clearColor = kMetalBgColor
         view.colorPixelFormat = .bgra8Unorm
         view.framebufferOnly = false
         view.enableSetNeedsDisplay = false

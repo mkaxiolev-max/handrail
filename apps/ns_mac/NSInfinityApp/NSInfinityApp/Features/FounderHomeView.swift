@@ -11,7 +11,7 @@ struct FounderHomeView: View {
                 // Header
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Founder Home")
+                        Text("Programs Runtime")
                             .font(.system(size: 28, weight: .black))
                             .foregroundColor(DSColors.textPrimary)
                         Text("\(appState.founderIdentity.name) · \(appState.founderIdentity.entity)")

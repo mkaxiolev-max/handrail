@@ -45,6 +45,22 @@ struct NodeOverlayState {
     var executionReady: Float = 1  // 0–1 — green ring brightens
 }
 
+// ── Design token bridge (Metal SIMD4 mirror of DSColors.Spec) ────────────────
+
+struct DesignTokenSIMD {
+    static let violet:   SIMD4<Float> = SIMD4(0.000, 0.831, 1.000, 1.00)  // #00D4FF
+    static let chamber:  SIMD4<Float> = SIMD4(0.420, 0.000, 1.000, 0.85)  // #6B00FF
+    static let adj:      SIMD4<Float> = SIMD4(0.000, 1.000, 0.533, 0.90)  // #00FF88
+    static let handrail: SIMD4<Float> = SIMD4(0.000, 1.000, 1.000, 0.90)  // #00FFFF
+    static let alex:     SIMD4<Float> = SIMD4(1.000, 1.000, 0.000, 0.90)  // #FFFF00
+    static let kernel:   SIMD4<Float> = SIMD4(1.000, 0.200, 0.200, 0.90)  // #FF3333
+    static let founder:  SIMD4<Float> = SIMD4(1.000, 0.420, 0.000, 0.90)  // #FF6B00
+    static let build:    SIMD4<Float> = SIMD4(0.290, 0.435, 0.647, 0.85)  // #4A6FA5
+    static let bg:       SIMD4<Float> = SIMD4(0.039, 0.055, 0.153, 1.00)  // #0A0E27
+    static let yubiKey:  SIMD4<Float> = SIMD4(0.000, 1.000, 1.000, 0.85)  // #00FFFF
+    static let membrane: SIMD4<Float> = SIMD4(0.000, 0.831, 1.000, 0.30)  // #00D4FF faint
+}
+
 // ── OrganismRenderer ─────────────────────────────────────────────────────────
 
 final class OrganismRenderer: NSObject, MTKViewDelegate {
@@ -81,7 +97,7 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
         OrganismNode(id: "adjudication", label: "Adjudication", role: .adjudication, position: SIMD2(0, -0.42),      radius: 0.08, isActive: true),
         OrganismNode(id: "handrail",     label: "Handrail",     role: .handrail,     position: SIMD2(-0.65, 0),      radius: 0.09, isActive: true),
         OrganismNode(id: "kernel",       label: "Kernel",       role: .kernel,       position: SIMD2(0, -0.70),      radius: 0.07, isActive: true),
-        OrganismNode(id: "yubikey",      label: "YubiKey",      role: .yubiKey,      position: SIMD2(0.28, -0.58),   radius: 0.05, isActive: true),
+        OrganismNode(id: "yubikey",      label: "YubiKey",      role: .yubiKey,      position: SIMD2(0.15, -0.50),   radius: 0.05, isActive: true),
         // Constitutional exterior
         OrganismNode(id: "alexandria",   label: "Alexandria",   role: .alexandria,   position: SIMD2(0.65, 0),       radius: 0.09, isActive: true),
         OrganismNode(id: "programs",     label: "Programs",     role: .programs,     position: SIMD2(0.75, 0.45),    radius: 0.06, isActive: true),
@@ -228,14 +244,22 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
         var v: [Vertex] = []
         let violet = nodes.first(where: { $0.id == "violet" })!
 
-        // Connections
-        for node in nodes where node.id != "violet" {
+        // Connections + autopoietic flow dots
+        for (idx, node) in nodes.enumerated() where node.id != "violet" {
             let ov = overlayStates[node.id]
-            let baseAlpha: Float = node.id == selectedNodeID ? 0.70 : 0.22
+            let edgePhase = Float(idx) * 0.75
+            let waveAlpha = 0.18 + 0.14 * sin(time * 1.8 + edgePhase)
+            let baseAlpha: Float = node.id == selectedNodeID ? 0.70 : waveAlpha
             let stressBoost = (ov?.stress ?? 0) * 0.3
             v += makeLink(from: violet.position, to: node.position,
                           width: 0.0035, aspect: aspect,
                           color: nodeColor(node).opacity(baseAlpha + stressBoost))
+            // Travelling dot — directional flow indicator
+            let phase = Float(idx) * 0.618
+            let t = (time * 0.25 + phase).truncatingRemainder(dividingBy: 1.0)
+            let dotPos = violet.position + (node.position - violet.position) * t
+            v += makeCircle(center: dotPos, radius: 0.014, aspect: aspect,
+                            color: nodeColor(node).opacity(0.85), segments: 8)
         }
 
         // Node circles + overlay halos
@@ -246,7 +270,7 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
 
             // Stress halo (red)
             if ov.stress > 0.05 {
-                let haloColor = SIMD4<Float>(0.95, 0.25, 0.25, ov.stress * 0.4 * (0.7 + 0.3 * sin(time * 4)))
+                let haloColor = SIMD4<Float>(1.000, 0.200, 0.200, ov.stress * 0.4 * (0.7 + 0.3 * sin(time * 4)))
                 v += makeCircle(center: node.position, radius: node.radius + 0.022,
                                 aspect: aspect, color: haloColor, segments: 32)
             }
@@ -269,15 +293,31 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
                               aspect: aspect, color: erColor, lineWidth: 0.005, segments: 32)
             }
 
+            // Violet radial glow halos — pulsing per spec
+            if node.id == "violet" {
+                let outerAlpha = 0.06 + 0.04 * sin(time * 1.4)
+                let innerAlpha = 0.10 + 0.06 * sin(time * 1.4)
+                v += makeCircle(center: node.position, radius: 0.24, aspect: aspect,
+                                color: DesignTokenSIMD.violet.opacity(outerAlpha), segments: 48)
+                v += makeCircle(center: node.position, radius: 0.17, aspect: aspect,
+                                color: DesignTokenSIMD.violet.opacity(innerAlpha), segments: 48)
+            }
+
             // Core circle
             let violetPulse: Float = node.id == "violet"
                 ? 0.022 * sin(time * 2.2) + 0.010 * sin(time * 5.1)
                 : 0
             let selectedBoost: Float = isSelected ? 0.015 : 0
             let fillColor = isSelected ? base.opacity(1.0) : base.opacity(0.78)
-            v += makeCircle(center: node.position,
-                            radius: node.radius + violetPulse + selectedBoost,
-                            aspect: aspect, color: fillColor, segments: 40)
+            if node.role == .handrail || node.role == .kernel || node.role == .yubiKey {
+                let lw: Float = node.role == .handrail ? 0.018 : node.role == .kernel ? 0.016 : 0.014
+                v += makeRing(center: node.position, radius: node.radius + selectedBoost,
+                              aspect: aspect, color: fillColor, lineWidth: lw, segments: 40)
+            } else {
+                v += makeCircle(center: node.position,
+                                radius: node.radius + violetPulse + selectedBoost,
+                                aspect: aspect, color: fillColor, segments: 40)
+            }
 
             // Selection ring
             if isSelected {
@@ -292,17 +332,17 @@ final class OrganismRenderer: NSObject, MTKViewDelegate {
 
     private func nodeColor(_ node: OrganismNode) -> SIMD4<Float> {
         switch node.role {
-        case .violet:       return SIMD4(0.000, 0.831, 1.000, 1.00)  // #00D4FF
-        case .chamber:      return SIMD4(0.420, 0.000, 1.000, 0.85)  // #6B00FF
-        case .adjudication: return SIMD4(0.000, 1.000, 0.533, 0.90)  // #00FF88
-        case .handrail:     return SIMD4(0.000, 1.000, 1.000, 0.90)  // #00FFFF
-        case .alexandria:   return SIMD4(1.000, 1.000, 0.000, 0.90)  // #FFFF00
-        case .kernel:       return SIMD4(1.000, 0.200, 0.200, 0.90)  // #FF3333
-        case .founder:      return SIMD4(1.000, 0.420, 0.000, 0.90)  // #FF6B00
-        case .programs:     return SIMD4(0.290, 0.435, 0.647, 0.85)  // #4A6FA5
-        case .buildSpace:   return SIMD4(0.290, 0.435, 0.647, 0.85)  // #4A6FA5
-        case .yubiKey:      return SIMD4(0.200, 0.800, 0.500, 0.85)  // greenish
-        case .membrane:     return SIMD4(0.000, 0.831, 1.000, 0.30)  // #00D4FF faint
+        case .violet:       return DesignTokenSIMD.violet
+        case .chamber:      return DesignTokenSIMD.chamber
+        case .adjudication: return DesignTokenSIMD.adj
+        case .handrail:     return DesignTokenSIMD.handrail
+        case .alexandria:   return DesignTokenSIMD.alex
+        case .kernel:       return DesignTokenSIMD.kernel
+        case .founder:      return DesignTokenSIMD.founder
+        case .programs:     return DesignTokenSIMD.build
+        case .buildSpace:   return DesignTokenSIMD.build
+        case .yubiKey:      return DesignTokenSIMD.yubiKey
+        case .membrane:     return DesignTokenSIMD.membrane
         }
     }
 

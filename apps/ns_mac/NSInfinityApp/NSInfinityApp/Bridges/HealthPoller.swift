@@ -32,6 +32,11 @@ final class HealthPoller {
                 ("ns",        9000, "/healthz"),
                 ("continuum", 8788, "/continuum/status"),
                 ("svc-9001",  9001, "/healthz"),
+                ("svc-9002",  9002, "/healthz"),
+                ("svc-9003",  9003, "/healthz"),
+                ("svc-9004",  9004, "/healthz"),
+                ("svc-9005",  9005, "/healthz"),
+                ("svc-9006",  9006, "/healthz"),
                 ("svc-9010",  9010, "/healthz"),
                 ("svc-9011",  9011, "/healthz"),
             ]

@@ -31,7 +31,7 @@ final class AppState: ObservableObject {
     @Published var score: Double = 0
     @Published var scoreLabel: String = "—"
     @Published var recentReceipts: [ReceiptEntry] = []
-    @Published var voiceState: VoiceState = .dormant
+    @Published var voiceState: VoiceState = .ready
     @Published var ringStatus: [RingStatus] = RingStatus.canonical
     @Published var founderIdentity = FounderIdentity.canonical
     @Published var isServicesOnline: Bool = false

@@ -30,6 +30,11 @@ final class ServiceHealth: Identifiable, ObservableObject {
         ServiceHealth(id: "ns",        name: "NorthStar", port: 9000, endpoint: "/healthz"),
         ServiceHealth(id: "continuum", name: "Continuum", port: 8788, endpoint: "/continuum/status"),
         ServiceHealth(id: "svc-9001",  name: "Svc-9001",  port: 9001, endpoint: "/healthz"),
+        ServiceHealth(id: "svc-9002",  name: "Svc-9002",  port: 9002, endpoint: "/healthz"),
+        ServiceHealth(id: "svc-9003",  name: "Svc-9003",  port: 9003, endpoint: "/healthz"),
+        ServiceHealth(id: "svc-9004",  name: "Svc-9004",  port: 9004, endpoint: "/healthz"),
+        ServiceHealth(id: "svc-9005",  name: "Svc-9005",  port: 9005, endpoint: "/healthz"),
+        ServiceHealth(id: "svc-9006",  name: "Svc-9006",  port: 9006, endpoint: "/healthz"),
         ServiceHealth(id: "svc-9010",  name: "Svc-9010",  port: 9010, endpoint: "/healthz"),
         ServiceHealth(id: "svc-9011",  name: "Svc-9011",  port: 9011, endpoint: "/healthz"),
     ]

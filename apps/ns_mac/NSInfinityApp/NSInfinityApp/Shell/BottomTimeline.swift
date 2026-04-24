@@ -29,22 +29,16 @@ struct BottomTimeline: View {
 
                 Divider().frame(height: 20).overlay(DSColors.surfaceBorder)
 
-                // Timeline content
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        if appState.recentReceipts.isEmpty {
-                            TimelineEmptyCard()
-                        } else {
-                            ForEach(appState.recentReceipts.prefix(12)) { receipt in
-                                TimelineEventCard(receipt: receipt)
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
+                // Rolling receipts ticker — right-to-left, newest enters from right edge
+                if appState.recentReceipts.isEmpty {
+                    TimelineEmptyCard()
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                    Spacer()
+                } else {
+                    ReceiptsTicker(receipts: Array(appState.recentReceipts.prefix(12).reversed()))
+                        .frame(maxWidth: .infinity)
                 }
-
-                Spacer()
             }
             .frame(maxHeight: .infinity)
             .background(DSColors.surfaceElevated)
@@ -62,6 +56,34 @@ private struct TimelineEmptyCard: View {
                     .font(.system(size: 10))
                     .foregroundColor(DSColors.textTertiary)
             )
+    }
+}
+
+private struct ReceiptsTicker: View {
+    let receipts: [ReceiptEntry]
+
+    private let speed: Double = 40          // pt/sec
+    private let cardWidth: Double = 168     // 160 card + 8 gap
+
+    private var loopWidth: CGFloat {
+        CGFloat(cardWidth * Double(receipts.count) + 24)
+    }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30)) { timeline in
+            let elapsed = CGFloat(timeline.date.timeIntervalSinceReferenceDate)
+            let offset = loopWidth > 0
+                ? -(elapsed * CGFloat(speed)).truncatingRemainder(dividingBy: loopWidth)
+                : 0
+            HStack(spacing: 8) {
+                ForEach(receipts) { TimelineEventCard(receipt: $0) }
+                ForEach(receipts) { TimelineEventCard(receipt: $0) }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .offset(x: offset)
+        }
+        .clipped()
     }
 }
 

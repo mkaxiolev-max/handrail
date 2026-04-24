@@ -14,7 +14,7 @@ struct AppShell: View {
 
                 HStack(spacing: 0) {
                     LeftRail()
-                        .frame(width: 220)
+                        .frame(width: 200)
 
                     ZStack {
                         DSColors.background
@@ -29,12 +29,12 @@ struct AppShell: View {
                     .animation(.spring(response: 0.28, dampingFraction: 0.82), value: appState.currentMode)
 
                     RightInspector()
-                        .frame(width: 280)
+                        .frame(width: 320)
                 }
                 .frame(maxHeight: .infinity)
 
                 BottomTimeline()
-                    .frame(height: 140)
+                    .frame(height: 120)
             }
 
             VoiceOverlay()

@@ -25,7 +25,7 @@ struct LeftRail: View {
                     .tracking(1.5)
                     .padding(.horizontal, 12)
 
-                ForEach(appState.services) { svc in
+                ForEach(Array(appState.services.prefix(7))) { svc in
                     ServiceStatusRow(svc: svc)
                 }
             }
@@ -107,12 +107,12 @@ private struct FounderIdentityBlock: View {
             Rectangle().fill(DSColors.surfaceBorder).frame(height: 1).padding(.bottom, 8)
             HStack(spacing: 8) {
                 Circle()
-                    .fill(DSColors.violetDim)
+                    .fill(DSColors.Spec.founder.opacity(0.35))
                     .frame(width: 28, height: 28)
                     .overlay(
                         Text(String(appState.founderIdentity.name.prefix(1)))
                             .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(DSColors.violet)
+                            .foregroundColor(DSColors.Spec.founder)
                     )
                 VStack(alignment: .leading, spacing: 1) {
                     Text(appState.founderIdentity.name)

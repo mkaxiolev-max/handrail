@@ -12,7 +12,7 @@ struct AlexandriaView: View {
             // Left: status + controls
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Alexandria")
+                    Text("Memory")
                         .font(.habitatTitle())
                         .foregroundColor(DSColors.textPrimary)
 
