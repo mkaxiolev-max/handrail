@@ -21,3 +21,6 @@ app.include_router(voice_ws.router)
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "voice_gateway", "port": 9002, "version": "1.0.0"}
+
+from services.pap.router import pap_router
+app.include_router(pap_router)
