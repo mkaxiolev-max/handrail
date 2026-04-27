@@ -425,3 +425,6 @@ RULES.extend([
     ("I8", "pap.storytime",      ["test_pap_storytime_bridge"]),
     ("I8", "pap.router",         ["test_pap_router"]),
 ])
+
+# Ring-5 #1 closure — XCTest bridge
+RULES.append(("I7", "Mac UI Truth / XCTest bridge", ["test_xctest_bridge"]))
