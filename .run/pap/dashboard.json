@@ -1,0 +1,36 @@
+{
+  "system": "NS-infinity",
+  "layer": "PAP",
+  "version": "1.0",
+  "wraps": "Aletheion v2.0",
+  "pipeline": [
+    "Ingress","CTF log","Parse H/A/T","Validate","QEC","Score",
+    "Mode dispatch","Aletheion LogosGate","Aletheion CanonGate",
+    "Aletheion PreActionGate","Handrail execute","AletheionReceipt",
+    "PAPReceipt","Triadic check","Canon decision","Storytime",
+    "Deletion pass","Response"
+  ],
+  "qec_syndromes_24h": {
+    "S1":0,"S2":0,"S3":0,"S4":0,"S5":0,
+    "S6":0,"S7":0,"S8":0,"S9":0,"S10":0
+  },
+  "five_pap_negations_status": {
+    "no_surface_conflation": "ENFORCED",
+    "no_action_without_receipt": "ENFORCED",
+    "no_claim_without_typing": "ENFORCED",
+    "no_execution_without_dual_gate": "ENFORCED",
+    "no_lineage_deletion": "ENFORCED"
+  },
+  "flags": {
+    "shadow_mode": true,
+    "gate_canon_via_pap": false,
+    "merkle_strict": true,
+    "deletion_lineage_lock": true,
+    "triadic_canon_floor": 95
+  },
+  "omega_distance": {
+    "live_post_aletheion": 96.70,
+    "live_projected_post_pap": 97.30,
+    "delta": 0.60
+  }
+}

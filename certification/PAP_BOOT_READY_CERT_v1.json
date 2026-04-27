@@ -1,0 +1,45 @@
+{
+  "certification": "PAP_BOOT_READY_v1",
+  "extends": "ALETHEION_BOOT_READY_v2",
+  "branch": "integration/pap-omega-20260427",
+  "parent_branch": "integration/max-omega-20260421-191635",
+  "repo": "mkaxiolev-max/handrail",
+  "decrees": ["P-1","P-2","P-3","P-4","P-5","P-6","P-7"],
+  "five_pap_negations": [
+    "no_surface_conflation",
+    "no_action_without_receipt",
+    "no_claim_without_typing",
+    "no_execution_without_dual_gate",
+    "no_lineage_deletion"
+  ],
+  "programs_invariants_added": [
+    "#14 NO_RESOURCE_WITHOUT_TRIPLE_COHERENCE",
+    "#15 NO_A_LAYER_ACTION_WITHOUT_DUAL_GATE_AND_RECEIPT",
+    "#16 NO_CANON_WITHOUT_TRIADIC_MIN_95"
+  ],
+  "rubrics": {
+    "pap": {"categories": 10, "max": 100},
+    "triadic": {
+      "tracks": ["LDR","OMEGA_GNOSEO","PAP"],
+      "policy": "min >= 95 for Canon",
+      "blocking_track_reported": true
+    }
+  },
+  "endpoints": [
+    "GET /pap/healthz",
+    "POST /pap/parse",
+    "POST /pap/validate",
+    "POST /pap/score",
+    "POST /pap/qec",
+    "POST /pap/action/check",
+    "POST /pap/canon/check",
+    "GET /pap/receipt/{rid}",
+    "GET /pap/dashboard"
+  ],
+  "tests_added": 28,
+  "tests_total_governance_layer": 78,
+  "shadow_mode": true,
+  "merkle_strict": true,
+  "triadic_canon_floor": 95,
+  "graduation_criteria": "flip gate_canon_via_pap=true after 7 days clean shadow + 0 S1-S10 fires + 0 contested PAP-blocking Canon promotions"
+}

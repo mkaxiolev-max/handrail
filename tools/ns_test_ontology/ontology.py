@@ -410,3 +410,18 @@ try:
     BUCKET_RULES.extend(ALETHEIA_CONTROL_BUCKETS)
 except NameError:
     BUCKET_RULES = ALETHEIA_CONTROL_BUCKETS
+
+
+# PAP Ω v1.0 — extend RULES with I8 buckets
+RULES.extend([
+    ("I8", "pap.models",         ["test_pap_models"]),
+    ("I8", "pap.hashing",        ["test_pap_hashing"]),
+    ("I8", "pap.validator",      ["test_pap_validator"]),
+    ("I8", "pap.scoring",        ["test_pap_scoring"]),
+    ("I8", "pap.qec",            ["test_pap_qec"]),
+    ("I8", "pap.receipts",       ["test_pap_receipts"]),
+    ("I8", "pap.deletion",       ["test_pap_deletion"]),
+    ("I8", "pap.canon_bridge",   ["test_pap_canon_bridge"]),
+    ("I8", "pap.storytime",      ["test_pap_storytime_bridge"]),
+    ("I8", "pap.router",         ["test_pap_router"]),
+])

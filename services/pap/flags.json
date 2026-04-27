@@ -1,0 +1,7 @@
+{
+  "shadow_mode": true,
+  "gate_canon_via_pap": false,
+  "merkle_strict": true,
+  "deletion_lineage_lock": true,
+  "triadic_canon_floor": 95
+}
