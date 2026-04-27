@@ -372,3 +372,20 @@ def write_reports(out: Path, ontology: dict, score: dict) -> None:
         md.append(f"- {obj['file_path']}::{obj['test_name']}")
 
     (out / "TEST_ONTOLOGY_REPORT.md").write_text("\n".join(md) + "\n")
+
+
+# C25: Aletheia-Control Ω — extend RULES with correct 3-tuple format
+RULES.extend([
+    ("I8", "aletheia.classifier",  ["test_aletheia_control_classifier"]),
+    ("I8", "aletheia.scoring",     ["test_aletheia_control_scoring"]),
+    ("I8", "aletheia.receipts",    ["test_aletheia_control_receipts"]),
+    ("I8", "aletheia.router",      ["test_aletheia_control_router"]),
+    ("I8", "aletheia.drift",       ["test_aletheia_control_drift"]),
+    ("I8", "aletheia.dashboard",   ["test_aletheia_control_dashboard"]),
+    ("I8", "aletheia.middleware",  ["test_aletheia_control_middleware"]),
+    ("I8", "aletheia.enforcement", ["test_aletheia_control_enforcement"]),
+    ("I8", "aletheia.canon",       ["test_aletheia_control_canon_promotion"]),
+    ("I8", "aletheia.handrail",    ["test_aletheia_control_handrail_binding"]),
+    ("I8", "aletheia.ether",       ["test_aletheia_control_ether_filters"]),
+    ("I8", "aletheia.alexandria",  ["test_aletheia_control_alexandria_receipts"]),
+])
