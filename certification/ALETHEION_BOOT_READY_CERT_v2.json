@@ -1,0 +1,23 @@
+{
+  "certification": "ALETHEION_BOOT_READY_v2",
+  "version": "2.0",
+  "branch": "integration/max-omega-20260421-191635",
+  "repo": "mkaxiolev-max/handrail",
+  "services": [
+    "aletheion.logos_gate",
+    "aletheion.canon_readiness",
+    "aletheion.pre_action",
+    "aletheion.router"
+  ],
+  "gates": {
+    "logos_gate": "ACTIVE",
+    "canon_readiness": "ACTIVE",
+    "pre_action": "ACTIVE"
+  },
+  "decrees": [
+    "Aletheion-1: truth coherence required for action admission",
+    "Aletheion-2: canon requires contradiction < 0.8 and readiness >= 70",
+    "Aletheion-3: pre-action gate is final before Handrail CPS"
+  ],
+  "status": "BOOT_READY"
+}

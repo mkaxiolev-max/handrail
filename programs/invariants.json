@@ -1,0 +1,19 @@
+{
+  "version": "1.2",
+  "description": "NS-infinity constitutional invariants — enforced at all execution layers",
+  "invariants": [
+    {"id": "#1",  "name": "NO_DIGNITY_VIOLATION",                 "enforced": true},
+    {"id": "#2",  "name": "NO_AUTH_BYPASS",                        "enforced": true},
+    {"id": "#3",  "name": "NO_POLICY_OVERRIDE_WITHOUT_QUORUM",     "enforced": true},
+    {"id": "#4",  "name": "NO_SELF_DESTRUCT",                      "enforced": true},
+    {"id": "#5",  "name": "NO_UNRECEIPTED_MUTATION",               "enforced": true},
+    {"id": "#6",  "name": "NO_CANON_WITHOUT_CONTRADICTION_CHECK",  "enforced": true},
+    {"id": "#7",  "name": "NO_EXECUTION_WITHOUT_HANDRAIL",         "enforced": true},
+    {"id": "#8",  "name": "NO_MEMORY_WRITE_WITHOUT_PROVENANCE",    "enforced": true},
+    {"id": "#9",  "name": "NO_TIER_DOWNGRADE",                     "enforced": true},
+    {"id": "#10", "name": "NO_VOICE_ACTION_WITHOUT_SESSION",       "enforced": true},
+    {"id": "#11", "name": "NO_EXTERNAL_CALL_WITHOUT_RATE_LIMIT",   "enforced": true},
+    {"id": "#12", "name": "NO_LOGOS_BYPASS",                       "enforced": true},
+    {"id": "#13", "name": "NO_EVIDENCE_DELETION",                  "enforced": true}
+  ]
+}
