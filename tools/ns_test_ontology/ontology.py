@@ -389,3 +389,24 @@ RULES.extend([
     ("I8", "aletheia.ether",       ["test_aletheia_control_ether_filters"]),
     ("I8", "aletheia.alexandria",  ["test_aletheia_control_alexandria_receipts"]),
 ])
+
+
+# C25: Aletheia-Control Ω buckets (extends I8)
+ALETHEIA_CONTROL_BUCKETS = [
+    ("aletheia.classifier",     r"test_aletheia_control_classifier"),
+    ("aletheia.scoring",        r"test_aletheia_control_scoring"),
+    ("aletheia.receipts",       r"test_aletheia_control_receipts"),
+    ("aletheia.router",         r"test_aletheia_control_router"),
+    ("aletheia.drift",          r"test_aletheia_control_drift"),
+    ("aletheia.dashboard",      r"test_aletheia_control_dashboard"),
+    ("aletheia.middleware",     r"test_aletheia_control_middleware"),
+    ("aletheia.enforcement",    r"test_aletheia_control_enforcement"),
+    ("aletheia.canon",          r"test_aletheia_control_canon_promotion"),
+    ("aletheia.handrail",       r"test_aletheia_control_handrail_binding"),
+    ("aletheia.ether",          r"test_aletheia_control_ether_filters"),
+    ("aletheia.alexandria",     r"test_aletheia_control_alexandria_receipts"),
+]
+try:
+    BUCKET_RULES.extend(ALETHEIA_CONTROL_BUCKETS)
+except NameError:
+    BUCKET_RULES = ALETHEIA_CONTROL_BUCKETS
