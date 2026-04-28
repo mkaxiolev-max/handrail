@@ -1361,6 +1361,58 @@ def _op_fs_run_tests(args: dict, policy) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# IMO — Coherence Kernel gate ops
+# ---------------------------------------------------------------------------
+
+def _op_imo_propose(args: dict, policy: dict) -> dict:
+    try:
+        from services.coherence_kernel import schemas as ck_schemas
+        from services.coherence_kernel.imo import gate as ck_gate
+        branch = ck_schemas.BranchState(**args["branch"])
+        proposal_id = ck_gate.propose(branch)
+        return {"ok": True, "data": {"proposal_id": proposal_id}}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _op_imo_adjudicate(args: dict, policy: dict) -> dict:
+    try:
+        from services.coherence_kernel.imo import gate as ck_gate
+        promotion = ck_gate.adjudicate(args["proposal_id"])
+        return {"ok": True, "data": promotion.model_dump(mode="json")}
+    except KeyError as e:
+        return {"ok": False, "error": f"proposal not found: {e}"}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _op_imo_override(args: dict, policy: dict) -> dict:
+    try:
+        from services.coherence_kernel.imo import gate as ck_gate
+        promotion = ck_gate.override(
+            args["proposal_id"],
+            args["reason"],
+            args["yubikey_receipt"],
+        )
+        return {"ok": True, "data": promotion.model_dump(mode="json")}
+    except (ValueError, KeyError) as e:
+        return {"ok": False, "error": str(e)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _op_imo_archive(args: dict, policy: dict) -> dict:
+    try:
+        from services.coherence_kernel.imo import gate as ck_gate
+        row_hash = ck_gate.archive(args["proposal_id"])
+        return {"ok": True, "data": {"row_hash": row_hash}}
+    except KeyError as e:
+        return {"ok": False, "error": str(e)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+# ---------------------------------------------------------------------------
 # OP_DISPATCH
 # ---------------------------------------------------------------------------
 
@@ -1499,6 +1551,11 @@ OP_DISPATCH: dict[str, Any] = {
     # Autopoietic mutation ops — Tier 2
     "fs.apply_patch": _op_fs_apply_patch,
     "fs.run_tests":   _op_fs_run_tests,
+    # Coherence Kernel — IMO gate (4 verbs)
+    "imo.propose":    _op_imo_propose,
+    "imo.adjudicate": _op_imo_adjudicate,
+    "imo.override":   _op_imo_override,
+    "imo.archive":    _op_imo_archive,
 }
 
 

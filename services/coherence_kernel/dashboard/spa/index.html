@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCOM — Non-Classical Observer Monitor</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0a0f; color: #c8d8e8; font-family: 'SF Mono', 'Menlo', monospace; font-size: 12px; }
+    #root { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 8px; min-height: 100vh; }
+    .panel { background: #0f1520; border: 1px solid #1e3050; border-radius: 6px; padding: 12px; overflow: hidden; }
+    .panel h2 { color: #4a9eff; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .metric { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #1a2535; }
+    .metric .label { color: #7899aa; }
+    .metric .value { color: #e0f0ff; font-weight: bold; }
+    .ok { color: #40d080; }
+    .warn { color: #f0a040; }
+    .err { color: #e04040; }
+    .score-bar { background: #1a2535; border-radius: 3px; height: 6px; margin-top: 4px; }
+    .score-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #1a6080, #40a0ff); transition: width 0.5s; }
+    .ts { color: #3a5070; font-size: 10px; margin-top: 6px; }
+    .header { grid-column: 1 / -1; background: #060c18; border: 1px solid #1e3050; border-radius: 6px;
+              padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { color: #4a9eff; font-size: 14px; letter-spacing: 2px; }
+    .conn-status { font-size: 10px; }
+    .receipt-row { padding: 2px 0; border-bottom: 1px solid #0f1a28; display: flex; gap: 8px; }
+    .receipt-op { color: #7899aa; flex: 0 0 140px; }
+    .receipt-ref { color: #c8d8e8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .table-row { display: flex; gap: 8px; padding: 2px 0; border-bottom: 1px solid #0f1a28; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const PANELS = [
+  "branch_registry","decoherence_status","readiness_score","imo_queue",
+  "interference_results","ledger_health","black_knight_status","receipt_stream"
+];
+
+function useNCOM() {
+  const [data, setData] = useState({});
+  const [connected, setConnected] = useState(false);
+  const ws = useRef(null);
+
+  useEffect(() => {
+    // Initial load
+    PANELS.forEach(p => {
+      fetch(`/ncom/panels/${p}`).then(r => r.json()).then(d =>
+        setData(prev => ({...prev, [p]: d}))
+      ).catch(() => {});
+    });
+
+    // WS for live
+    const connect = () => {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      ws.current = new WebSocket(`${proto}://${location.host}/ncom/ws`);
+      ws.current.onopen = () => setConnected(true);
+      ws.current.onclose = () => { setConnected(false); setTimeout(connect, 3000); };
+      ws.current.onerror = () => setConnected(false);
+      ws.current.onmessage = e => {
+        try { const d = JSON.parse(e.data); setData(prev => ({...prev, ...d})); } catch(_) {}
+      };
+    };
+    connect();
+    return () => ws.current && ws.current.close();
+  }, []);
+
+  return { data, connected };
+}
+
+function ScoreBar({ value, max = 100 }) {
+  const pct = Math.min(100, Math.max(0, (value / max) * 100));
+  const color = pct >= 78 ? '#40a0ff' : pct >= 50 ? '#f0a040' : '#e04040';
+  return <div className="score-bar"><div className="score-fill" style={{width:`${pct}%`, background: color}}/></div>;
+}
+
+function BranchRegistryPanel({ d }) {
+  if (!d) return <div className="panel"><h2>Branch Registry</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Branch Registry</h2>
+    <div className="metric"><span className="label">Total Branches</span><span className="value">{d.count ?? 0}</span></div>
+    {(d.branches || []).slice(0, 6).map(b => (
+      <div key={b.id} className="metric"><span className="label ok">{b.id}</span><span className="value" style={{fontSize:'10px'}}>{b.claim}</span></div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function DecoherencePanel({ d }) {
+  if (!d) return <div className="panel"><h2>Decoherence Status</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Decoherence Status</h2>
+    <div className="metric"><span className="label">Total Breach Events</span><span className="value err">{d.total_breach_events ?? 0}</span></div>
+    {(d.recent || []).slice(0, 5).map((e, i) => (
+      <div key={i} className="metric">
+        <span className={`label ${e.breached ? 'err' : 'ok'}`}>{e.breached ? 'BREACH' : 'ok'}</span>
+        <span className="value">{(e.aggregate || 0).toFixed(4)}</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function ReadinessPanel({ d }) {
+  if (!d || !d.latest) return <div className="panel"><h2>Readiness Score</h2><div>No data</div></div>;
+  const { score_100, sub_metrics, branch_id, ts } = d.latest;
+  return <div className="panel">
+    <h2>Readiness Score</h2>
+    <div className="metric"><span className="label">Score</span><span className={`value ${score_100 >= 78 ? 'ok' : 'warn'}`}>{score_100?.toFixed(2)}</span></div>
+    <ScoreBar value={score_100} />
+    <div style={{marginTop:'6px'}}>
+      {Object.entries(sub_metrics || {}).map(([k, v]) => (
+        <div key={k} className="metric"><span className="label">{k}</span><span className="value">{v?.toFixed(2)}</span></div>
+      ))}
+    </div>
+    <div className="ts">{branch_id} · {ts}</div>
+  </div>;
+}
+
+function ImoQueuePanel({ d }) {
+  if (!d) return <div className="panel"><h2>IMO Queue</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>IMO Queue</h2>
+    <div className="metric"><span className="label">Pending</span><span className="value warn">{d.pending_count ?? 0}</span></div>
+    {(d.recent_decisions || []).slice(-5).map((dec, i) => (
+      <div key={i} className="metric">
+        <span className={`label ${dec.decision === 'collapse_ready' ? 'ok' : 'warn'}`}>{dec.decision}</span>
+        <span className="value" style={{fontSize:'10px'}}>{dec.proposal_id?.slice(0,8)}</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function InterferencePanel({ d }) {
+  if (!d) return <div className="panel"><h2>Interference</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Interference Results</h2>
+    <div className="metric"><span className="label">Total Passes</span><span className="value">{d.total_passes ?? 0}</span></div>
+    {(d.recent || []).slice(0, 5).map((r, i) => (
+      <div key={i} className="metric">
+        <span className="label">{(r.quality || 0).toFixed(4)}</span>
+        <span className="value">{r.outcome}</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function LedgerHealthPanel({ d }) {
+  if (!d) return <div className="panel"><h2>Ledger Health</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Ledger Health</h2>
+    <div className="metric"><span className="label">All Chains Valid</span><span className={`value ${d.all_chains_valid ? 'ok' : 'err'}`}>{d.all_chains_valid ? 'YES' : 'NO'}</span></div>
+    {Object.entries(d.tables || {}).map(([tbl, info]) => (
+      <div key={tbl} className="metric">
+        <span className={`label ${info.chain_valid ? 'ok' : 'err'}`}>{tbl}</span>
+        <span className="value">{info.count} rows</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function BlackKnightPanel({ d }) {
+  if (!d) return <div className="panel"><h2>Black Knight</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Black Knight Status</h2>
+    <div className="metric"><span className="label">Active Proposals</span><span className="value warn">{d.active_proposals ?? 0}</span></div>
+    {(d.recent_gate_ops || []).map((op, i) => (
+      <div key={i} className="metric">
+        <span className="label">{op.op}</span>
+        <span className="value" style={{fontSize:'10px'}}>{op.branch_id}</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function ReceiptStreamPanel({ d }) {
+  if (!d) return <div className="panel"><h2>Receipt Stream</h2><div>Loading…</div></div>;
+  return <div className="panel">
+    <h2>Receipt Stream</h2>
+    {(d.receipts || []).slice(0, 12).map((r, i) => (
+      <div key={i} className="receipt-row">
+        <span className="receipt-op">{r.op}</span>
+        <span className="receipt-ref">{r.ref_id?.slice(0, 20)}</span>
+      </div>
+    ))}
+    <div className="ts">{d.ts}</div>
+  </div>;
+}
+
+function App() {
+  const { data, connected } = useNCOM();
+  return <>
+    <div className="header">
+      <h1>NCOM — Non-Classical Observer Monitor</h1>
+      <div className={`conn-status ${connected ? 'ok' : 'err'}`}>
+        {connected ? '● LIVE' : '○ CONNECTING…'}
+      </div>
+    </div>
+    <BranchRegistryPanel d={data.branch_registry} />
+    <DecoherencePanel d={data.decoherence_status} />
+    <ReadinessPanel d={data.readiness_score} />
+    <ImoQueuePanel d={data.imo_queue} />
+    <InterferencePanel d={data.interference_results} />
+    <LedgerHealthPanel d={data.ledger_health} />
+    <BlackKnightPanel d={data.black_knight_status} />
+    <ReceiptStreamPanel d={data.receipt_stream} />
+  </>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
