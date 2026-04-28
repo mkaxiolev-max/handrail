@@ -18,4 +18,4 @@ def stream_tsv_from_zip(zip_path: Path) -> Iterator[Dict[str, Any]]:
             text = io.TextIOWrapper(raw, encoding="utf-8", errors="replace")
             reader = csv.DictReader(text, delimiter="\t", quoting=csv.QUOTE_NONE)
             for row in reader:
-                yield {k: v.strip('"') if v else v for k, v in row.items()}
+                yield {k.strip('"'): v.strip('"') if v else v for k, v in row.items()}
