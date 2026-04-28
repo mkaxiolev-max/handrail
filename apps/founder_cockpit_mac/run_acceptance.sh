@@ -39,7 +39,19 @@ check_ep() {
 check_ep "Handrail :8011"    "http://127.0.0.1:8011/healthz"          4 || true
 check_ep "NS Core :9000"     "http://127.0.0.1:9000/healthz"          4 || true
 check_ep "Continuum :8788"   "http://127.0.0.1:8788/continuum/status" 4 || true
-check_ep "RIS :8014"         "http://127.0.0.1:8014/ris/sources"     12 || true  # live S3 probe
+# RIS: /ris/status is cached (instant); /ris/sources fires live S3 HEAD probes (slow).
+# Try cached path first; fall back to 20s probe if no cached route.
+RIS_UP=false
+if curl -fsS --max-time 4 "http://127.0.0.1:8014/ris/status" >/dev/null 2>&1; then
+    ok "RIS :8014  →  UP (cached /ris/status)"
+    SCORE=$((SCORE + 1)); RIS_UP=true
+elif curl -fsS --max-time 20 "http://127.0.0.1:8014/ris/sources" >/dev/null 2>&1; then
+    ok "RIS :8014  →  UP (/ris/sources, ~20s live probe)"
+    SCORE=$((SCORE + 1)); RIS_UP=true
+else
+    warn "RIS :8014  →  DOWN (both /ris/status and /ris/sources timed out)"
+    NOTES+=("RIS :8014 unreachable")
+fi
 check_ep "NCOM :9020"        "http://127.0.0.1:9020/ncom/healthz"     4 || true
 check_ep "Mac Adapter :8765" "http://127.0.0.1:8765/healthz"          4 || true
 
