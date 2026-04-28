@@ -1,0 +1,76 @@
+{
+  "verdict": "GAPS_EXIST",
+  "on_spec_elements": [
+    "DSColors.Spec: all 9 design tokens correct (founder #FF6B00, violet #00D4FF, chambers #6B00FF, adj #00FF88, handrail #00FFFF, alex #FFFF00, kernel #FF3333, build #4A6FA5, bg #0A0E27)",
+    "TopBar: NS∞ wordmark left-aligned with DSColors.Spec.violet",
+    "TopBar: DOCKER X/11 dynamic pill (live count from appState.services)",
+    "TopBar: INVARIANTS 8/10 pill (DSColors.online green)",
+    "TopBar: RING 5 0/5 warn-state pill (DSColors.accentAmber)",
+    "TopBar: YUBIKEY 26116460 pill (DSColors.online green)",
+    "TopBar: SHALOM ✓ green badge (DSColors.online)",
+    "VoiceOverlayPill: top-right float, 'Violet · <state>', pulsing membrane dot, DSColors.Spec.violet throughout",
+    "VoiceOverlay rendered above all content via outermost ZStack in AppShell",
+    "LeftRail: 6 modes in exact spec order (Living Architecture, Engine Room, Programs Runtime, Memory, Governance, Build Space)",
+    "LeftRail: default active mode = .livingArch (Living Architecture)",
+    "LeftRail: all 6 modes tappable, active state highlighted with violetFaint background + violetDim border",
+    "LeftRail: 7 live-services status rows (prefix(7) of allServices), green dot = DSColors.online when status==.online",
+    "LeftRail: Founder identity card at bottom with DSColors.Spec.founder token",
+    "LeftRail fixed at 200pt, RightInspector fixed at 320pt, BottomTimeline fixed at 120pt — all match spec",
+    "AppShell routes all 6 HabitatMode cases to distinct views",
+    "Organism map: Violet node at NDC (0,0) with violet token (#00D4FF) and 3-layer radial glow halos",
+    "Organism map: Five chambers (Institute, Board, Forge, Omega, Registry) with chambers token (#6B00FF)",
+    "Organism map: Adjudication node at (0,-0.42) with adj token (#00FF88)",
+    "Organism map: Handrail rendered as ring at (-0.65,0) with handrail token (#00FFFF)",
+    "Organism map: Alexandria node at (0.65,0) with alex token (#FFFF00); Programs node at (0.75,0.45) with build token",
+    "Organism map: Animated autopoietic flow lines (makeLink) + per-edge travelling dot (directional flow indicator)",
+    "Organism map: Privacy membrane — translucent Circle stroke (Spec.violet opacity 0.18) centered on Violet in SwiftUI overlay",
+    "Organism map: Constitutional boundary — dashed Ellipse (violet opacity 0.35) in SwiftUI overlay layer",
+    "Organism map: Dignity Kernel band rendered as makeRing() with kernel token (#FF3333), position (0,-0.70) — verified inside ellipse (normalized dist 0.858 < 1)",
+    "Organism map: YubiKey rendered as makeRing() at (0.15,-0.50) — verified inside ellipse (normalized dist 0.588 < 1)",
+    "Organism map: Build Space at (0.80,-0.55) — verified outside ellipse (normalized dist 3.02 > 1), build token",
+    "Organism map: Founder node at (-0.78,0.62) with founder token (#FF6B00), connected to Violet via flow line",
+    "RightInspector: Violet identity card (InspectorSection 'VIOLET', DSColors.Spec.violet dot)",
+    "RightInspector: Chamber scores widget with spec fallbacks Institute=7.6, Board=5.15, Forge=4.9 (chambers token bars)",
+    "RightInspector: Ring 5 gates — 5 rows, all blocked=true (lock icon, DSColors.offline red)",
+    "RightInspector: Alexandria counts block (edges, atoms, receipts) via AlexandriaSummaryWidget + live fetch",
+    "BottomTimeline: rolling right-to-left ReceiptsTicker via TimelineView animation + negative x-offset loop",
+    "BottomTimeline: layer color-coding uses DSColors.Spec tokens (adj, alex, kernel, violet, handrail, chambers)",
+    "BottomTimeline: rowType classifier emits 'receipt', 'adjudication', 'atom_write', 'invariant_check'",
+    "Global background: AppShell ZStack root = DSColors.background (#0A0E27) + center canvas ZStack also sets DSColors.background",
+    "No 'TODO', 'Sample', 'Lorem ipsum', or 'Placeholder' literal strings visible in any rendered view"
+  ],
+  "gaps": [
+    {
+      "spec_element": "10/10 proofs + Shalom block (RightInspector)",
+      "severity": "medium",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/RightInspector.swift",
+      "fix_plan": "Add the 6 missing ProofRow entries beneath the existing 4 (Boot proof, Receipt chain, Merkle proof, YubiKey quorum) so all 10 proofs are individually listed, matching the '10/10' count in the block header."
+    },
+    {
+      "spec_element": "YubiKey band INSIDE the boundary — color consistency",
+      "severity": "medium",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/LivingArchitectureView.swift",
+      "fix_plan": "Change labelColor(.yubiKey) from DSColors.online (green #33D972) to DSColors.Spec.handrail (#00FFFF) to match the SIMD4 color OrganismRenderer already uses for the YubiKey Metal node; eliminates label/node color split."
+    },
+    {
+      "spec_element": "Left-rail mode routing — all six modes reachable (OmegaView orphan)",
+      "severity": "low",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/OmegaView.swift",
+      "fix_plan": "OmegaView (score bands, model registry, capability graph, semantic candidates) is not routed from any HabitatMode case in AppShell.modeContent; either wire it to an existing or new left-rail mode, or delete it if intentionally excluded from the spec navigation."
+    }
+  ],
+  "design_token_violations": [
+    {
+      "file": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift",
+      "line_hint": "private func nodeColor\\(_ node: OrganismNode\\) -> SIMD4<Float>",
+      "issue": "11 inline SIMD4<Float> color literals hardcode all spec tokens (e.g. SIMD4(0.000, 0.831, 1.000, 1.00) for #00D4FF violet). Metal cannot use SwiftUI Color, but a shared struct MetalColors mirroring DSColors.Spec as SIMD4 constants would make token maintenance single-source."
+    },
+    {
+      "file": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/MetalView.swift",
+      "line_hint": "private let kMetalBgColor = MTLClearColor",
+      "issue": "kMetalBgColor = MTLClearColor(red: 0.039, green: 0.055, blue: 0.153, alpha: 1.0) hardcodes the bg token (#0A0E27) as raw floats; should be a shared constant derived from DSColors.Spec.bg component values."
+    }
+  ],
+  "needs_human": false,
+  "notes": "The implementation is largely faithful to the spec: all 9 design tokens are correctly defined, all 6 left-rail modes are present and wired, the organism map topology is complete and geometrically correct (all interior nodes verified inside the dashed ellipse, all exterior nodes verified outside), the VoiceOverlayPill floats above every view, and the timeline colour-coding uses spec tokens. Three meaningful gaps exist: the proof block lists only 4 of the stated 10 proofs; the YubiKey SwiftUI label colour diverges from the Metal node colour; and OmegaView.swift is a non-trivial view file that is unreachable from any navigation mode. The only design-token violations are in Metal-layer files where SwiftUI Color is architecturally unavailable — the raw float values match the spec exactly but are inline duplicates rather than pointing to a single shared bridge. The Board chamber node is at normalised ellipse distance 0.996, visually on the inner edge of the constitutional boundary; this is mathematically inside but warrants attention if the ellipse geometry is ever adjusted."
+}

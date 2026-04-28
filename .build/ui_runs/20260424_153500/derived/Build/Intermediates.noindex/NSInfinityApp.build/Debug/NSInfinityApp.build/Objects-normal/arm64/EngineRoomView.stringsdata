@@ -1,0 +1,56 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/EngineRoomView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Engine Room",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 14
+        }
+      },
+      {
+        "comment": "",
+        "key": "{\"ops\": [{\"op\": \"fs.pwd\"}]}",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 24
+        }
+      },
+      {
+        "comment": "",
+        "key": "executing…",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 52
+        }
+      },
+      {
+        "comment": "",
+        "key": "Execute",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "Clear",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 57
+        }
+      },
+      {
+        "comment": "",
+        "key": "No executions yet",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 105
+        }
+      }
+    ]
+  },
+  "version": 1
+}

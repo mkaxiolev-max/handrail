@@ -1,0 +1,26 @@
+All 11 services now polled. Here is the complete accounting:
+
+---
+
+**Gaps closed:**
+| Gap | File | Status |
+|-----|------|--------|
+| Violet radial glow (high) | `OrganismRenderer.swift` | Fixed — 3 glow halos added before core draw |
+| Chamber scores always visible (high) | `RightInspector.swift` | Already closed (no guard existed) |
+| Docker 11/11 polling (medium) | `HealthPoller.swift` | Fixed — svc-9002…9006 added |
+| Handrail band/ring (medium) | `OrganismRenderer.swift` | Fixed — `makeRing(lw:0.018)` |
+| Kernel band (medium) | `OrganismRenderer.swift` | Fixed — `makeRing(lw:0.016)` |
+| YubiKey band + color (medium) | `OrganismRenderer.swift` | Fixed — `makeRing(lw:0.014)` + handrail token `#00FFFF` |
+| Programs Runtime title (low) | `FounderHomeView.swift` | Already closed ("Programs Runtime" was already set) |
+| Memory mode title (low) | `AlexandriaView.swift` | Fixed — "Alexandria" → "Memory" |
+
+**Design token violations closed:**
+| DTV | File | Status |
+|-----|------|--------|
+| bg constant extraction | `MetalView.swift` | Fixed — `kMetalBgColor` constant, referenced by name |
+| yubiKey wrong color (MUST) | `OrganismRenderer.swift` | Fixed — `SIMD4(0.200,0.800,0.500)` → `SIMD4(0.000,1.000,1.000)` |
+| Stress halo wrong red | `OrganismRenderer.swift` | Fixed — `0.95,0.25,0.25` → `1.000,0.200,0.200` (exact kernel token) |
+| nodeColor full extraction (should) | `OrganismRenderer.swift` | Not extracted — all individual token values are already correct now; full MetalColors refactor exceeds minimal-surgical scope |
+| Governance amber (no spec token) | `OrganismRenderer.swift` | No correct value exists in spec — no edit warranted |
+
+FIX: 4 files edited; 6 gaps closed

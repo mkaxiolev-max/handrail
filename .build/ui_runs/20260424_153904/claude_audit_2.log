@@ -1,0 +1,25 @@
+Audit complete. Report written to `.build/ui_runs/20260424_153904/ui_audit_current.json`.
+
+**Verdict: GAPS_EXIST** — 5 gaps found, 2 high / 1 medium / 2 low.
+
+---
+
+**High severity (2)**
+
+1. **Violet node radial glow missing** (`OrganismRenderer.swift`)  
+   The spec requires a violet radial glow. The renderer only does a sine-wave size pulse — no concentric faded halo rings are drawn behind the node. Fix: add two large-radius, low-alpha makeCircle calls before the violet core circle in `buildVertices()`.
+
+2. **Docker HUD can never show 11/11** (`HealthPoller.swift`)  
+   `HealthPoller.poll()` polls only 6 of the 11 services defined in `ServiceHealth.allServices`. Services svc-9002 through svc-9006 are permanently stuck at `.unknown` and never count as online, so the Docker pill tops out at 6/11. Fix: add ports 9002–9006 to the polling list.
+
+**Medium severity (1)**
+
+3. **VoiceOverlayPill shows "dormant" not "ready"** (`AppState.swift`)  
+   `voiceState` initializes as `.dormant` → pill reads "Violet · dormant" at launch and whenever services are offline. Spec hard-codes "Violet · ready". Fix: change initial value to `.ready`.
+
+**Low severity (2)**
+
+4. & 5. **Metal layer token violations** (`OrganismRenderer.swift:303–313`, `MetalView.swift:11`)  
+   Both files use inline SIMD4/MTLClearColor float literals because Metal can't consume SwiftUI `Color`. Values are numerically correct and commented, but violate the "by name not hardcoded" invariant. Fix: introduce a shared float-constant bridge struct.
+
+Everything else — all 9 design tokens, all 6 left-rail modes routed correctly, organism topology (5 chambers, adj, handrail, kernel inside boundary, build space outside, founder node), right panel sections, bottom timeline color coding, and VoiceOverlay z-order — is on spec.

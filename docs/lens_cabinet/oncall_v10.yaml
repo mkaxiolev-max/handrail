@@ -1,0 +1,25 @@
+# AXIOLEV NS∞ Lens Cabinet v10 — On-Call Rotation
+# Solo-founder mode: Mike is sole on-call across all 5 teams.
+teams:
+  architecture:
+    primary: [mike]
+    secondary: []        # → drummond, when ready
+    pager: page+sms
+  math_phi:
+    primary: [mike]
+    secondary: []        # → walrath
+  data_engineering:
+    primary: [mike]
+    secondary: []        # → schlingmann
+  validation_audit:
+    primary: [mike]
+    secondary: []        # → reyes
+  web_crawl:
+    primary: [mike]
+    secondary: []        # → weston
+
+rotation_window_hours: 168  # weekly once N > 1
+escalation_chain: [mike]
+sla:
+  acknowledge_minutes: 15
+  resolve_minutes: 240

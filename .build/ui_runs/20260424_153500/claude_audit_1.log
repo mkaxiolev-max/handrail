@@ -1,0 +1,16 @@
+Audit complete. Report written to `.build/ui_runs/20260424_153500/ui_audit_current.json`.
+
+**Verdict: GAPS_EXIST** — 11 gaps across 4 blockers, 3 high, 3 medium, 2 low.
+
+**Blockers (4):**
+1. **Docker 11/11 pill** — `ServiceHealth.allServices` only defines 6 services; pill will never show 11/11
+2. **Right-to-left rolling timeline** — BottomTimeline is a static `ScrollView(.horizontal)`, not an auto-scrolling ticker
+3. **bg token invariant broken in Metal** — `MetalView.swift` clearColor is `(0.05, 0.05, 0.07)` but bg token #0A0E27 = `(0.039, 0.055, 0.153)`
+4. **YubiKey MUST be inside constitutional boundary** — NDC position `(0.28, -0.58)` computes distance 1.02 from ellipse center, putting it just outside; hard invariant breach
+
+**High (3):**
+- Only 6 services in left rail (spec: 7)
+- Flow lines are static — spec requires animated autopoietic animation
+- Right panel is 280pt wide — spec says ≈320pt
+
+**Medium/Low:** Wrong token usages (founder card shows purple instead of #FF6B00 orange; Violet section uses app-accent purple instead of #00D4FF), and minor height tweaks.

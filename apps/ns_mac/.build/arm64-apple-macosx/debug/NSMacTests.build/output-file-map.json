@@ -1,0 +1,19 @@
+{
+  "": {
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/primary.swiftdeps"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacComponentTests.swift": {
+    "dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests.d",
+    "object": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests.swift.o",
+    "swiftmodule": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests.swiftdeps",
+    "diagnostics": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests.dia"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacRuntimeCoverageManifestTests.swift": {
+    "dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests.d",
+    "object": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests.swift.o",
+    "swiftmodule": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests~partial.swiftmodule",
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests.swiftdeps",
+    "diagnostics": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests.dia"
+  }
+}

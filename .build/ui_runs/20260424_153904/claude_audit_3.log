@@ -1,0 +1,22 @@
+Audit complete. Report written to `.build/ui_runs/20260424_153904/ui_audit_current.json`.
+
+**Verdict: `GAPS_EXIST`** — 3 gaps, 3 token violations found.
+
+---
+
+### Gaps (3)
+
+| Severity | Element | File | Issue |
+|----------|---------|------|-------|
+| **medium** | Build Space (build token) | `BuildSpaceView.swift:8` | Hammer icon uses `DSColors.accentAmber` instead of `DSColors.Spec.build` (#4A6FA5) |
+| **low** | Six modes reachable | `NSInfinityApp.swift:28-39` | `NSInfinityCommands` Button closures are all `{}` — menu-click routing is dead (keyboard shortcuts still work via `KeyboardHandler`) |
+| **low** | Background = bg token | `WindowManager.swift:13` | `configureMainWindow` is dead code but sets `NSColor(0.05,0.05,0.07)` ≈ #0D0D12 — wrong value, not the bg token (#0A0E27) |
+
+### Design Token Violations (3)
+
+1. **`DSColors.swift:18-20`** — `DSColors.violet = Color(0.56, 0.35, 0.95)` ≈ #8F59F2 (non-spec purple) conflicts with the spec's single `violet = #00D4FF`; propagates to LeftRail, BottomTimeline, RightInspector, FounderHomeView, OmegaView chrome
+2. **`WindowManager.swift:13`** — hardcoded `NSColor(0.05, 0.05, 0.07)` not derived from any named token
+3. **`BuildSpaceView.swift:8`** — `accentAmber` where `DSColors.Spec.build` should be used
+
+### Everything else is on-spec ✓
+All 9 design tokens exact-matched, Metal token SIMD mirrors verified, constitutional boundary geometry verified (Kernel+YubiKey inside, Build Space outside by coordinate math), VoicePill uses `DSColors.Spec.violet`, all six modes reachable, no placeholder strings anywhere.

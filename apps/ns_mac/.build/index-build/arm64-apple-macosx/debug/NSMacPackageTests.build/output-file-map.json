@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/primary.swiftdeps"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.derived/runner.swift": {
+    "dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner.d",
+    "object": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner.swiftdeps",
+    "diagnostics": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner.dia"
+  }
+}

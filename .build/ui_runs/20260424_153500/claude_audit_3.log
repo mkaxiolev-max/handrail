@@ -1,0 +1,10 @@
+Audit complete. Verdict: **GAPS_EXIST** — 36 spec elements confirmed on-spec, 3 gaps found, 2 design-token violations.
+
+**Gaps:**
+1. **Medium** — `RightInspector.swift`: "FOUNDER PROOFS" block header says "10/10 proofs · Shalom ✓" but only 4 `ProofRow` entries are listed (Boot proof, Receipt chain, Merkle proof, YubiKey quorum). 6 rows missing.
+2. **Medium** — `LivingArchitectureView.swift`: `labelColor(.yubiKey)` returns `DSColors.online` (green), while `OrganismRenderer.nodeColor(.yubiKey)` emits `#00FFFF` (handrail/cyan) — the SwiftUI label and Metal node colors disagree.
+3. **Low** — `OmegaView.swift` is a full feature view (score bands, model registry, capability graph, semantic candidates) not connected to any `HabitatMode` case — unreachable from the left rail.
+
+**Design-token violations (Metal-layer only):**
+- `OrganismRenderer.swift`: 11 inline `SIMD4<Float>` constants duplicating `DSColors.Spec` — a shared `MetalColors` bridge would keep these single-source.
+- `MetalView.swift` line 5: `kMetalBgColor` hardcodes the `bg` token as raw floats.

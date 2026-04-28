@@ -1,0 +1,18 @@
+All edits verified. Here's a complete summary:
+
+---
+
+**Files edited: 8 | Gaps closed: 11 | Design token violations fixed: 5**
+
+| File | Change |
+|------|--------|
+| `ServiceHealth.swift` | Added 5 entries (svc-9002–9006) → 11 total; fixes Docker 11/11 pill |
+| `LeftRail.swift` | Capped service list at `.prefix(7)` for 7-row display; founder avatar uses `DSColors.Spec.founder` + `.opacity(0.35)` |
+| `BottomTimeline.swift` | Replaced static `ScrollView` with `ReceiptsTicker` — `TimelineView`-driven offset at 40 pt/sec, reversed array (newest from right), seamless double-loop |
+| `MetalView.swift` | `clearColor` → `(0.039, 0.055, 0.153)` = `#0A0E27` bg token |
+| `OrganismRenderer.swift` | YubiKey NDC moved `(0.28, -0.58)` → `(0.15, -0.50)` (inside constitutional ellipse, distance 0.588 < 1.0); added travelling dot along each connection (golden-ratio phase offsets) |
+| `RightInspector.swift` | VIOLET section indicator `DSColors.violet` → `DSColors.Spec.violet` (#00D4FF) |
+| `AppShell.swift` | RightInspector `width: 280` → `320`; BottomTimeline `height: 140` → `120` |
+| `TopBar.swift` | NS∞ wordmark `DSColors.violet` → `DSColors.Spec.violet` (#00D4FF) |
+
+FIX: 8 files edited; 11 gaps closed

@@ -1,0 +1,32 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Build Space",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 9
+        }
+      },
+      {
+        "comment": "",
+        "key": "Speculative exterior — Ring 6 and beyond",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 12
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ring 5 must be complete before Build Space activates",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 15
+        }
+      }
+    ]
+  },
+  "version": 1
+}

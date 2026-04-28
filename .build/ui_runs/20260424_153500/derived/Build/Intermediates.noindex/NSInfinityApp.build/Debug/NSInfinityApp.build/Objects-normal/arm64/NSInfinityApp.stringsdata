@@ -1,0 +1,72 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/App/NSInfinityApp.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "NS∞ Founder Habitat",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 10
+        }
+      },
+      {
+        "comment": "",
+        "key": "Habitat",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Founder Home",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "Living Architecture",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Engine Room",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Alexandria",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Governance",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Build Space",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 37
+        }
+      }
+    ]
+  },
+  "version": 1
+}

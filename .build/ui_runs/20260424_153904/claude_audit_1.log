@@ -1,0 +1,19 @@
+Audit complete. Report written to `.build/ui_runs/20260424_153904/ui_audit_current.json`.
+
+**Verdict: `GAPS_EXIST`** — 13 gaps found, 4 design-token violations.
+
+**Two high-severity gaps share a single root cause:**
+- `ServiceHealth.allServices` defines only 6 services. The spec requires 11 (for "Docker 11/11") and 7 for the left-rail list. Fix: add entries to `ServiceHealth.swift`.
+
+**Medium gaps (8):**
+| Gap | Fix file |
+|---|---|
+| RightInspector 280pt vs spec ≈320pt | `AppShell.swift` line 31 |
+| Chamber scores hidden when offline | `RightInspector.swift` — remove `!capGraph.isEmpty` guard |
+| Board score 5.15 displayed as 5.2 (%.1f rounding) | `RightInspector.swift` — use `%.2f` |
+| Timeline static scroll, not auto-rolling | `BottomTimeline.swift` |
+| VIOLET card uses `DSColors.violet` (purple accent) not `DSColors.Spec.violet` (#00D4FF) | `RightInspector.swift` line 14 |
+| Founder avatar uses `DSColors.violetDim` not `DSColors.Spec.founder` (#FF6B00) | `LeftRail.swift` ~line 109 |
+| Flow lines static (no animation) | `OrganismRenderer.swift` |
+
+**Low gaps (3):** LeftRail 220pt vs 200pt, BottomTimeline 140pt vs 120pt, `MetalView` clearColor ≠ bg token.

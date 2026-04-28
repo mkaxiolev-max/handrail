@@ -1,0 +1,17 @@
+Audit complete. Report written to `.build/ui_runs/20260424_153500/ui_audit_current.json`.
+
+**verdict: GAPS_EXIST** — 8 gaps, 5 design-token violations.
+
+**High severity (2):**
+- `RightInspector.swift` — chamber scores gated behind `if !capGraph.isEmpty`, so they vanish when the runtime is offline. The fallback values (7.6/5.15/4.9) are coded but unreachable. Remove the guard.
+- `OrganismRenderer.swift` — Violet node has size-pulsing but **no radial glow**. Spec requires a radial glow halo. Fix: prepend 2–3 large, low-alpha makeCircle calls around Violet.
+
+**Medium severity (4):**
+- `HealthPoller.swift` — polls only 6/11 services; svc-9002 through svc-9006 are never polled, so the DOCKER pill can never read 11/11.
+- `OrganismRenderer.swift` (×3) — Handrail, Dignity Kernel, and YubiKey are rendered as filled circles, but the spec calls them "band" / "band/ring" shapes. Replace those three with `makeRing`. YubiKey also uses an unspecced greenish `SIMD4` not matching any token.
+
+**Low severity (2):**
+- `FounderHomeView.swift` — view header says "Founder Home"; mode label is "Programs Runtime".
+- `AlexandriaView.swift` — view header says "Alexandria"; mode label is "Memory".
+
+**Design-token violations (5):** All in the Metal layer (`OrganismRenderer.swift` + `MetalView.swift`) — hardcoded SIMD4 floats should be named Metal constants derived from `DSColors.Spec`.

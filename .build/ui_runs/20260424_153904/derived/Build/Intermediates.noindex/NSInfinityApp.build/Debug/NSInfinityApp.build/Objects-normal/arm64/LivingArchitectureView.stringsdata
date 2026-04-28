@@ -1,0 +1,32 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/LivingArchitectureView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Pinch to zoom",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Drag to pan",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Click node",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 74
+        }
+      }
+    ]
+  },
+  "version": 1
+}

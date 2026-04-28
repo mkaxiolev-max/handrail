@@ -1,0 +1,70 @@
+{
+  "verdict": "GAPS_EXIST",
+  "on_spec_elements": [
+    "Design tokens: all 9 spec tokens (founder #FF6B00, violet #00D4FF, chambers #6B00FF, adj #00FF88, handrail #00FFFF, alex #FFFF00, kernel #FF3333, build #4A6FA5, bg #0A0E27) defined at exact hex in DSColors.Spec and mirrored correctly in DesignTokenSIMD (Metal layer)",
+    "Background = bg token (#0A0E27) applied to AppShell ZStack and center canvas ZStack; all feature views inherit without override",
+    "3-pane layout: LeftRail fixed 200 pt, center canvas flex, RightInspector fixed 320 pt (AppShell.swift:17,32)",
+    "TopBar fixed 48 pt with NS∞ wordmark (violet token), DOCKER X/X pill (dynamic), INVARIANTS 8/10 pill, RING 5 0/5 warn-state pill (amber), YUBIKEY 26116460 pill, SHALOM ✓ green pill (TopBar.swift:11,35-41)",
+    "VoiceOverlay renders in outermost ZStack above all panes; VoicePill text 'Violet · ready' (state-driven), pulsing ring animation, color = DSColors.Spec.violet (#00D4FF) (VoiceOverlay.swift:50,43-47)",
+    "LeftRail: six modes in correct spec order (Living Architecture, Engine Room, Programs Runtime, Memory, Governance, Build Space); default active = .livingArch; active highlight implemented; tapping sets appState.currentMode (LeftRail.swift:10-14, AppState.swift:4-23)",
+    "LeftRail: seven live-services rows via services.prefix(7) with green/red dot per ServiceHealth.status (LeftRail.swift:28)",
+    "LeftRail: Founder identity card at bottom using DSColors.Spec.founder token (LeftRail.swift:102-129)",
+    "Center canvas routes all six modes via AppShell.modeContent; animated .id+.transition mode switch (AppShell.swift:47-55)",
+    "LivingArchitectureView: Metal organism map (MetalOrganismView / OrganismRenderer) fills center, bg derived from DesignTokenSIMD.bg (MetalView.swift:5-10)",
+    "Violet node at NDC origin, radial glow halos drawn with DesignTokenSIMD.violet, pulsing sine animation (OrganismRenderer.swift:297-303,307-309)",
+    "Five chambers (Institute, Board, Forge, Omega, Registry) arrayed around Violet with chambers token (OrganismRenderer canonicalNodes ch1-ch5)",
+    "Adjudication node (adj token) between chambers and handrail, position (0,-0.42) (OrganismRenderer.swift:97)",
+    "Handrail rendered as ring/band using handrail token at (-0.65,0) (OrganismRenderer.swift:98,312-315)",
+    "Alexandria node (alex token) at (0.65,0); Programs node at (0.75,0.45) (OrganismRenderer.swift:102-103)",
+    "Animated autopoietic flow lines + travelling dots (directional, per-node phase) from Violet to all nodes (OrganismRenderer.swift:248-264)",
+    "Privacy membrane: translucent Circle stroke (DSColors.Spec.violet.opacity(0.18), lineWidth 10) centered at (W/2,H/2) (LivingArchitectureView.swift:23-26)",
+    "Constitutional boundary: dashed ellipse (StrokeStyle dash:[7,4]) enclosing chambers + adj + handrail + kernel + yubikey (LivingArchitectureView.swift:36-41)",
+    "Dignity Kernel (kernel token) at NDC (0,-0.70): inside boundary (ellipse NDC center (-0.15,-0.135), semi-axes (0.59,0.635) → kernel at ~0.86 normalized distance < 1.0) (OrganismRenderer.swift:99)",
+    "YubiKey band (handrail token, ring) at NDC (0.15,-0.50): inside boundary (~0.59 normalized distance < 1.0) (OrganismRenderer.swift:100)",
+    "Build Space node (build token) at NDC (0.80,-0.55): outside boundary (~3.01 normalized distance > 1.0) (OrganismRenderer.swift:104)",
+    "Founder node (founder token) at NDC (-0.78,0.62) with flow line into Violet (OrganismRenderer.swift:105)",
+    "RightInspector fixed 320 pt: Violet identity card, chamber scores widget with spec fallbacks (Institute 7.6, Board 5.15, Forge 4.9), 10/10 proofs + Shalom block, 5 Ring 5 gates all blocked/red, Alexandria edges/atoms/receipts counts (RightInspector.swift:11-95)",
+    "BottomTimeline fixed 120 pt: rolling right-to-left ReceiptsTicker with looping animation; TimelineEventCard layer-colored by op string (adj, atom_write, invariant_check, receipt, handrail, chamber tokens); rowType label shows all 4 required types (BottomTimeline.swift:62-142)",
+    "No 'TODO', 'Sample', 'Lorem ipsum', or 'Placeholder' strings found in any visible UI text across all 26 Swift files",
+    "All six left-rail modes reachable: LeftRail tapGesture sets currentMode; keyboard shortcuts Cmd+1-6 handled by KeyboardHandler (KeyboardHandler.swift:34-46)"
+  ],
+  "gaps": [
+    {
+      "spec_element": "Build Space label/area OUTSIDE the boundary (build token)",
+      "severity": "medium",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift",
+      "fix_plan": "Change BuildSpaceView.swift:8 `foregroundColor(DSColors.accentAmber)` to `foregroundColor(DSColors.Spec.build)` so the mode-panel icon uses the spec build token (#4A6FA5) instead of amber."
+    },
+    {
+      "spec_element": "All six left-rail modes must be reachable; tapping routes the center canvas",
+      "severity": "low",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/App/NSInfinityApp.swift",
+      "fix_plan": "Wire NSInfinityCommands Button actions (lines 28-39) to `AppState.shared.currentMode = .<mode>` so Habitat menu items function when clicked (keyboard path already works via KeyboardHandler)."
+    },
+    {
+      "spec_element": "Background = bg token (#0A0E27) across all views",
+      "severity": "low",
+      "file_hint": "apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/WindowManager.swift",
+      "fix_plan": "Replace WindowManager.swift:13 `NSColor(red: 0.05, green: 0.05, blue: 0.07, alpha: 1.0)` (≈#0D0D12, wrong value) with a bg-token-derived color, or delete the dead method (configureMainWindow is never called from any active code path)."
+    }
+  ],
+  "design_token_violations": [
+    {
+      "file": "apps/ns_mac/NSInfinityApp/NSInfinityApp/DesignSystem/DSColors.swift",
+      "line_hint": "static let violet.*0\\.56.*0\\.35.*0\\.95",
+      "issue": "DSColors.violet = Color(red:0.56,green:0.35,blue:0.95) ≈ #8F59F2 is a non-spec purple that conflicts with the spec's single violet token (#00D4FF = DSColors.Spec.violet); this non-spec color propagates as the UI accent to LeftRail.swift:55,63,67, BottomTimeline.swift:22,25, RightInspector.swift:29,171,219, FounderHomeView.swift:29,117,120,125, OmegaView.swift:23,26,43 — spec defines only one violet token"
+    },
+    {
+      "file": "apps/ns_mac/NSInfinityApp/NSInfinityApp/AppKit/WindowManager.swift",
+      "line_hint": "NSColor.*0\\.05.*0\\.05.*0\\.07",
+      "issue": "hardcoded NSColor(red:0.05,green:0.05,blue:0.07) ≈ #0D0D12 should be derived from the bg token (DSColors.bg / DesignTokenSIMD.bg = #0A0E27); value is incorrect and not referenced by token name"
+    },
+    {
+      "file": "apps/ns_mac/NSInfinityApp/NSInfinityApp/Features/BuildSpaceView.swift",
+      "line_hint": "foregroundColor.*accentAmber",
+      "issue": "hardcoded DSColors.accentAmber used for Build Space hammer icon; should be DSColors.Spec.build (#4A6FA5 = build token) per spec 'Build Space label/area (build token)'"
+    }
+  ],
+  "needs_human": false,
+  "notes": "The app is substantially on-spec: all nine design tokens are correctly defined with exact hex values, the 3-pane shell (LeftRail 200pt / center canvas / RightInspector 320pt) plus TopBar and BottomTimeline 120pt are all present, the Metal organism map correctly renders all five chambers (Forge, Institute, Board, Omega, Registry), the constitutional boundary correctly encloses Kernel and YubiKey while placing Build Space outside it, the privacy membrane and autopoietic flow lines are implemented, the VoicePill uses the spec violet token (#00D4FF), the Right Panel has all required elements (chamber scores with correct fallbacks, 10/10 proofs + Shalom, 5 Ring 5 gates all red, Alexandria counts), and no placeholder strings appear. Three gaps were found: (1) medium — BuildSpaceView's mode-panel icon uses DSColors.accentAmber instead of the spec build token; (2) low — NSInfinityCommands Habitat menu items have empty action closures, making menu-click routing non-functional (keyboard shortcuts still work via KeyboardHandler); (3) low — WindowManager.configureMainWindow is dead code containing a hardcoded wrong-hex background color (~#0D0D12 vs bg token #0A0E27). Three design-token violations are flagged: the introduction of a non-spec DSColors.violet (~#8F59F2 purple) that shadows the spec's canonical violet (#00D4FF) throughout the UI chrome is the highest-priority concern; the other two mirror the third gap and the BuildSpaceView icon issue."
+}

@@ -1,0 +1,24 @@
+You are inside /Users/axiolevns/axiolev_runtime. Previous audit wrote /Users/axiolevns/axiolev_runtime/.build/ui_runs/20260424_153904/ui_audit_current.json.
+
+Task: read the audit JSON. For each item in "gaps" and each entry in
+"design_token_violations", apply the smallest SwiftUI/AppKit edit that
+closes it, following the canonical spec at /Users/axiolevns/axiolev_runtime/.build/ui_runs/20260424_153904/LIVING_ARCHITECTURE_SPEC.md.
+
+Rules:
+- Edits must be minimal and surgical. One concern per edit.
+- Respect design tokens EXACTLY (hex from spec). Reference named tokens where possible.
+- Do NOT introduce placeholder text ("TODO", "Sample", "Lorem ipsum", "Placeholder").
+- Do NOT disable existing functionality.
+- Do NOT edit NSInfinityApp.xcodeproj/project.pbxproj (Xcode owns that).
+- If a gap requires adding a NEW Swift file:
+    - Create it under /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/<AppropriateSubdir>/
+    - If the file must be added to the Xcode target to compile (most cases),
+      emit NEEDS_HUMAN instead of editing project.pbxproj.
+- If any gap requires judgement you can't make safely, emit NEEDS_HUMAN.
+- Do NOT touch: Dignity Kernel logic, YubiKey quorum, chamber separation invariants.
+
+Return ONE line at the end:
+  FIX: <N files edited; M gaps closed>
+  NEEDS_HUMAN: <which gap needs human judgement and why>
+
+Allowed tools: Read, Edit, Write, Grep, Glob. No Bash. No network.

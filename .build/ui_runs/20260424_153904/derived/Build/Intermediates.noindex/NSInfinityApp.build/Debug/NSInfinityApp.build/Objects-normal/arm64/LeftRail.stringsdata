@@ -1,0 +1,24 @@
+{
+  "source": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Shell/LeftRail.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "SERVICES",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 22
+        }
+      },
+      {
+        "comment": "",
+        "key": ":%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 84
+        }
+      }
+    ]
+  },
+  "version": 1
+}

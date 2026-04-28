@@ -1,0 +1,3 @@
+module NSMacPackageTests {
+    header "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/arm64-apple-macosx/debug/NSMacPackageTests.build/include/NSMacPackageTests-Swift.h"
+}

@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-04-27",
+  "branch": "integration/xctest-20260427",
+  "commit": "63f4f696",
+  "ns_system_score": 97.42,
+  "ns_system_score_version": "v3.1 Omega-Prime",
+  "scoring_methodology": "100-point scale. Scores represent UI operational surface completeness relative to NS canonical architecture. NOT the NS organism score.",
+
+  "categories": {
+    "system_coverage": {
+      "weight": 20,
+      "description": "How many canonical NS subsystems have a UI surface",
+      "total_subsystems": 45,
+      "subsystems_with_ui": 12,
+      "subsystems_partial_ui": 8,
+      "subsystems_absent": 25,
+      "current_score": 6,
+      "target_95_score": 17,
+      "target_99_score": 19,
+      "notes": "12 of 45 canonical subsystems have any UI. 25 have zero surface. This is the largest gap."
+    },
+    "governance_visibility": {
+      "weight": 15,
+      "description": "Constitutional gates, PAP, Aletheion, Logos, Dignity, Canon visible in UI",
+      "current_score": 5,
+      "target_95_score": 13,
+      "target_99_score": 14,
+      "gaps": [
+        "PAP Ω shadow mode — zero UI",
+        "Logos Gate risk triad (deception/coercion/domination) — absent",
+        "Aletheion v2 three-gate matrix — absent",
+        "Aletheia-Control Ω / C25 — zero UI",
+        "Canon promotion queue — absent",
+        "NCOM collapse readiness — absent",
+        "Constitutional warning flow — absent"
+      ]
+    },
+    "execution_observability": {
+      "weight": 15,
+      "description": "Handrail CPS, proof carriers, reversibility, Mac plane, receipts visible",
+      "current_score": 7,
+      "target_95_score": 13,
+      "target_99_score": 14,
+      "gaps": [
+        "Proof carrier list — absent",
+        "Reversibility registry — absent",
+        "Goal formation — absent",
+        "Action-outcome loop — absent",
+        "Drift monitor — absent",
+        "Efficiency ledger — absent",
+        "Mac plane adapter status — absent"
+      ]
+    },
+    "memory_provenance_clarity": {
+      "weight": 15,
+      "description": "Alexandria atoms, canon, receipts, contradiction graph, epistemic class display",
+      "current_score": 5,
+      "target_95_score": 13,
+      "target_99_score": 14,
+      "gaps": [
+        "EpistemicBadge — absent (epistemic class never displayed)",
+        "Evidence atom browser — absent",
+        "Contradiction graph — absent",
+        "Provenance chain visualization — absent",
+        "Corpus ingestion status — absent",
+        "Storytime / Ether — absent"
+      ]
+    },
+    "scoring_diagnostics": {
+      "weight": 10,
+      "description": "v3.1 score, I7, I8, theoretical ceiling, deltas, PRISM, ARMS",
+      "current_score": 2,
+      "target_95_score": 8,
+      "target_99_score": 9,
+      "gaps": [
+        "v3.1 score not displayed (only v2.1 / v3.0)",
+        "I7 (99.9 certification power) — zero UI",
+        "I8 (self-modification) — zero UI",
+        "Theoretical ceiling — absent",
+        "Deltas-to-99 per instrument — absent",
+        "PRISM-Ω — zero UI",
+        "ARMS scoring — zero UI"
+      ]
+    },
+    "dwm_integration": {
+      "weight": 10,
+      "description": "DWM console, receipts, ring map, score impact, tests",
+      "current_score": 0,
+      "target_95_score": 6,
+      "target_99_score": 9,
+      "notes": "DWM is architecture-defined, implementation-pending. Zero code. Zero UI. Zero tests.",
+      "gaps": [
+        "DWM service — does not exist",
+        "DWM API — does not exist",
+        "DWM console — does not exist",
+        "DWM receipts — does not exist",
+        "DWM ring integration map — does not exist",
+        "DWM score impact calculation — does not exist",
+        "DWM ABI schemas — do not exist",
+        "DWM tests — do not exist"
+      ]
+    },
+    "operator_usability": {
+      "weight": 10,
+      "description": "Navigation completeness, command palette, drawers, confirmation flows",
+      "current_score": 4,
+      "target_95_score": 8,
+      "target_99_score": 9,
+      "gaps": [
+        "Command palette (⌘K) — absent",
+        "Receipt drawer — absent",
+        "Audit drawer — absent",
+        "IrreversibleActionConfirm — absent",
+        "CollapseReadyModal — absent",
+        "ConstitutionalWarning overlay — absent",
+        "11 nav items present; 22 needed"
+      ]
+    },
+    "test_coverage": {
+      "weight": 5,
+      "description": "Vitest, Playwright, contract, receipt-link, accessibility tests",
+      "current_score": 2,
+      "target_95_score": 4,
+      "target_99_score": 5,
+      "current_vitest": 21,
+      "target_vitest_95": 60,
+      "target_vitest_99": 100,
+      "playwright_configured": false,
+      "accessibility_tests": 0,
+      "gaps": [
+        "Playwright not configured",
+        "Route existence tests — absent",
+        "Component render tests — 3 present (contract-only)",
+        "Accessibility tests — absent",
+        "No-mocked-data tests — absent"
+      ]
+    }
+  },
+
+  "totals": {
+    "current_score": 31,
+    "target_95_score": 82,
+    "target_99_score": 93,
+    "max_possible": 100
+  },
+
+  "highest_leverage_deltas": [
+    {
+      "rank": 1,
+      "item": "DWM service + console",
+      "current": 0,
+      "target": 10,
+      "delta": 10,
+      "category": "dwm_integration",
+      "notes": "Unlocks entire DWM category. Spec is complete — ready to implement."
+    },
+    {
+      "rank": 2,
+      "item": "I7 + I8 in scoring page",
+      "current": 0,
+      "target": 6.5,
+      "delta": 6.5,
+      "category": "scoring_diagnostics",
+      "notes": "Both instruments live with tests. Adding 2 rows to scoring page is 30-minute task."
+    },
+    {
+      "rank": 3,
+      "item": "PAP Ω Console",
+      "current": 0,
+      "target": 5,
+      "delta": 5,
+      "category": "governance_visibility",
+      "notes": "Graduation review 2026-05-04. Urgency window is narrow."
+    },
+    {
+      "rank": 4,
+      "item": "EpistemicBadge (universal)",
+      "current": 0,
+      "target": 5,
+      "delta": 5,
+      "category": "memory_provenance_clarity",
+      "notes": "Single primitive component that satisfies core design principle across all surfaces."
+    },
+    {
+      "rank": 5,
+      "item": "Aletheia-Control Ω / C25 Console",
+      "current": 0,
+      "target": 5,
+      "delta": 5,
+      "category": "governance_visibility",
+      "notes": "C25 tested, Ω-Control tested. API surface likely exists — needs UI shell."
+    },
+    {
+      "rank": 6,
+      "item": "Score Reconciler v3.1",
+      "current": 0,
+      "target": 4,
+      "delta": 4,
+      "category": "scoring_diagnostics",
+      "notes": "Authoritative score is 97.42 v3.1 but UI shows v3.0. Highest-visibility gap."
+    },
+    {
+      "rank": 7,
+      "item": "PRISM-Ω Console",
+      "current": 0,
+      "target": 4,
+      "delta": 4,
+      "category": "scoring_diagnostics",
+      "notes": "Service exists. No API endpoint or UI."
+    },
+    {
+      "rank": 8,
+      "item": "Ring Status live poll",
+      "current": 1,
+      "target": 4,
+      "delta": 3,
+      "category": "system_coverage",
+      "notes": "Static seeds currently. Replace with /api/v1/ui/rings live poll."
+    },
+    {
+      "rank": 9,
+      "item": "ReceiptDrawer (universal)",
+      "current": 0,
+      "target": 3,
+      "delta": 3,
+      "category": "operator_usability",
+      "notes": "Single component enabling receipt traceability across all surfaces."
+    },
+    {
+      "rank": 10,
+      "item": "Noetic / Intent Kernel Console",
+      "current": 0,
+      "target": 3,
+      "delta": 3,
+      "category": "scoring_diagnostics",
+      "notes": "Noetic service exists. No UI. Part of gnoseogenesis chain."
+    }
+  ],
+
+  "current_state_summary": {
+    "ui_score": 31,
+    "ui_grade": "F — operator cannot observe most NS subsystems",
+    "passing_surfaces": [
+      "Founder Home (partial)",
+      "Scoring (partial — I1-I6 only)",
+      "Ring 5 Gates",
+      "Engine Room (partial)",
+      "Ω-Logos I₆",
+      "Alexandria Ledger (partial)",
+      "Autonomy Tiers",
+      "Violet / Voice",
+      "Timeline",
+      "Build + Receipts",
+      "Living Architecture (partial)"
+    ],
+    "critical_absences": [
+      "DWM — zero code",
+      "PAP Ω — shadow mode invisible",
+      "I7 — 99.9 certification power invisible",
+      "I8 — self-modification invisible",
+      "Aletheia-Control Ω — zero UI",
+      "PRISM-Ω — zero UI",
+      "Noetic / Intent — zero UI",
+      "EpistemicBadge — never applied",
+      "ReceiptDrawer — never built"
+    ]
+  },
+
+  "target_state_95": {
+    "ui_score": 82,
+    "ui_grade": "A — operator can observe all critical subsystems",
+    "required_completions": [
+      "All P1 and P2 backlog items",
+      "Vitest: 60+ tests passing",
+      "Playwright configured with 10 route tests",
+      "EpistemicBadge applied across all surfaces",
+      "ReceiptDrawer universal",
+      "PAP console live before 2026-05-04",
+      "DWM service skeleton + status endpoint"
+    ]
+  },
+
+  "target_state_99": {
+    "ui_score": 93,
+    "ui_grade": "S — complete operational surface with full observability",
+    "required_completions": [
+      "All P1 through P5 backlog items",
+      "Vitest: 100+ tests",
+      "Playwright: full E2E suite",
+      "Accessibility tests passing",
+      "DWM fully implemented (not just skeleton)",
+      "Product Portfolio page live",
+      "Mac app parity with ns_ui (all 11+ modes)"
+    ]
+  }
+}

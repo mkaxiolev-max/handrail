@@ -1,0 +1,423 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-04-27",
+  "status_legend": {
+    "present": "Component exists in repo",
+    "partial": "Component exists but incomplete",
+    "absent": "Component does not exist — must be created",
+    "superseded": "Exists but not canonical"
+  },
+  "components": [
+    {
+      "id": "FounderAppShell",
+      "path": "ns_ui/src/components/shell/FounderAppShell.tsx",
+      "type": "shell",
+      "status": "present",
+      "description": "Root shell wrapping sidebar + content area",
+      "dependencies": ["FounderSidebar", "FounderStatusStrip"]
+    },
+    {
+      "id": "FounderSidebar",
+      "path": "ns_ui/src/components/shell/FounderSidebar.tsx",
+      "type": "shell",
+      "status": "present",
+      "description": "Left navigation rail — 11 sections, service status mini",
+      "nav_items": ["founder", "organism", "engine", "runtime", "memory", "governance", "build", "execution", "voice", "timeline", "omega"],
+      "missing_items": ["aletheia", "dwm", "pap", "prism", "arms", "noetic", "ris", "models", "drift", "portfolio"]
+    },
+    {
+      "id": "FounderStatusStrip",
+      "path": "ns_ui/src/components/shell/FounderStatusStrip.tsx",
+      "type": "shell",
+      "status": "present",
+      "description": "Bottom status bar — SSE status, last receipt, warnings"
+    },
+    {
+      "id": "Card",
+      "path": "ns_ui/src/components/ui/Card.tsx",
+      "type": "primitive",
+      "status": "present",
+      "description": "Base card container + GoldRule divider"
+    },
+    {
+      "id": "Metric",
+      "path": "ns_ui/src/components/ui/Metric.tsx",
+      "type": "primitive",
+      "status": "present",
+      "description": "Label + value + hint metric display"
+    },
+    {
+      "id": "Sparkline",
+      "path": "ns_ui/src/components/ui/Sparkline.tsx",
+      "type": "primitive",
+      "status": "present",
+      "description": "Small score history sparkline"
+    },
+    {
+      "id": "EngineRoomPage",
+      "path": "ns_ui/src/features/engine/EngineRoomPage.tsx",
+      "type": "page",
+      "status": "present",
+      "description": "Engine room with cognition layers, adjudication, SSE live stream",
+      "missing_subwidgets": ["ProofCarrierList", "ReversibilityRegistry", "GoalFormationPanel", "ActionOutcomeLoop", "EfficiencyLedger"]
+    },
+    {
+      "id": "ArchitecturePage",
+      "path": "ns_ui/src/features/architecture/ArchitecturePage.tsx",
+      "type": "page",
+      "status": "present",
+      "description": "Living architecture overview"
+    },
+    {
+      "id": "FounderHomePage",
+      "path": "ns_ui/src/features/founder/FounderHomePage.tsx",
+      "type": "page",
+      "status": "present",
+      "description": "Founder home (wraps home route)"
+    },
+    {
+      "id": "VioletPage",
+      "path": "ns_ui/src/features/violet/VioletPage.tsx",
+      "type": "page",
+      "status": "present",
+      "description": "Violet voice/identity interface"
+    },
+    {
+      "id": "EpistemicBadge",
+      "path": null,
+      "type": "primitive",
+      "status": "absent",
+      "description": "Badge displaying epistemic class: OBSERVED_FACT | REPORTED_CLAIM | DERIVED_INFERENCE | PROMOTED_CANON | SPECULATION | BLOCKED_ACTION | PENDING_REVIEW",
+      "priority": 1
+    },
+    {
+      "id": "ReceiptDrawer",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "Slide-in drawer showing SHA-256, receipt type, provenance chain, full JSON",
+      "priority": 1
+    },
+    {
+      "id": "AuditDrawer",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "Proof chain drawer for any action",
+      "priority": 1
+    },
+    {
+      "id": "CommandPalette",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "⌘K operator command palette with search + action confirmation",
+      "priority": 2
+    },
+    {
+      "id": "CollapseReadyModal",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "Full-screen NCOM collapse-ready alert modal",
+      "priority": 3
+    },
+    {
+      "id": "IrreversibleActionConfirm",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "3-step confirmation flow for IRREVERSIBLE actions",
+      "priority": 2
+    },
+    {
+      "id": "ConstitutionalWarning",
+      "path": null,
+      "type": "shell",
+      "status": "absent",
+      "description": "Warning overlay when Logos Gate status = BLOCK",
+      "priority": 1
+    },
+    {
+      "id": "GlobalShalom",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Boolean Shalom state indicator — organism-level health ring",
+      "priority": 1
+    },
+    {
+      "id": "RingStatusGrid",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "7-ring status grid — each ring: OK / WARN / BLOCK",
+      "priority": 2
+    },
+    {
+      "id": "InstrumentStatusGrid",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "I1–I8 instrument grid with scores and status indicators",
+      "priority": 1
+    },
+    {
+      "id": "I7CertificationBadge",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "I7 Certification Power indicator (currently 99.9)",
+      "priority": 1
+    },
+    {
+      "id": "I8SelfModPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "I8 self-modification status — sandbox state, 136+ tests status",
+      "priority": 1
+    },
+    {
+      "id": "PAPPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "PAP Ω shadow mode status, triadic floor, graduation countdown to 2026-05-04",
+      "priority": 1
+    },
+    {
+      "id": "AletheiaControlPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Aletheia-Control Ω panel — C25 composite score",
+      "priority": 2
+    },
+    {
+      "id": "C25ScorePanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "C25 golden corpus — 25 questions status grid",
+      "priority": 2
+    },
+    {
+      "id": "WisdomCourageAcceptance",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Triadic floor display: wisdom / courage / acceptance scores",
+      "priority": 2
+    },
+    {
+      "id": "ConcernWasteRoute",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "ConcernWasteRoute classifier output display",
+      "priority": 3
+    },
+    {
+      "id": "LogosGatePanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Logos Gate risk scores: deception / coercion / domination",
+      "priority": 2
+    },
+    {
+      "id": "AletheionGateMatrix",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Aletheion v2 three-gate matrix: logos / canon_readiness / pre_action",
+      "priority": 2
+    },
+    {
+      "id": "CanonPromotionQueue",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Pending canon promotions with six-fold gate progress bars",
+      "priority": 3
+    },
+    {
+      "id": "DignityKernelPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Dignity Kernel + Hamiltonian gate status + HIC pattern list",
+      "priority": 3
+    },
+    {
+      "id": "HICPatternList",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Live HIC pattern count with recent trigger log",
+      "priority": 3
+    },
+    {
+      "id": "NCOMReadinessPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Collapse readiness indicator — triggers CollapseReadyModal",
+      "priority": 3
+    },
+    {
+      "id": "HandrailCPSPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Handrail CPS moat status — queue depth, last op, proof carrier count",
+      "priority": 2
+    },
+    {
+      "id": "ProofCarrierList",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "List of active CPS proof carriers with status",
+      "priority": 2
+    },
+    {
+      "id": "ReversibilityRegistryPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Reversible vs irreversible action counts + registry link",
+      "priority": 3
+    },
+    {
+      "id": "GoalFormationPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Active goals and formation method display",
+      "priority": 5
+    },
+    {
+      "id": "DriftMonitorPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Score drift monitor with timeline graph",
+      "priority": 3
+    },
+    {
+      "id": "EvidenceAtomBrowser",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Filterable atom browser — source, type, timestamp, epistemic class",
+      "priority": 3
+    },
+    {
+      "id": "ContradictionGraph",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "ReactFlow graph of conflicting evidence pairs",
+      "priority": 3
+    },
+    {
+      "id": "ProvenanceChain",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Visual chain from observation → inference → canon",
+      "priority": 3
+    },
+    {
+      "id": "CorpusIngestionStatus",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Corpus ingestion job list and status",
+      "priority": 4
+    },
+    {
+      "id": "ScoreReconcilerPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "v3.1 / v3.2 / v3.3 score comparison with deltas",
+      "priority": 2
+    },
+    {
+      "id": "TheoreticalCeilingPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Max achievable score given open Ring 5 gates",
+      "priority": 2
+    },
+    {
+      "id": "PRISMOmegaPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "PRISM-Ω multi-axis synthesis output — axis breakdown + log",
+      "priority": 2
+    },
+    {
+      "id": "ARMSScoringPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "ARMS scoring dimensions display",
+      "priority": 3
+    },
+    {
+      "id": "NoeticPanel",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Noetic + gnoseogenesis + intent kernel monitor",
+      "priority": 2
+    },
+    {
+      "id": "RISSourceGrid",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Reality ingestion source grid — USPTO, SEC, news, technical, regulatory",
+      "priority": 3
+    },
+    {
+      "id": "LocalModelRegistry",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Local model registry from ns_local_brain_manifest.json",
+      "priority": 3
+    },
+    {
+      "id": "DWMConsole",
+      "path": null,
+      "type": "page",
+      "status": "absent",
+      "description": "DWM integration console — state, inputs/outputs, receipts, integration map, score impact",
+      "notes": "Architecture-defined, implementation-pending as of 2026-04-27",
+      "priority": 1
+    },
+    {
+      "id": "DWMIntegrationMap",
+      "path": null,
+      "type": "widget",
+      "status": "absent",
+      "description": "Visual map of DWM → Ring integration points",
+      "priority": 1
+    },
+    {
+      "id": "PortfolioOverviewPage",
+      "path": null,
+      "type": "page",
+      "status": "absent",
+      "description": "Product portfolio page — NS∞, Handrail, ROOT, Symphony OS, Pain-Resolution, Wearable Power",
+      "priority": 7
+    }
+  ]
+}

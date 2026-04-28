@@ -1,0 +1,377 @@
+{
+  "schema": "axiolev.ns.i7_certification_power/v1",
+  "run_id": "--emit-report",
+  "generated_at_utc": "2026-04-27T20:34:44Z",
+  "categories": [
+    {
+      "id": "governance",
+      "name": "Governance",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "Policy directory present",
+          "artifact_path": "policies/",
+          "verified": true
+        },
+        {
+          "description": "Policy hierarchy documented",
+          "artifact_path": "POLICY_HIERARCHY.md",
+          "verified": true
+        },
+        {
+          "description": "Canon axioms present",
+          "artifact_path": "canon/axioms/",
+          "verified": true
+        },
+        {
+          "description": "Governance tests: 3",
+          "artifact_path": "tests/certification/test_T060_governance.py",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/certification/test_T060_governance.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "risk",
+      "name": "Risk",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "External gates registry",
+          "artifact_path": "KNOWN_EXTERNAL_GATES.json",
+          "verified": true
+        },
+        {
+          "description": "Brokerage risk tests",
+          "artifact_path": "tests/brokerage/",
+          "verified": true
+        },
+        {
+          "description": "Risk tests: 3",
+          "artifact_path": "tests/certification/test_T061_risk.py",
+          "verified": true
+        },
+        {
+          "description": "Dignity Kernel never-event enforcement",
+          "artifact_path": "services/ns/nss/kernel/dignity.py",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/brokerage/",
+        "tests/certification/test_T061_risk.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "lineage",
+      "name": "Lineage",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "20 proof artifacts in proofs/",
+          "artifact_path": "proofs/",
+          "verified": true
+        },
+        {
+          "description": "Alexandria Merkle proof service",
+          "artifact_path": "services/alex_merkle/",
+          "verified": true
+        },
+        {
+          "description": "Lineage tests: 3",
+          "artifact_path": "tests/certification/test_T062_lineage.py",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "proofs/m2_jarvis_proof.json",
+        "proofs/san_adapter_proof.json",
+        "proofs/dignity_kernel_proof.json",
+        "proofs/determinism_proof_1000.json",
+        "proofs/omega_checkpoint_v2.json",
+        "tests/certification/test_T062_lineage.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "transparency",
+      "name": "Transparency",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "TLA+ invariant spec",
+          "artifact_path": "tla/NSInvariants.tla",
+          "verified": true
+        },
+        {
+          "description": "Documentation: 7 markdown files",
+          "artifact_path": "docs/",
+          "verified": true
+        },
+        {
+          "description": "Transparency tests: 3",
+          "artifact_path": "tests/certification/test_T063_transparency.py",
+          "verified": true
+        },
+        {
+          "description": "Architecture truth document",
+          "artifact_path": "ARCHITECTURE_TRUTH.md",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/certification/test_T063_transparency.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "safety",
+      "name": "Safety",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "Dignity Kernel present",
+          "artifact_path": "dignity_kernel/",
+          "verified": true
+        },
+        {
+          "description": "Canon axioms",
+          "artifact_path": "canon/axioms/",
+          "verified": true
+        },
+        {
+          "description": "Safety tests: 4",
+          "artifact_path": "tests/certification/test_T064_safety.py",
+          "verified": true
+        },
+        {
+          "description": "Adversarial test suite",
+          "artifact_path": "services/ns_core/test_adversarial.py",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/certification/test_T064_safety.py",
+        "services/ns_core/test_adversarial.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "bias",
+      "name": "Bias / Fairness",
+      "score_0_to_10": 9.899999999999999,
+      "evidence_items": [
+        {
+          "description": "Bias tests: 3",
+          "artifact_path": "tests/certification/test_T065_bias.py",
+          "verified": true
+        },
+        {
+          "description": "Calibration tests: 20",
+          "artifact_path": "tests/test_calibration.py",
+          "verified": true
+        },
+        {
+          "description": "Hormetic robustness tests present",
+          "artifact_path": null,
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/certification/test_T065_bias.py",
+        "tests/test_calibration.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "security",
+      "name": "Security",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "Gitleaks config present",
+          "artifact_path": ".gitleaks.toml",
+          "verified": true
+        },
+        {
+          "description": "Gitleaks ignore list present",
+          "artifact_path": ".gitleaksignore",
+          "verified": true
+        },
+        {
+          "description": "Security tests: 4",
+          "artifact_path": "tests/certification/test_T066_security.py",
+          "verified": true
+        },
+        {
+          "description": "YubiKey binding proof",
+          "artifact_path": "proofs/yubikey_binding_proof.json",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/certification/test_T066_security.py",
+        "proofs/yubikey_binding_proof.json"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "runtime",
+      "name": "Runtime / Drift",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "Boot script present",
+          "artifact_path": "boot.sh",
+          "verified": true
+        },
+        {
+          "description": "Boot proof artifact",
+          "artifact_path": "proofs/ns_boot_proof.json",
+          "verified": true
+        },
+        {
+          "description": "Runtime tests: 3",
+          "artifact_path": "tests/certification/test_T067_runtime.py",
+          "verified": true
+        },
+        {
+          "description": "Continuum append-only event store",
+          "artifact_path": "services/continuum/",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "proofs/ns_boot_proof.json",
+        "tests/certification/test_T067_runtime.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "auditability",
+      "name": "Auditability",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "Continuum append-only audit log",
+          "artifact_path": "services/continuum/",
+          "verified": true
+        },
+        {
+          "description": "Replay contract proof",
+          "artifact_path": "proofs/replay_contract_proof.json",
+          "verified": true
+        },
+        {
+          "description": "Auditability tests: 3",
+          "artifact_path": "tests/certification/test_T068_auditability.py",
+          "verified": true
+        },
+        {
+          "description": "Test ontology meta-tests",
+          "artifact_path": "tests/meta/test_ns_test_ontology.py",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "proofs/replay_contract_proof.json",
+        "tests/certification/test_T068_auditability.py",
+        "tests/meta/test_ns_test_ontology.py"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "continuous_improvement",
+      "name": "Continuous Improvement",
+      "score_0_to_10": 10.0,
+      "evidence_items": [
+        {
+          "description": "26 phase system tests",
+          "artifact_path": "tests/test_phase_*.py",
+          "verified": true
+        },
+        {
+          "description": "Master v3.2 score test",
+          "artifact_path": "tests/test_master_v32.py",
+          "verified": true
+        },
+        {
+          "description": "CI tests: 4",
+          "artifact_path": "tests/certification/test_T069_continuous.py",
+          "verified": true
+        },
+        {
+          "description": "Changelog present",
+          "artifact_path": "CHANGELOG.md",
+          "verified": true
+        }
+      ],
+      "gaps": [],
+      "receipts": [
+        "tests/test_phase_*.py",
+        "tests/test_master_v32.py",
+        "tests/certification/test_T069_continuous.py"
+      ],
+      "status": "complete"
+    }
+  ],
+  "total_score_0_to_100": 99.9,
+  "complete_categories": 10,
+  "partial_categories": 0,
+  "absent_categories": 0,
+  "blocking_gaps": [],
+  "certification_band": "theoretical_max",
+  "ontology_link": null,
+  "claim_to_artifact_mapping": {
+    "governance.Policy directory present": "policies/",
+    "governance.Policy hierarchy documented": "POLICY_HIERARCHY.md",
+    "governance.Canon axioms present": "canon/axioms/",
+    "governance.Governance tests: 3": "tests/certification/test_T060_governance.py",
+    "risk.External gates registry": "KNOWN_EXTERNAL_GATES.json",
+    "risk.Brokerage risk tests": "tests/brokerage/",
+    "risk.Risk tests: 3": "tests/certification/test_T061_risk.py",
+    "risk.Dignity Kernel never-event enforcement": "services/ns/nss/kernel/dignity.py",
+    "lineage.20 proof artifacts in proofs/": "proofs/",
+    "lineage.Alexandria Merkle proof service": "services/alex_merkle/",
+    "lineage.Lineage tests: 3": "tests/certification/test_T062_lineage.py",
+    "transparency.TLA+ invariant spec": "tla/NSInvariants.tla",
+    "transparency.Documentation: 7 markdown files": "docs/",
+    "transparency.Transparency tests: 3": "tests/certification/test_T063_transparency.py",
+    "transparency.Architecture truth document": "ARCHITECTURE_TRUTH.md",
+    "safety.Dignity Kernel present": "dignity_kernel/",
+    "safety.Canon axioms": "canon/axioms/",
+    "safety.Safety tests: 4": "tests/certification/test_T064_safety.py",
+    "safety.Adversarial test suite": "services/ns_core/test_adversarial.py",
+    "bias.Bias tests: 3": "tests/certification/test_T065_bias.py",
+    "bias.Calibration tests: 20": "tests/test_calibration.py",
+    "security.Gitleaks config present": ".gitleaks.toml",
+    "security.Gitleaks ignore list present": ".gitleaksignore",
+    "security.Security tests: 4": "tests/certification/test_T066_security.py",
+    "security.YubiKey binding proof": "proofs/yubikey_binding_proof.json",
+    "runtime.Boot script present": "boot.sh",
+    "runtime.Boot proof artifact": "proofs/ns_boot_proof.json",
+    "runtime.Runtime tests: 3": "tests/certification/test_T067_runtime.py",
+    "runtime.Continuum append-only event store": "services/continuum/",
+    "auditability.Continuum append-only audit log": "services/continuum/",
+    "auditability.Replay contract proof": "proofs/replay_contract_proof.json",
+    "auditability.Auditability tests: 3": "tests/certification/test_T068_auditability.py",
+    "auditability.Test ontology meta-tests": "tests/meta/test_ns_test_ontology.py",
+    "continuous_improvement.26 phase system tests": "tests/test_phase_*.py",
+    "continuous_improvement.Master v3.2 score test": "tests/test_master_v32.py",
+    "continuous_improvement.CI tests: 4": "tests/certification/test_T069_continuous.py",
+    "continuous_improvement.Changelog present": "CHANGELOG.md"
+  }
+}

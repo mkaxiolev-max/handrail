@@ -1,0 +1,42 @@
+You are inside /Users/axiolevns/axiolev_runtime. NSInfinityApp has built and is running.
+
+Canonical UI spec (ground truth): /Users/axiolevns/axiolev_runtime/.build/ui_runs/20260424_153500/LIVING_ARCHITECTURE_SPEC.md
+Source tree to audit:             /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/
+
+Task: audit every SwiftUI/AppKit view file against the spec. Identify
+EVERY missing, wrong, or drifting element. Write a strict JSON report.
+
+Steps:
+1. Read the spec file completely.
+2. Read every .swift file under /Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/ (views, view models,
+   design tokens, app entry points, scene roots). Use Grep/Glob to find them.
+3. Map each spec requirement to existing Swift code. If not found or not
+   conformant, record it as a gap.
+4. Flag any hardcoded hex that should reference a named design token.
+
+Write VALID JSON to this EXACT path:
+  /Users/axiolevns/axiolev_runtime/.build/ui_runs/20260424_153500/ui_audit_current.json
+
+Schema:
+{
+  "verdict": "MATCHES_SPEC" | "GAPS_EXIST",
+  "on_spec_elements": ["..."],
+  "gaps": [
+    {
+      "spec_element": "<exact name from spec>",
+      "severity": "blocker" | "high" | "medium" | "low",
+      "file_hint": "<existing file path to edit, or NEW:<path>>",
+      "fix_plan": "<one-sentence smallest patch>"
+    }
+  ],
+  "design_token_violations": [
+    {"file": "<path>", "line_hint": "<grep pattern>", "issue": "hardcoded #XXXXXX should be <token>"}
+  ],
+  "needs_human": false,
+  "notes": "<one paragraph>"
+}
+
+Do NOT edit source files in this pass. Audit only. Be strict.
+If the app truly satisfies every element, verdict = MATCHES_SPEC and gaps = [].
+
+Allowed tools: Read, Write, Grep, Glob. No Bash. No network.

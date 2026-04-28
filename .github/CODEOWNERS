@@ -1,0 +1,53 @@
+# AXIOLEV NS∞ Lens Cabinet v10 — CODEOWNERS
+# Default: Architecture team (currently @mkenworthy solo)
+* @mkaxiolev-max/architecture
+
+# Architecture
+/services/ns/nss/lenses/cabinet.py          @mkaxiolev-max/architecture
+/services/ns/nss/lenses/base.py             @mkaxiolev-max/architecture
+/services/ns/nss/lenses/contracts.py        @mkaxiolev-max/architecture
+/services/ns/nss/lenses/registry.py         @mkaxiolev-max/architecture
+/services/ns/nss/lenses/source_resolver.py  @mkaxiolev-max/architecture
+/services/ns/nss/lenses/v10/version_drift_lens.py    @mkaxiolev-max/architecture
+/services/ns/nss/lenses/v10/schema_evolution_lens.py @mkaxiolev-max/architecture
+
+# Math / Phi
+/services/ns/nss/lenses/phi_curvature.py    @mkaxiolev-max/math-phi
+/services/ns/nss/lenses/refractive_index.py @mkaxiolev-max/math-phi
+/services/ns/nss/lenses/scoring.py          @mkaxiolev-max/math-phi @mkaxiolev-max/architecture
+/services/ns/nss/lenses/v10/claim_novelty_lens.py    @mkaxiolev-max/math-phi
+/services/ns/nss/lenses/v10/embedding_drift_lens.py  @mkaxiolev-max/math-phi
+
+# Data Engineering
+/services/ns/nss/lenses/writers.py          @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/rejects.py          @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/embeddings.py       @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/observability.py    @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/cps_integration/    @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/v10/streaming_lens.py   @mkaxiolev-max/data-eng
+/services/ns/nss/lenses/v10/cost_budget_lens.py @mkaxiolev-max/data-eng
+
+# Validation / Audit
+/services/ns/nss/lenses/validators.py       @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/contradiction.py    @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/receipts.py         @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/provenance_chain_lens.py          @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/differential_privacy_lens.py      @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/adversarial_robustness_lens.py    @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/temporal_coherence_lens.py        @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/cross_source_triangulation_lens.py @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/legal_compliance_lens.py          @mkaxiolev-max/validation-audit @mkenworthy
+/services/ns/nss/lenses/v10/bias_detection_lens.py            @mkaxiolev-max/validation-audit
+/services/ns/nss/lenses/v10/citation_integrity_lens.py        @mkaxiolev-max/validation-audit
+
+# Web / Crawl
+/services/ns/nss/lenses/v10/langchain_agentic_lens.py @mkaxiolev-max/web-crawl
+/services/ns/nss/lenses/v10/multimodal_lens.py        @mkaxiolev-max/web-crawl
+/services/ns/nss/lenses/v10/federated_lens.py         @mkaxiolev-max/web-crawl
+
+# Decoupled Symphony contract surface
+/services/ns/nss/lenses/contracts_external/ @mkaxiolev-max/architecture
+
+# Governance docs
+/docs/lens_cabinet/ @mkenworthy
+/.github/CODEOWNERS @mkenworthy

@@ -1,0 +1,3 @@
+module NSMac {
+    header "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/include/NSMac-Swift.h"
+}

@@ -1,0 +1,605 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.xctest/Contents/MacOS/NSMacPackageTests",
+      "packagePath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac",
+      "productName" : "NSMacPackageTests"
+    }
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.NSMac-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/sources",
+      "importPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Sources/NSMac/NSMac.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "NSMac",
+      "moduleOutputPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMac.swiftmodule",
+      "objects" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-Onone",
+        "-enable-testing",
+        "-j28",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/include/NSMac-Swift.h",
+        "-swift-version",
+        "5",
+        "-Xfrontend",
+        "-experimental-lazy-typecheck",
+        "-Xfrontend",
+        "-experimental-skip-all-function-bodies",
+        "-Xfrontend",
+        "-experimental-allow-module-with-compiler-errors",
+        "-Xfrontend",
+        "-empty-abi-descriptor",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ns_mac"
+      ],
+      "outputFileMapPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMac.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : true,
+      "sources" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Sources/NSMac/NSMac.swift"
+      ],
+      "tempsPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.NSMacPackageTests-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/sources",
+      "importPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMacTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "NSMacPackageTests",
+      "moduleOutputPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMacPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j28",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/include/NSMacPackageTests-Swift.h",
+        "-Xfrontend",
+        "-experimental-lazy-typecheck",
+        "-Xfrontend",
+        "-experimental-skip-all-function-bodies",
+        "-Xfrontend",
+        "-experimental-allow-module-with-compiler-errors",
+        "-Xfrontend",
+        "-empty-abi-descriptor",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ns_mac"
+      ],
+      "outputFileMapPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMacPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : true,
+      "sources" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.NSMacTests-arm64-apple-macosx-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/sources",
+      "importPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacComponentTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacRuntimeCoverageManifestTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMac.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "NSMacTests",
+      "moduleOutputPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMacTests.swiftmodule",
+      "objects" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/NSMacComponentTests.swift.o",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/NSMacRuntimeCoverageManifestTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j28",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "5",
+        "-Xfrontend",
+        "-experimental-lazy-typecheck",
+        "-Xfrontend",
+        "-experimental-skip-all-function-bodies",
+        "-Xfrontend",
+        "-experimental-allow-module-with-compiler-errors",
+        "-Xfrontend",
+        "-empty-abi-descriptor",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ns_mac"
+      ],
+      "outputFileMapPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules/NSMacTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : true,
+      "sources" : [
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacComponentTests.swift",
+        "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacRuntimeCoverageManifestTests.swift"
+      ],
+      "tempsPath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "NSMac" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "NSMac",
+      "-package-name",
+      "ns_mac",
+      "-c",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Sources/NSMac/NSMac.swift",
+      "-I",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-Onone",
+      "-enable-testing",
+      "-j28",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/include/NSMac-Swift.h",
+      "-swift-version",
+      "5",
+      "-Xfrontend",
+      "-experimental-lazy-typecheck",
+      "-Xfrontend",
+      "-experimental-skip-all-function-bodies",
+      "-Xfrontend",
+      "-experimental-allow-module-with-compiler-errors",
+      "-Xfrontend",
+      "-empty-abi-descriptor",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ns_mac",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "NSMacPackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "NSMacPackageTests",
+      "-package-name",
+      "ns_mac",
+      "-c",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j28",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/include/NSMacPackageTests-Swift.h",
+      "-Xfrontend",
+      "-experimental-lazy-typecheck",
+      "-Xfrontend",
+      "-experimental-skip-all-function-bodies",
+      "-Xfrontend",
+      "-experimental-allow-module-with-compiler-errors",
+      "-Xfrontend",
+      "-empty-abi-descriptor",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ns_mac",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "NSMacTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "NSMacTests",
+      "-package-name",
+      "ns_mac",
+      "-c",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacComponentTests.swift",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacRuntimeCoverageManifestTests.swift",
+      "-I",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j28",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "5",
+      "-Xfrontend",
+      "-experimental-lazy-typecheck",
+      "-Xfrontend",
+      "-experimental-skip-all-function-bodies",
+      "-Xfrontend",
+      "-experimental-allow-module-with-compiler-errors",
+      "-Xfrontend",
+      "-empty-abi-descriptor",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ns_mac",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "NSMac" : [
+
+    ],
+    "NSMacPackageTests" : [
+      "NSMacTests",
+      "NSMac"
+    ],
+    "NSMacTests" : [
+      "NSMac"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Sources/NSMac/NSMac.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/sources"
+    },
+    "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacPackageTests.build/sources"
+    },
+    "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacComponentTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Tests/NSMacTests/NSMacRuntimeCoverageManifestTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMacTests.build/sources"
+    },
+    "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

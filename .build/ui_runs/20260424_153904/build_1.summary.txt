@@ -1,0 +1,11 @@
+## BUILD SUMMARY (attempt 1)
+exit_code: 0
+
+### errors (first 30)
+
+### warnings (first 20)
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift:71:40: warning: call to method 'scoreBand' in closure requires explicit use of 'self' to make capture semantics explicit; this is an error in the Swift 6 language mode
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Bridges/HealthPoller.swift:55:60: warning: reference to captured var 'anyOnline' in concurrently-executing code; this is an error in the Swift 6 language mode
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift:173:19: warning: immutable value 'pipelineState' was never used; consider replacing with '_' or removing it
+/Users/axiolevns/axiolev_runtime/apps/ns_mac/NSInfinityApp/NSInfinityApp/Metal/OrganismRenderer.swift:173:38: warning: immutable value 'particlePipeline' was never used; consider replacing with '_' or removing it
+2026-04-24 15:39:13.302 appintentsmetadataprocessor[8667:123226] warning: Metadata extraction skipped. No AppIntents.framework dependency found.

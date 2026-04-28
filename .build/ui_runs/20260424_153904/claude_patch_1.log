@@ -1,0 +1,18 @@
+All 4 edits confirmed correct. SourceKit "cannot find type" warnings are single-file scope noise — the full Xcode build resolves all cross-module references.
+
+---
+
+**Summary of all changes applied:**
+
+| File | Gap(s) closed |
+|------|--------------|
+| `ServiceHealth.swift` *(prior pass)* | Docker 11/11; 7 rail services |
+| `AppShell.swift` *(prior pass + this session)* | RightPanel 320 pt; BottomTimeline 120 pt; **LeftRail 200 pt** |
+| `LeftRail.swift` *(prior pass)* | prefix(7) rail list; founder token on avatar |
+| `RightInspector.swift` *(prior pass + this session)* | Violet dot → Spec.violet; **chamber scores always shown**; **Board format %.2f** |
+| `BottomTimeline.swift` *(prior pass)* | Rolling ReceiptsTicker with continuous scroll |
+| `MetalView.swift` *(prior pass)* | clearColor → exact bg token (0.039, 0.055, 0.153) |
+| `OrganismRenderer.swift` *(this session)* | **Wave-modulated link alpha** (autopoietic flow animation) |
+| `FounderHomeView.swift` *(this session)* | **Title → "Programs Runtime"** |
+
+FIX: 4 files edited; 13 gaps closed

@@ -1,0 +1,276 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-04-27",
+  "branch": "integration/xctest-20260427",
+  "commit": "63f4f696",
+  "apps": {
+    "ns_ui": {
+      "framework": "Next.js 16.2.2",
+      "base_url": "http://localhost:3001",
+      "api_base": "http://localhost:9011",
+      "status": "canonical",
+      "routes": [
+        {
+          "path": "/",
+          "redirect": "/home",
+          "status": "present",
+          "file": "ns_ui/src/app/page.tsx"
+        },
+        {
+          "path": "/home",
+          "title": "Founder Home",
+          "icon": "🏛️",
+          "status": "present",
+          "file": "ns_ui/src/app/home/page.tsx",
+          "api_endpoint": "/api/v1/ui/summary",
+          "data_status": "real_with_fallback",
+          "missing_widgets": ["I7CertificationPill", "I8StatusPill", "PAPGraduationCountdown", "DWMStatusPill"]
+        },
+        {
+          "path": "/living",
+          "title": "Living Architecture",
+          "icon": "🧬",
+          "status": "present",
+          "file": "ns_ui/src/features/architecture/ArchitecturePage.tsx",
+          "api_endpoint": "/api/v1/ui/architecture",
+          "data_status": "real_with_fallback",
+          "missing_widgets": ["LiveRingPoller", "I7Badge", "I8Badge"]
+        },
+        {
+          "path": "/governance",
+          "title": "Governance + Canon",
+          "icon": "⚖️",
+          "status": "present",
+          "file": "ns_ui/src/app/[slug]/page.tsx",
+          "api_endpoint": "/api/v1/ui/governance",
+          "data_status": "real_with_fallback",
+          "missing_widgets": ["LogosGateRiskScores", "AletheionGateMatrix", "CanonPromotionQueue", "PAPPanel", "NCOMReadiness"]
+        },
+        {
+          "path": "/engine",
+          "title": "Engine Room",
+          "icon": "⚙️",
+          "status": "present",
+          "file": "ns_ui/src/features/engine/EngineRoomPage.tsx",
+          "api_endpoint": "/api/v1/ui/execution + SSE /api/v1/engine/live/stream",
+          "data_status": "real",
+          "sse": true,
+          "missing_widgets": ["ProofCarrierList", "ReversibilityRegistry", "GoalFormation", "EfficiencyLedger"]
+        },
+        {
+          "path": "/voice",
+          "title": "Violet (Voice)",
+          "icon": "🎙️",
+          "status": "present",
+          "file": "ns_ui/src/features/violet/VioletPage.tsx",
+          "api_endpoint": "/api/v1/ui/voice",
+          "data_status": "real_with_fallback",
+          "missing_widgets": []
+        },
+        {
+          "path": "/alexandria",
+          "title": "Alexandria Ledger",
+          "icon": "📜",
+          "status": "present",
+          "file": "ns_ui/src/app/[slug]/page.tsx",
+          "api_endpoint": "/api/v1/ui/memory",
+          "data_status": "real",
+          "missing_widgets": ["EvidenceAtomBrowser", "ContradictionGraph", "CorpusIngestionStatus", "ProvenanceChain"]
+        },
+        {
+          "path": "/build",
+          "title": "Build + Receipts",
+          "icon": "🧱",
+          "status": "present",
+          "file": "ns_ui/src/app/[slug]/page.tsx",
+          "api_endpoint": "/api/v1/ui/build",
+          "data_status": "real_with_fallback",
+          "missing_widgets": []
+        },
+        {
+          "path": "/timeline",
+          "title": "Timeline",
+          "icon": "🗓️",
+          "status": "present",
+          "file": "ns_ui/src/app/[slug]/page.tsx",
+          "api_endpoint": "/api/v1/ui/timeline",
+          "data_status": "real",
+          "missing_widgets": []
+        },
+        {
+          "path": "/scoring",
+          "title": "Scoring (v2.1/v3.0)",
+          "icon": "📊",
+          "status": "present",
+          "file": "ns_ui/src/app/scoring/page.tsx",
+          "api_endpoint": "/api/v1/ui/scoring",
+          "data_status": "real_with_fallback",
+          "missing_widgets": ["I7Row", "I8Row", "V31Score", "V32Projection", "TheoreticalCeiling", "DeltasTo99"]
+        },
+        {
+          "path": "/omega_logos",
+          "title": "Ω-Logos (I₆)",
+          "icon": "🕊️",
+          "status": "present",
+          "file": "ns_ui/src/app/omega_logos/page.tsx",
+          "api_endpoint": "/api/v1/ui/omega_logos",
+          "data_status": "real_with_fallback",
+          "missing_widgets": ["I6ReceiptLink"]
+        },
+        {
+          "path": "/ring5",
+          "title": "Ring 5 External Gates",
+          "icon": "🗝️",
+          "status": "present",
+          "file": "ns_ui/src/app/ring5/page.tsx",
+          "api_endpoint": "/api/v1/ui/ring5",
+          "data_status": "real_with_fallback",
+          "missing_widgets": []
+        },
+        {
+          "path": "/autonomy",
+          "title": "Autonomy Tiers",
+          "icon": "🔐",
+          "status": "present",
+          "file": "ns_ui/src/app/autonomy/page.tsx",
+          "api_endpoint": "/api/v1/ui/autonomy",
+          "data_status": "real_empty_fallback",
+          "missing_widgets": ["TierGrid (tiers array empty from API)"]
+        },
+        {
+          "path": "/aletheia",
+          "title": "Truth / Aletheia-Control Ω",
+          "icon": "🌐",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/aletheia_control/status",
+          "data_status": "none",
+          "priority": 1,
+          "required_components": ["AletheiaControlPanel", "C25ScorePanel", "WisdomCourageAcceptance"]
+        },
+        {
+          "path": "/dwm",
+          "title": "DWM Console",
+          "icon": "🔧",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/dwm/status",
+          "data_status": "none",
+          "priority": 1,
+          "notes": "Architecture-defined, implementation-pending",
+          "required_components": ["DWMConsole", "DWMStatePanel", "DWMIntegrationMap"]
+        },
+        {
+          "path": "/pap",
+          "title": "PAP Ω Console",
+          "icon": "🎓",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/pap/status",
+          "data_status": "none",
+          "priority": 1,
+          "notes": "Graduation review 2026-05-04 — urgent",
+          "required_components": ["PAPPanel", "PAPShadowStatus", "PAPGraduationCountdown"]
+        },
+        {
+          "path": "/prism",
+          "title": "PRISM-Ω",
+          "icon": "🔭",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/prism/status",
+          "data_status": "none",
+          "priority": 2,
+          "required_components": ["PRISMOmegaPanel", "PRISMAxisBreakdown"]
+        },
+        {
+          "path": "/arms",
+          "title": "ARMS Scoring",
+          "icon": "📐",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/arms/score",
+          "data_status": "none",
+          "priority": 3,
+          "required_components": ["ARMSScoringPanel"]
+        },
+        {
+          "path": "/noetic",
+          "title": "Noetic / Intent Kernel",
+          "icon": "🧠",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/noetic/status",
+          "data_status": "none",
+          "priority": 2,
+          "required_components": ["NoeticPanel", "IntentKernelMonitor"]
+        },
+        {
+          "path": "/ris",
+          "title": "RIS Console",
+          "icon": "📡",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/ris/sources",
+          "data_status": "none",
+          "priority": 3,
+          "required_components": ["RISSourceGrid", "IngestionReceipts"]
+        },
+        {
+          "path": "/models",
+          "title": "Model Router / Sovereign Compute",
+          "icon": "🤖",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/models/registry",
+          "data_status": "none",
+          "priority": 3,
+          "required_components": ["LocalModelRegistry", "ModelRouterPanel"]
+        },
+        {
+          "path": "/drift",
+          "title": "Drift Monitor",
+          "icon": "📉",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/drift/status",
+          "data_status": "none",
+          "priority": 3,
+          "required_components": ["DriftMonitorPanel", "DriftTimeline"]
+        },
+        {
+          "path": "/portfolio",
+          "title": "Product Portfolio",
+          "icon": "🏢",
+          "status": "ABSENT",
+          "file": null,
+          "api_endpoint": "/api/v1/portfolio/overview",
+          "data_status": "none",
+          "priority": 7,
+          "required_components": ["PortfolioOverviewPage", "ProductMatrix"]
+        }
+      ]
+    },
+    "frontend_legacy": {
+      "framework": "Vite 4.4 + React 18",
+      "base_url": "http://localhost:3000",
+      "status": "superseded",
+      "routes": [
+        "/briefing", "/build", "/calls", "/engine", "/governance", "/memory",
+        "/omega", "/organism", "/runtime", "/violet"
+      ]
+    },
+    "ns_mac": {
+      "framework": "SwiftUI",
+      "status": "active",
+      "modes": [
+        "Living Architecture", "Engine Room", "Programs Runtime",
+        "Memory", "Governance", "Build Space"
+      ],
+      "missing_modes": [
+        "PAP Console", "DWM Console", "Aletheia-Control",
+        "RIS Console", "Model Router"
+      ]
+    }
+  }
+}

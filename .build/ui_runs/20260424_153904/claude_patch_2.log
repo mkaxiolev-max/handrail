@@ -1,0 +1,15 @@
+All edits are correct. Here is the complete summary:
+
+---
+
+**Changes applied across 4 files:**
+
+| File | Gap | Change |
+|------|-----|--------|
+| `AppState.swift` | Gap 3 (medium) | `voiceState` initial value `.dormant` → `.ready`; pill now shows "Violet · ready" at launch |
+| `HealthPoller.swift` | Gap 2 (high) | Added `svc-9002` through `svc-9006` to the polled ports array; all 11 `ServiceHealth.allServices` entries now polled, enabling Docker 11/11 |
+| `OrganismRenderer.swift` | Gap 1 (high) | Replaced static glow halos with 2 pulsing halos at radii 0.24/0.17 with `sin(time*1.4)` alpha animation, using `DesignTokenSIMD.violet` |
+| `OrganismRenderer.swift` | Gap 4 (low) | Added `DesignTokenSIMD` struct (11 named SIMD4 constants mirroring `DSColors.Spec`); `nodeColor()` now references named constants instead of inline literals |
+| `MetalView.swift` | Gap 5 (low) | `kMetalBgColor` now derives its components from `DesignTokenSIMD.bg` — single source of truth for the bg token in the Metal layer |
+
+FIX: 4 files edited; 5 gaps closed

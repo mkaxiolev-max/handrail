@@ -1,0 +1,12 @@
+{
+  "": {
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/primary.swiftdeps"
+  },
+  "/Users/axiolevns/axiolev_runtime/apps/ns_mac/Sources/NSMac/NSMac.swift": {
+    "dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac.d",
+    "object": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac.swift.o",
+    "swiftmodule": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac~partial.swiftmodule",
+    "swift-dependencies": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac.swiftdeps",
+    "diagnostics": "/Users/axiolevns/axiolev_runtime/apps/ns_mac/.build/index-build/arm64-apple-macosx/debug/NSMac.build/NSMac.dia"
+  }
+}
