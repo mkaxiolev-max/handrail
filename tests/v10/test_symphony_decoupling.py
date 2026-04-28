@@ -19,4 +19,6 @@ def test_symphony_contracts_no_symphony_import():
     if not path.exists():
         pytest.skip("symphony_contracts.py not found")
     text = path.read_text()
-    assert "symphony_os" not in text
+    # Check for actual import statements only (line-anchored) — docstring mentions are fine
+    assert not re.search(r"^\s*(from\s+symphony_os|import\s+symphony_os)\b", text, re.MULTILINE), \
+        "symphony_contracts.py must not import from symphony_os"
