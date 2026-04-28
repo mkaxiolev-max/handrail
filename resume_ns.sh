@@ -45,3 +45,4 @@ printf '%s\n' '{
   "artifacts": [{"sha": "'"$SHA"'", "branch": "'"$BRANCH"'", "status": "up"}],
   "dignity_banner": "AXIOLEV HOLDINGS LLC — DIGNITY PRESERVED"
 }'
+bash ~/axiolev_runtime/scripts/run_coherence_dashboard.sh

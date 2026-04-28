@@ -1,11 +1,13 @@
 """NCOM — Non-Classical Observer Monitor FastAPI server (port 9020).
 
 Panels: 8 read-only data sources + WebSocket live push.
+Extended: /ncom/query (IMO gate propose→adjudicate), /ncom/branches (registry read).
 """
 from __future__ import annotations
-import asyncio, json
+import asyncio, json, uuid
+from datetime import datetime, timezone
 from pathlib import Path
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from services.coherence_kernel.dashboard.panels import PANEL_HANDLERS
 
@@ -43,6 +45,122 @@ async def get_panel(panel_id: str):
         return JSONResponse(content=data)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ncom/query")
+async def ncom_query(req: Request):
+    """Route a prompt through the IMO gate (propose → adjudicate) and return a DecisionCard."""
+    body = await req.json()
+    prompt = (body.get("prompt") or "").strip()
+    if not prompt:
+        return JSONResponse({"error": "empty prompt"}, status_code=400)
+    branch_id = f"q_{uuid.uuid4().hex[:12]}"
+    try:
+        from services.coherence_kernel import schemas as ck
+        from services.coherence_kernel.imo import gate as ck_gate
+        from services.coherence_kernel.decoherence import aggregator
+        from services.coherence_kernel import readiness as readiness_mod
+        branch = ck.BranchState(
+            id=branch_id,
+            claim=prompt,
+            evidence_amplitude=ck.AmplitudeEvidenceWeight(
+                magnitude=0.6, phase=0.3,
+                provenance_chain=["user_prompt", "ns_core"],
+                redundancy_count=2, source_diversity=0.5),
+            uncertainty=0.4,
+            contradiction_links=[], reinforcement_links=[],
+            reversibility_cost=1.5, decoherence_resistance=0.7,
+            created_at=datetime.now(timezone.utc),
+            cps_op_chain=["ns_core.query"],
+        )
+        proposal_id = ck_gate.propose(branch)
+        promotion = ck_gate.adjudicate(proposal_id)
+        decision = promotion.gate_decision
+        invariants_passed = promotion.invariants_passed
+        imo_receipt = promotion.imo_receipt
+        try:
+            rs = readiness_mod.compute_readiness(branch)
+            score_100 = rs.score_100
+        except Exception:
+            score_100 = 0.0
+        dd = aggregator.compute(branch)
+        decoherence_data = {
+            "urgency": dd.urgency_score, "bias": dd.bias_score,
+            "context_loss": dd.context_loss_score,
+            "narrative_lock": dd.narrative_lock_score,
+            "social_pressure": dd.social_pressure_score,
+            "aggregate": dd.aggregate, "breached": dd.breached,
+        }
+    except Exception as e:
+        decision = "abort"; invariants_passed = []; imo_receipt = f"err:{e}"
+        proposal_id = None; score_100 = 0.0
+        decoherence_data = {"aggregate": 1.0, "breached": True, "error": str(e)}
+    verb_map = {
+        "collapse_ready":      ("ANSWER ADMITTED TO CANON-ELIGIBLE", 0.92),
+        "hold_ncom":           ("HOLD — Non-Collapsing Operational Mode", 0.55),
+        "force_more_branches": ("INSUFFICIENT EVIDENCE — generate alternatives", 0.35),
+        "abort":               ("REJECTED — invariant or decoherence violation", 0.10),
+    }
+    answer_text, conf = verb_map.get(decision, ("UNKNOWN", 0.0))
+    return {
+        "answer": answer_text, "confidence": conf, "verb": decision,
+        "branch_id": branch_id, "proposal_id": proposal_id,
+        "score_100": score_100,
+        "invariants_passed": invariants_passed,
+        "imo_receipt": imo_receipt,
+        "trace": {
+            "router": {"engine": "coherence_kernel", "verb": decision},
+            "ether": {"prompt_tokens": len(prompt.split()), "evidence_count": 2},
+            "decoherence": decoherence_data,
+            "canon_alignment": "PENDING_PROMOTE" if decision == "collapse_ready" else "NOT_ELIGIBLE",
+            "next_actions": (
+                ["promote_to_canon", "branch", "simulate"]
+                if decision == "collapse_ready" else ["force_more_branches", "review_decoherence"]
+            ),
+        },
+    }
+
+
+@app.get("/ncom/branches")
+async def ncom_branches():
+    """Return branch registry state for ns_core cockpit endpoints."""
+    try:
+        from services.coherence_kernel.branch_registry import list_branches, get_branch
+        from services.coherence_kernel.imo.gate import _decisions, _proposals
+        branches = []
+        for bid in list_branches()[:200]:
+            b = get_branch(bid)
+            if b:
+                branches.append({
+                    "id": b.id, "claim": b.claim,
+                    "contradiction_links": list(b.contradiction_links or []),
+                    "reinforcement_links": list(b.reinforcement_links or []),
+                    "amp": getattr(b.evidence_amplitude, "magnitude", 0.0),
+                    "ts": b.created_at.isoformat() if b.created_at else None,
+                })
+        canon_records = []
+        for prop_id, prom in list(_decisions.items())[-100:]:
+            if prom.gate_decision == "collapse_ready":
+                br = _proposals.get(prop_id)
+                canon_records.append({
+                    "branch_id": getattr(br, "id", prop_id),
+                    "claim": getattr(br, "claim", ""),
+                    "verb": prom.gate_decision,
+                    "imo_receipt": prom.imo_receipt,
+                    "invariants_passed": list(prom.invariants_passed or []),
+                })
+        recent_decisions = []
+        for prop_id, prom in list(_decisions.items())[-20:]:
+            br = _proposals.get(prop_id)
+            recent_decisions.append({
+                "proposal_id": prop_id,
+                "verb": prom.gate_decision,
+                "claim": getattr(br, "claim", "")[:80],
+                "imo_receipt": prom.imo_receipt,
+            })
+    except Exception as e:
+        branches = []; canon_records = []; recent_decisions = []
+    return {"branches": branches, "canon": canon_records, "recent_decisions": recent_decisions}
 
 
 @app.websocket("/ncom/ws")

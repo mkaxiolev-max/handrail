@@ -813,6 +813,164 @@ async def voice_sms(request: Request):
         )
 
 
+# ── Founder Cockpit MAX endpoints ────────────────────────────────────────────
+# Injected by integration/founder-cockpit-mac-MAX-20260428
+# All coherence kernel calls route via HTTP to NCOM dashboard on host:9020
+# (modules not available inside Docker container — NCOM has full Python access)
+
+_NCOM = "http://host.docker.internal:9020"
+
+def _ncom_get(path: str, timeout: int = 5):
+    import urllib.request, json as _json
+    with urllib.request.urlopen(f"{_NCOM}{path}", timeout=timeout) as r:
+        return _json.loads(r.read())
+
+def _ncom_post(path: str, body: dict, timeout: int = 10):
+    import urllib.request, json as _json
+    data = _json.dumps(body).encode()
+    req = urllib.request.Request(f"{_NCOM}{path}", data=data,
+                                  headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return _json.loads(r.read())
+
+@app.post("/query")
+async def query(req: Request):
+    from fastapi.responses import JSONResponse
+    body = await req.json()
+    prompt = (body.get("prompt") or "").strip()
+    if not prompt:
+        return JSONResponse({"answer": "UNAVAILABLE: empty prompt", "confidence": 0.0,
+            "trace": {"error": "empty"}}, status_code=400)
+    try:
+        result = _ncom_post("/ncom/query", {"prompt": prompt})
+        return result
+    except Exception as e:
+        return JSONResponse({
+            "answer": "UNAVAILABLE: coherence kernel unreachable",
+            "confidence": 0.0, "verb": "abort",
+            "score_100": 0.0, "trace": {"error": str(e)},
+        }, status_code=503)
+
+@app.get("/router/decision")
+async def router_decision():
+    return {"engine": "coherence_kernel", "version": "1.0",
+            "available_verbs": ["collapse_ready","hold_ncom","force_more_branches","abort"]}
+
+@app.get("/ether/retrieval_trace")
+async def ether_trace():
+    try:
+        data = _ncom_get("/ncom/panels/branch_registry")
+        branches = data.get("branches", [])
+        ids = [b.get("id","?") for b in branches[:50]]
+    except Exception:
+        ids = []
+    return {"recent_branch_count": len(ids), "branch_ids": ids,
+            "substrate": "alexandria", "note": "Ether retrieval is the Atomlex/Alexandria join layer"}
+
+@app.get("/system/state")
+async def system_state():
+    from datetime import datetime, timezone
+    try:
+        ck_ok = _ncom_get("/ncom/healthz").get("ok", False)
+    except Exception:
+        ck_ok = False
+    return {"ns_core": "ok",
+            "coherence_kernel": "armed" if ck_ok else "unreachable",
+            "imo_gate": "active" if ck_ok else "unavailable",
+            "ts": datetime.now(timezone.utc).isoformat()}
+
+@app.get("/canon")
+async def canon_list():
+    try:
+        data = _ncom_get("/ncom/branches")
+        records = data.get("canon", [])
+    except Exception as e:
+        records = []
+        logging.warning(f"canon_list error: {e}")
+    return {"count": len(records), "records": records}
+
+@app.post("/canon/promote")
+async def canon_promote(req: Request):
+    from fastapi.responses import JSONResponse
+    body = await req.json()
+    prop_id = body.get("proposal_id"); reason = body.get("reason","founder_promote")
+    if not prop_id:
+        return JSONResponse({"error":"proposal_id required"}, status_code=400)
+    return {"ok": True, "proposal_id": prop_id, "reason": reason,
+            "note": "Canon is append-only. Promote via IMO gate propose→adjudicate→collapse_ready."}
+
+@app.get("/contradictions")
+async def contradictions_list():
+    try:
+        data = _ncom_get("/ncom/branches")
+        branches = data.get("branches", [])
+        items = [{"branch_id": b["id"], "claim": b["claim"],
+                  "contradicts": b["contradiction_links"]}
+                 for b in branches if b.get("contradiction_links")]
+    except Exception:
+        items = []
+    return {"count": len(items), "items": items,
+            "pressure_score": min(1.0, len(items) / 50.0)}
+
+@app.get("/contradictions/graph")
+async def contradictions_graph():
+    try:
+        data = _ncom_get("/ncom/branches")
+        branches = data.get("branches", [])
+        nodes = [{"id": b["id"], "label": b["claim"][:60]} for b in branches]
+        edges = [{"from": b["id"], "to": c}
+                 for b in branches for c in b.get("contradiction_links", [])]
+    except Exception:
+        nodes, edges = [], []
+    return {"nodes": nodes, "edges": edges}
+
+@app.get("/memory/atoms")
+async def memory_atoms():
+    try:
+        data = _ncom_get("/ncom/branches")
+        branches = data.get("branches", [])
+        atoms = [{"id": b["id"], "claim": b["claim"], "amp": b.get("amp", 0.0),
+                  "ts": b.get("ts")} for b in branches[:100]]
+    except Exception:
+        atoms = []
+    return {"count": len(atoms), "atoms": atoms}
+
+@app.get("/memory/molecules")
+async def memory_molecules():
+    try:
+        data = _ncom_get("/ncom/branches")
+        branches = data.get("branches", [])
+        clusters: dict = {}
+        for b in branches:
+            if b.get("reinforcement_links"):
+                key = tuple(sorted(set([b["id"]] + b["reinforcement_links"])))
+                clusters.setdefault(key, []).append(b["claim"])
+    except Exception:
+        clusters = {}
+    return {"count": len(clusters),
+            "molecules": [{"members": list(k), "claims": v} for k,v in clusters.items()]}
+
+@app.get("/storytime")
+async def storytime():
+    try:
+        data = _ncom_get("/ncom/branches")
+        decisions = data.get("recent_decisions", [])
+        return {
+            "what_happened": [
+                f"{d['verb']} for '{d.get('claim','?')[:80]}'" for d in decisions
+            ],
+            "what_is_uncertain": [d["proposal_id"] for d in decisions
+                                   if d.get("verb") == "hold_ncom"],
+            "what_changed": [d["proposal_id"] for d in decisions
+                             if d.get("verb") == "collapse_ready"],
+            "rule": "STORYTIME NARRATES. CANON IS APPEND-ONLY. NARRATIVE NEVER OVERRIDES.",
+        }
+    except Exception:
+        return {"what_happened": [], "what_is_uncertain": [], "what_changed": [],
+                "rule": "STORYTIME NARRATES. CANON IS APPEND-ONLY. NARRATIVE NEVER OVERRIDES."}
+
+# ── End Founder Cockpit MAX endpoints ─────────────────────────────────────────
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=9000)
