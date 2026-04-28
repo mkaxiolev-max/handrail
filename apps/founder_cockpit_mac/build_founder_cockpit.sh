@@ -35,29 +35,34 @@ BUILD_PRODUCT=$(find .build -name "NSFounderCockpit" -type f 2>/dev/null | grep 
 ok "Build product: $BUILD_PRODUCT"
 
 # Bundle into .app
-APP_DIR="dist/mac/NSFounderCockpit.app/Contents"
-mkdir -p "$APP_DIR/MacOS"
-mkdir -p "$APP_DIR/Resources"
+BUNDLE_DIR="dist/mac/NSFounderCockpit.app"
+APP_DIR="$BUNDLE_DIR/Contents"
+mkdir -p "$APP_DIR/MacOS" "$APP_DIR/Resources"
 
 cp "$BUILD_PRODUCT" "$APP_DIR/MacOS/NSFounderCockpit"
 chmod +x "$APP_DIR/MacOS/NSFounderCockpit"
 
-# Write minimal Info.plist into bundle
-cp "Info.plist" "$APP_DIR/Info.plist" 2>/dev/null || cat > "$APP_DIR/Info.plist" << 'EOF'
+# Write real Info.plist with CFBundleExecutable so `open` works
+cat > "$APP_DIR/Info.plist" << 'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key><string>NSFounderCockpit</string>
-    <key>CFBundleIdentifier</key><string>com.axiolev.ns.founder-cockpit</string>
-    <key>CFBundleExecutable</key><string>NSFounderCockpit</string>
-    <key>CFBundleVersion</key><string>1.0</string>
-    <key>NSPrincipalClass</key><string>NSApplication</string>
-    <key>NSHighResolutionCapable</key><true/>
-    <key>LSMinimumSystemVersion</key><string>14.0</string>
-</dict>
-</plist>
-EOF
+<plist version="1.0"><dict>
+  <key>CFBundleName</key><string>NS∞ Founder Cockpit</string>
+  <key>CFBundleDisplayName</key><string>NS∞ Founder Cockpit</string>
+  <key>CFBundleIdentifier</key><string>com.axiolev.ns.founder-cockpit</string>
+  <key>CFBundleVersion</key><string>1.0</string>
+  <key>CFBundleShortVersionString</key><string>1.0.0</string>
+  <key>CFBundleExecutable</key><string>NSFounderCockpit</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleSignature</key><string>????</string>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
+  <key>NSPrincipalClass</key><string>NSApplication</string>
+</dict></plist>
+PLIST
+printf "APPL????" > "$APP_DIR/PkgInfo"
+plutil -lint "$APP_DIR/Info.plist" > /dev/null && ok "Info.plist valid" || warn "Info.plist lint failed"
 
 ok "App bundle: dist/mac/NSFounderCockpit.app"
 

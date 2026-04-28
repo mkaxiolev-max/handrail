@@ -24,24 +24,29 @@ log "PRE-CHECK: Live endpoints"
 SCORE=0; TOTAL=9; NOTES=()
 
 check_ep() {
-    local label="$1"; local url="$2"
-    if curl -fsS --max-time 4 "$url" >/dev/null 2>&1; then
+    local label="$1"; local url="$2"; local timeout="${3:-4}"
+    if curl -fsS --max-time "$timeout" "$url" >/dev/null 2>&1; then
         ok "$label  →  UP"
         SCORE=$((SCORE + 1))
         return 0
     else
-        warn "$label  →  DOWN"
+        warn "$label  →  DOWN (${timeout}s timeout)"
         NOTES+=("$label unreachable")
         return 1
     fi
 }
 
-check_ep "Handrail :8011"    "http://127.0.0.1:8011/healthz"        || true
-check_ep "NS Core :9000"     "http://127.0.0.1:9000/healthz"        || true
-check_ep "Continuum :8788"   "http://127.0.0.1:8788/continuum/status" || true
-check_ep "RIS :8014"         "http://127.0.0.1:8014/ris/sources"    || true
-check_ep "NCOM :9020"        "http://127.0.0.1:9020/ncom/healthz"   || true
-check_ep "Mac Adapter :8765" "http://127.0.0.1:8765/healthz"        || true
+check_ep "Handrail :8011"    "http://127.0.0.1:8011/healthz"          4 || true
+check_ep "NS Core :9000"     "http://127.0.0.1:9000/healthz"          4 || true
+check_ep "Continuum :8788"   "http://127.0.0.1:8788/continuum/status" 4 || true
+check_ep "RIS :8014"         "http://127.0.0.1:8014/ris/sources"     12 || true  # live S3 probe
+check_ep "NCOM :9020"        "http://127.0.0.1:9020/ncom/healthz"     4 || true
+check_ep "Mac Adapter :8765" "http://127.0.0.1:8765/healthz"          4 || true
+
+# BOOT-ORDER-CHECK: NCOM must be alive before ns_core /query works
+if ! curl -fsS --max-time 3 http://127.0.0.1:9020/ncom/healthz >/dev/null 2>&1; then
+    warn "NCOM :9020 NOT UP — ns_core /query will 503. Run: bash scripts/run_coherence_dashboard.sh"
+fi
 
 # ── IMO gate smoke test ───────────────────────────────────────
 log "D2: IMO gate /query"
@@ -70,8 +75,8 @@ fi
 # ── Swift tests ───────────────────────────────────────────────
 log "Running swift test..."
 swift test 2>&1 | tee /tmp/founder_cockpit_tests.log
-TEST_PASS=$(grep -E "passed" /tmp/founder_cockpit_tests.log | tail -1 | grep -oE "[0-9]+ passed" | head -1 || echo "? passed")
-TEST_FAIL=$(grep -E "failed" /tmp/founder_cockpit_tests.log | tail -1 | grep -oE "[0-9]+ failed" | head -1 || echo "0 failed")
+TEST_PASS=$(grep -E "^	 Executed [0-9]+ tests" /tmp/founder_cockpit_tests.log | tail -1 | grep -oE "[0-9]+ tests" | head -1 || echo "? tests")
+TEST_FAIL=$(grep -E "^	 Executed [0-9]+ tests" /tmp/founder_cockpit_tests.log | tail -1 | grep -oE "[0-9]+ failure" | head -1 || echo "0 failures")
 
 echo ""
 echo -e "${BOLD}${GREEN}═══════════════════════════════════════════════════════${NC}"
